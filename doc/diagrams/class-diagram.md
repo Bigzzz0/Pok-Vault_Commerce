@@ -15,10 +15,9 @@ classDiagram
     direction TB
 
     %% ==========================================
-    %% 1. PRESENTATION LAYER
+    %% 1. PRESENTATION LAYER (Web & REST Controllers)
     %% ==========================================
-    package "1. Presentation Layer (Web & REST Controllers)" {
-        class OrderApiController {
+    class OrderApiController {
             -OrderService orderService
             -TradeMatchingService tradeMatchingService
             +createOrder(PlaceOrderRequest request) ResponseEntity~ApiResponse~
@@ -61,13 +60,11 @@ classDiagram
             +handleInvalidOrderState(InvalidOrderStateException ex) ResponseEntity~ApiResponse~
             +handleGenericException(Exception ex) ResponseEntity~ApiResponse~
         }
-    }
 
     %% ==========================================
-    %% 2. APPLICATION / SERVICE LAYER
+    %% 2. APPLICATION / SERVICE LAYER (Business Logic & Orchestration)
     %% ==========================================
-    package "2. Service Layer (Business Logic & Orchestration)" {
-        class OrderService {
+    class OrderService {
             <<interface>>
             +createOrder(PlaceOrderRequest request) OrderResponse
             +transitionOrder(Long id, String action) OrderResponse
@@ -122,13 +119,11 @@ classDiagram
             +addPulledCard(Long id, AddPulledCardRequest request) AccountCardResponse
             +getAccountCards(Long id) List~AccountCardResponse~
         }
-    }
 
     %% ==========================================
-    %% 3. GOF DESIGN PATTERN: STRATEGY (DISCOUNT)
+    %% 3. GOF DESIGN PATTERN: STRATEGY (Discount Calculation)
     %% ==========================================
-    package "Design Pattern: Strategy (Discount Calculation)" {
-        class DiscountService {
+    class DiscountService {
             -List~DiscountStrategy~ strategies
             +calculateDiscount(MembershipTier tier, BigDecimal subtotal) BigDecimal
             +getApplicableStrategy(MembershipTier tier) DiscountStrategy
@@ -158,13 +153,11 @@ classDiagram
             +supports(MembershipTier tier) boolean
             +getDiscountPercentage() BigDecimal
         }
-    }
 
     %% ==========================================
-    %% 4. GOF DESIGN PATTERN: STATE (ORDER LIFECYCLE)
+    %% 4. GOF DESIGN PATTERN: STATE (Order State Machine)
     %% ==========================================
-    package "Design Pattern: State (Order State Machine)" {
-        class OrderState {
+    class OrderState {
             <<interface>>
             +pay(OrderContext context) void
             +ship(OrderContext context) void
@@ -225,13 +218,11 @@ classDiagram
             +cancel(OrderContext context) void
             +getStatus() OrderStatus
         }
-    }
 
     %% ==========================================
-    %% 5. GOF DESIGN PATTERN: OBSERVER (STOCK ALERT)
+    %% 5. GOF DESIGN PATTERN: OBSERVER (Inventory Alert)
     %% ==========================================
-    package "Design Pattern: Observer (Inventory Alert)" {
-        class ApplicationEventPublisher {
+    class ApplicationEventPublisher {
             <<interface>>
             +publishEvent(Object event) void
         }
@@ -251,13 +242,11 @@ classDiagram
             -int LOW_STOCK_THRESHOLD
             +onOrderPlaced(OrderPlacedEvent event) void
         }
-    }
 
     %% ==========================================
-    %% 6. DOMAIN LAYER (ENTITIES)
+    %% 6. DOMAIN LAYER (JPA Entities)
     %% ==========================================
-    package "6. Domain Layer (JPA Entities)" {
-        class User {
+    class User {
             -Long id
             -String username
             -String email
@@ -342,13 +331,11 @@ classDiagram
             -BigDecimal unitPrice
             -BigDecimal subtotal
         }
-    }
 
     %% ==========================================
-    %% 7. PERSISTENCE LAYER (SPRING DATA JPA)
+    %% 7. PERSISTENCE LAYER (Spring Data JPA Repositories)
     %% ==========================================
-    package "7. Persistence Layer (Repositories)" {
-        class OrderRepository {
+    class OrderRepository {
             <<interface>>
             +findByOrderCode(String code) Optional~Order~
             +findByUserId(Long userId) List~Order~
@@ -371,7 +358,6 @@ classDiagram
             +findByNameContainingIgnoreCase(String name) List~Card~
             +findByRarity(Rarity rarity) List~Card~
         }
-    }
 
     %% ==========================================
     %% RELATIONSHIPS & REALIZATIONS

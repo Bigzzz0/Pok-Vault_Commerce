@@ -57,16 +57,16 @@ flowchart TD
 
     %% Flow Connections
     A7 --> B1
-    B1 -- ไม่ถูกต้อง --> B2
+    B1 -->|"ไม่ถูกต้อง"| B2
     B2 --> A5
-    B1 -- ถูกต้อง --> B3
+    B1 -->|"ถูกต้อง"| B3
     B3 --> C1
     C1 --> C2
     C2 --> D1
     D1 --> C3
-    C3 -- สต็อกไม่พอ --> B4
+    C3 -->|"สต็อกไม่พอ"| B4
     B4 --> A2
-    C3 -- สต็อกเพียงพอ --> C4
+    C3 -->|"สต็อกเพียงพอ"| C4
     C4 --> C5
     C5 --> C6
     C6 --> D2
@@ -111,7 +111,7 @@ flowchart TD
         F1[แสดงฟอร์มลงทะเบียนไอดีเกม]
         F2[ส่งคำขอ POST /api/v1/accounts]
         F3[แสดง Modal บันทึกผลการเปิดซอง]
-        F4[ส่งคำขอ POST /api/v1/accounts/{id}/pulls]
+        F4["ส่งคำขอ POST /api/v1/accounts/{id}/pulls"]
         F5[อัปเดตตัวเลข Stock Cards ของไอดีนั้นบนตารางทันที]
         F6[แสดง Alert: บันทึกการ์ดเข้าไอดีเกมสำเร็จ]
     end
@@ -125,7 +125,7 @@ flowchart TD
     end
 
     %% Flow Connections
-    P3 -- ลงทะเบียนไอดีใหม่ --> P4
+    P3 -->|"ลงทะเบียนไอดีใหม่"| P4
     P4 --> F1
     F1 --> P5
     P5 --> F2
@@ -133,7 +133,7 @@ flowchart TD
     S1 --> S2
     S2 --> P2
 
-    P3 -- บันทึกการ์ดเปิดซองได้ --> P6
+    P3 -->|"บันทึกการ์ดเปิดซองได้"| P6
     P6 --> F3
     F3 --> P7
     P7 --> P8
@@ -193,9 +193,9 @@ flowchart TD
     T2 --> T3
     T3 --> S10
     S10 --> S11
-    S11 -- ไม่มีไอดีพร้อม -- --> S12
+    S11 -->|"ไม่มีไอดีพร้อม"| S12
     S12 --> T4
-    S11 -- มีไอดีพร้อม -- --> T4
+    S11 -->|"มีไอดีพร้อม"| T4
     T4 --> T5
     T5 --> S13
     S13 --> T6
@@ -224,12 +224,12 @@ flowchart TD
 ```mermaid
 flowchart TD
     StartCancel([เริ่มต้น: ลูกค้าขอยกเลิกออเดอร์ในแชท หรือหมดเวลาโอน]) --> ClickCancel[แอดมินคลิกปุ่ม 'Cancel Order' บนหน้าเว็บ /orders]
-    ClickCancel --> SendPatch[ส่งคำขอ PATCH /api/v1/orders/{id}/transition?action=cancel]
+    ClickCancel --> SendPatch["ส่งคำขอ PATCH /api/v1/orders/{id}/transition?action=cancel"]
     SendPatch --> CheckCurrentState{ตรวจสอบสถานะปัจจุบันของออเดอร์}
 
-    CheckCurrentState -- PENDING หรือ PAID --> ExecCancel[OrderState.cancel ดำเนินการยกเลิก]
-    CheckCurrentState -- SHIPPING --> ThrowIllegalState[โยน InvalidOrderStateException: ไม่สามารถยกเลิกได้เพราะส่งการ์ดในเกมแล้ว]
-    CheckCurrentState -- COMPLETED หรือ CANCELLED --> ThrowTerminal[โยน InvalidOrderStateException: ออเดอร์จบไปแล้ว]
+    CheckCurrentState -->|"PENDING หรือ PAID"| ExecCancel[OrderState.cancel ดำเนินการยกเลิก]
+    CheckCurrentState -->|"SHIPPING"| ThrowIllegalState["โยน InvalidOrderStateException: ไม่สามารถยกเลิกได้เพราะส่งการ์ดในเกมแล้ว"]
+    CheckCurrentState -->|"COMPLETED หรือ CANCELLED"| ThrowTerminal["โยน InvalidOrderStateException: ออเดอร์จบไปแล้ว"]
 
     ExecCancel --> LoopItems[วนลูปรายการ OrderItem ในออเดอร์]
     LoopItems --> RestoreStock[เรียก inventory.restoreStock คืนจำนวนการ์ดเข้าคลัง]

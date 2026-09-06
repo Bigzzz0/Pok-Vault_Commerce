@@ -117,34 +117,34 @@ classDiagram
     %% ==========================================
     class MembershipTier {
         <<enumeration>>
-        REGULAR : 0% discount
-        VIP : 10% discount
-        WHOLESALE : 15% discount
+        REGULAR
+        VIP
+        WHOLESALE
     }
 
     class OrderStatus {
         <<enumeration>>
-        PENDING : รอแจ้งโอนในแชท
-        PAID : ยืนยันสลิปแล้ว
-        SHIPPING : ส่งการ์ดในเกมแล้ว
-        COMPLETED : เทรดสำเร็จสมบูรณ์
-        CANCELLED : ยกเลิก/คืนสต็อก
+        PENDING
+        PAID
+        SHIPPING
+        COMPLETED
+        CANCELLED
     }
 
     class AccountTradeStatus {
         <<enumeration>>
-        READY : พร้อมเทรด
-        COOLDOWN : รอปลดเวลา
-        BUSY_TRADING : กำลังเทรด
-        SUSPENDED : ระงับการใช้งาน
+        READY
+        COOLDOWN
+        BUSY_TRADING
+        SUSPENDED
     }
 
     class TradeFulfillmentStatus {
         <<enumeration>>
-        UNASSIGNED : ยังไม่กำหนดไอดี
-        FRIEND_PENDING : รอลูกค้ารับเพื่อน
-        TRADE_SENT : ส่งคำขอเทรดแล้ว
-        COMPLETED : การเทรดเสร็จสิ้น
+        UNASSIGNED
+        FRIEND_PENDING
+        TRADE_SENT
+        COMPLETED
     }
 
     class CardCondition {

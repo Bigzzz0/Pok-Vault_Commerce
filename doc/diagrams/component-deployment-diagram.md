@@ -89,11 +89,11 @@ flowchart TB
     %% CONNECTIONS & INTERFACES
     %% ==========================================
     %% Client to Presentation
-    AppController -->|HTTP JSON / REST API| OrderAPI
-    AppController -->|HTTP JSON / REST API| GameAccAPI
-    AppController -->|HTTP JSON / REST API| CardAPI
-    ThymeleafView -->|HTTP GET Page Requests| WebPageCtrl
-    AppController -->|Prefilled Chat Handshake| FBMessengerGateway
+    AppController -->|"HTTP JSON / REST API"| OrderAPI
+    AppController -->|"HTTP JSON / REST API"| GameAccAPI
+    AppController -->|"HTTP JSON / REST API"| CardAPI
+    ThymeleafView -->|"HTTP GET Page Requests"| WebPageCtrl
+    AppController -->|"Prefilled Chat Handshake"| FBMessengerGateway
 
     %% Presentation to Service
     OrderAPI --> OrderServiceComp
@@ -180,13 +180,13 @@ flowchart LR
     Desktop --> Browser
     Mobile --> Browser
 
-    Browser -->|HTTPS : 443 / TLS 1.3 Encrypted\nREST API JSON & HTML Payloads| ReverseProxy
-    ReverseProxy -->|Internal Proxy HTTP : 8080| Tomcat
+    Browser -->|"HTTPS : 443 / TLS 1.3 Encrypted<br/>REST API JSON & HTML Payloads"| ReverseProxy
+    ReverseProxy -->|"Internal Proxy HTTP : 8080"| Tomcat
     Tomcat --> AppJar
     AppJar --> JDK
 
-    AppJar -->|Encrypted JDBC / TCP : 5432\nSSL Mode = require| PostgreSQL
-    Browser -.->|Chat Handshake URL Redirect\n(Pre-filled order summary)| MessengerPlatform
+    AppJar -->|"Encrypted JDBC / TCP : 5432<br/>SSL Mode = require"| PostgreSQL
+    Browser -.->|"Chat Handshake URL Redirect (Pre-filled order summary)"| MessengerPlatform
 ```
 
 ---
