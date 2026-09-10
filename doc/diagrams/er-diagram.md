@@ -267,8 +267,6 @@ erDiagram
 
 ---
 
----
-
 ## 3. การวิเคราะห์ความสัมพันธ์และ Cardinality (JPA Mapping Analysis)
 
 | ตารางหลัก (Parent Entity) | ตารางลูก (Child Entity) | ความสัมพันธ์ (Cardinality) | Foreign Key Column | การตั้งค่า JPA Annotations | พฤติกรรมเมื่อลบข้อมูล (Cascade / Orphan Behavior) |
@@ -279,6 +277,7 @@ erDiagram
 | **`card_expansions`** | **`cards`** | **1 : N** (One-to-Many) | `cards.expansion_id` | `@OneToMany(mappedBy = "expansion", fetch = FetchType.LAZY)` | 1 ชุดซองประกอบด้วยการ์ดหลายใบ |
 | **`cards`** | **`card_inventories`** | **1 : N** (One-to-Many) | `card_inventories.card_id` | `@ManyToOne(fetch = FetchType.LAZY)` ฝั่งลูก | การ์ด 1 ใบสามารถกระจายเก็บอยู่ในคลังหรือไอดีเกมหลายบัญชีได้ |
 | **`game_accounts`** | **`card_inventories`** | **1 : N** (One-to-Many) | `card_inventories.game_account_id` | `@OneToMany(mappedBy = "gameAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)` | ไอดีเกม 1 ไอดีถือครองการ์ดในคลังได้หลายใบ และเมื่อบันทึกการเปิดซอง (`+ Add Pull`) จะผูกเข้ากับไอดีนี้ |
+| **`card_inventories`** | **`order_items`** | **1 : N** (One-to-Many) | `order_items.inventory_id` | `@ManyToOne(fetch = FetchType.LAZY)` ฝั่งลูก | สต็อกการ์ด 1 เรคคอร์ดสามารถถูกอ้างอิงเพื่อจอง/สั่งซื้อในหลายออเดอร์ได้ |
 | **`game_accounts`** | **`order_items`** | **1 : N** (One-to-Many) | `order_items.assigned_account_id` | `@ManyToOne(fetch = FetchType.LAZY)` ฝั่งลูก | ไอดีเกม 1 บัญชีสามารถรับมอบหมายให้ทำหน้าที่ส่งเทรดการ์ดในหลายๆ ออเดอร์ได้ |
 
 ---

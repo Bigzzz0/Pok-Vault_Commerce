@@ -120,6 +120,21 @@ classDiagram
             +getAccountCards(Long id) List~AccountCardResponse~
         }
 
+        class CardService {
+            <<interface>>
+            +getAllCards(String expansion, String rarity) List~CardResponse~
+            +getCardById(Long id) CardResponse
+            +searchCards(String query) List~CardResponse~
+        }
+
+        class CardServiceImpl {
+            -CardRepository cardRepo
+            -CardExpansionRepository expansionRepo
+            +getAllCards(String expansion, String rarity) List~CardResponse~
+            +getCardById(Long id) CardResponse
+            +searchCards(String query) List~CardResponse~
+        }
+
     %% ==========================================
     %% 3. GOF DESIGN PATTERN: STRATEGY (Discount Calculation)
     %% ==========================================
@@ -266,6 +281,16 @@ classDiagram
             -Integer rewardPoints
         }
 
+        class CardExpansion {
+            -Long id
+            -String code
+            -String name
+            -String series
+            -LocalDate releaseDate
+            -Integer totalCards
+            -List~Card~ cards
+        }
+
         class Card {
             -Long id
             -CardExpansion expansion
@@ -359,16 +384,32 @@ classDiagram
             +findByRarity(Rarity rarity) List~Card~
         }
 
+        class CardExpansionRepository {
+            <<interface>>
+            +findByCode(String code) Optional~CardExpansion~
+        }
+
+        class OrderItemRepository {
+            <<interface>>
+            +findByOrderId(Long orderId) List~OrderItem~
+            +findByAssignedAccountId(Long accountId) List~OrderItem~
+        }
+
     %% ==========================================
     %% RELATIONSHIPS & REALIZATIONS
     %% ==========================================
     OrderApiController --> OrderService
     OrderApiController --> TradeMatchingService
     GameAccountApiController --> GameAccountService
+    CardApiController --> CardService
+    WebViewController --> CardService
+    WebViewController --> OrderService
+    WebViewController --> GameAccountService
 
     OrderServiceImpl ..|> OrderService
     TradeMatchingServiceImpl ..|> TradeMatchingService
     GameAccountServiceImpl ..|> GameAccountService
+    CardServiceImpl ..|> CardService
 
     OrderServiceImpl --> DiscountService
     OrderServiceImpl --> ApplicationEventPublisher
@@ -379,10 +420,14 @@ classDiagram
     TradeMatchingServiceImpl --> OrderRepository
     TradeMatchingServiceImpl --> GameAccountRepository
     TradeMatchingServiceImpl --> OrderItemRepository
+    TradeMatchingServiceImpl --> CardInventoryRepository
 
     GameAccountServiceImpl --> GameAccountRepository
     GameAccountServiceImpl --> CardInventoryRepository
     GameAccountServiceImpl --> CardRepository
+
+    CardServiceImpl --> CardRepository
+    CardServiceImpl --> CardExpansionRepository
 
     %% Strategy Pattern Realization
     RegularDiscountStrategy ..|> DiscountStrategy
@@ -407,10 +452,11 @@ classDiagram
     User "1" *-- "1" UserProfile
     User "1" o-- "0..*" Order
     Order "1" *-- "1..*" OrderItem
-    CardInventory "1" <-- "0..*" OrderItem
+    CardExpansion "1" o-- "1..*" Card
+    Card "1" <-- "0..*" CardInventory
     GameAccount "1" o-- "0..*" CardInventory
     GameAccount "1" <-- "0..*" OrderItem
-    Card "1" <-- "0..*" CardInventory
+    CardInventory "1" <-- "0..*" OrderItem
 ```
 
 ---
