@@ -100,18 +100,6 @@ classDiagram
         +BigDecimal subtotal
     }
 
-    class Deck {
-        +Long id
-        +String name
-        +String description
-        +getTotalCards() int
-    }
-
-    class DeckCard {
-        +Long id
-        +Integer quantity
-    }
-
     %% ==========================================
     %% DOMAIN ENUMERATIONS (VALUE TYPES)
     %% ==========================================
@@ -192,13 +180,9 @@ classDiagram
     %% ==========================================
     User "1" *-- "1" UserProfile : has profile
     User "1" o-- "0..*" Order : places
-    User "1" o-- "0..*" Deck : creates
 
     CardExpansion "1" o-- "1..*" Card : publishes
     Card "1" <-- "0..*" CardInventory : defines template
-    Card "1" <-- "0..*" DeckCard : references
-
-    Deck "1" *-- "1..*" DeckCard : contains
     
     GameAccount "1" o-- "0..*" CardInventory : holds in vault
     GameAccount "1" <-- "0..*" OrderItem : assigned trader
@@ -231,9 +215,6 @@ classDiagram
 ### 2.3 โมเดลการจับคู่เทรดในเกม (In-Game Trade Matching)
 * **Invariant 8 (Single Active Trader Assignment)**: แต่ละรายการการ์ด `OrderItem` จะต้องถูกมอบหมายให้กับ `GameAccount` เพียงไอดีเดียวเท่านั้นที่เป็นเจ้าของสต็อกการ์ดใบนั้น
 * **Invariant 9 (Account Trade Readiness)**: ไอดีเกมที่จะได้รับคัดเลือกให้เป็นผู้ส่งการ์ดเทรด ต้องมีสถานะเป็น `READY` เท่านั้น (ไม่ติด `COOLDOWN`, ไม่ติด `BUSY_TRADING`, และไม่ติด `SUSPENDED`)
-
-### 2.4 โมเดลการจัดเด็ค (Deck & DeckCard Constraints)
-* **Invariant 10 (Card Copy Limit)**: ตามกฎสากลของเกม Pokémon TCG Pocket เด็คหนึ่งจะใส่การ์ดที่มีชื่อและเลขชุดเดียวกันได้ไม่เกิน **2 ใบ** (`quantity BETWEEN 1 AND 2`)
 
 ---
 

@@ -8,19 +8,15 @@
 
 ## 1. Entity Relationship Diagram (Crow's Foot Notation)
 
-แผนภาพแสดงความสัมพันธ์เชิงโครงสร้างของข้อมูลทั้ง 10 ตารางในระบบ ครอบคลุมคลังการ์ด, บัญชีเกมที่ใช้เปิดซองสะสม, ระบบคำสั่งซื้อ Chat Commerce, และระบบจัดเด็คการ์ด
+แผนภาพแสดงความสัมพันธ์เชิงโครงสร้างของข้อมูลทั้ง 8 ตารางในระบบ ครอบคลุมคลังการ์ด, บัญชีเกมที่ใช้เปิดซองสะสม, และระบบคำสั่งซื้อ Chat Commerce Trade Platform
 
 ```mermaid
 erDiagram
     USERS ||--|| USER_PROFILES : "has profile (1:1)"
     USERS ||--o{ ORDERS : "places orders (1:N)"
-    USERS ||--o{ DECKS : "owns decks (1:N)"
     
     CARD_EXPANSIONS ||--|{ CARDS : "contains cards (1:N)"
     CARDS ||--o{ CARD_INVENTORIES : "stocked in (1:N)"
-    CARDS ||--o{ DECK_CARDS : "included in (1:N)"
-    
-    DECKS ||--|{ DECK_CARDS : "consists of (1:N)"
     
     GAME_ACCOUNTS ||--o{ CARD_INVENTORIES : "holds inventory (1:N)"
     CARD_INVENTORIES ||--o{ ORDER_ITEMS : "reserved/sold in (1:N)"
@@ -125,24 +121,6 @@ erDiagram
         integer quantity "Quantity of cards ordered (>= 1)"
         decimal unit_price "Price per unit frozen at time of purchase (10,2)"
         decimal subtotal "Line item total amount (quantity * unit_price)"
-        timestamp created_at "Creation timestamp"
-        timestamp updated_at "Last update timestamp"
-    }
-
-    DECKS {
-        bigint id PK "IDENTITY, Auto Increment"
-        varchar name "Custom deck name e.g. Pikachu Lightning Rush, length 100"
-        varchar description "Deck strategy / gameplay notes, length 500"
-        bigint user_id FK "Foreign Key -> USERS(id)"
-        timestamp created_at "Creation timestamp"
-        timestamp updated_at "Last update timestamp"
-    }
-
-    DECK_CARDS {
-        bigint id PK "IDENTITY, Auto Increment"
-        bigint deck_id FK "Foreign Key -> DECKS(id), Cascade Delete"
-        bigint card_id FK "Foreign Key -> CARDS(id)"
-        integer quantity "Number of copies (Pokemon Pocket rules max 2, default 1)"
         timestamp created_at "Creation timestamp"
         timestamp updated_at "Last update timestamp"
     }
@@ -252,7 +230,7 @@ erDiagram
 | `quantity` | `INTEGER` | NO | `NOT NULL`, `CHECK(quantity >= 0)` | `0` | จำนวนใบที่พร้อมจำหน่ายในไอดีนี้ (ห้ามติดลบ) |
 | `buy_in_price` | `DECIMAL(10,2)`| NO | `NOT NULL`, `CHECK(buy_in_price >= 0)` | `0.00` | ต้นทุนเฉลี่ยต่อใบ (สำหรับคำนวณกำไร-ขาดทุน) |
 | `selling_price` | `DECIMAL(10,2)`| NO | `NOT NULL`, `CHECK(selling_price >= 0)`| `0.00` | ราคาขายหน้าร้านที่ลูกค้าต้องชำระก่อนหักส่วนลด |
-| `storage_slot` | `VARCHAR(50)` | YES | - | `NULL` | ตำแหน่งจัดเก็บ เช่น "VAULT-A1", "DECK-01" |
+| `storage_slot` | `VARCHAR(50)` | YES | - | `NULL` | ตำแหน่งจัดเก็บ เช่น "VAULT-A1", "VAULT-B2" |
 | `created_at` | `TIMESTAMP` | NO | `NOT NULL` | `NOW()` | วันที่นำการ์ดเข้าสต็อก |
 | `updated_at` | `TIMESTAMP` | YES | - | `NOW()` | วันที่มีการตัดสต็อกหรือปรับราคาล่าสุด |
 
@@ -298,36 +276,6 @@ erDiagram
 
 ---
 
-### 2.9 ตาราง `decks` (สำรับการ์ดจัดเด็คของผู้ใช้งาน)
-* **คำอธิบาย**: บันทึกเด็คการ์ดที่ผู้ใช้งานจัดขึ้นสำหรับศึกษาเมต้าเกมหรือจำลองการเล่น
-* **ความสัมพันธ์**: `USERS` (1) ➔ `DECKS` (N)
-
-| ชื่อคอลัมน์ (Column Name) | ชนิดข้อมูล (Data Type) | Nullable | คีย์ / ข้อจำกัด (Constraints) | ค่าเริ่มต้น (Default) | คำอธิบายและความหมายทางธุรกิจ (Description & Business Rules) |
-| :--- | :--- | :---: | :--- | :---: | :--- |
-| `id` | `BIGINT` | NO | **PK**, `IDENTITY`, Auto-Increment | - | รหัสอ้างอิงเด็ค |
-| `user_id` | `BIGINT` | YES | **FK** $\rightarrow$ `users(id)` | `NULL` | เจ้าของเด็คการ์ด |
-| `name` | `VARCHAR(100)` | NO | `NOT NULL` | - | ชื่อเด็ค เช่น "Pikachu ex Lightning Speed" |
-| `description` | `VARCHAR(500)` | YES | - | `NULL` | คำอธิบายกลยุทธ์การเล่นของเด็ค |
-| `created_at` | `TIMESTAMP` | NO | `NOT NULL` | `NOW()` | วันที่สร้างเด็ค |
-| `updated_at` | `TIMESTAMP` | YES | - | `NOW()` | วันที่แก้ไขเด็ค |
-
----
-
-### 2.10 ตาราง `deck_cards` (รายการการ์ดที่บรรจุอยู่ในเด็ค)
-* **คำอธิบาย**: ตารางร่วม (Join Entity) บันทึกการ์ดและจำนวนใบที่อยู่ในเด็ค
-* **ความสัมพันธ์**: `DECKS` (1) ➔ `DECK_CARDS` (N) และ `CARDS` (1) ➔ `DECK_CARDS` (N)
-
-| ชื่อคอลัมน์ (Column Name) | ชนิดข้อมูล (Data Type) | Nullable | คีย์ / ข้อจำกัด (Constraints) | ค่าเริ่มต้น (Default) | คำอธิบายและความหมายทางธุรกิจ (Description & Business Rules) |
-| :--- | :--- | :---: | :--- | :---: | :--- |
-| `id` | `BIGINT` | NO | **PK**, `IDENTITY`, Auto-Increment | - | รหัสอ้างอิงการ์ดในเด็ค |
-| `deck_id` | `BIGINT` | NO | **FK** $\rightarrow$ `decks(id)`, Cascade Delete | - | เด็คที่การ์ดนี้บรรจุอยู่ |
-| `card_id` | `BIGINT` | NO | **FK** $\rightarrow$ `cards(id)` | - | แม่แบบการ์ดที่เลือกใส่ในเด็ค |
-| `quantity` | `INTEGER` | NO | `NOT NULL`, `CHECK(quantity BETWEEN 1 AND 2)` | `1` | จำนวนใบของการ์ดใบนี้ในเด็ค (ตามกฎ Pokémon Pocket ใส่ซ้ำได้สูงสุด 2 ใบ) |
-| `created_at` | `TIMESTAMP` | NO | `NOT NULL` | `NOW()` | วันที่เพิ่มการ์ดเข้าเด็ค |
-| `updated_at` | `TIMESTAMP` | YES | - | `NOW()` | วันที่แก้ไขจำนวนการ์ด |
-
----
-
 ## 3. การวิเคราะห์ความสัมพันธ์และ Cardinality (JPA Mapping Analysis)
 
 | ตารางหลัก (Parent Entity) | ตารางลูก (Child Entity) | ความสัมพันธ์ (Cardinality) | Foreign Key Column | การตั้งค่า JPA Annotations | พฤติกรรมเมื่อลบข้อมูล (Cascade / Orphan Behavior) |
@@ -339,8 +287,6 @@ erDiagram
 | **`cards`** | **`card_inventories`** | **1 : N** (One-to-Many) | `card_inventories.card_id` | `@ManyToOne(fetch = FetchType.LAZY)` ฝั่งลูก | การ์ด 1 ใบสามารถกระจายเก็บอยู่ในคลังหรือไอดีเกมหลายบัญชีได้ |
 | **`game_accounts`** | **`card_inventories`** | **1 : N** (One-to-Many) | `card_inventories.game_account_id` | `@OneToMany(mappedBy = "gameAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)` | ไอดีเกม 1 ไอดีถือครองการ์ดในคลังได้หลายใบ และเมื่อบันทึกการเปิดซอง (`+ Add Pull`) จะผูกเข้ากับไอดีนี้ |
 | **`game_accounts`** | **`order_items`** | **1 : N** (One-to-Many) | `order_items.assigned_account_id` | `@ManyToOne(fetch = FetchType.LAZY)` ฝั่งลูก | ไอดีเกม 1 บัญชีสามารถรับมอบหมายให้ทำหน้าที่ส่งเทรดการ์ดในหลายๆ ออเดอร์ได้ |
-| **`users`** | **`decks`** | **1 : N** (One-to-Many) | `decks.user_id` | `@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)` | ผู้ใช้ 1 คนสร้างเด็คได้หลายเด็ค |
-| **`decks`** | **`deck_cards`** | **1 : N** (One-to-Many) | `deck_cards.deck_id` | `@OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, orphanRemoval = true)` | เด็ค 1 เด็คประกอบด้วยการ์ดหลายใบ (จำกัดการ์ดซ้ำไม่เกิน 2 ใบ) |
 
 ---
 
@@ -352,7 +298,7 @@ erDiagram
    - ทุกคอลัมน์ในทุกตารางเก็บข้อมูลที่เป็นหน่วยย่อยที่สุด (Atomic Value) ไม่มีการเก็บลิสต์ของข้อมูลรวมในฟิลด์เดียว (เช่น รายการการ์ดในออเดอร์ถูกแยกเป็นตาราง `order_items` แทนที่จะเก็บเป็นสตริงคั่นด้วยเครื่องหมายจุลภาคในตาราง `orders`)
    - ทุกตารางมี Primary Key กำกับชัดเจน
 2. **Second Normal Form (2NF) - Full Functional Dependency**:
-   - ตารางที่ใช้ Composite Key เช่น `deck_cards(deck_id, card_id)` และ `card_inventories` มีฟิลด์ทุกฟิลด์ขึ้นตรงกับ Primary Key ทั้งหมดอย่างสมบูรณ์ ไม่มีการขึ้นตรงกับเพียงบางส่วนของคีย์ (No Partial Dependency)
+   - ทุกตารางมี Primary Key เป็น Single Column Identity (`id`) และฟิลด์ทุกฟิลด์ขึ้นตรงกับ Primary Key ทั้งหมดอย่างสมบูรณ์ สำหรับตารางความสัมพันธ์อย่าง `card_inventories` และ `order_items` ข้อมูล attribute ทุกตัวขึ้นตรงกับ Surrogate Key และ FK อย่างสมบูรณ์ ไม่มีการขึ้นตรงกับเพียงบางส่วนของคีย์ (No Partial Dependency)
 3. **Third Normal Form (3NF) - No Transitive Dependency**:
    - ข้อมูลทุกคอลัมน์ขึ้นตรงกับ Primary Key โดยตรง ไม่มีการขึ้นต่อกันเป็นทอดๆ เช่น ในตาราง `orders` จะไม่เก็บชื่อจริง ที่อยู่ หรือระดับสมาชิกของลูกค้าไว้ แต่จะเก็บเฉพาะ `user_id` เท่านั้น เพื่อให้ดึงข้อมูลจาก `users` และ `user_profiles` เมื่อจำเป็น (ป้องกันปัญหา Update Anomaly)
    - ในตาราง `order_items` มีการจัดเก็บ `unit_price` และ `subtotal` แยกไว้เฉพาะเจาะจง เพราะเป็นราคาประวัติศาสตร์ (Historical Snapshot) ณ วินาทีที่มีการสั่งซื้อจริง เพื่อป้องกันผลกระทบเมื่อราคาขายของการ์ดในคลัง (`card_inventories.selling_price`) มีการปรับขึ้นหรือลงในอนาคต
@@ -523,32 +469,4 @@ CREATE TABLE order_items (
 CREATE INDEX idx_item_order_id ON order_items(order_id);
 CREATE INDEX idx_item_inventory_id ON order_items(inventory_id);
 CREATE INDEX idx_item_assigned_account_id ON order_items(assigned_account_id);
-
--- 9. Table: decks
-CREATE TABLE decks (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT,
-    name VARCHAR(100) NOT NULL,
-    description VARCHAR(500),
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_deck_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-CREATE INDEX idx_deck_user_id ON decks(user_id);
-
--- 10. Table: deck_cards
-CREATE TABLE deck_cards (
-    id BIGSERIAL PRIMARY KEY,
-    deck_id BIGINT NOT NULL,
-    card_id BIGINT NOT NULL,
-    quantity INTEGER NOT NULL DEFAULT 1,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_deckcard_deck FOREIGN KEY (deck_id) REFERENCES decks(id) ON DELETE CASCADE,
-    CONSTRAINT fk_deckcard_card FOREIGN KEY (card_id) REFERENCES cards(id) ON DELETE RESTRICT,
-    CONSTRAINT uk_deck_card UNIQUE (deck_id, card_id),
-    CONSTRAINT chk_deck_card_qty CHECK (quantity BETWEEN 1 AND 2)
-);
-CREATE INDEX idx_deck_card_deck_id ON deck_cards(deck_id);
-CREATE INDEX idx_deck_card_card_id ON deck_cards(card_id);
 ```
