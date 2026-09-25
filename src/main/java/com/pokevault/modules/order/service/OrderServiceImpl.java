@@ -15,12 +15,15 @@ import com.pokevault.repository.CardInventoryRepository;
 import com.pokevault.repository.OrderRepository;
 import com.pokevault.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import com.pokevault.modules.order.event.OrderPlacedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -32,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
     private final CardInventoryRepository cardInventoryRepository;
     private final UserRepository userRepository;
     private final DiscountService discountService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public OrderResponse createOrder(PlaceOrderRequest request) {
@@ -96,6 +100,14 @@ public class OrderServiceImpl implements OrderService {
         order.setFinalAmount(finalAmount);
 
         Order savedOrder = orderRepository.save(order);
+
+        // Publish OrderPlacedEvent via Spring ApplicationEventPublisher
+        eventPublisher.publishEvent(OrderPlacedEvent.builder()
+                .orderId(savedOrder.getId())
+                .orderCode(savedOrder.getOrderCode())
+                .items(savedOrder.getItems())
+                .timestamp(LocalDateTime.now())
+                .build());
 
         return OrderResponse.fromEntity(savedOrder);
     }
