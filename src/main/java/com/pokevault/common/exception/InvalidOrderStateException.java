@@ -1,12 +1,12 @@
 package com.pokevault.common.exception;
 
-public class ResourceNotFoundException extends RuntimeException {
+public class InvalidOrderStateException extends RuntimeException {
 
-    public ResourceNotFoundException(String message) {
+    public InvalidOrderStateException(String message) {
         super(message);
     }
 
-    public ResourceNotFoundException(String message, Throwable cause) {
+    public InvalidOrderStateException(String message, Throwable cause) {
         super(message, cause);
     }
 }
