@@ -1,13 +1,20 @@
 package com.pokevault.modules.catalog.controller;
 
 import com.pokevault.common.response.ApiResponse;
+import com.pokevault.common.response.PageResponse;
 import com.pokevault.modules.catalog.dto.CardExpansionResponse;
 import com.pokevault.modules.catalog.dto.CardFilterRequest;
+import com.pokevault.modules.catalog.dto.CardRequest;
 import com.pokevault.modules.catalog.dto.CardResponse;
 import com.pokevault.modules.catalog.service.CardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +34,15 @@ public class CardApiController {
             @ModelAttribute CardFilterRequest filter) {
         List<CardResponse> cards = cardService.getAllCards(filter);
         return ResponseEntity.ok(ApiResponse.ok("Retrieved " + cards.size() + " cards successfully", cards));
+    }
+
+    @GetMapping("/paged")
+    @Operation(summary = "Get cards with pagination and sorting", description = "Retrieve a paged list of Pokemon cards with query filters and sort options")
+    public ResponseEntity<ApiResponse<PageResponse<CardResponse>>> getCardsPaged(
+            @ModelAttribute CardFilterRequest filter,
+            @PageableDefault(page = 0, size = 10, sort = "cardNumber", direction = Sort.Direction.ASC) Pageable pageable) {
+        PageResponse<CardResponse> pageResult = cardService.getCardsPaged(filter, pageable);
+        return ResponseEntity.ok(ApiResponse.ok("Retrieved page " + pageResult.getPageNumber() + " successfully", pageResult));
     }
 
     @GetMapping("/{id}")
@@ -62,5 +78,29 @@ public class CardApiController {
     public ResponseEntity<ApiResponse<List<CardResponse>>> getCardsByExpansionCode(@PathVariable String code) {
         List<CardResponse> cards = cardService.getCardsByExpansionCode(code);
         return ResponseEntity.ok(ApiResponse.ok("Retrieved " + cards.size() + " cards for expansion " + code, cards));
+    }
+
+    @PostMapping
+    @Operation(summary = "Create a new card", description = "Add a new Pokemon card to the catalog")
+    public ResponseEntity<ApiResponse<CardResponse>> createCard(@Valid @RequestBody CardRequest request) {
+        CardResponse created = cardService.createCard(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok("Card created successfully", created));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update an existing card", description = "Update card details by card ID")
+    public ResponseEntity<ApiResponse<CardResponse>> updateCard(
+            @PathVariable Long id,
+            @Valid @RequestBody CardRequest request) {
+        CardResponse updated = cardService.updateCard(id, request);
+        return ResponseEntity.ok(ApiResponse.ok("Card updated successfully", updated));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a card", description = "Remove a card from the catalog by ID")
+    public ResponseEntity<Void> deleteCard(@PathVariable Long id) {
+        cardService.deleteCard(id);
+        return ResponseEntity.noContent().build();
     }
 }
