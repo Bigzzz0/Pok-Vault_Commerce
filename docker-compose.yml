@@ -1,0 +1,43 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      # ต้องสั่ง activate profile prod ตรงๆ ไม่งั้น application.yml จะใช้ profile local (H2) ตามค่า default เสมอ
+      SPRING_PROFILES_ACTIVE: prod
+      # ชื่อตัวแปรต้องตรงกับที่ profile prod ใน application.yml ประกาศไว้ (DB_HOST, DB_PORT, ...)
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: pokevault
+      DB_USERNAME: pokevault_user
+      DB_PASSWORD: ${DB_PASSWORD:-localdevpass}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - pokevault-net
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: pokevault
+      POSTGRES_USER: pokevault_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-localdevpass}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pokevault_user -d pokevault"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pokevault-net
+
+volumes:
+  pgdata:
+
+networks:
+  pokevault-net:

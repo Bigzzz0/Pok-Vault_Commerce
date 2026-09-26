@@ -1,0 +1,90 @@
+# วางไฟล์นี้ไว้ที่ .github/workflows/ci-cd.yml ในโปรเจกต์ (ต้องเป็น path นี้เท่านั้น GitHub จึงจะรันให้)
+
+name: CI/CD - PokeVault Commerce
+
+on:
+  pull_request:
+    branches: [ develop, main ]
+  push:
+    branches: [ develop, main ]
+
+jobs:
+  # ---------- Job 1: รันทุกครั้งที่เปิด PR หรือ push เข้า develop/main ----------
+  test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: pokevault_test
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U test_user"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run tests against real Postgres
+        run: ./mvnw clean verify
+        env:
+          # ต้องสั่ง activate profile prod ตรงๆ ไม่งั้นจะรันด้วย profile local (H2) ตามค่า default
+          SPRING_PROFILES_ACTIVE: prod
+          # ชื่อตัวแปรต้องตรงกับที่ profile prod ใน application.yml ประกาศไว้
+          DB_HOST: localhost
+          DB_PORT: "5432"
+          DB_NAME: pokevault_test
+          DB_USERNAME: test_user
+          DB_PASSWORD: test_pass
+
+      - name: Upload test report (ดูได้แม้ test fail)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: target/surefire-reports/
+
+  # ---------- Job 2: build image เก็บไว้ (รันเฉพาะตอน push จริง ไม่รันตอนแค่เปิด PR) ----------
+  build-and-push:
+    name: Build & Push Docker Image
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}   # มีให้อยู่แล้ว ไม่ต้องสร้างเอง
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}:${{ github.ref_name }}-latest
+
+  # ยังไม่มี job deploy — ตอนพร้อม deploy จริง (เลือก Render/Railway/Fly.io แล้ว)
+  # ค่อยเพิ่ม job ใหม่ต่อจาก build-and-push ทีหลังได้
