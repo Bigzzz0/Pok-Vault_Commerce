@@ -13,7 +13,8 @@ public class PaidOrderState implements OrderState {
     @Override
     public void cancel(OrderContext context) {
         // ลูกค้ายกเลิกก่อนเริ่มส่งการ์ดในเกม (คืนเงิน) -> สลับเป็น CANCELLED
-        context.setState(new CancelledOrderState());
+        // พร้อมคืนสต็อก
+        context.setState(new CancelledOrderState(context));
     }
 
     @Override
