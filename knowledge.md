@@ -44,6 +44,7 @@ graph TD
         C5 --> C6["Commit 6: Pending & Paid States\n(730e21a, bd8db0c)"]
         C6 --> C7["Commit 7: ShippingState Guard\n(067bac0)"]
         C7 --> C8["Commit 8: Completed & Cancelled States\n(2831a5f)"]
+        C8 --> C9["Commit 9: State Transition Endpoint\n(b45a9c4)"]
     end
 ```
 
@@ -256,16 +257,52 @@ graph TD
 
 ---
 
-## ⏸️ Commit 9: State Transition Endpoint in OrderApiController (คิวงานถัดไป)
-- **Roadmap Commit 9**: `feat: implement state transition endpoint in OrderApiController`
+### ✅ Commit 9: State Transition Endpoint in OrderApiController
+* **Commit Hash**: `b45a9c4`
+* **Commit Message**: `feat: implement state transition endpoint in OrderApiController`
+* **ไฟล์ที่สร้าง/แก้ไข**:
+  1. `src/main/java/com/pokevault/modules/order/controller/OrderApiController.java`
+  2. `src/main/java/com/pokevault/modules/trade/state/OrderContext.java`
+  3. `src/main/java/com/pokevault/modules/order/service/OrderService.java`
+  4. `src/main/java/com/pokevault/modules/order/service/OrderServiceImpl.java`
+  5. `src/main/java/com/pokevault/domain/entity/Order.java`
+  6. `src/main/java/com/pokevault/repository/OrderRepository.java`
+  7. `src/main/java/com/pokevault/modules/order/dto/OrderResponse.java`
+
+#### 🎯 หลักการออกแบบที่ใช้ (Design Principles)
+* **GoF State Pattern Integration**: ผูก State Machine เข้ากับ Service & Controller Layer โดยให้ `OrderContext` ทำหน้าที่ควบคุมการเปลี่ยนผ่านสถานะอย่างแท้จริง แทนที่จะเขียน `if-else` เช็กสถานะใน Controller
+* **Single Responsibility Principle (SRP)**:
+  - `OrderApiController`: สนใจเฉพาะ HTTP Request Parsing, Swagger Documentation, และการห่อ Response ด้วย `ApiResponse<OrderResponse>`
+  - `OrderServiceImpl`: จัดการ Transactional Database boundary, ดึง Entity, สั่ง Context ดำเนินการ และ Save
+  - `OrderContext`: จัดการ State Transition กฎ Business Rules และ Sync สถานะลง Entity
+* **Open/Closed Principle (OCP)**: Controller และ Service ไม่จำเป็นต้องแก้ไขเมื่อมี State หรือเงื่อนไขใหม่ใน State Pattern เพราะเรียกผ่าน Polymorphic action `context.executeAction(action)`
+* **Fail-Fast via AOP Exception Advice**: หาก action ไม่ถูกต้อง หรือเป็นการสั่งข้ามสถานะที่ผิดกฎ State Machine จะโยน `InvalidOrderStateException` ทันที และถูก Intercept โดย `GlobalExceptionHandler` ส่งกลับเป็น HTTP 400 Bad Request อัตโนมัติ
+* **Information Expert & DTO Pattern**: ป้องกันการรั่วไหลของข้อมูล Entity ตรงๆ โดยตอบกลับผ่าน `OrderResponse.fromEntity(savedOrder)`
+
+#### ⚙️ การทำงานของโค้ดอย่างละเอียด (Code Mechanics)
+1. **`OrderContext` Enhancements**:
+   - เพิ่ม `fromOrder(Order order)`: Factory method สำหรับระบุ Initial State ตามค่า `order.getOrderStatus()`
+   - เพิ่ม `executeAction(String action)`: รองรับคำสั่ง `"pay"`, `"ship"`, `"complete"`, `"cancel"` พร้อม validation ตรวจสอบ action ที่ไม่รองรับ
+   - ใน `setState(OrderState state)`: เพิ่มการซิงค์ `this.order.setOrderStatus(state.getStatus())` ทันทีที่สถานะเปลี่ยน
+2. **`OrderService.transitionOrderStatus(Long id, String action)`**:
+   - ดึง Entity `Order` ผ่าน `orderRepository.findById(id)` (หากไม่พบจะโยน `ResourceNotFoundException`)
+   - นำ Order เข้าสู่ `OrderContext.fromOrder(order)`
+   - สั่ง `context.executeAction(action)`
+   - บันทึกการเปลี่ยนแปลง `orderRepository.save(order)` ภายใต้ `@Transactional`
+   - แปลง Entity ที่ได้เป็น `OrderResponse` ส่งออกไป
+3. **`OrderApiController` REST Endpoint**:
+   - `PATCH /api/v1/orders/{id}/status?action=pay|ship|complete|cancel`
+   - ตกแต่งด้วย OpenAPI Swagger Annotations (`@Operation`, `@Parameter`, `@Tag`) ให้รองรับการทดสอบผ่าน Swagger UI
+
+---
+
+## ⏸️ Commit 10: TradeRecommendationResponse DTO (คิวงานถัดไป)
+- **Roadmap Commit 10**: `feat: define TradeRecommendationResponse DTO`
 - **ไฟล์เป้าหมาย**:
-  - `src/main/java/com/pokevault/modules/trade/controller/api/OrderApiController.java` (หรือ Controller ที่เกี่ยวข้อง)
+  - `src/main/java/com/pokevault/modules/trade/dto/TradeRecommendationResponse.java`
 - **สรุปสิ่งที่ต้องทำเมื่อกลับมา**:
-  - สร้าง REST API Endpoint: `PATCH /api/v1/orders/{id}/status?action=pay|ship|complete|cancel`
-  - โหลด Order จากฐานข้อมูลผ่าน ID
-  - สร้าง `OrderContext` ตามสถานะปัจจุบันของ Order แล้วสั่ง Action (`pay()`, `ship()`, `complete()`, `cancel()`)
-  - อัปเดตสถานะใหม่ลงใน Entity และบันทึกกลับลง Database ผ่าน Repository
-  - จัดการ Error ผ่าน `GlobalExceptionHandler` หากมีคำขอเปลี่ยนสถานะที่ผิดกฎ
+  - สร้างโครงสร้างข้อมูล Response DTO สำหรับการแนะนำไอดีเกมที่เหมาะสมที่สุดในการส่งการ์ดให้ลูกค้า (Trade Matching)
+  - ประกอบด้วยฟิลด์สำคัญ: `orderItemId`, `cardId`, `cardName`, `recommendedAccountId`, `accountTrainerName`, `friendId`, `availableStock`, `tradeStatus` ฯลฯ พร้อม Static mapper `fromInventory(...)`
 
 ---
 
@@ -279,8 +316,8 @@ graph TD
 - [x] **Commit 6 (`730e21a`, `bd8db0c`)**: `feat: implement PendingOrderState and PaidOrderState`
 - [x] **Commit 7 (`067bac0`)**: `feat: implement ShippingOrderState with cancel rejection guard`
 - [x] **Commit 8 (`2831a5f`)**: `feat: implement CompletedOrderState and CancelledOrderState with stock restore`
-- [ ] **Commit 9**: `feat: implement state transition endpoint in OrderApiController` *(คิวงานถัดไป)*
-- [ ] **Commit 10**: `feat: define TradeRecommendationResponse DTO`
+- [x] **Commit 9 (`b45a9c4`)**: `feat: implement state transition endpoint in OrderApiController`
+- [ ] **Commit 10**: `feat: define TradeRecommendationResponse DTO` *(คิวงานถัดไป)*
 - [ ] **Commit 11**: `feat: implement TradeMatchingService with account recommendation query`
 - [ ] **Commit 12**: `feat: implement auto-match best account assignment algorithm`
 - [ ] **Commit 13**: `feat: add endpoints for trade recommendations and account assignment`
