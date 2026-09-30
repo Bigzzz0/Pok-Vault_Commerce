@@ -46,6 +46,10 @@ graph TD
         C7 --> C8["Commit 8: Completed & Cancelled States\n(2831a5f)"]
         C8 --> C9["Commit 9: State Transition Endpoint\n(b45a9c4)"]
     end
+
+    subgraph TradeMatching["Milestone 3: In-Game Trade Matching System"]
+        C9 --> C10["Commit 10: TradeRecommendationResponse DTO\n(35cd653)"]
+    end
 ```
 
 ---
@@ -296,13 +300,44 @@ graph TD
 
 ---
 
-## ⏸️ Commit 10: TradeRecommendationResponse DTO (คิวงานถัดไป)
-- **Roadmap Commit 10**: `feat: define TradeRecommendationResponse DTO`
+### ✅ Commit 10: TradeRecommendationResponse DTO
+* **Commit Hash**: `35cd653`
+* **Commit Message**: `feat: define TradeRecommendationResponse DTO`
+* **โฟลเดอร์หลัก**: `src/main/java/com/pokevault/modules/trade/dto/` และ `src/main/java/com/pokevault/domain/enums/`
+* **ไฟล์ที่สร้าง/แก้ไข**:
+  1. `src/main/java/com/pokevault/modules/trade/dto/TradeRecommendationResponse.java`
+  2. `src/main/java/com/pokevault/domain/enums/TradeFulfillmentStatus.java`
+  3. `src/main/java/com/pokevault/domain/enums/AccountTradeStatus.java`
+
+#### 🎯 หลักการออกแบบที่ใช้ (Design Principles)
+* **DTO Pattern & Information Expert**: รวบรวมข้อมูลที่จำเป็นสำหรับการแนะนำไอดีเกมที่เหมาะสมในการเทรดการ์ดแต่ละใบไว้ใน DTO เดียวอย่างรัดกุม ป้องกันการเปิดเผย Entity ภายใน
+* **Encapsulation & Nested Static Structure**: ออกแบบ `CandidateAccountResponse` เป็น static nested class ภายใน เพื่อสื่อความหมายของบริบทอย่างชัดเจนว่าเป็นตัวเลือกไอดีเกมสำรอง (Alternative Candidates)
+* **Domain Enums for Type Safety**:
+  - `TradeFulfillmentStatus`: กำหนดขั้นตอนการส่งมอบการ์ด (`UNASSIGNED`, `FRIEND_PENDING`, `TRADE_SENT`, `COMPLETED`)
+  - `AccountTradeStatus`: กำหนดสถานะความพร้อมของไอดีเกม (`READY`, `BUSY`, `COOLDOWN`, `BANNED`)
+  - การใช้ Enum แทน String ช่วยป้องกัน Typo bug และสร้างข้อกำหนดที่แข็งแกร่ง (Strongly-Typed Contract)
+
+#### ⚙️ การทำงานของโค้ดอย่างละเอียด (Code Mechanics)
+1. **ข้อมูลฝั่งคำสั่งซื้อและการ์ด**:
+   - `orderId`, `orderCode`, `orderItemId`, `cardId`, `cardName`, `cardNumber`, `requestedQuantity`, `fulfillmentStatus`, `currentAssignedAccountId`
+2. **ข้อมูลผลการจับคู่อันดับ 1 (Best Recommended Account)**:
+   - `recommendedAccountId`, `recommendedAccountCode`, `recommendedInGameName`, `recommendedFriendId`, `accountStatus`, `availableStock`, `matchFound`, `recommendationReason`
+3. **ข้อมูลไอดีสำรอง**:
+   - `List<CandidateAccountResponse> alternativeCandidates` (initialized with empty list by default via `@Builder.Default`)
+
+---
+
+## ⏸️ Commit 11: TradeMatchingService with Account Recommendation Query (คิวงานถัดไป)
+- **Roadmap Commit 11**: `feat: implement TradeMatchingService with account recommendation query`
 - **ไฟล์เป้าหมาย**:
-  - `src/main/java/com/pokevault/modules/trade/dto/TradeRecommendationResponse.java`
+  - `src/main/java/com/pokevault/modules/trade/service/TradeMatchingService.java`
+  - `src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java`
+  - `src/main/java/com/pokevault/repository/CardInventoryRepository.java` (ถ้าต้องการ custom query)
 - **สรุปสิ่งที่ต้องทำเมื่อกลับมา**:
-  - สร้างโครงสร้างข้อมูล Response DTO สำหรับการแนะนำไอดีเกมที่เหมาะสมที่สุดในการส่งการ์ดให้ลูกค้า (Trade Matching)
-  - ประกอบด้วยฟิลด์สำคัญ: `orderItemId`, `cardId`, `cardName`, `recommendedAccountId`, `accountTrainerName`, `friendId`, `availableStock`, `tradeStatus` ฯลฯ พร้อม Static mapper `fromInventory(...)`
+  - สร้าง Business Logic ใน `TradeMatchingService`:
+    - ค้นหาไอดีเกมร้านค้าที่ถือการ์ดใบที่ต้องการ และมีสถานะ `READY` พร้อมจำนวนสต็อกคงเหลือ
+    - จัดอันดับไอดีที่ดีที่สุด (Best Candidate) และรวบรวมไอดีสำรอง
+    - คืนค่าออกมาเป็น `List<TradeRecommendationResponse>` สำหรับทุกรายการในคำสั่งซื้อ
 
 ---
 
@@ -317,8 +352,8 @@ graph TD
 - [x] **Commit 7 (`067bac0`)**: `feat: implement ShippingOrderState with cancel rejection guard`
 - [x] **Commit 8 (`2831a5f`)**: `feat: implement CompletedOrderState and CancelledOrderState with stock restore`
 - [x] **Commit 9 (`b45a9c4`)**: `feat: implement state transition endpoint in OrderApiController`
-- [ ] **Commit 10**: `feat: define TradeRecommendationResponse DTO` *(คิวงานถัดไป)*
-- [ ] **Commit 11**: `feat: implement TradeMatchingService with account recommendation query`
+- [x] **Commit 10 (`35cd653`)**: `feat: define TradeRecommendationResponse DTO`
+- [ ] **Commit 11**: `feat: implement TradeMatchingService with account recommendation query` *(คิวงานถัดไป)*
 - [ ] **Commit 12**: `feat: implement auto-match best account assignment algorithm`
 - [ ] **Commit 13**: `feat: add endpoints for trade recommendations and account assignment`
 - [ ] **Commit 14**: `test: add unit tests for OrderState transitions and guards`
