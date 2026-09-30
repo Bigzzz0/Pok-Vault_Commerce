@@ -9,6 +9,8 @@ public interface OrderService {
 
     OrderResponse createOrder(PlaceOrderRequest request);
 
+    OrderResponse transitionOrderStatus(Long id, String action);
+
     OrderResponse getOrderById(Long id);
 
     List<OrderResponse> getAllOrders();
