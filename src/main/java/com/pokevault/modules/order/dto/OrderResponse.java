@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -26,6 +27,7 @@ public class OrderResponse {
     private BigDecimal discountAmount;
     private BigDecimal finalAmount;
     private String notes;
+    private List<OrderItemResponse> items;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -45,6 +47,9 @@ public class OrderResponse {
                 .discountAmount(order.getDiscountAmount())
                 .finalAmount(order.getFinalAmount())
                 .notes(order.getNotes())
+                .items(order.getItems() != null
+                        ? order.getItems().stream().map(OrderItemResponse::fromEntity).toList()
+                        : List.of())
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
                 .build();
