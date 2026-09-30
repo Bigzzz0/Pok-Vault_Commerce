@@ -43,6 +43,7 @@ graph TD
         C4 --> C5["Commit 5: OrderContext\n(9b8d72e)"]
         C5 --> C6["Commit 6: Pending & Paid States\n(730e21a, bd8db0c)"]
         C6 --> C7["Commit 7: ShippingState Guard\n(067bac0)"]
+        C7 --> C8["Commit 8: Completed & Cancelled States\n(2831a5f)"]
     end
 ```
 
@@ -222,14 +223,49 @@ graph TD
 
 ---
 
-## ⏸️ Commit 8: CompletedOrderState and CancelledOrderState with Stock Restore (คิวงานถัดไป)
-- **Roadmap Commit 8**: `feat: implement CompletedOrderState and CancelledOrderState with stock restore`
+### ✅ Commit 8: CompletedOrderState and CancelledOrderState with Stock Restore
+* **Commit Hash**: `2831a5f`
+* **Commit Message**: `feat: implement CompletedOrderState and CancelledOrderState with stock restore`
+* **ไฟล์ที่สร้าง/แก้ไข**:
+  1. `src/main/java/com/pokevault/modules/trade/state/CompletedOrderState.java`
+  2. `src/main/java/com/pokevault/modules/trade/state/CancelledOrderState.java`
+  3. `src/main/java/com/pokevault/modules/trade/state/PendingOrderState.java` (ส่ง context เพื่อคืนสต็อก)
+  4. `src/main/java/com/pokevault/modules/trade/state/PaidOrderState.java` (ส่ง context เพื่อคืนสต็อก)
+
+#### 🎯 หลักการออกแบบที่ใช้ (Design Principles)
+* **Terminal State Pattern (สถานะสิ้นสุดวงจร)**: ทั้ง `CompletedOrderState` และ `CancelledOrderState` ทำหน้าที่เป็นสถานะสิ้นสุด (Terminal States) ที่ไม่อนุญาตให้เปลี่ยนสถานะหรือสั่ง Actions ใดๆ ต่อไป (`pay`, `ship`, `complete`, `cancel`) โดยอาศัย Default Methods ใน `OrderState` ที่โยน `InvalidOrderStateException` แบบ Fail-Fast ทันที
+* **Stock Restoration & Business Invariants**: เมื่อคำสั่งซื้อถูกยกเลิก (ไม่ว่าจะเกิดจากการยกเลิกขณะรอชำระเงิน `PENDING` หรือชำระเงินแล้ว `PAID`) สต็อกการ์ดที่ถูกหักจองไว้จะต้องถูกส่งสัญญาณคืนเข้าคลัง (Restore Stock) อัตโนมัติ เพื่อป้องกันปัญหาสต็อกจมหรือคลังการ์ดคลาดเคลื่อน
+* **Single Responsibility Principle (SRP)**:
+  - `CompletedOrderState`: รับผิดชอบเฉพาะการยืนยันว่าการส่งมอบการ์ดสำเร็จสมบูรณ์
+  - `CancelledOrderState`: รับผิดชอบเฉพาะการควบคุมการยกเลิกและการสั่งคืนสต็อก
+* **Defensive Programming & Null-Safety**: ในเมธอด `restoreStock(OrderContext context)` มีการตรวจสอบ `context != null` และ `context.getOrder() != null` ก่อนดำเนินการ ป้องกัน `NullPointerException` อย่างรัดกุม
+
+#### ⚙️ การทำงานของโค้ดอย่างละเอียด (Code Mechanics)
+1. **`CompletedOrderState`**:
+   - คืนค่า `getStatus()` เป็น `OrderStatus.COMPLETED`
+   - เมื่อสร้าง Object จะบันทึก Log ระดับ INFO: `"Order reached terminal state: COMPLETED"`
+   - ไม่อนุญาตให้สั่ง `pay()`, `ship()`, `complete()`, หรือ `cancel()` ใดๆ ซ้ำ
+2. **`CancelledOrderState`**:
+   - คืนค่า `getStatus()` เป็น `OrderStatus.CANCELLED`
+   - มี 2 Constructors:
+     - `CancelledOrderState()`: Default constructor สำหรับกรณีสร้าง state ทั่วไป
+     - `CancelledOrderState(OrderContext context)`: เรียก `restoreStock(context)` อัตโนมัติเมื่อคำสั่งซื้อเปลี่ยนเข้าสู่สถานะยกเลิก
+   - เมธอด `restoreStock(OrderContext context)`: ดึงข้อมูล Order และทำการสั่งคืนสต็อกเข้าคลัง พร้อมบันทึก Audit Log
+3. **การเชื่อมโยงกับ `PendingOrderState` และ `PaidOrderState`**:
+   - อัปเดตเมธอด `cancel(context)` ให้ส่ง `context` เข้าสู่ `new CancelledOrderState(context)` ทำให้ระบบคืนสต็อกทำงานทันทีอย่างต่อเนื่องเมื่อออเดอร์ถูกยกเลิก
+
+---
+
+## ⏸️ Commit 9: State Transition Endpoint in OrderApiController (คิวงานถัดไป)
+- **Roadmap Commit 9**: `feat: implement state transition endpoint in OrderApiController`
 - **ไฟล์เป้าหมาย**:
-  - `src/main/java/com/pokevault/modules/trade/state/CompletedOrderState.java`
-  - `src/main/java/com/pokevault/modules/trade/state/CancelledOrderState.java`
+  - `src/main/java/com/pokevault/modules/trade/controller/api/OrderApiController.java` (หรือ Controller ที่เกี่ยวข้อง)
 - **สรุปสิ่งที่ต้องทำเมื่อกลับมา**:
-  - `CompletedOrderState`: Terminal State สำหรับคำสั่งซื้อที่เสร็จสมบูรณ์ ไม่อนุญาตให้เรียก Action ใดๆ ต่อไป
-  - `CancelledOrderState`: Terminal State สำหรับคำสั่งซื้อที่ยกเลิก พร้อมกลไกการสั่งคืนสต็อกการ์ดเข้าคลัง (`inventory.restoreStock()`) โดยอัตโนมัติ
+  - สร้าง REST API Endpoint: `PATCH /api/v1/orders/{id}/status?action=pay|ship|complete|cancel`
+  - โหลด Order จากฐานข้อมูลผ่าน ID
+  - สร้าง `OrderContext` ตามสถานะปัจจุบันของ Order แล้วสั่ง Action (`pay()`, `ship()`, `complete()`, `cancel()`)
+  - อัปเดตสถานะใหม่ลงใน Entity และบันทึกกลับลง Database ผ่าน Repository
+  - จัดการ Error ผ่าน `GlobalExceptionHandler` หากมีคำขอเปลี่ยนสถานะที่ผิดกฎ
 
 ---
 
@@ -242,11 +278,12 @@ graph TD
 - [x] **Commit 5 (`9b8d72e`)**: `feat: implement OrderContext to manage current order state`
 - [x] **Commit 6 (`730e21a`, `bd8db0c`)**: `feat: implement PendingOrderState and PaidOrderState`
 - [x] **Commit 7 (`067bac0`)**: `feat: implement ShippingOrderState with cancel rejection guard`
-- [ ] **Commit 8**: `feat: implement CompletedOrderState and CancelledOrderState with stock restore` *(คิวงานถัดไป)*
-- [ ] **Commit 9**: `feat: implement state transition endpoint in OrderApiController`
+- [x] **Commit 8 (`2831a5f`)**: `feat: implement CompletedOrderState and CancelledOrderState with stock restore`
+- [ ] **Commit 9**: `feat: implement state transition endpoint in OrderApiController` *(คิวงานถัดไป)*
 - [ ] **Commit 10**: `feat: define TradeRecommendationResponse DTO`
 - [ ] **Commit 11**: `feat: implement TradeMatchingService with account recommendation query`
 - [ ] **Commit 12**: `feat: implement auto-match best account assignment algorithm`
 - [ ] **Commit 13**: `feat: add endpoints for trade recommendations and account assignment`
 - [ ] **Commit 14**: `test: add unit tests for OrderState transitions and guards`
 - [ ] **Commit 15**: `test: add unit test for TradeMatchingServiceImpl auto-match logic`
+
