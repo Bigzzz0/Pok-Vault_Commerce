@@ -1,1 +1,51 @@
 /* PokéVault Commerce Style Engine */
+
+h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1A365D;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: #2B6CB0;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+}
+
+body {
+    flex-direction: column;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+header {
+    display: block;
+    unicode-bidi: isolate;
+    background: #080808;
+    color: #f0f0f0;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    min-height: 60px;
+    order: 1;
+    position: relative;
+}
+
+.container {
+    max-width: 1080px;
+    margin: 0 auto;
+}
