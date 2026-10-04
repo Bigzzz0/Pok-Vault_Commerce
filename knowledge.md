@@ -53,6 +53,10 @@ graph TD
         C11 --> C12["Commit 12: Auto-Match Assignment Algorithm\n(9fcac5f)"]
         C12 --> C13["Commit 13: Trade Matching Endpoints\n(ebc8794)"]
     end
+
+    subgraph Testing["Milestone 4: Unit Testing & Verification"]
+        C13 --> C14["Commit 14: OrderState Unit Tests\n(c6b6942)"]
+    end
 ```
 
 ---
@@ -412,16 +416,40 @@ graph TD
 
 ---
 
-## ⏸️ Commit 14: Unit Tests for OrderState Transitions and Guards (คิวงานถัดไป)
-- **Roadmap Commit 14**: `test: add unit tests for OrderState transitions and guards`
-- **ไฟล์เป้าหมาย**:
+### ✅ Commit 14: Unit Tests for OrderState Transitions and Guards
+* **Commit Hash**: `c6b6942`
+* **Commit Message**: `test: add unit tests for OrderState transitions and guards`
+* **โฟลเดอร์หลัก**: `src/test/java/com/pokevault/modules/trade/state/`
+* **ไฟล์ที่สร้าง/แก้ไข**:
   - `src/test/java/com/pokevault/modules/trade/state/OrderStateTest.java`
+
+#### 🎯 หลักการออกแบบที่ใช้ (Design Principles)
+* **Test Isolation & Single Responsibility**: แต่ละ Test Case รับผิดชอบตรวจสอบเฉพาะสถานะหรือเงื่อนไขทางธุรกิจหนึ่งๆ โดยแยกเป็น 7 `@Nested` Test Classes อย่างเป็นสัดส่วน
+* **Defensive Boundary & Invariant Verification**: ตรวจสอบการบังคับใช้กฎ Invariants อย่างเคร่งครัด เช่น การห้ามกดยกเลิกขณะการ์ดอยู่ในสถานะ `SHIPPING` เพื่อป้องกันการสูญเสียการ์ดฟรี (Anti-Fraud Guard)
+* **Fail-Fast Behavior Verification**: ยืนยันว่าการสั่ง Action ที่ผิดกฎ (เช่น สั่ง `ship()` ในสถานะ `PENDING`) จะต้องโยน `InvalidOrderStateException` ทันที
+* **Behavior-Driven Structure (BDD)**: ใช้ AssertJ (`assertThat`, `assertThatThrownBy`) เพื่อเขียน Assertion ที่อ่านง่ายและสื่อความหมายชัดเจน
+
+#### ⚙️ การทำงานของโค้ดอย่างละเอียด (Code Mechanics)
+1. **Happy Path Tests**: ทดสอบวงจรชีวิตคำสั่งซื้อตั้งแต่ `PENDING` -> `PAID` -> `SHIPPING` -> `COMPLETED` พร้อมตรวจสอบว่า Entity `Order` ปรับสถานะซิงค์ตามตลอดเวลา
+2. **Cancellation Flows**: ทดสอบการยกเลิกจาก `PENDING` และ `PAID` เข้าสู่ `CANCELLED`
+3. **Shipping Guard Tests**: ทดสอบความปลอดภัยว่าขณะคำสั่งซื้ออยู่ในสถานะ `SHIPPING` จะต้องโยน `InvalidOrderStateException` พร้อมข้อความ `"Cannot cancel order while cards are being shipped in game"` เสมอ และสถานะจะต้องไม่เปลี่ยนแปลง
+4. **Terminal State Protection Tests**: ทดสอบว่าสถานะสิ้นสุด (`COMPLETED` และ `CANCELLED`) จะต้องปฏิเสธทุก Action (`pay`, `ship`, `complete`, `cancel`)
+5. **Illegal Transition Tests**: ทดสอบการข้ามขั้นของสถานะทั้งหมดเพื่อพิสูจน์การทำงานของ Default Methods ใน Interface
+6. **Action String Execution Tests**: ทดสอบ `executeAction(action)` รองรับตัวพิมพ์เล็ก-ใหญ่ ตัดช่องว่างหน้าหลัง และโยน Exception สำหรับ Action ที่ไม่รู้จัก
+7. **Factory Method Tests**: ทดสอบ `OrderContext.fromOrder(order)` คืนค่า State เริ่มต้นถูกต้องตาม `OrderStatus` ของ Entity และตรวจสอบการจัดการกรณี `order == null`
+
+---
+
+## ⏸️ Commit 15: Unit Test for TradeMatchingServiceImpl Auto-Match Logic (คิวสุดท้าย)
+- **Roadmap Commit 15**: `test: add unit test for TradeMatchingServiceImpl auto-match logic`
+- **ไฟล์เป้าหมาย**:
+  - `src/test/java/com/pokevault/modules/trade/service/TradeMatchingServiceTest.java`
 - **สรุปสิ่งที่ต้องทำเมื่อกลับมา**:
-  - เขียน Unit Test ทดสอบ GoF State Pattern:
-    - ทดสอบ State Transitions: `PENDING` -> `PAID` -> `SHIPPING` -> `COMPLETED`
-    - ทดสอบการยกเลิก: `PENDING` -> `CANCELLED` และ `PAID` -> `CANCELLED` (ตรวจสอบการคืนสต็อก)
-    - ทดสอบ Invariant Guards: การห้ามกดยกเลิกขณะอยู่ในสถานะ `SHIPPING` (โยน `InvalidOrderStateException`)
-    - ทดสอบ Terminal State Protection: ห้ามสั่ง action ใดๆ ต่อจาก `COMPLETED` หรือ `CANCELLED`
+  - เขียน Mockito Unit Test สำหรับ `TradeMatchingServiceImpl`:
+    - จำลอง Mock Data: `Order`, `OrderItem`, `Card`, `CardInventory`, `GameAccount`
+    - ทดสอบ `getRecommendations`: แนะนำไอดีสถานะ `READY` อันดับหนึ่ง และรวบรวมไอดีสำรอง
+    - ทดสอบ `autoMatchOrderItem`: ทำการ Assign ไอดี `READY` สต็อกสูงสุด และปรับสถานะเป็น `FRIEND_PENDING`
+    - ทดสอบ Edge Cases: กรณีไม่มีไอดี `READY`, กรณีสต็อกไม่พอ (โยน `InsufficientStockException`), กรณีพยายาม Re-assign ออเดอร์ที่อยู่ในสถานะ `TRADE_SENT` หรือ `COMPLETED` (โยน `InvalidOrderStateException`)
 
 ---
 
@@ -440,7 +468,7 @@ graph TD
 - [x] **Commit 11 (`6118057`)**: `feat: implement TradeMatchingService with account recommendation query`
 - [x] **Commit 12 (`9fcac5f`)**: `feat: implement auto-match best account assignment algorithm`
 - [x] **Commit 13 (`ebc8794`)**: `feat: add endpoints for trade recommendations and account assignment`
-- [ ] **Commit 14**: `test: add unit tests for OrderState transitions and guards` *(คิวงานถัดไป)*
-- [ ] **Commit 15**: `test: add unit test for TradeMatchingServiceImpl auto-match logic`
+- [x] **Commit 14 (`c6b6942`)**: `test: add unit tests for OrderState transitions and guards`
+- [ ] **Commit 15**: `test: add unit test for TradeMatchingServiceImpl auto-match logic` *(คิวงานสุดท้าย)*
 
 
