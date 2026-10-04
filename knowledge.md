@@ -491,5 +491,105 @@ graph TD
 
 🎉 **สมาชิกคนที่ 4 (นายแทนคุณ พันธ์นิกุล — 673380301-0) ดำเนินการพัฒนา ครบทั้ง 15 Commits ตามสถาปัตยกรรมและมาตรฐานวิชาเรียบร้อยสมบูรณ์ 100%**
 
+---
 
+## 🎓 5. คู่มือเตรียมตอบคำถามอาจารย์และการสอบปากเปล่า (Defense & Presentation Cheat Sheet)
 
+> ส่วนนี้จัดทำขึ้นเป็นพิเศษเพื่อให้สมาชิกคนที่ 4 สามารถใช้ทบทวน ทำความเข้าใจเชิงลึก และใช้ตอบคำถามอาจารย์ผู้ตรวจวิชา CP353002 ได้อย่างมั่นใจ ทั้งในเชิงทฤษฎีซอฟต์แวร์ (Design Principles/Patterns) และเชิงปฏิบัติการเขียนโค้ด (Implementation Mechanics)
+
+---
+
+### 🏛️ หมวดที่ 1: GoF State Pattern & สถาปัตยกรรม State Machine
+
+#### ❓ คำถามที่ 1: "ทำไมถึงเลือกใช้ GoF State Pattern แทนการใช้ `switch-case` หรือ `if-else` เช็กสถานะคำสั่งซื้อใน Service หรือ Entity ตรงๆ?"
+* **แนวทางการตอบ (Core Rationale)**:
+  1. **ขจัดปัญหา Shotgun Surgery & Spaghetti Code**: หากใช้ `switch-case` เมื่อมีสถานะใหม่เพิ่มเข้ามาในอนาคต (เช่น `REFUNDED` หรือ `DISPUTED`) เราจะต้องตามไปแก้ไข `switch-case` ในทุกๆ Controller และ Service ซึ่งเสี่ยงทำให้โค้ดเดิมพัง
+  2. **สอดคล้องกับ Open/Closed Principle (OCP)**: การใช้ State Pattern ทำให้ระบบ "เปิดรับการต่อขยายสถานะใหม่" (Open for Extension) ได้โดยการสร้างคลาสสถานะใหม่ที่ implement `OrderState` โดย "ไม่ต้องแก้ไขโค้ดสถานะเดิมแม้แต่บรรทัดเดียว" (Closed for Modification)
+  3. **Runtime Polymorphism & High Cohesion**: พฤติกรรมของ Order จะเปลี่ยนไปตาม State Object ณ ขณะนั้นแบบไดนามิก โดยแต่ละคลาสสถานะ (`PendingOrderState`, `PaidOrderState` ฯลฯ) จะดูแลเฉพาะกฎและเงื่อนไขของตัวเอง ทำให้โค้ดอ่านง่ายและแยก Unit Test ได้อิสระ 100%
+
+#### ❓ คำถามที่ 2: "ทำไมใน `OrderState` interface ถึงต้องใช้ Java Default Methods ที่โยน `InvalidOrderStateException`?"
+* **แนวทางการตอบ (Core Rationale)**:
+  1. **Fail-Fast Principle**: หากคำสั่งซื้อถูกสั่ง Action ที่ไม่ถูกต้องตามสถานะปัจจุบัน (เช่น ออเดอร์ยังรอจ่ายเงิน `PENDING` แต่ถูกสั่ง `ship()`) ระบบจะปฏิเสธและโยน Exception แจ้งข้อผิดพลาดทันที แทนการปล่อยให้ข้อมูลในระบบเสียหาย
+  2. **Interface Segregation & Ergonomics**: หากประกาศเมธอดแบบ Abstract ปกติ ทุก Concrete State จะต้องถูกบังคับให้เขียน `@Override` เมธอดที่ตัวเองไม่รองรับให้รกโค้ด การมี Default Method ที่โยน Exception เป็นค่าเริ่มต้น ทำให้คลาสลูกเลือก Override เฉพาะ Actions ที่สถานะนั้น **"อนุญาตให้ทำได้จริง"** เท่านั้น
+
+#### ❓ คำถามที่ 3: "บทบาทของ `OrderContext` คืออะไร มีไว้ทำไม และทำไมไม่ให้ Controller คุยกับ Concrete State ตรงๆ?"
+* **แนวทางการตอบ (Core Rationale)**:
+  1. **Context Object & Encapsulation**: `OrderContext` ทำหน้าที่เป็น Facade ตัวแทนของ Order ที่เปิด Interface ให้ภายนอก (Controller/Service) เรียกใช้งาน โดยซ่อนความซับซ้อนว่าภายในคือคลาสสถานะใด
+  2. **Dependency Inversion Principle (DIP)**: Controller และ Service ยึดติดกับ Abstraction (`OrderContext` และ `OrderState`) เท่านั้น ไม่ผูกติดกับ Concrete Classes ตรงๆ (Low Coupling)
+  3. **Entity Synchronization**: Context มีหน้าที่ซิงค์สถานะของ State Machine เข้ากับ Database Entity (`Order.setOrderStatus(...)`) ทุกครั้งที่เกิดการเปลี่ยนผ่านสถานะอย่างแนบเนียน
+
+---
+
+### 🛡️ หมวดที่ 2: กฎความปลอดภัยทางธุรกิจ (Business Invariants & Security)
+
+#### ❓ คำถามที่ 4: "ใน `ShippingOrderState` ทำไมต้อง Override เมธอด `cancel()` เพื่อปฏิเสธการยกเลิก? (Cancel Rejection Guard)"
+* **แนวทางการตอบ (Core Rationale)**:
+  * **Business Invariant Protection & Anti-Fraud**: ในบริบทของเกม Pokémon Pocket เมื่อร้านค้าส่งการ์ดเข้าไปในเกมแล้ว (`SHIPPING` / `TRADE_SENT`) การ์ดจะถูกล็อคในระบบเกม หากระบบอนุญาตให้ลูกค้ายกเลิกคำสั่งซื้อและคืนเงินขณะนี้ ร้านค้าจะเกิดภาวะ **Free-Card Loss (สูญเสียการ์ดฟรี)** ทันที ระบบจึงต้องมี Cancel Guard เพื่อบังคับว่า *"ห้ามยกเลิกคำสั่งซื้อขณะกำลังส่งการ์ดในเกม"* อย่างเด็ดขาด
+
+#### ❓ คำถามที่ 5: "ระบบจัดการสต็อกอย่างไรเมื่อคำสั่งซื้อถูกยกเลิก (Stock Restoration)?"
+* **แนวทางการตอบ (Core Rationale)**:
+  * ใน `CancelledOrderState(OrderContext context)` มีการเรียกเมธอด `restoreStock(context)` อัตโนมัติ เพื่อส่งสัญญาณคืนสต็อกการ์ดที่ถูกจองไว้กลับเข้าคลัง ป้องกันปัญหาสต็อกจม (Phantom Stock Allocation) และทำให้ลูกค้ารายอื่นสามารถสั่งซื้อการ์ดใบนั้นได้ต่อทันที
+
+---
+
+### ⚡ หมวดที่ 3: Global Exception Handling & Clean Architecture
+
+#### ❓ คำถามที่ 6: "`GlobalExceptionHandler` ที่ใช้ `@RestControllerAdvice` มีความเกี่ยวข้องกับ Aspect-Oriented Programming (AOP) อย่างไร?"
+* **แนวทางการตอบ (Core Rationale)**:
+  1. **Cross-Cutting Concern Separation**: การดักจับ Error และจัดรูปแบบ JSON Response เป็นงานส่วนกลางที่กระจายอยู่ทุก Controller การใช้ `@RestControllerAdvice` เป็นการใช้กลไก AOP Interceptor ของ Spring Web ดักจับ Exception ที่หลุดออกมาจาก `@RestController` ทั้งหมดมาไว้ที่จุดเดียว
+  2. **Single Responsibility Principle (SRP)**: ปลดภาระของ Controller ให้สนใจเฉพาะ Happy Path และ HTTP Routing ไม่ต้องเขียนบล็อก `try-catch` ซ้ำซ้อน
+  3. **Unified API Error Contract**: รับประกันว่า Client/Frontend จะได้รับ Error JSON Format เดียวกันเสมอ (`ErrorResponse`) ป้องกันข้อมูลภายใน (เช่น Stacktrace หรือ Table Name) รั่วไหลสู่ภายนอก
+
+---
+
+### 🤖 หมวดที่ 4: In-Game Trade Matching Algorithm
+
+#### ❓ คำถามที่ 7: "อธิบายขั้นตอนการทำงานของอัลกอริทึมค้นหาและจับคู่ไอดีเกม (`autoMatchBestAccount`)?"
+* **แนวทางการตอบ (Core Rationale)**:
+  1. **Filter Active Inventories**: ค้นหาคลังทั้งหมดที่มีการ์ดใบที่ต้องการ และกรองเฉพาะคลังที่มีไอดีเกมผูกอยู่และมีสต็อก `quantity > 0`
+  2. **Sorting Strategy (Two-Level Sorting)**:
+     - **เงื่อนไขที่ 1 (Priority)**: ให้ความสำคัญกับไอดีที่มีสถานะเป็น `AccountTradeStatus.READY` ก่อนสถานะอื่น (`BUSY`, `COOLDOWN`)
+     - **เงื่อนไขที่ 2 (Quantity)**: หากสถานะเท่ากัน ให้จัดเรียงตามจำนวนสต็อกคงเหลือจากมากไปน้อย (`Comparator.reverseOrder()`) เพื่อเลือกไอดีที่มีสต็อกสูงสุดมาใช้งาน
+  3. **State Mutation & Assignment**: เมื่อได้ Best Account จะกำหนด `item.setAssignedAccount(bestAccount)` และปรับสถานะเป็น `TradeFulfillmentStatus.FRIEND_PENDING` (รอแอดเพื่อนในเกม)
+  4. **Defensive Re-assignment Guard**: ตรวจสอบก่อนว่า `OrderItem` ต้องไม่อยู่ในสถานะ `TRADE_SENT` หรือ `COMPLETED` เพื่อป้องกันการเปลี่ยนไอดีทับซ้อน
+
+#### ❓ คำถามที่ 8: "ทำไมเมธอด Auto-match ใน Service ต้องมี `@Transactional`?"
+* **แนวทางการตอบ (Core Rationale)**:
+  * เพื่อรักษาคุณสมบัติ **ACID (Atomicity & Consistency)** ของฐานข้อมูล โดยการมอบหมายไอดี (`assignedAccount`) และการเปลี่ยนสถานะการเทรด (`tradeStatus = FRIEND_PENDING`) จะต้องถูกบันทึกลงใน Database พร้อมกัน หากเกิดข้อผิดพลาดใดๆ ขึ้นระหว่างทำงาน ข้อมูลจะถูก Rollback ทั้งหมด ไม่เกิดสภาวะข้อมูลค้างหรือผิดเพี้ยน
+
+---
+
+### 🧪 หมวดที่ 5: Testing Strategy (Unit Tests)
+
+#### ❓ คำถามที่ 9: "ทำไมใน `TradeMatchingServiceTest` ถึงใช้ Mockito แทนที่จะต่อ Database จริง?"
+* **แนวทางการตอบ (Core Rationale)**:
+  1. **Test Isolation**: การทดสอบ Unit Test ของ Service Layer มุ่งเน้นการตรวจสอบ "Business Logic และ Algorithm" ไม่ใช่การทดสอบ Database Connection
+  2. **Speed & Determinism**: การ Mock ด้วย `@Mock` ทำให้รันเทสได้เร็วระดับมิลลิวินาที ไม่ต้องรอสร้างตารางหรือรัน Migration
+  3. **Edge Case Simulation**: สามารถจำลองเงื่อนไขสุดโต่งได้ง่าย เช่น จำลองให้ Repository หาข้อมูลไม่เจอ, จำลองให้ไอดีทุกตัวติด `BUSY`, หรือจำลองสต็อกไม่พอ เพื่อทดสอบว่าโยน Exception ถูกต้องหรือไม่
+
+#### ❓ คำถามที่ 10: "ใน `OrderStateTest` มีการทดสอบครอบคลุมด้านใดบ้าง?"
+* **แนวทางการตอบ (Core Rationale)**:
+  * มีทั้งหมด 7 หมวดหมู่การทดสอบ (`@Nested`):
+    1. Happy Path Transition (`PENDING` -> `PAID` -> `SHIPPING` -> `COMPLETED`)
+    2. Cancellation Flows (`PENDING` -> `CANCELLED`, `PAID` -> `CANCELLED`)
+    3. Critical Shipping Guard (ห้ามยกเลิกขณะ `SHIPPING`)
+    4. Terminal States Protection (`COMPLETED` และ `CANCELLED` ปฏิเสธทุก Action)
+    5. Illegal Transitions (ทดสอบการข้ามขั้น)
+    6. String Action Execution (`executeAction`)
+    7. Factory Method & Entity Synchronization (`fromOrder`)
+
+---
+
+### 📊 ตารางสรุปหัวใจสำคัญของโค้ด (Cheat Sheet Matrix สำหรับเปิดดูตอนสอบ)
+
+| ส่วนของโค้ด / ไฟล์ | Design Pattern / หลักการ | เหตุผลสำคัญที่ต้องตอบอาจารย์ |
+| :--- | :--- | :--- |
+| **`OrderState` / `OrderContext`** | GoF State Pattern | ควบคุม State Machine ของออเดอร์, ขจัด `if-else`, รองรับ OCP และ Polymorphism |
+| **`OrderState.java` Default Methods** | Fail-Fast Principle | โยน `InvalidOrderStateException` เป็นค่าเริ่มต้น ป้องกัน Action ผิดกฎ |
+| **`ShippingOrderState.cancel()`** | Business Invariant Guard | ห้ามกดยกเลิกขณะส่งการ์ดในเกม ป้องกันปัญหา Free-Card Loss |
+| **`CancelledOrderState`** | Stock Restoration | คืนสต็อกการ์ดที่จองไว้กลับเข้าคลังอัตโนมัติ |
+| **`GlobalExceptionHandler`** | AOP & `@RestControllerAdvice` | รวมศูนย์การจัดการ Error, แยก Cross-Cutting Concern, คืน `ErrorResponse` มาตรฐาน |
+| **`TradeMatchingServiceImpl`** | Sorting & Filter Algorithm | คัดเลือกไอดี `READY` สต็อกสูงสุด, มี Re-assignment Guard, บันทึกผ่าน `@Transactional` |
+| **`TradeMatchingApiController`** | REST Controller & Swagger | Routing เฉพาะ HTTP, ห่อผลลัพธ์ด้วย `ApiResponse<T>`, มี OpenAPI Docs ครบ |
+| **`OrderStateTest`** | Unit Test with BDD AssertJ | แยก 7 `@Nested` suites ตรวจสอบ State Machine ทุก Transition และ Guards |
+| **`TradeMatchingServiceTest`** | Mockito Test Isolation | จำลอง Repositories ทั้งหมด ตรวจสอบทั้งผลลัพธ์และ Behavior Verification (`verify()`) |
