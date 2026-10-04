@@ -51,6 +51,7 @@ graph TD
         C9 --> C10["Commit 10: TradeRecommendationResponse DTO\n(35cd653)"]
         C10 --> C11["Commit 11: TradeMatchingService Recommendation\n(6118057)"]
         C11 --> C12["Commit 12: Auto-Match Assignment Algorithm\n(9fcac5f)"]
+        C12 --> C13["Commit 13: Trade Matching Endpoints\n(ebc8794)"]
     end
 ```
 
@@ -384,18 +385,43 @@ graph TD
 
 ---
 
-## ⏸️ Commit 13: TradeMatchingApiController Endpoints (คิวงานถัดไป)
-- **Roadmap Commit 13**: `feat: add endpoints for trade recommendations and account assignment`
-- **ไฟล์เป้าหมาย**:
+### ✅ Commit 13: TradeMatchingApiController Endpoints
+* **Commit Hash**: `ebc8794`
+* **Commit Message**: `feat: add endpoints for trade recommendations and account assignment`
+* **โฟลเดอร์หลัก**: `src/main/java/com/pokevault/modules/trade/controller/`
+* **ไฟล์ที่สร้าง/แก้ไข**:
   - `src/main/java/com/pokevault/modules/trade/controller/TradeMatchingApiController.java`
+
+#### 🎯 หลักการออกแบบที่ใช้ (Design Principles)
+* **Single Responsibility Principle (SRP)**: Controller ทำหน้าที่เพียงแปลง HTTP Request/Response, ทำ Routing, และเรียกใช้ Service Layer โดยไม่ยัดเยียด Business Logic ใน Controller
+* **Clean REST API Design & Standardized Response Format**: ทุก Endpoint ห่อผลลัพธ์ด้วย `ApiResponse<T>` เพื่อให้ Frontend/Client ได้รับ Response ที่มีโครงสร้างเป็นอันหนึ่งอันเดียวกัน
+* **API Documentation & Discoverability (OpenAPI / Swagger)**: กำกับทุก Endpoint ด้วย `@Tag`, `@Operation`, และ `@Parameter` เพื่อให้ทีมพัฒนาและผู้ทดสอบสามารถเรียกทดสอบผ่าน Swagger UI ได้ทันที
+* **Separation of Concerns (Read vs Write)**: แยก GET Endpoints สำหรับดูคำแนะนำ (Recommendation Query) ออกจาก POST Endpoints สำหรับสั่งจับคู่และเปลี่ยนสถานะ (Fulfillment Mutation)
+
+#### ⚙️ การทำงานของโค้ดอย่างละเอียด (Code Mechanics)
+1. **`GET /api/v1/trades/orders/{orderId}/recommendations`**:
+   - ดึงคำแนะนำไอดีเกมสำหรับทุกรายการสินค้าในคำสั่งซื้อ (Order)
+2. **`GET /api/v1/trades/items/{orderItemId}/recommendation`**:
+   - ดึงคำแนะนำไอดีเกมสำหรับรายการคำสั่งซื้อเดี่ยว (OrderItem)
+3. **`POST /api/v1/trades/items/{orderItemId}/auto-match`**:
+   - สั่ง Auto-Match จับคู่ไอดีเกมสถานะ `READY` ที่มีสต็อกการ์ดสูงสุดให้ OrderItem รายการนั้น และปรับเป็น `FRIEND_PENDING`
+4. **`POST /api/v1/trades/orders/{orderId}/auto-match`**:
+   - สั่ง Auto-Match จับคู่ไอดีเกมให้กับทุกรายการใน Order ในคำสั่งเดียว
+5. **`POST /api/v1/trades/items/{orderItemId}/assign?accountId={id}`**:
+   - แอดมินสั่งมอบหมายไอดีเกมแบบเจาะจง (Manual Assignment)
+
+---
+
+## ⏸️ Commit 14: Unit Tests for OrderState Transitions and Guards (คิวงานถัดไป)
+- **Roadmap Commit 14**: `test: add unit tests for OrderState transitions and guards`
+- **ไฟล์เป้าหมาย**:
+  - `src/test/java/com/pokevault/modules/trade/state/OrderStateTest.java`
 - **สรุปสิ่งที่ต้องทำเมื่อกลับมา**:
-  - สร้าง REST Controller พร้อมเส้นทาง API:
-    - `GET /api/v1/trades/orders/{orderId}/recommendations`: ดูคำแนะนำการจับคู่ไอดีทั้งออเดอร์
-    - `GET /api/v1/trades/items/{orderItemId}/recommendation`: ดูคำแนะนำสำหรับรายการเดี่ยว
-    - `POST /api/v1/trades/items/{orderItemId}/auto-match`: สั่งรัน Auto-Match รายการเดี่ยว
-    - `POST /api/v1/trades/orders/{orderId}/auto-match`: สั่งรัน Auto-Match ทั้งออเดอร์
-    - `POST /api/v1/trades/items/{orderItemId}/assign?accountId={id}`: กำหนดไอดีแบบ Manual
-  - ตกแต่งด้วย OpenAPI Swagger Annotations (`@Tag`, `@Operation`, `@Parameter`) และห่อ Response ด้วย `ApiResponse<T>`
+  - เขียน Unit Test ทดสอบ GoF State Pattern:
+    - ทดสอบ State Transitions: `PENDING` -> `PAID` -> `SHIPPING` -> `COMPLETED`
+    - ทดสอบการยกเลิก: `PENDING` -> `CANCELLED` และ `PAID` -> `CANCELLED` (ตรวจสอบการคืนสต็อก)
+    - ทดสอบ Invariant Guards: การห้ามกดยกเลิกขณะอยู่ในสถานะ `SHIPPING` (โยน `InvalidOrderStateException`)
+    - ทดสอบ Terminal State Protection: ห้ามสั่ง action ใดๆ ต่อจาก `COMPLETED` หรือ `CANCELLED`
 
 ---
 
@@ -413,8 +439,8 @@ graph TD
 - [x] **Commit 10 (`35cd653`)**: `feat: define TradeRecommendationResponse DTO`
 - [x] **Commit 11 (`6118057`)**: `feat: implement TradeMatchingService with account recommendation query`
 - [x] **Commit 12 (`9fcac5f`)**: `feat: implement auto-match best account assignment algorithm`
-- [ ] **Commit 13**: `feat: add endpoints for trade recommendations and account assignment` *(คิวงานถัดไป)*
-- [ ] **Commit 14**: `test: add unit tests for OrderState transitions and guards`
+- [x] **Commit 13 (`ebc8794`)**: `feat: add endpoints for trade recommendations and account assignment`
+- [ ] **Commit 14**: `test: add unit tests for OrderState transitions and guards` *(คิวงานถัดไป)*
 - [ ] **Commit 15**: `test: add unit test for TradeMatchingServiceImpl auto-match logic`
 
 
