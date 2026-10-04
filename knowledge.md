@@ -49,6 +49,8 @@ graph TD
 
     subgraph TradeMatching["Milestone 3: In-Game Trade Matching System"]
         C9 --> C10["Commit 10: TradeRecommendationResponse DTO\n(35cd653)"]
+        C10 --> C11["Commit 11: TradeMatchingService Recommendation\n(6118057)"]
+        C11 --> C12["Commit 12: Auto-Match Assignment Algorithm\n(9fcac5f)"]
     end
 ```
 
@@ -327,17 +329,73 @@ graph TD
 
 ---
 
-## ⏸️ Commit 11: TradeMatchingService with Account Recommendation Query (คิวงานถัดไป)
-- **Roadmap Commit 11**: `feat: implement TradeMatchingService with account recommendation query`
+### ✅ Commit 11: TradeMatchingService with Account Recommendation Query
+* **Commit Hash**: `6118057`
+* **Commit Message**: `feat: implement TradeMatchingService with account recommendation query`
+* **โฟลเดอร์หลัก**: `src/main/java/com/pokevault/modules/trade/service/`
+* **ไฟล์ที่สร้าง/แก้ไข**:
+  1. `src/main/java/com/pokevault/modules/trade/service/TradeMatchingService.java`
+  2. `src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java`
+
+#### 🎯 หลักการออกแบบที่ใช้ (Design Principles)
+* **Single Responsibility Principle (SRP)**: แยก Service สำหรับคำนวณและแนะนำไอดีเกมสำหรับการส่งมอบการ์ด (Trade Fulfillment) ออกมาเป็นโมดูลอิสระ ไม่ปะปนกับ Order Processing ทั่วไป
+* **Dependency Inversion Principle (DIP)**: ประกาศ `TradeMatchingService` interface และให้ `TradeMatchingServiceImpl` ทำการ implement เพื่อรองรับการ mock ใน unit test และลด coupling
+* **Information Expert & Defensive Sorting**: Service ดึงรายการคลังทั้งหมดของการ์ดใบนั้น แล้วจัดลำดับ (Sort) โดยให้ไอดีที่มีสถานะ `READY` ขึ้นก่อนสถานะอื่น และเรียงลำดับจำนวนสต็อกคงเหลือจากมากไปน้อย (`Comparator.reverseOrder()`)
+
+#### ⚙️ การทำงานของโค้ดอย่างละเอียด (Code Mechanics)
+1. **`getRecommendations(Long orderId)`**:
+   - ตรวจสอบความมีอยู่ของคำสั่งซื้อผ่าน `orderRepository.findById(orderId)` หากไม่พบจะโยน `ResourceNotFoundException`
+   - วนลูปทุก `OrderItem` ในคำสั่งซื้อ เพื่อสร้างคำแนะนำ `TradeRecommendationResponse`
+2. **`getRecommendationForItem(Long orderItemId)`**:
+   - ค้นหารายการคำสั่งซื้อเฉพาะเจาะจงผ่าน `orderItemRepository.findById(orderItemId)`
+3. **`buildRecommendationForItem(Order order, OrderItem item)`**:
+   - ค้นหา `CardInventory` ที่ถือการ์ดใบที่ต้องการผ่าน `cardInventoryRepository.findByCardId(card.getId())`
+   - กรองเฉพาะรายการที่ผูกกับ `GameAccount` และมีสต็อก `quantity > 0`
+   - คัดเลือก Best Candidate (อันดับ 1) หากมีสถานะ `READY` จะตั้งค่า `matchFound = true`
+   - รวบรวมไอดีสำรองที่เหลือใส่ใน `alternativeCandidates` เพื่อเป็นทางเลือกเสริม
+
+---
+
+### ✅ Commit 12: Auto-Match Best Account Assignment Algorithm
+* **Commit Hash**: `9fcac5f`
+* **Commit Message**: `feat: implement auto-match best account assignment algorithm`
+* **โฟลเดอร์หลัก**: `src/main/java/com/pokevault/modules/trade/service/`
+* **ไฟล์ที่สร้าง/แก้ไข**:
+  1. `src/main/java/com/pokevault/modules/trade/service/TradeMatchingService.java`
+  2. `src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java`
+
+#### 🎯 หลักการออกแบบที่ใช้ (Design Principles)
+* **High Cohesion & Business Invariant Enforcement**: บังคับใช้กฎทางธุรกิจของการเทรดการ์ด โดยระบบจะมอบหมายงานให้เฉพาะไอดีร้านค้าที่มีสถานะ `READY` และมีสต็อกการ์ดเพียงพอกับจำนวนที่สั่ง (`quantity >= requestedQuantity`) เท่านั้น
+* **Defensive Guard**: ป้องกันการ re-assign ซ้ำหากรายการนั้นได้ส่งการ์ดไปแล้ว (`TRADE_SENT`) หรือส่งมอบสำเร็จแล้ว (`COMPLETED`) เพื่อป้องกันความผิดพลาดในการส่งมอบซ้ำซ้อน
+* **Fail-Fast Principle**: โยน `InsufficientStockException` หรือ `InvalidOrderStateException` ทันทีเมื่อไม่พบไอดีที่พร้อม หรือข้อมูลการ์ดไม่สมบูรณ์ แทนการปล่อยให้เกิดข้อผิดพลาดเงียบ
+* **Transactional Consistency (ACID)**: เมธอดที่ทำการเปลี่ยนแปลงข้อมูล (`autoMatchOrderItem`, `autoMatchOrder`, `assignAccountToOrderItem`) กำกับด้วย `@Transactional` เพื่อรับประกันว่าการมอบหมาย `assignedAccount` และการเปลี่ยนสถานะเป็น `FRIEND_PENDING` จะถูกบันทึกพร้อมกันอย่างสมบูรณ์
+
+#### ⚙️ การทำงานของโค้ดอย่างละเอียด (Code Mechanics)
+1. **`autoMatchOrderItem(Long orderItemId)`**:
+   - ตรวจสอบ Guard ห้ามเปลี่ยนไอดีหากอยู่ในสถานะ `TRADE_SENT` หรือ `COMPLETED`
+   - ค้นหาคลังทั้งหมดของการ์ดใบนั้น กรองเฉพาะไอดีที่มีสถานะ `READY` และมีจำนวนการ์ด `>= item.getQuantity()`
+   - เลือกไอดีที่มีสต็อกคงเหลือมากที่สุด (`max(Comparator.comparing(CardInventory::getQuantity))`)
+   - กำหนด `item.setAssignedAccount(bestAccount)` และปรับสถานะ `item.setTradeStatus(TradeFulfillmentStatus.FRIEND_PENDING)`
+   - บันทึกลงฐานข้อมูลด้วย `orderItemRepository.save(item)` และคืนค่า `TradeRecommendationResponse` ล่าสุด
+2. **`autoMatchOrder(Long orderId)`**:
+   - ดึงคำสั่งซื้อและวนลูปเรียก `autoMatchOrderItem` ให้กับทุกรายการสินค้าในคำสั่งซื้อ คืนค่าเป็น `List<TradeRecommendationResponse>`
+3. **`assignAccountToOrderItem(Long orderItemId, Long accountId)`**:
+   - รองรับการมอบหมายไอดีแบบ Manual โดยตรวจสอบว่าไอดีเกมที่ระบุมีสถานะ `READY` และ OrderItem ยังไม่หลุดพ้นสถานะที่แก้ไขได้
+
+---
+
+## ⏸️ Commit 13: TradeMatchingApiController Endpoints (คิวงานถัดไป)
+- **Roadmap Commit 13**: `feat: add endpoints for trade recommendations and account assignment`
 - **ไฟล์เป้าหมาย**:
-  - `src/main/java/com/pokevault/modules/trade/service/TradeMatchingService.java`
-  - `src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java`
-  - `src/main/java/com/pokevault/repository/CardInventoryRepository.java` (ถ้าต้องการ custom query)
+  - `src/main/java/com/pokevault/modules/trade/controller/TradeMatchingApiController.java`
 - **สรุปสิ่งที่ต้องทำเมื่อกลับมา**:
-  - สร้าง Business Logic ใน `TradeMatchingService`:
-    - ค้นหาไอดีเกมร้านค้าที่ถือการ์ดใบที่ต้องการ และมีสถานะ `READY` พร้อมจำนวนสต็อกคงเหลือ
-    - จัดอันดับไอดีที่ดีที่สุด (Best Candidate) และรวบรวมไอดีสำรอง
-    - คืนค่าออกมาเป็น `List<TradeRecommendationResponse>` สำหรับทุกรายการในคำสั่งซื้อ
+  - สร้าง REST Controller พร้อมเส้นทาง API:
+    - `GET /api/v1/trades/orders/{orderId}/recommendations`: ดูคำแนะนำการจับคู่ไอดีทั้งออเดอร์
+    - `GET /api/v1/trades/items/{orderItemId}/recommendation`: ดูคำแนะนำสำหรับรายการเดี่ยว
+    - `POST /api/v1/trades/items/{orderItemId}/auto-match`: สั่งรัน Auto-Match รายการเดี่ยว
+    - `POST /api/v1/trades/orders/{orderId}/auto-match`: สั่งรัน Auto-Match ทั้งออเดอร์
+    - `POST /api/v1/trades/items/{orderItemId}/assign?accountId={id}`: กำหนดไอดีแบบ Manual
+  - ตกแต่งด้วย OpenAPI Swagger Annotations (`@Tag`, `@Operation`, `@Parameter`) และห่อ Response ด้วย `ApiResponse<T>`
 
 ---
 
@@ -353,9 +411,10 @@ graph TD
 - [x] **Commit 8 (`2831a5f`)**: `feat: implement CompletedOrderState and CancelledOrderState with stock restore`
 - [x] **Commit 9 (`b45a9c4`)**: `feat: implement state transition endpoint in OrderApiController`
 - [x] **Commit 10 (`35cd653`)**: `feat: define TradeRecommendationResponse DTO`
-- [ ] **Commit 11**: `feat: implement TradeMatchingService with account recommendation query` *(คิวงานถัดไป)*
-- [ ] **Commit 12**: `feat: implement auto-match best account assignment algorithm`
-- [ ] **Commit 13**: `feat: add endpoints for trade recommendations and account assignment`
+- [x] **Commit 11 (`6118057`)**: `feat: implement TradeMatchingService with account recommendation query`
+- [x] **Commit 12 (`9fcac5f`)**: `feat: implement auto-match best account assignment algorithm`
+- [ ] **Commit 13**: `feat: add endpoints for trade recommendations and account assignment` *(คิวงานถัดไป)*
 - [ ] **Commit 14**: `test: add unit tests for OrderState transitions and guards`
 - [ ] **Commit 15**: `test: add unit test for TradeMatchingServiceImpl auto-match logic`
+
 
