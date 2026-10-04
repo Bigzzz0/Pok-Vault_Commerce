@@ -56,6 +56,7 @@ graph TD
 
     subgraph Testing["Milestone 4: Unit Testing & Verification"]
         C13 --> C14["Commit 14: OrderState Unit Tests\n(c6b6942)"]
+        C14 --> C15["Commit 15: TradeMatching Unit Tests\n(86dcc4d)"]
     end
 ```
 
@@ -440,20 +441,37 @@ graph TD
 
 ---
 
-## ⏸️ Commit 15: Unit Test for TradeMatchingServiceImpl Auto-Match Logic (คิวสุดท้าย)
-- **Roadmap Commit 15**: `test: add unit test for TradeMatchingServiceImpl auto-match logic`
-- **ไฟล์เป้าหมาย**:
+### ✅ Commit 15: Unit Test for TradeMatchingServiceImpl Auto-Match Logic
+* **Commit Hash**: `86dcc4d`
+* **Commit Message**: `test: add unit test for TradeMatchingServiceImpl auto-match logic`
+* **โฟลเดอร์หลัก**: `src/test/java/com/pokevault/modules/trade/service/`
+* **ไฟล์ที่สร้าง/แก้ไข**:
   - `src/test/java/com/pokevault/modules/trade/service/TradeMatchingServiceTest.java`
-- **สรุปสิ่งที่ต้องทำเมื่อกลับมา**:
-  - เขียน Mockito Unit Test สำหรับ `TradeMatchingServiceImpl`:
-    - จำลอง Mock Data: `Order`, `OrderItem`, `Card`, `CardInventory`, `GameAccount`
-    - ทดสอบ `getRecommendations`: แนะนำไอดีสถานะ `READY` อันดับหนึ่ง และรวบรวมไอดีสำรอง
-    - ทดสอบ `autoMatchOrderItem`: ทำการ Assign ไอดี `READY` สต็อกสูงสุด และปรับสถานะเป็น `FRIEND_PENDING`
-    - ทดสอบ Edge Cases: กรณีไม่มีไอดี `READY`, กรณีสต็อกไม่พอ (โยน `InsufficientStockException`), กรณีพยายาม Re-assign ออเดอร์ที่อยู่ในสถานะ `TRADE_SENT` หรือ `COMPLETED` (โยน `InvalidOrderStateException`)
+
+#### 🎯 หลักการออกแบบที่ใช้ (Design Principles)
+* **Test Isolation via Mockito**: ใช้ `@Mock` และ `@InjectMocks` เพื่อจำลองพฤติกรรมของ Repositories (`OrderRepository`, `OrderItemRepository`, `CardInventoryRepository`, `GameAccountRepository`) โดยไม่ต้องเชื่อมต่อ Database จริง ทำให้รันเทสได้รวดเร็วและไม่มี side effects
+* **Behavior Verification & State Assertion**: ไม่เพียงตรวจสอบ Return Object แต่ยังตรวจสอบว่า Entity ถูก mutate ค่า (`setAssignedAccount`, `setTradeStatus`) และเมธอด `orderItemRepository.save(item)` ถูกเรียกจริงผ่าน `verify()`
+* **Defensive Edge Case Verification**: ทดสอบกรณีความผิดพลาดอย่างรอบด้าน ทั้งกรณีไม่มีคลังการ์ด, กรณีไม่มีไอดีสถานะ `READY`, กรณีสต็อกไม่พอ, และกรณีสั่ง Re-assign ออเดอร์ที่เริ่มส่งหรือส่งมอบเสร็จสิ้นแล้ว
+
+#### ⚙️ การทำงานของโค้ดอย่างละเอียด (Code Mechanics)
+1. **`RecommendationQueryTests`**:
+   - `testGetRecommendationsRanksBestReadyAccount`: พิสูจน์ว่าไอดีสถานะ `READY` ที่มีสต็อกการ์ดสูงสุดจะถูกคัดเลือกเป็นอันดับ 1 (Best Recommended Account) เสมอ แม้จะมีไอดีอื่นที่มีสต็อกมากกว่าแต่สถานะเป็น `BUSY` ก็ตาม
+   - `testGetRecommendationForItem`: ทดสอบการ Query แนะนำไอดีสำหรับ OrderItem เดี่ยว
+   - `testGetRecommendationsNoInventory` และ `testGetRecommendationsOnlyBusyAccount`: ทดสอบกรณีไม่พบคลัง หรือมีเฉพาะไอดีที่ไม่พร้อม จะส่งกลับ `matchFound = false` พร้อมระบุเหตุผลชัดเจน
+2. **`AutoMatchAlgorithmTests`**:
+   - `testAutoMatchOrderItemSuccess`: ทดสอบการ Auto-Match สำเร็จ บันทึกไอดีลง Entity, เปลี่ยนสถานะเป็น `FRIEND_PENDING`, และเรียก `save(item)`
+   - `testAutoMatchOrderItemInsufficientStock`: ทดสอบเมื่อสต็อกในไอดี `READY` ไม่พอกับจำนวนที่ขอซื้อ จะโยน `InsufficientStockException` และไม่บันทึกลง Database
+   - `testAutoMatchOrderItemGuardAgainstReassignment`: ทดสอบ Guard ห้าม Re-assign หากสถานะเป็น `TRADE_SENT` หรือ `COMPLETED` โดยโยน `InvalidOrderStateException`
+3. **`BatchAutoMatchTests`**:
+   - `testAutoMatchOrderSuccess`: ทดสอบการวนลูป Auto-Match ให้กับทุกรายการใน Order
+4. **`ManualAssignmentTests`**:
+   - `testManualAssignAccountSuccess`: ทดสอบการมอบหมายไอดีด้วยตนเอง (Manual)
+   - `testManualAssignAccountNotReady`: ทดสอบการปฏิเสธการมอบหมายหากไอดีเกมเป้าหมายไม่อยู่ในสถานะ `READY`
+   - `testManualAssignRejectWhenCompleted`: ทดสอบการปฏิเสธการแก้ไขหากรายการนั้น `COMPLETED` แล้ว
 
 ---
 
-## 🗺️ 4. แผนผังความก้าวหน้า 15 Commits (Member 4 Tracker)
+## 🏆 4. สรุปความก้าวหน้าครบ 15 Commits บริบูรณ์ (100% Completion)
 
 - [x] **Commit 1 (`2d9cc98`)**: `feat: create custom exceptions for stock and invalid order states`
 - [x] **Commit 2 (`aebf676`)**: `feat: implement GlobalExceptionHandler with RestControllerAdvice`
@@ -469,6 +487,9 @@ graph TD
 - [x] **Commit 12 (`9fcac5f`)**: `feat: implement auto-match best account assignment algorithm`
 - [x] **Commit 13 (`ebc8794`)**: `feat: add endpoints for trade recommendations and account assignment`
 - [x] **Commit 14 (`c6b6942`)**: `test: add unit tests for OrderState transitions and guards`
-- [ ] **Commit 15**: `test: add unit test for TradeMatchingServiceImpl auto-match logic` *(คิวงานสุดท้าย)*
+- [x] **Commit 15 (`86dcc4d`)**: `test: add unit test for TradeMatchingServiceImpl auto-match logic`
+
+🎉 **สมาชิกคนที่ 4 (นายแทนคุณ พันธ์นิกุล — 673380301-0) ดำเนินการพัฒนา ครบทั้ง 15 Commits ตามสถาปัตยกรรมและมาตรฐานวิชาเรียบร้อยสมบูรณ์ 100%**
+
 
 
