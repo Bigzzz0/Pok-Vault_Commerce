@@ -6,12 +6,10 @@ services:
     environment:
       # ต้องสั่ง activate profile prod ตรงๆ ไม่งั้น application.yml จะใช้ profile local (H2) ตามค่า default เสมอ
       SPRING_PROFILES_ACTIVE: prod
-      # ชื่อตัวแปรต้องตรงกับที่ profile prod ใน application.yml ประกาศไว้ (DB_HOST, DB_PORT, ...)
-      DB_HOST: db
-      DB_PORT: "5432"
-      DB_NAME: pokevault
-      DB_USERNAME: pokevault_user
-      DB_PASSWORD: ${DB_PASSWORD:-localdevpass}
+      # ชื่อตัวแปรต้องตรงกับที่ profile prod ใน application.yml ประกาศไว้ (SPRING_DATASOURCE_*)
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/pokevault
+      SPRING_DATASOURCE_USERNAME: pokevault_user
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-localdevpass}
     depends_on:
       db:
         condition: service_healthy
