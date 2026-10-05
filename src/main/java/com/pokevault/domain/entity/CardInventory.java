@@ -1,29 +1,12 @@
 package com.pokevault.domain.entity;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-
 import com.pokevault.common.exception.InsufficientStockException;
 import com.pokevault.domain.enums.CardCondition;
+import jakarta.persistence.*;
+import lombok.*;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 @Table(name = "card_inventories")
@@ -53,7 +36,7 @@ public class CardInventory extends BaseEntity {
 
 	@Column(name = "quantity", nullable = false)
 	@Builder.Default
-	private int quantity = 0;
+	private Integer quantity = 0;
 
 	@Column(name = "buy_in_price", nullable = false, precision = 10, scale = 2)
 	@Builder.Default
@@ -68,22 +51,25 @@ public class CardInventory extends BaseEntity {
 
 	public boolean hasSufficientStock(int requestedQuantity) {
 		validatePositiveQuantity(requestedQuantity);
-		return quantity >= requestedQuantity;
+		return quantity != null && quantity >= requestedQuantity;
 	}
 
 	public void deductStock(int count) {
 		validatePositiveQuantity(count);
 		if (!hasSufficientStock(count)) {
 			throw new InsufficientStockException(
-					"Requested " + count + " cards, but only " + quantity + " are in stock"
-			);
+					"Insufficient stock for inventory ID " + this.id + " (Requested: " + count + ", Available: "
+							+ this.quantity + ")");
 		}
-		quantity -= count;
+		this.quantity -= count;
 	}
 
 	public void restoreStock(int count) {
 		validatePositiveQuantity(count);
-		quantity += count;
+		if (this.quantity == null) {
+			this.quantity = 0;
+		}
+		this.quantity += count;
 	}
 
 	public void setQuantity(int quantity) {
@@ -104,7 +90,7 @@ public class CardInventory extends BaseEntity {
 	@PrePersist
 	@PreUpdate
 	private void validateInventory() {
-		if (quantity < 0) {
+		if (quantity != null && quantity < 0) {
 			throw new IllegalArgumentException("Inventory quantity cannot be negative");
 		}
 		Objects.requireNonNull(card, "Card is required for an inventory item");

@@ -16,12 +16,14 @@ public enum AccountTradeStatus {
     BUSY_TRADING,
 
     /**
-     * Account is on cooldown waiting for Pokémon Pocket trade restrictions/timers to reset.
+     * Account is on cooldown waiting for Pokémon Pocket trade restrictions/timers
+     * to reset.
      */
     COOLDOWN,
 
     /**
-     * Account is temporarily suspended by store admin for maintenance or verification.
+     * Account is temporarily suspended by store admin for maintenance or
+     * verification.
      */
     SUSPENDED
 }

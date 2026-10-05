@@ -8,11 +8,12 @@ import java.math.BigDecimal;
 
 /**
  * Entity representing a store-owned Pokémon TCG Pocket game account (Vault)
- * used for opening booster packs, storing card inventories, and trading with customers.
+ * used for opening booster packs, storing card inventories, and trading with
+ * customers.
  */
 @Entity
 @Table(name = "game_accounts", uniqueConstraints = {
-        @UniqueConstraint(name = "uk_account_code", columnNames = {"account_code"})
+        @UniqueConstraint(name = "uk_account_code", columnNames = { "account_code" })
 })
 @Getter
 @Setter
@@ -46,41 +47,22 @@ public class GameAccount extends BaseEntity {
     @Column(name = "notes", length = 500)
     private String notes;
 
-    /**
-     * Checks if this game account is currently ready and available for trade matching.
-     *
-     * @return true if status is READY
-     */
     public boolean isAvailableForTrade() {
         return this.tradeStatus == AccountTradeStatus.READY;
     }
 
-    /**
-     * Updates account status to BUSY_TRADING when assigned to an active trade order.
-     */
     public void markBusyTrading() {
         this.tradeStatus = AccountTradeStatus.BUSY_TRADING;
     }
 
-    /**
-     * Sets account status to COOLDOWN after completing a trade in-game.
-     */
     public void markCooldown() {
         this.tradeStatus = AccountTradeStatus.COOLDOWN;
     }
 
-    /**
-     * Restores account status to READY when available for new trades.
-     */
     public void markReady() {
         this.tradeStatus = AccountTradeStatus.READY;
     }
 
-    /**
-     * Suspends account usage with an optional reason recorded in notes.
-     *
-     * @param reason the suspension reason
-     */
     public void suspend(String reason) {
         this.tradeStatus = AccountTradeStatus.SUSPENDED;
         if (reason != null && !reason.isBlank()) {

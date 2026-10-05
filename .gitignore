@@ -58,3 +58,6 @@ Thumbs.db
 # Environment variables
 .env
 .env.local
+
+# Documentation / Local notes
+workflow.md
