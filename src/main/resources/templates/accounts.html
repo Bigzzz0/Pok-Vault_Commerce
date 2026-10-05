@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon TCG Pocket - Game Accounts Vault</title>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('tcg-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/pokemon-cards-holo.css}">
+</head>
+<body>
+
+    <!-- Official Pokémon TCG Style Navbar -->
+    <nav class="navbar">
+        <a th:href="@{/}" class="brand">
+            <div class="brand-emblem">
+                <div th:replace="~{fragments/icons :: pokeball('icon-md')}"></div>
+            </div>
+            <span>Pokémon TCG Pocket Gallery</span>
+        </a>
+        <div class="nav-links">
+            <a th:href="@{/}" class="nav-link">
+                <div th:replace="~{fragments/icons :: dashboard('icon-sm')}"></div>
+                <span>Exhibition</span>
+            </a>
+            <a th:href="@{/cards}" class="nav-link">
+                <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
+                <span>Card Gallery</span>
+            </a>
+            <a th:href="@{/inventory}" class="nav-link">
+                <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
+                <span>Vault Inventory</span>
+            </a>
+            <a th:href="@{/accounts}" class="nav-link active">
+                <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
+                <span>Game Accounts</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-link">
+                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                <span>Orders</span>
+            </a>
+            <a href="/swagger-ui.html" target="_blank" class="nav-link swagger-btn">
+                <span>Swagger OpenAPI</span>
+                <div th:replace="~{fragments/icons :: externalLink('icon-sm')}"></div>
+            </a>
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
+                <span class="theme-icon-sun" style="display: inline-flex;"><th:block th:replace="~{fragments/icons :: sun('icon-sm')}"></th:block></span>
+                <span class="theme-icon-moon" style="display: none;"><th:block th:replace="~{fragments/icons :: moon('icon-sm')}"></th:block></span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <header class="gallery-hero">
+            <div class="hero-tag">
+                <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
+                <span>Reroll & Starter Account Management Hub</span>
+            </div>
+            <h1>GAME ACCOUNTS VAULT</h1>
+            <p>Manage bot and starter accounts used for pack opening. Track pulled cards per account and automate friend-code in-game trades to fulfill customer card purchases.</p>
+            
+            <div class="hero-stats-row">
+                <div class="hero-stat-pill">
+                    <div class="hero-stat-num" th:text="${totalAccounts != null ? totalAccounts : 4}">4</div>
+                    <div class="hero-stat-label">Total Accounts</div>
+                </div>
+                <div class="hero-stat-pill">
+                    <div class="hero-stat-num" style="color: #10b981;" th:text="${readyAccounts != null ? readyAccounts : 3}">3</div>
+                    <div class="hero-stat-label">Trade Ready</div>
+                </div>
+                <div class="hero-stat-pill">
+                    <div class="hero-stat-num" style="color: var(--accent-cyan);" th:text="${cooldownAccounts != null ? cooldownAccounts : 1}">1</div>
+                    <div class="hero-stat-label">In Cooldown</div>
+                </div>
+                <div class="hero-stat-pill">
+                    <div class="hero-stat-num" style="color: var(--accent-gold);" th:text="${totalElements != null ? totalElements : 4}">4</div>
+                    <div class="hero-stat-label">Active Vault Rows</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Actions Toolbar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h2 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.25rem;">Active Trading Accounts</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Each account holds authentic pulled cards ready for in-game friend trade</p>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+                <button class="btn btn-secondary" onclick="openAddCardModal()">
+                    <div th:replace="~{fragments/icons :: sparkles('icon-sm')}"></div>
+                    <span>Record Pulled Card</span>
+                </button>
+                <button class="btn btn-primary" onclick="openCreateAccountModal()">
+                    <div th:replace="~{fragments/icons :: plus('icon-sm')}"></div>
+                    <span>Register New Account</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Accounts Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account Code</th>
+                        <th>Trainer Name</th>
+                        <th>Friend Code</th>
+                        <th>Notes / Pack Series</th>
+                        <th>Trade Status</th>
+                        <th>Stock Cards</th>
+                        <th>Buy-In Cost</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(accounts)}">
+                        <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                            No game accounts registered yet. Click <strong>Register New Account</strong> to start!
+                        </td>
+                    </tr>
+                    <tr th:each="acc : ${accounts}">
+                        <td>
+                            <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent-cyan);" th:text="${acc.accountCode}">ACC-001</span>
+                        </td>
+                        <td>
+                            <strong style="color: var(--text-primary);" th:text="${acc.inGameName}">ApexBot_01</strong>
+                        </td>
+                        <td>
+                            <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: var(--bg-surface-elevated); padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid var(--border-color);">
+                                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; color: var(--accent-gold);" th:text="${acc.friendId}">1234-5678-9012-3456</span>
+                                <button type="button" class="icon-btn" th:data-code="${acc.friendId}" onclick="copyFriendCode(this.getAttribute('data-code'), this)" title="Copy Friend Code" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: inline-flex; align-items: center;">
+                                    <div th:replace="~{fragments/icons :: copy('icon-xs')}"></div>
+                                </button>
+                            </div>
+                        </td>
+                        <td>
+                            <span style="font-size: 0.88rem; color: var(--text-secondary);" th:text="${acc.notes != null ? acc.notes : 'Reroll Pack Opening'}">Reroll Pack Opening</span>
+                        </td>
+                        <td>
+                            <!-- Status Badges -->
+                            <span th:if="${acc.tradeStatus.name() == 'READY'}" class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                ● READY
+                            </span>
+                            <span th:if="${acc.tradeStatus.name() == 'COOLDOWN'}" class="status-badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">
+                                ⏳ COOLDOWN
+                            </span>
+                            <span th:if="${acc.tradeStatus.name() == 'BUSY_TRADING'}" class="status-badge" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3);">
+                                🔄 BUSY TRADING
+                            </span>
+                            <span th:if="${acc.tradeStatus.name() == 'SUSPENDED'}" class="status-badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);">
+                                ⛔ SUSPENDED
+                            </span>
+                        </td>
+                        <td>
+                            <span class="rarity-pill" th:text="${acc.totalCardsCount != null ? acc.totalCardsCount + ' cards' : '0 cards'}">3 cards</span>
+                        </td>
+                        <td>
+                            <span style="font-weight: 700; color: var(--accent-cyan);" th:text="${acc.buyInCost != null ? '฿' + #numbers.formatDecimal(acc.buyInCost, 1, 2) : '฿0.00'}">฿250.00</span>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.4rem;">
+                                <button class="btn btn-secondary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem;" 
+                                        th:data-acc-id="${acc.id}"
+                                        th:data-acc-code="${acc.accountCode}"
+                                        th:data-acc-ign="${acc.inGameName}"
+                                        onclick="inspectAccountCards(this.dataset.accId, this.dataset.accCode, this.dataset.accIgn)">
+                                    <div th:replace="~{fragments/icons :: eye('icon-sm')}"></div>
+                                    <span>Inspect Cards</span>
+                                </button>
+                                <button class="btn btn-primary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem;"
+                                        th:data-acc-id="${acc.id}"
+                                        onclick="openAddCardForAccount(this.dataset.accId)">
+                                    <div th:replace="~{fragments/icons :: plus('icon-sm')}"></div>
+                                    <span>Add Pull</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal 1: Register New Game Account -->
+    <div id="createAccountModal" class="modal-overlay" onclick="if(event.target === this) closeCreateAccountModal()">
+        <div class="modal-container" style="max-width: 520px;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div th:replace="~{fragments/icons :: users('icon-md')}"></div>
+                    <h3 class="modal-title">Register Game Account</h3>
+                </div>
+                <button class="modal-close-btn" onclick="closeCreateAccountModal()">
+                    <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
+                </button>
+            </div>
+            <form id="createAccountForm" onsubmit="handleCreateAccount(event)">
+                <div class="modal-body" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Account Code</label>
+                        <input type="text" id="accCode" required placeholder="ACC-005" class="gallery-search-input" style="width: 100%; border-radius: 8px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">In-Game Trainer Name</label>
+                        <input type="text" id="accInGameName" required placeholder="e.g. ApexBot_05" class="gallery-search-input" style="width: 100%; border-radius: 8px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Friend Code (16 Digits)</label>
+                        <input type="text" id="accFriendCode" required placeholder="XXXX-XXXX-XXXX-XXXX" class="gallery-search-input" style="width: 100%; border-radius: 8px; font-family: 'JetBrains Mono', monospace;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Trainer Level</label>
+                            <input type="number" id="accLevel" min="1" max="100" value="20" class="gallery-search-input" style="width: 100%; border-radius: 8px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Daily Trade Limit</label>
+                            <input type="number" id="accTrades" min="0" max="5" value="5" class="gallery-search-input" style="width: 100%; border-radius: 8px;">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Notes (Pack Series, Source)</label>
+                        <input type="text" id="accNotes" placeholder="e.g. Genetic Apex Reroll #12" class="gallery-search-input" style="width: 100%; border-radius: 8px;">
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding: 1.25rem; display: flex; justify-content: flex-end; gap: 0.75rem; border-top: 1px solid var(--border-color);">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateAccountModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Register Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Record Pulled Card (Open Pack) -->
+    <div id="addCardModal" class="modal-overlay" onclick="if(event.target === this) closeAddCardModal()">
+        <div class="modal-container" style="max-width: 520px;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div th:replace="~{fragments/icons :: sparkles('icon-md')}"></div>
+                    <h3 class="modal-title">Record Pulled Card</h3>
+                </div>
+                <button class="modal-close-btn" onclick="closeAddCardModal()">
+                    <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
+                </button>
+            </div>
+            <form id="addCardForm" onsubmit="handleAddCardSubmit(event)">
+                <div class="modal-body" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Target Game Account</label>
+                        <select id="pullAccountSelect" required class="gallery-search-input" style="width: 100%; border-radius: 8px; background: var(--bg-surface-elevated); color: var(--text-primary);">
+                            <option value="" disabled selected>Select Account</option>
+                            <option th:each="acc : ${accounts}" th:value="${acc.id}" th:text="${acc.accountCode + ' - ' + acc.inGameName + ' (' + acc.tradeStatus + ')'}">ACC-001</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Select Pulled Pokémon Card</label>
+                        <select id="pullCardSelect" required class="gallery-search-input" style="width: 100%; border-radius: 8px; background: var(--bg-surface-elevated); color: var(--text-primary);">
+                            <option value="" disabled selected>Select Card</option>
+                            <!-- Populated dynamically via /api/v1/cards -->
+                        </select>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Copies Pulled</label>
+                            <input type="number" id="pullQuantity" min="1" value="1" required class="gallery-search-input" style="width: 100%; border-radius: 8px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Pack Type</label>
+                            <input type="text" id="pullPack" placeholder="e.g. Charizard Booster" class="gallery-search-input" style="width: 100%; border-radius: 8px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding: 1.25rem; display: flex; justify-content: flex-end; gap: 0.75rem; border-top: 1px solid var(--border-color);">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddCardModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save to Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Account Cards Vault Inspector (Drawer with 3D Holo Cards) -->
+    <div id="accountCardsModal" class="modal-overlay" onclick="if(event.target === this) closeAccountCardsModal()">
+        <div class="modal-container modal-wide" style="max-width: 960px;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div th:replace="~{fragments/icons :: package('icon-md')}"></div>
+                    <div>
+                        <h3 class="modal-title" id="drawerAccountTitle">Account Inventory Vault</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;" id="drawerAccountSub">Pulled cards available for trade</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeAccountCardsModal()">
+                    <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Cards Grid inside Account -->
+                <div id="accountCardsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; max-height: 60vh; overflow-y: auto; padding: 1rem 0;">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color);">
+                <div id="drawerSummaryText" style="font-size: 0.9rem; color: var(--text-secondary);">Total: 0 cards</div>
+                <button type="button" class="btn btn-secondary" onclick="closeAccountCardsModal()">Close Vault</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/audio.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>
