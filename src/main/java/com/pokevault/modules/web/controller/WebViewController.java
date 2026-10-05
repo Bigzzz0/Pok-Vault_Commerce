@@ -1,13 +1,251 @@
 package com.pokevault.modules.web.controller;
 
+import com.pokevault.domain.entity.Card;
+import com.pokevault.domain.entity.CardInventory;
+import com.pokevault.domain.entity.GameAccount;
+import com.pokevault.domain.entity.Order;
+import com.pokevault.domain.entity.User;
+import com.pokevault.domain.entity.UserProfile;
+import com.pokevault.domain.enums.AccountTradeStatus;
+import com.pokevault.domain.enums.ElementType;
+import com.pokevault.repository.CardExpansionRepository;
+import com.pokevault.repository.CardInventoryRepository;
+import com.pokevault.repository.CardRepository;
+import com.pokevault.repository.GameAccountRepository;
+import com.pokevault.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+/**
+ * Serves the Thymeleaf pages under templates/. Entities are mapped to plain
+ * view-model maps here so the templates get the fields they expect
+ * (e.g. totalStock, imageUrl, membershipTier) without touching the API DTOs.
+ */
 @Controller
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class WebViewController {
 
+    private static final int LOW_STOCK_THRESHOLD = 3;
+    private static final int FEATURED_CARD_LIMIT = 6;
+    private static final String CARD_IMAGE_DIR = "/images/cards/";
+    private static final String CARD_BACK_IMAGE = CARD_IMAGE_DIR + "card-back.jpg";
+
+    private final CardRepository cardRepository;
+    private final CardExpansionRepository expansionRepository;
+    private final CardInventoryRepository inventoryRepository;
+    private final GameAccountRepository gameAccountRepository;
+    private final OrderRepository orderRepository;
+
     @GetMapping("/")
-    public String index() {
-        return "index";
+    public String dashboard(Model model) {
+        List<CardInventory> inventories = inventoryRepository.findAll();
+        Map<Long, Integer> stockByCard = stockByCard(inventories);
+
+        List<Map<String, Object>> lowStock = inventories.stream()
+                .filter(inv -> inv.getQuantity() != null && inv.getQuantity() <= LOW_STOCK_THRESHOLD)
+                .sorted(Comparator.comparing(CardInventory::getQuantity))
+                .map(this::toInventoryView)
+                .toList();
+
+        List<Map<String, Object>> featured = cardRepository.findAll(Sort.by(Sort.Direction.DESC, "rarity")).stream()
+                .limit(FEATURED_CARD_LIMIT)
+                .map(c -> toCardView(c, stockByCard))
+                .toList();
+
+        model.addAttribute("totalCards", cardRepository.count());
+        model.addAttribute("totalExpansions", expansionRepository.count());
+        model.addAttribute("totalOrders", orderRepository.count());
+        model.addAttribute("lowStockCount", lowStock.size());
+        model.addAttribute("lowStockItems", lowStock);
+        model.addAttribute("featuredCards", featured);
+        return "dashboard";
+    }
+
+    @GetMapping("/cards")
+    public String cards(@RequestParam(required = false) String element,
+                        @RequestParam(required = false) String search,
+                        Model model) {
+        ElementType selectedElement = parseElement(element);
+        String keyword = search == null ? "" : search.trim().toLowerCase();
+        Map<Long, Integer> stockByCard = stockByCard(inventoryRepository.findAll());
+
+        List<Map<String, Object>> cards = cardRepository.findAll(Sort.by("expansion.code", "cardNumber")).stream()
+                .filter(c -> selectedElement == null || c.getElementType() == selectedElement)
+                .filter(c -> keyword.isEmpty() || c.getName().toLowerCase().contains(keyword))
+                .map(c -> toCardView(c, stockByCard))
+                .toList();
+
+        model.addAttribute("cards", cards);
+        model.addAttribute("totalElements", cards.size());
+        model.addAttribute("selectedElement", selectedElement);
+        model.addAttribute("search", search);
+        return "cards";
+    }
+
+    @GetMapping("/inventory")
+    public String inventory(Model model) {
+        List<Map<String, Object>> inventories = inventoryRepository.findAll(Sort.by("id")).stream()
+                .map(this::toInventoryView)
+                .toList();
+
+        model.addAttribute("inventories", inventories);
+        model.addAttribute("totalElements", inventories.size());
+        return "inventory";
+    }
+
+    @GetMapping("/accounts")
+    public String accounts(Model model) {
+        Map<Long, Integer> cardsByAccount = inventoryRepository.findAll().stream()
+                .filter(inv -> inv.getGameAccount() != null && inv.getQuantity() != null)
+                .collect(Collectors.groupingBy(inv -> inv.getGameAccount().getId(),
+                        Collectors.summingInt(CardInventory::getQuantity)));
+
+        List<GameAccount> entities = gameAccountRepository.findAll(Sort.by("id"));
+        List<Map<String, Object>> accounts = entities.stream()
+                .map(a -> toAccountView(a, cardsByAccount.getOrDefault(a.getId(), 0)))
+                .toList();
+
+        model.addAttribute("accounts", accounts);
+        model.addAttribute("totalAccounts", entities.size());
+        model.addAttribute("readyAccounts", countByStatus(entities, AccountTradeStatus.READY));
+        model.addAttribute("cooldownAccounts", countByStatus(entities, AccountTradeStatus.COOLDOWN));
+        model.addAttribute("totalElements", entities.size());
+        return "accounts";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
+    @GetMapping("/orders")
+    public String orders(Model model) {
+        List<Map<String, Object>> orders = orderRepository.findAll(Sort.by(Sort.Direction.DESC, "id")).stream()
+                .map(this::toOrderView)
+                .toList();
+
+        model.addAttribute("orders", orders);
+        return "orders";
+    }
+
+    private ElementType parseElement(String element) {
+        if (element == null || element.isBlank()) {
+            return null;
+        }
+        try {
+            return ElementType.valueOf(element.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    private Map<Long, Integer> stockByCard(List<CardInventory> inventories) {
+        return inventories.stream()
+                .filter(inv -> inv.getCard() != null && inv.getQuantity() != null)
+                .collect(Collectors.groupingBy(inv -> inv.getCard().getId(),
+                        Collectors.summingInt(CardInventory::getQuantity)));
+    }
+
+    private long countByStatus(List<GameAccount> accounts, AccountTradeStatus status) {
+        return accounts.stream().filter(a -> a.getTradeStatus() == status).count();
+    }
+
+    /**
+     * The seeded image URLs point at a remote host that rejects hotlinking (403), so prefer the
+     * bundled static image (e.g. A1_004_EN.png) and fall back to the card back when none exists.
+     */
+    private String resolveImageUrl(Card card) {
+        if (card.getExpansion() != null && card.getCardNumber() != null) {
+            // card numbers are stored as "004/226"; the bundled files only use the leading part
+            String number = String.format("%3s", card.getCardNumber().split("/")[0].trim()).replace(' ', '0');
+            String code = card.getExpansion().getCode();
+            for (String prefix : List.of(code, code.toUpperCase())) {
+                String file = prefix + "_" + number + "_EN.png";
+                if (new ClassPathResource("static" + CARD_IMAGE_DIR + file).exists()) {
+                    return CARD_IMAGE_DIR + file;
+                }
+            }
+        }
+        return CARD_BACK_IMAGE;
+    }
+
+    private Map<String, Object> toCardView(Card card, Map<Long, Integer> stockByCard) {
+        Map<String, Object> view = new LinkedHashMap<>();
+        view.put("id", card.getId());
+        view.put("name", card.getName());
+        view.put("cardNumber", card.getCardNumber());
+        view.put("expansionCode", card.getExpansion() != null ? card.getExpansion().getCode() : null);
+        view.put("rarity", card.getRarity());
+        view.put("rarityDescription", null);
+        // Trainer/Item cards have no element, but the templates call elementType.name() unconditionally
+        view.put("elementType", card.getElementType() != null ? card.getElementType() : ElementType.COLORLESS);
+        view.put("hp", card.getHp());
+        view.put("description", null);
+        view.put("imageUrl", resolveImageUrl(card));
+        view.put("totalStock", stockByCard.getOrDefault(card.getId(), 0));
+        return view;
+    }
+
+    private Map<String, Object> toInventoryView(CardInventory inv) {
+        Card card = inv.getCard();
+        Map<String, Object> view = new LinkedHashMap<>();
+        view.put("id", inv.getId());
+        view.put("cardName", card != null ? card.getName() : null);
+        view.put("cardNumber", card != null ? card.getCardNumber() : null);
+        view.put("expansionCode", card != null && card.getExpansion() != null ? card.getExpansion().getCode() : null);
+        view.put("imageUrl", card != null ? resolveImageUrl(card) : CARD_BACK_IMAGE);
+        view.put("condition", inv.getCondition());
+        view.put("conditionLabel", inv.getCondition());
+        view.put("quantity", inv.getQuantity());
+        view.put("buyInPrice", inv.getBuyInPrice());
+        view.put("sellingPrice", inv.getSellingPrice());
+        view.put("storageSlot", inv.getStorageSlot());
+        return view;
+    }
+
+    private Map<String, Object> toAccountView(GameAccount account, int totalCards) {
+        Map<String, Object> view = new LinkedHashMap<>();
+        view.put("id", account.getId());
+        view.put("accountCode", account.getAccountCode());
+        view.put("inGameName", account.getInGameName());
+        view.put("friendId", account.getFriendId());
+        view.put("tradeStatus", account.getTradeStatus());
+        view.put("buyInCost", account.getBuyInCost());
+        view.put("notes", account.getNotes());
+        view.put("totalCardsCount", totalCards);
+        return view;
+    }
+
+    private Map<String, Object> toOrderView(Order order) {
+        User user = order.getUser();
+        UserProfile profile = user != null ? user.getUserProfile() : null;
+
+        Map<String, Object> view = new LinkedHashMap<>();
+        view.put("id", order.getId());
+        view.put("orderCode", order.getOrderCode());
+        view.put("createdAt", order.getCreatedAt());
+        view.put("username", user != null ? user.getUsername() : null);
+        view.put("customerFullName", profile != null ? profile.getFullName() : null);
+        view.put("customerFriendId", order.getCustomerFriendId());
+        view.put("customerInGameName", order.getCustomerInGameName());
+        view.put("membershipTier", profile != null ? profile.getMembershipTier() : null);
+        view.put("orderStatus", order.getOrderStatus());
+        view.put("items", order.getItems());
+        view.put("discountAmount", order.getDiscountAmount());
+        view.put("finalAmount", order.getFinalAmount());
+        return view;
     }
 }
