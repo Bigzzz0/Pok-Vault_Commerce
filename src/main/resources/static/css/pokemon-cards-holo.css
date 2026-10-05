@@ -1,0 +1,393 @@
+/* ==========================================================================
+   POKÉMON TCG POCKET - ADVANCED 3D HOLOGRAPHIC & FOIL SHADER SYSTEM
+   Adapted from Simon Goellner's pokemon-cards-css (poke-holo)
+   Hardware-Accelerated 3D Transforms, Multi-Layer Shaders, Specular Glare & Foil Shimmer
+   ========================================================================== */
+
+:root {
+  --card-aspect: 0.718;
+  --card-radius: 16px;
+  --card-scale: 1;
+
+  /* Color Palettes for Prismatic Sunpillars & Light Diffraction */
+  --sunpillar-1: hsl(2, 100%, 73%);
+  --sunpillar-2: hsl(53, 100%, 69%);
+  --sunpillar-3: hsl(93, 100%, 69%);
+  --sunpillar-4: hsl(176, 100%, 76%);
+  --sunpillar-5: hsl(228, 100%, 74%);
+  --sunpillar-6: hsl(283, 100%, 73%);
+
+  --sunpillar-clr-1: var(--sunpillar-1);
+  --sunpillar-clr-2: var(--sunpillar-2);
+  --sunpillar-clr-3: var(--sunpillar-3);
+  --sunpillar-clr-4: var(--sunpillar-4);
+  --sunpillar-clr-5: var(--sunpillar-5);
+  --sunpillar-clr-6: var(--sunpillar-6);
+
+  /* Element Aura Glows */
+  --glow-fire: #ef4444;
+  --glow-water: #38bdf8;
+  --glow-lightning: #fbbf24;
+  --glow-psychic: #c084fc;
+  --glow-grass: #34d399;
+  --glow-gold: #f59e0b;
+  --glow-immersive: #ec4899;
+
+  /* Textures */
+  --texture-glitter: url('/images/textures/glitter.png');
+  --texture-grain: url('/images/textures/grain.webp');
+  --texture-cosmos: url('/images/textures/cosmos.png');
+  --texture-metal: url('/images/textures/metal.png');
+}
+
+/* Base Card Container */
+.holo-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--card-aspect);
+  border-radius: var(--card-radius);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  perspective: 1000px;
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+  will-change: transform, box-shadow;
+  transition: box-shadow 0.35s ease;
+}
+
+/* Hardware-Accelerated 3D Translater & Rotator */
+.holo-card__translater {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transform: translate3d(var(--translate-x, 0px), var(--translate-y, 0px), 0.01px) scale(var(--card-scale, 1));
+  will-change: transform;
+}
+
+.holo-card__rotator {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: var(--card-radius);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transform: rotateX(var(--rotate-y, 0deg)) rotateY(var(--rotate-x, 0deg));
+  will-change: transform, box-shadow;
+  box-shadow: 
+    0 12px 30px rgba(0, 0, 0, 0.5),
+    0 2px 10px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.35s ease;
+}
+
+.holo-card:hover,
+.holo-card.interacting,
+.holo-card:hover .holo-card__rotator,
+.holo-card.interacting .holo-card__rotator {
+  box-shadow: 
+    0 24px 50px rgba(0, 0, 0, 0.65),
+    0 0 28px var(--card-glow, rgba(59, 130, 246, 0.3)),
+    0 0 50px -15px var(--card-glow, rgba(59, 130, 246, 0.2));
+}
+
+/* Front and Back Face Stacking */
+.holo-card__front,
+.holo-card__back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.holo-card__front {
+  transform: translate3d(0px, 0px, 0.01px);
+  z-index: 2;
+  background-color: #0b0f19;
+}
+
+.holo-card__back {
+  transform: rotateY(180deg) translate3d(0px, 0px, 0.01px);
+  z-index: 1;
+}
+
+/* Card Artwork Image */
+.holo-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: var(--card-radius);
+  image-rendering: auto;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   HOLOGRAPHIC SHINE & SPECULAR GLARE LAYERS
+   ========================================================================== */
+.holo-card__shine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: var(--card-radius);
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+  opacity: var(--card-opacity, 0);
+  transition: opacity 0.25s ease-out;
+  mix-blend-mode: color-dodge;
+  filter: brightness(0.95) contrast(1.6) saturate(1.1);
+  transform: translateZ(1px);
+}
+
+.holo-card__glare {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: var(--card-radius);
+  pointer-events: none;
+  z-index: 7;
+  overflow: hidden;
+  opacity: var(--card-opacity, 0);
+  transition: opacity 0.25s ease-out;
+  mix-blend-mode: overlay;
+  background: radial-gradient(
+    circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+    rgba(255, 255, 255, 0.85) 5%,
+    rgba(255, 255, 255, 0.45) 20%,
+    rgba(255, 255, 255, 0.1) 45%,
+    rgba(0, 0, 0, 0.3) 80%
+  );
+  transform: translateZ(1.5px);
+}
+
+/* Shimmer ::before and ::after pseudo-layers */
+.holo-card__shine::before,
+.holo-card__shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: var(--card-radius);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   RARITY-SPECIFIC SHADERS
+   ========================================================================== */
+
+/* 1. CROWN RARE: Metallic Gold Foil + Glitter Dust + Sunpillar Conic Spectrum */
+.holo-card[data-rarity="CROWN_RARE"] {
+  --card-glow: var(--glow-gold);
+}
+
+.holo-card[data-rarity="CROWN_RARE"] .holo-card__rotator {
+  outline: 2px solid rgba(245, 158, 11, 0.7);
+}
+
+.holo-card[data-rarity="CROWN_RARE"] .holo-card__shine {
+  background-image: 
+    var(--texture-glitter),
+    var(--texture-glitter),
+    conic-gradient(
+      from calc(var(--pointer-x, 50%) * 3.6deg) at var(--pointer-x, 50%) var(--pointer-y, 50%),
+      hsl(45, 100%, 75%),
+      hsl(35, 100%, 65%),
+      hsl(55, 100%, 80%),
+      hsl(25, 100%, 60%),
+      hsl(45, 100%, 75%)
+    ),
+    radial-gradient(
+      circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+      rgba(255, 235, 150, 0.95) 0%,
+      rgba(245, 158, 11, 0.4) 40%,
+      transparent 80%
+    );
+  background-size: 25% 25%, 35% 35%, cover, cover;
+  background-position: var(--background-x, 50%) var(--background-y, 50%), calc(100% - var(--background-x, 50%)) calc(100% - var(--background-y, 50%)), center, center;
+  background-blend-mode: hard-light, soft-light, overlay;
+  mix-blend-mode: color-dodge;
+  filter: brightness(1.2) contrast(1.8) saturate(1.8);
+}
+
+.holo-card[data-rarity="CROWN_RARE"] .holo-card__shine::before {
+  background-image: 
+    var(--texture-metal),
+    linear-gradient(135deg, rgba(255, 215, 0, 0.35) 0%, rgba(245, 158, 11, 0.5) 50%, rgba(217, 119, 6, 0.35) 100%);
+  background-size: cover, cover;
+  background-blend-mode: overlay;
+  mix-blend-mode: lighten;
+  opacity: 0.85;
+}
+
+/* 2. 3-STAR IMMERSIVE: Cosmic Galaxy Starburst + Prismatic Chromatic Dispersion */
+.holo-card[data-rarity="STAR_3"] {
+  --card-glow: var(--glow-immersive);
+}
+
+.holo-card[data-rarity="STAR_3"] .holo-card__shine {
+  background-image: 
+    var(--texture-cosmos),
+    repeating-linear-gradient(
+      calc(var(--pointer-x, 50%) * 1.8deg + 45deg),
+      var(--sunpillar-1),
+      var(--sunpillar-2) 15%,
+      var(--sunpillar-3) 30%,
+      var(--sunpillar-4) 50%,
+      var(--sunpillar-5) 70%,
+      var(--sunpillar-6) 85%,
+      var(--sunpillar-1) 100%
+    ),
+    radial-gradient(
+      circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(236, 72, 153, 0.4) 30%,
+      transparent 70%
+    );
+  background-size: 80% 80%, 250% 250%, cover;
+  background-position: 
+    calc(var(--background-x, 50%) * 0.8) calc(var(--background-y, 50%) * 0.8),
+    calc(var(--background-x, 50%) * 1.5) calc(var(--background-y, 50%) * 1.5),
+    center;
+  background-blend-mode: color-dodge, hard-light;
+  mix-blend-mode: color-dodge;
+  filter: brightness(1.25) contrast(1.6) saturate(1.5);
+}
+
+/* 3. DIAMOND 4 / ex CARDS: Diagonal Light Beams + Scanlines + Elemental Color Shift */
+.holo-card[data-rarity="DIAMOND_4"] {
+  --card-glow: var(--glow-fire);
+}
+
+.holo-card[data-rarity="DIAMOND_4"][data-element="FIRE"] { --card-glow: var(--glow-fire); }
+.holo-card[data-rarity="DIAMOND_4"][data-element="WATER"] { --card-glow: var(--glow-water); }
+.holo-card[data-rarity="DIAMOND_4"][data-element="LIGHTNING"] { --card-glow: var(--glow-lightning); }
+.holo-card[data-rarity="DIAMOND_4"][data-element="PSYCHIC"] { --card-glow: var(--glow-psychic); }
+.holo-card[data-rarity="DIAMOND_4"][data-element="GRASS"] { --card-glow: var(--glow-grass); }
+
+.holo-card[data-rarity="DIAMOND_4"] .holo-card__shine {
+  background-image: 
+    repeating-linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.6) 20%,
+      rgba(255, 255, 255, 0) 40%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.15) 0px,
+      rgba(0, 0, 0, 0.15) 2px,
+      transparent 2px,
+      transparent 4px
+    ),
+    linear-gradient(
+      calc(var(--pointer-x, 50%) * 2deg + 90deg),
+      var(--sunpillar-1),
+      var(--sunpillar-2),
+      var(--sunpillar-4),
+      var(--sunpillar-6)
+    );
+  background-size: 300% 300%, cover, 200% 200%;
+  background-position: 
+    calc(((50% - var(--background-x, 50%)) * 2) + 50%) calc(((50% - var(--background-y, 50%)) * 2) + 50%),
+    center,
+    var(--background-x, 50%) var(--background-y, 50%);
+  background-blend-mode: overlay, hard-light;
+  mix-blend-mode: color-dodge;
+  filter: brightness(1.1) contrast(1.5) saturate(1.3);
+}
+
+/* 4. DIAMOND 3 (Gardevoir): Starlight Rainbow Bars */
+.holo-card[data-rarity="DIAMOND_3"] {
+  --card-glow: var(--glow-psychic);
+}
+
+.holo-card[data-rarity="DIAMOND_3"] .holo-card__shine {
+  background-image: 
+    repeating-linear-gradient(
+      90deg,
+      var(--sunpillar-1) 0%,
+      var(--sunpillar-2) 20%,
+      var(--sunpillar-3) 40%,
+      var(--sunpillar-4) 60%,
+      var(--sunpillar-5) 80%,
+      var(--sunpillar-6) 100%
+    ),
+    radial-gradient(circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(255, 255, 255, 0.7) 0%, transparent 60%);
+  background-size: 200% 100%, cover;
+  background-position: calc(var(--background-x, 50%) * 2) center, center;
+  background-blend-mode: overlay;
+  mix-blend-mode: color-dodge;
+  filter: brightness(1.1) contrast(1.3) saturate(1.2);
+}
+
+/* 5. DIAMOND 2 (Supporter Full Art): Brushed Silver Sheen */
+.holo-card[data-rarity="DIAMOND_2"] {
+  --card-glow: rgba(255, 255, 255, 0.4);
+}
+
+.holo-card[data-rarity="DIAMOND_2"] .holo-card__shine {
+  background-image: 
+    var(--texture-metal),
+    linear-gradient(
+      calc(var(--pointer-x, 50%) * 1.5deg + 60deg),
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  background-size: cover, 200% 200%;
+  background-position: center, var(--background-x, 50%) var(--background-y, 50%);
+  mix-blend-mode: soft-light;
+  filter: brightness(1.1) contrast(1.2);
+}
+
+/* ==========================================================================
+   SHOWCASE IDLE AMBIENT SHIMMER ANIMATION
+   ========================================================================== */
+@keyframes holoIdleFloat {
+  0% {
+    --rotate-x: 5deg;
+    --rotate-y: -4deg;
+    --pointer-x: 35%;
+    --pointer-y: 35%;
+    --background-x: 40%;
+    --background-y: 40%;
+    --card-opacity: 0.55;
+  }
+  50% {
+    --rotate-x: -5deg;
+    --rotate-y: 4deg;
+    --pointer-x: 65%;
+    --pointer-y: 65%;
+    --background-x: 60%;
+    --background-y: 60%;
+    --card-opacity: 0.65;
+  }
+  100% {
+    --rotate-x: 5deg;
+    --rotate-y: -4deg;
+    --pointer-x: 35%;
+    --pointer-y: 35%;
+    --background-x: 40%;
+    --background-y: 40%;
+    --card-opacity: 0.55;
+  }
+}
+
+.holo-card.showcase-idle:not(:hover) .holo-card__rotator {
+  animation: holoIdleFloat 6s ease-in-out infinite;
+}
