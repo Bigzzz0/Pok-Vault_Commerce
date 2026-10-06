@@ -343,8 +343,9 @@ let currentOrderTarget = null;
 const TIER_DISCOUNTS = {
     'REGULAR': 0.00,
     'VIP': 0.10,
-    'ELITE': 0.15
+    'WHOLESALE': 0.15
 };
+const FRIEND_ID_PATTERN = /^\d{4}-\d{4}-\d{4}-\d{4}$|^\d{16}$/;
 
 function openOrderModal(inventoryId, cardName, cardNumber, condition, unitPrice, availableStock) {
     if (availableStock <= 0) {
@@ -422,8 +423,14 @@ async function submitOrder() {
 
     const friendIdInput = document.getElementById('orderFriendIdInput');
     const ignInput = document.getElementById('orderInGameNameInput');
-    const customerFriendId = friendIdInput && friendIdInput.value.trim() ? friendIdInput.value.trim() : "1111-2222-3333-4444";
-    const customerInGameName = ignInput && ignInput.value.trim() ? ignInput.value.trim() : "AshMaster";
+    const customerFriendId = friendIdInput ? friendIdInput.value.trim() : '';
+    const customerInGameName = ignInput ? ignInput.value.trim() : '';
+
+    if (!FRIEND_ID_PATTERN.test(customerFriendId)) {
+        showToast('Please enter the customer Friend ID as 16 digits (e.g. 1234-5678-9012-3456).', 'danger');
+        if (friendIdInput) friendIdInput.focus();
+        return;
+    }
 
     const payload = {
         userId: userId,
@@ -439,8 +446,10 @@ async function submitOrder() {
     };
 
     const submitBtn = document.getElementById('orderSubmitBtn');
+    const submitLabel = submitBtn.querySelector('span') || submitBtn;
+    const submitLabelText = submitLabel.textContent;
     submitBtn.disabled = true;
-    submitBtn.textContent = "Processing...";
+    submitLabel.textContent = "Processing...";
 
     try {
         const response = await fetch('/api/v1/orders', {
@@ -465,7 +474,7 @@ async function submitOrder() {
         showToast('Network error while placing order: ' + err.message, 'danger');
     } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = "Confirm Order & Pay";
+        submitLabel.textContent = submitLabelText;
     }
 }
 
@@ -485,7 +494,7 @@ function showChatCommerceModal(orderData, targetCard, friendId, ign) {
     const finalElem = document.getElementById('chatOrderFinalAmt');
     const messengerBtn = document.getElementById('chatMessengerBtn');
 
-    const cardTitle = targetCard ? `${targetCard.cardName} (${targetCard.condition})` : 'Pokémon TCG Card';
+    const cardTitle = targetCard ? `${targetCard.cardName} (${targetCard.condition}) x${targetCard.quantity}` : 'Pokémon TCG Card';
     const finalAmountStr = `฿${orderData.finalAmount.toFixed(2)}`;
 
     if (codeElem) codeElem.textContent = `#${orderData.orderCode}`;
@@ -494,7 +503,7 @@ function showChatCommerceModal(orderData, targetCard, friendId, ign) {
     if (finalElem) finalElem.textContent = finalAmountStr;
 
     // Compose prefilled message for Facebook Messenger
-    const summaryMsg = `สวัสดีครับ สั่งจองการ์ดผ่านเว็บเรียบร้อยแล้วครับ!\n• รหัสคำสั่งซื้อ: #${orderData.orderCode}\n• รายการการ์ด: ${cardTitle}\n• ยอดชำระ: ${finalAmountStr} (ส่วนลด Strategy: -฿${orderData.discountAmount.toFixed(2)})\n• รหัสเพื่อนในเกม (Friend ID): ${friendId}\n• ชื่อเทรนเนอร์ (IGN): ${ign}\nขอส่งหลักฐานการโอนเงินและนัดส่งการ์ดเทรดในเกมครับ`;
+    const summaryMsg = `สวัสดีครับ สั่งจองการ์ดผ่านเว็บเรียบร้อยแล้วครับ!\n• รหัสคำสั่งซื้อ: #${orderData.orderCode}\n• รายการการ์ด: ${cardTitle}\n• ยอดชำระ: ${finalAmountStr} (ส่วนลด Strategy: -฿${orderData.discountAmount.toFixed(2)})\n• รหัสเพื่อนในเกม (Friend ID): ${friendId}\n• ชื่อเทรนเนอร์ (IGN): ${ign || '-'}\nขอส่งหลักฐานการโอนเงินและนัดส่งการ์ดเทรดในเกมครับ`;
     lastChatSummaryText = summaryMsg;
 
     if (messengerBtn) {
@@ -503,6 +512,9 @@ function showChatCommerceModal(orderData, targetCard, friendId, ign) {
     }
 
     modal.classList.add('active');
+
+    // Handshake: put the order summary on the clipboard right away so the customer can paste it in chat
+    copyToClipboard(summaryMsg, 'คัดลอกข้อความสรุปออเดอร์แล้ว! วางส่งในแชทได้ทันที');
 }
 
 function closeChatCommerceModal() {
@@ -513,19 +525,13 @@ function closeChatCommerceModal() {
 
 function copyChatOrderSummary(btn) {
     if (!lastChatSummaryText) return;
-    navigator.clipboard.writeText(lastChatSummaryText).then(() => {
-        showToast('คัดลอกข้อความสรุปออเดอร์แล้ว! สามารถนำไปวางส่งในแชทได้ทันที', 'success');
-        if (btn) {
-            const span = btn.querySelector('span');
-            if (span) {
-                const orig = span.textContent;
-                span.textContent = '✓ คัดลอกสำเร็จแล้ว!';
-                setTimeout(() => span.textContent = orig, 2000);
-            }
-        }
-    }).catch(() => {
-        showToast('ไม่สามารถคัดลอกข้อความอัตโนมัติได้', 'danger');
-    });
+    copyToClipboard(lastChatSummaryText, 'คัดลอกข้อความสรุปออเดอร์แล้ว! สามารถนำไปวางส่งในแชทได้ทันที');
+    const span = btn ? btn.querySelector('span') : null;
+    if (span) {
+        const orig = span.textContent;
+        span.textContent = '✓ คัดลอกสำเร็จแล้ว!';
+        setTimeout(() => span.textContent = orig, 2000);
+    }
 }
 
 // --- 4. Quick Stock Stepper (Inventory Page) ---

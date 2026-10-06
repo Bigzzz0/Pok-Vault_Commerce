@@ -8,11 +8,13 @@ import com.pokevault.domain.entity.User;
 import com.pokevault.domain.entity.UserProfile;
 import com.pokevault.domain.enums.AccountTradeStatus;
 import com.pokevault.domain.enums.ElementType;
+import com.pokevault.domain.enums.MembershipTier;
 import com.pokevault.repository.CardExpansionRepository;
 import com.pokevault.repository.CardInventoryRepository;
 import com.pokevault.repository.CardRepository;
 import com.pokevault.repository.GameAccountRepository;
 import com.pokevault.repository.OrderRepository;
+import com.pokevault.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Sort;
@@ -48,6 +50,7 @@ public class WebViewController {
     private final CardInventoryRepository inventoryRepository;
     private final GameAccountRepository gameAccountRepository;
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
 
     @GetMapping("/")
     public String dashboard(Model model) {
@@ -101,8 +104,13 @@ public class WebViewController {
                 .map(this::toInventoryView)
                 .toList();
 
+        List<Map<String, Object>> customers = userRepository.findAll(Sort.by("id")).stream()
+                .map(this::toCustomerView)
+                .toList();
+
         model.addAttribute("inventories", inventories);
         model.addAttribute("totalElements", inventories.size());
+        model.addAttribute("customers", customers);
         return "inventory";
     }
 
@@ -226,6 +234,16 @@ public class WebViewController {
         view.put("buyInCost", account.getBuyInCost());
         view.put("notes", account.getNotes());
         view.put("totalCardsCount", totalCards);
+        return view;
+    }
+
+    private Map<String, Object> toCustomerView(User user) {
+        UserProfile profile = user.getUserProfile();
+        Map<String, Object> view = new LinkedHashMap<>();
+        view.put("id", user.getId());
+        view.put("displayName", profile != null && profile.getFullName() != null ? profile.getFullName() : user.getUsername());
+        view.put("membershipTier", profile != null && profile.getMembershipTier() != null
+                ? profile.getMembershipTier() : MembershipTier.REGULAR);
         return view;
     }
 
