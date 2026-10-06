@@ -224,6 +224,13 @@ function toggleCardFlip() {
     const flipperBox = document.getElementById('inspectFlipperBox');
     const label = document.getElementById('inspectFlipLabel');
 
+    // The entry spin leaves an inline rotateY(0deg) behind, which outranks the .is-flipped rule
+    const flipperInner = document.getElementById('inspectFlipperInner');
+    if (flipperInner) {
+        flipperInner.style.transform = '';
+        flipperInner.style.transition = '';
+    }
+
     if (flipperBox) {
         if (isCardFlipped) {
             flipperBox.classList.add('is-flipped');
@@ -575,7 +582,7 @@ async function executeOrderTransition(orderId, action) {
     }
 
     try {
-        const response = await fetch(`/api/v1/orders/${orderId}/transition?action=${action}`, {
+        const response = await fetch(`/api/v1/orders/${orderId}/status?action=${action}`, {
             method: 'PATCH'
         });
         const result = await response.json();
