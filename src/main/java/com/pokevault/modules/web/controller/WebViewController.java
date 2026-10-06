@@ -64,6 +64,7 @@ public class WebViewController {
                 .toList();
 
         List<Map<String, Object>> featured = cardRepository.findAll(Sort.by(Sort.Direction.DESC, "rarity")).stream()
+                .filter(c -> isInVault(c, stockByCard))
                 .limit(FEATURED_CARD_LIMIT)
                 .map(c -> toCardView(c, stockByCard))
                 .toList();
@@ -86,6 +87,7 @@ public class WebViewController {
         Map<Long, Integer> stockByCard = stockByCard(inventoryRepository.findAll());
 
         List<Map<String, Object>> cards = cardRepository.findAll(Sort.by("expansion.code", "cardNumber")).stream()
+                .filter(c -> isInVault(c, stockByCard))
                 .filter(c -> selectedElement == null || c.getElementType() == selectedElement)
                 .filter(c -> keyword.isEmpty() || c.getName().toLowerCase().contains(keyword))
                 .map(c -> toCardView(c, stockByCard))
@@ -158,6 +160,11 @@ public class WebViewController {
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    /** The storefront only shows cards the store actually holds; catalog entries with no stock stay hidden. */
+    private boolean isInVault(Card card, Map<Long, Integer> stockByCard) {
+        return stockByCard.getOrDefault(card.getId(), 0) > 0;
     }
 
     private Map<Long, Integer> stockByCard(List<CardInventory> inventories) {

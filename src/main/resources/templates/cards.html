@@ -116,6 +116,9 @@
 
         <!-- Frameless Floating Cards Showcase -->
         <div class="gallery-cards-grid">
+            <div th:if="${#lists.isEmpty(cards)}" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
+                No cards in the vault yet. Record a pull in <a th:href="@{/accounts}"><strong>Accounts</strong></a> to stock the gallery.
+            </div>
             <div th:each="c : ${cards}" class="gallery-card-unit">
                 <!-- 3D Parallax Card Unit with Simeydotme Shaders -->
                 <div th:class="${'tcg-card-3d holo-card ' + (c.rarity.name() == 'CROWN_RARE' ? 'crown-rare' : (c.rarity.name() == 'STAR_3' ? 'holo-immersive' : ''))}"
