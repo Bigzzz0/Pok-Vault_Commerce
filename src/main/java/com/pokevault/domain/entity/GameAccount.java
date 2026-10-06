@@ -6,8 +6,15 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
+/**
+ * Entity representing a store-owned Pokémon TCG Pocket game account (Vault)
+ * used for opening booster packs, storing card inventories, and trading with
+ * customers.
+ */
 @Entity
-@Table(name = "game_accounts")
+@Table(name = "game_accounts", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_account_code", columnNames = { "account_code" })
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,7 +26,7 @@ public class GameAccount extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "account_code", nullable = false, unique = true, length = 50)
+    @Column(name = "account_code", nullable = false, length = 50, unique = true)
     private String accountCode;
 
     @Column(name = "in_game_name", nullable = false, length = 100)
@@ -39,4 +46,27 @@ public class GameAccount extends BaseEntity {
 
     @Column(name = "notes", length = 500)
     private String notes;
+
+    public boolean isAvailableForTrade() {
+        return this.tradeStatus == AccountTradeStatus.READY;
+    }
+
+    public void markBusyTrading() {
+        this.tradeStatus = AccountTradeStatus.BUSY_TRADING;
+    }
+
+    public void markCooldown() {
+        this.tradeStatus = AccountTradeStatus.COOLDOWN;
+    }
+
+    public void markReady() {
+        this.tradeStatus = AccountTradeStatus.READY;
+    }
+
+    public void suspend(String reason) {
+        this.tradeStatus = AccountTradeStatus.SUSPENDED;
+        if (reason != null && !reason.isBlank()) {
+            this.notes = reason;
+        }
+    }
 }
