@@ -54,11 +54,17 @@ spring:
   sql:
     init:
       mode: always
+      # Postgres keeps its data across restarts, so data.sql hits the unique constraints
+      # on every boot after the first; skip those inserts instead of failing startup
+      continue-on-error: true
 
 ---
 # Common Server & Documentation Config
 server:
   port: ${PORT:8080}
+  # Cloud hosts terminate HTTPS at a proxy; honour X-Forwarded-* so Swagger's
+  # generated server URL is https and "Try it out" isn't blocked as mixed content
+  forward-headers-strategy: framework
 
 springdoc:
   api-docs:
