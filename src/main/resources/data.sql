@@ -86,3 +86,33 @@ VALUES
 ((SELECT id FROM users WHERE username = 'admin'), 'PokéVault Admin', '081-111-2222', 'Pallet Town HQ 101', 'WHOLESALE', 1000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 ((SELECT id FROM users WHERE username = 'staff_ash'), 'Ash Ketchum', '082-333-4444', 'Pallet Town Vault 02', 'REGULAR', 50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 ((SELECT id FROM users WHERE username = 'customer_red'), 'Red Champion', '089-999-8888', 'Mt. Silver Cabin', 'VIP', 250, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- 5. Seed Store Game Accounts (the in-game IDs that hold the store's cards)
+INSERT INTO game_accounts (account_code, in_game_name, friend_id, trade_status, buy_in_cost, notes, created_at, updated_at)
+VALUES
+('PV-ACC-01', 'PokeVaultMain', '1111-2222-3333-4444', 'READY', 0.00, 'Main vault account - Genetic Apex chase cards', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('PV-ACC-02', 'PokeVaultSub', '5555-6666-7777-8888', 'READY', 0.00, 'Secondary vault account - Genetic Apex bulk', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- 6. Seed Vault Stock (only cards that have a bundled image; the rest of the catalog stays out of stock)
+-- card_inventories has no unique key, so the NOT EXISTS guard keeps a restart on a persistent
+-- database (PostgreSQL) from inserting the same stock a second time
+INSERT INTO card_inventories (card_id, game_account_id, card_condition, quantity, buy_in_price, selling_price, created_at, updated_at)
+SELECT c.id, a.id, 'MINT', v.quantity, v.buy_in_price, v.selling_price, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+FROM (VALUES
+    ('280/226', 'PV-ACC-01', 2, 900.00, 1500.00),  -- Charizard ex (Immersive)
+    ('286/226', 'PV-ACC-01', 1, 2200.00, 3500.00), -- Mewtwo ex (Crown)
+    ('129/226', 'PV-ACC-01', 3, 140.00, 250.00),   -- Mewtwo ex
+    ('096/226', 'PV-ACC-01', 4, 120.00, 220.00),   -- Pikachu ex
+    ('104/226', 'PV-ACC-01', 3, 100.00, 180.00),   -- Zapdos ex
+    ('004/226', 'PV-ACC-01', 3, 100.00, 180.00),   -- Venusaur ex
+    ('035/226', 'PV-ACC-02', 5, 30.00, 60.00),     -- Charizard
+    ('046/226', 'PV-ACC-02', 5, 25.00, 50.00),     -- Moltres
+    ('010/226', 'PV-ACC-02', 6, 20.00, 40.00),     -- Beedrill
+    ('126/226', 'PV-ACC-02', 8, 5.00, 15.00),      -- Mr. Mime
+    ('225/226', 'PV-ACC-02', 6, 12.00, 30.00),     -- Sabrina
+    ('224/226', 'PV-ACC-02', 8, 5.00, 15.00)       -- Brock
+) AS v(card_number, account_code, quantity, buy_in_price, selling_price)
+JOIN card_expansions e ON e.code = 'A1'
+JOIN cards c ON c.expansion_id = e.id AND c.card_number = v.card_number
+JOIN game_accounts a ON a.account_code = v.account_code
+WHERE NOT EXISTS (SELECT 1 FROM card_inventories);
