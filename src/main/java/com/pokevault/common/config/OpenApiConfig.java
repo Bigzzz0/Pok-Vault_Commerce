@@ -16,16 +16,17 @@ public class OpenApiConfig {
     public OpenAPI pokeVaultOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Pokémon TCG Pocket Inventory Management API")
+                        .title("PokéVault Commerce API")
                         .description("RESTful API documentation for CP353002 Principles of Software Design and Development.\n" +
-                                     "Covers Card Catalog, Inventory/Stock Management, Order Placement, Strategy Discounts & State Machine.")
+                                     "Covers Card Catalog, Vault/Stock Management, Order Placement (Chat Commerce Handshake), " +
+                                     "Strategy Discounts, Order State Machine & In-Game Trade Matching.")
                         .version("v1.0.0")
                         .contact(new Contact()
-                                .name("CP353002 Student Development Team")
-                                .email("dev@tcgpocket.local"))
+                                .name("PokéVault Commerce Team (CP353002)")
+                                .url("https://github.com/Bigzzz0/Pok-Vault_Commerce"))
                         .license(new License().name("MIT License").url("https://opensource.org/licenses/MIT")))
                 .externalDocs(new ExternalDocumentation()
                         .description("Project Documentation & Architecture Blueprints")
-                        .url("https://github.com/your-username/tcg-pocket-inventory"));
+                        .url("https://github.com/Bigzzz0/Pok-Vault_Commerce/tree/main/doc"));
     }
 }
