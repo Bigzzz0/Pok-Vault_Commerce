@@ -155,9 +155,8 @@
                         Select Customer Account (Strategy Pattern Membership Discount):
                     </label>
                     <select id="orderUserSelect" class="select-field" style="width: 100%;" onchange="updateOrderCalculation()">
-                        <option value="2" data-tier="VIP">Ash Ketchum (VIP Member - 10% Discount Strategy)</option>
-                        <option value="1" data-tier="ELITE">Store Manager Oak (Elite Member - 15% Discount Strategy)</option>
-                        <option value="3" data-tier="REGULAR">Red of Pallet Town (Regular - Standard Pricing)</option>
+                        <option th:each="c : ${customers}" th:value="${c.id}" th:data-tier="${c.membershipTier}"
+                                th:text="${c.displayName + ' (' + c.membershipTier + ')'}">Red Champion (VIP)</option>
                     </select>
                 </div>
 
@@ -199,13 +198,13 @@
                         <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">
                             Customer Friend ID (In-Game):
                         </label>
-                        <input id="orderFriendIdInput" type="text" class="input-field" style="width: 100%; font-family: 'JetBrains Mono', monospace;" placeholder="1111-2222-3333-4444" value="1111-2222-3333-4444">
+                        <input id="orderFriendIdInput" type="text" class="input-field" style="width: 100%; font-family: 'JetBrains Mono', monospace;" placeholder="1234-5678-9012-3456" maxlength="19" inputmode="numeric" autocomplete="off" required>
                     </div>
                     <div>
                         <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">
                             Customer Trainer Name:
                         </label>
-                        <input id="orderInGameNameInput" type="text" class="input-field" style="width: 100%;" placeholder="e.g. AshMaster" value="AshMaster">
+                        <input id="orderInGameNameInput" type="text" class="input-field" style="width: 100%;" placeholder="e.g. AshMaster" maxlength="100">
                     </div>
                 </div>
 
@@ -220,7 +219,7 @@
                 <button class="btn btn-secondary" onclick="closeOrderModal()">Cancel</button>
                 <button id="orderSubmitBtn" class="btn btn-primary" onclick="submitOrder()">
                     <div th:replace="~{fragments/icons :: creditCard('icon-sm')}"></div>
-                    <span>Confirm Order & Pay</span>
+                    <span>Confirm Booking &amp; Proceed to Chat</span>
                 </button>
             </div>
         </div>
@@ -258,7 +257,7 @@
 
                 <!-- Chat Commerce CTA Buttons -->
                 <div style="display: flex; flex-direction: column; gap: 0.65rem;">
-                    <a id="chatMessengerBtn" href="https://m.me/poketcgpocketstore" target="_blank" class="btn btn-primary" style="padding: 0.85rem; font-size: 0.95rem; font-weight: 700; justify-content: center; background: linear-gradient(135deg, #0084ff, #00c6ff); box-shadow: 0 4px 15px rgba(0, 132, 255, 0.35);">
+                    <a id="chatMessengerBtn" href="https://m.me/poketcgpocketstore" target="_blank" rel="noopener" onclick="copyChatOrderSummary()" class="btn btn-primary" style="padding: 0.85rem; font-size: 0.95rem; font-weight: 700; justify-content: center; background: linear-gradient(135deg, #0084ff, #00c6ff); box-shadow: 0 4px 15px rgba(0, 132, 255, 0.35);">
                         <span>💬 ทักแชท Facebook เพื่อแจ้งโอน & นัดเทรด</span>
                     </a>
                     <button type="button" class="btn btn-secondary" onclick="copyChatOrderSummary(this)" style="padding: 0.65rem; font-size: 0.85rem; justify-content: center;">
