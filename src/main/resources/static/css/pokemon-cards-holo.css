@@ -235,11 +235,11 @@
 }
 
 /* 2. 3-STAR IMMERSIVE: Cosmic Galaxy Starburst + Prismatic Chromatic Dispersion */
-.holo-card[data-rarity="STAR_3"] {
+.holo-card[data-rarity="IMMERSIVE_RARE"] {
   --card-glow: var(--glow-immersive);
 }
 
-.holo-card[data-rarity="STAR_3"] .holo-card__shine {
+.holo-card[data-rarity="IMMERSIVE_RARE"] .holo-card__shine {
   background-image: 
     var(--texture-cosmos),
     repeating-linear-gradient(
@@ -269,17 +269,17 @@
 }
 
 /* 3. DIAMOND 4 / ex CARDS: Diagonal Light Beams + Scanlines + Elemental Color Shift */
-.holo-card[data-rarity="DIAMOND_4"] {
+.holo-card[data-rarity="DOUBLE_RARE"] {
   --card-glow: var(--glow-fire);
 }
 
-.holo-card[data-rarity="DIAMOND_4"][data-element="FIRE"] { --card-glow: var(--glow-fire); }
-.holo-card[data-rarity="DIAMOND_4"][data-element="WATER"] { --card-glow: var(--glow-water); }
-.holo-card[data-rarity="DIAMOND_4"][data-element="LIGHTNING"] { --card-glow: var(--glow-lightning); }
-.holo-card[data-rarity="DIAMOND_4"][data-element="PSYCHIC"] { --card-glow: var(--glow-psychic); }
-.holo-card[data-rarity="DIAMOND_4"][data-element="GRASS"] { --card-glow: var(--glow-grass); }
+.holo-card[data-rarity="DOUBLE_RARE"][data-element="FIRE"] { --card-glow: var(--glow-fire); }
+.holo-card[data-rarity="DOUBLE_RARE"][data-element="WATER"] { --card-glow: var(--glow-water); }
+.holo-card[data-rarity="DOUBLE_RARE"][data-element="LIGHTNING"] { --card-glow: var(--glow-lightning); }
+.holo-card[data-rarity="DOUBLE_RARE"][data-element="PSYCHIC"] { --card-glow: var(--glow-psychic); }
+.holo-card[data-rarity="DOUBLE_RARE"][data-element="GRASS"] { --card-glow: var(--glow-grass); }
 
-.holo-card[data-rarity="DIAMOND_4"] .holo-card__shine {
+.holo-card[data-rarity="DOUBLE_RARE"] .holo-card__shine {
   background-image: 
     repeating-linear-gradient(
       115deg,
@@ -312,11 +312,11 @@
 }
 
 /* 4. DIAMOND 3 (Gardevoir): Starlight Rainbow Bars */
-.holo-card[data-rarity="DIAMOND_3"] {
+.holo-card[data-rarity="RARE"] {
   --card-glow: var(--glow-psychic);
 }
 
-.holo-card[data-rarity="DIAMOND_3"] .holo-card__shine {
+.holo-card[data-rarity="RARE"] .holo-card__shine {
   background-image: 
     repeating-linear-gradient(
       90deg,
@@ -336,11 +336,11 @@
 }
 
 /* 5. DIAMOND 2 (Supporter Full Art): Brushed Silver Sheen */
-.holo-card[data-rarity="DIAMOND_2"] {
+.holo-card[data-rarity="UNCOMMON"] {
   --card-glow: rgba(255, 255, 255, 0.4);
 }
 
-.holo-card[data-rarity="DIAMOND_2"] .holo-card__shine {
+.holo-card[data-rarity="UNCOMMON"] .holo-card__shine {
   background-image: 
     var(--texture-metal),
     linear-gradient(

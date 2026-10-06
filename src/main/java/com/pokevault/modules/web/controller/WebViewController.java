@@ -9,6 +9,7 @@ import com.pokevault.domain.entity.UserProfile;
 import com.pokevault.domain.enums.AccountTradeStatus;
 import com.pokevault.domain.enums.ElementType;
 import com.pokevault.domain.enums.MembershipTier;
+import com.pokevault.domain.enums.Rarity;
 import com.pokevault.repository.CardExpansionRepository;
 import com.pokevault.repository.CardInventoryRepository;
 import com.pokevault.repository.CardRepository;
@@ -23,11 +24,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -80,15 +84,20 @@ public class WebViewController {
 
     @GetMapping("/cards")
     public String cards(@RequestParam(required = false) String element,
+                        @RequestParam(required = false) String rarity,
                         @RequestParam(required = false) String search,
                         Model model) {
-        ElementType selectedElement = parseElement(element);
+        ElementType selectedElement = parseEnum(ElementType.class, element);
+        Rarity selectedRarity = parseEnum(Rarity.class, rarity);
         String keyword = search == null ? "" : search.trim().toLowerCase();
         Map<Long, Integer> stockByCard = stockByCard(inventoryRepository.findAll());
 
         List<Map<String, Object>> cards = cardRepository.findAll(Sort.by("expansion.code", "cardNumber")).stream()
                 .filter(c -> isInVault(c, stockByCard))
-                .filter(c -> selectedElement == null || c.getElementType() == selectedElement)
+                // Trainer cards have no element and are displayed as COLORLESS (see toCardView)
+                .filter(c -> selectedElement == null || selectedElement
+                        == (c.getElementType() != null ? c.getElementType() : ElementType.COLORLESS))
+                .filter(c -> selectedRarity == null || c.getRarity() == selectedRarity)
                 .filter(c -> keyword.isEmpty() || c.getName().toLowerCase().contains(keyword))
                 .map(c -> toCardView(c, stockByCard))
                 .toList();
@@ -96,7 +105,17 @@ public class WebViewController {
         model.addAttribute("cards", cards);
         model.addAttribute("totalElements", cards.size());
         model.addAttribute("selectedElement", selectedElement);
+        model.addAttribute("selectedRarity", selectedRarity);
         model.addAttribute("search", search);
+        // each pill keeps the other filter and the search term, so the filters combine
+        model.addAttribute("allElementsUrl", cardsUrl(null, selectedRarity, search));
+        model.addAttribute("elementFilters", Arrays.stream(ElementType.values())
+                .map(e -> toFilterView(e, e == selectedElement, cardsUrl(e, selectedRarity, search)))
+                .toList());
+        model.addAttribute("allRaritiesUrl", cardsUrl(selectedElement, null, search));
+        model.addAttribute("rarityFilters", Arrays.stream(Rarity.values())
+                .map(r -> toFilterView(r, r == selectedRarity, cardsUrl(selectedElement, r, search)))
+                .toList());
         return "cards";
     }
 
@@ -151,15 +170,35 @@ public class WebViewController {
         return "orders";
     }
 
-    private ElementType parseElement(String element) {
-        if (element == null || element.isBlank()) {
+    private <E extends Enum<E>> E parseEnum(Class<E> type, String value) {
+        if (value == null || value.isBlank()) {
             return null;
         }
         try {
-            return ElementType.valueOf(element.trim().toUpperCase());
+            return Enum.valueOf(type, value.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    private String cardsUrl(ElementType element, Rarity rarity, String search) {
+        return UriComponentsBuilder.fromPath("/cards")
+                .queryParamIfPresent("element", Optional.ofNullable(element))
+                .queryParamIfPresent("rarity", Optional.ofNullable(rarity))
+                .queryParamIfPresent("search", Optional.ofNullable(search).filter(v -> !v.isBlank()))
+                .build().encode().toUriString();
+    }
+
+    private Map<String, Object> toFilterView(Enum<?> value, boolean active, String url) {
+        Map<String, Object> view = new LinkedHashMap<>();
+        view.put("name", value.name());
+        // DOUBLE_RARE -> "Double Rare"
+        view.put("label", Arrays.stream(value.name().split("_"))
+                .map(w -> w.charAt(0) + w.substring(1).toLowerCase())
+                .collect(Collectors.joining(" ")));
+        view.put("active", active);
+        view.put("url", url);
+        return view;
     }
 
     /** The storefront only shows cards the store actually holds; catalog entries with no stock stay hidden. */

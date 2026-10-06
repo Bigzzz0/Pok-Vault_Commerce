@@ -4,13 +4,14 @@
 
     <!-- Unified Element Dispatcher (Guarantees exactly one icon, preventing overlap) -->
     <th:block th:fragment="elementIcon(type, className)">
+        <!-- th:replace outranks th:case on the same tag, so each case needs its own wrapper -->
         <th:block th:switch="${type}">
-            <div th:case="'FIRE'" th:replace="~{fragments/icons :: fire(${className})}"></div>
-            <div th:case="'WATER'" th:replace="~{fragments/icons :: water(${className})}"></div>
-            <div th:case="'LIGHTNING'" th:replace="~{fragments/icons :: lightning(${className})}"></div>
-            <div th:case="'PSYCHIC'" th:replace="~{fragments/icons :: psychic(${className})}"></div>
-            <div th:case="'GRASS'" th:replace="~{fragments/icons :: grass(${className})}"></div>
-            <div th:case="*" th:replace="~{fragments/icons :: star(${className})}"></div>
+            <th:block th:case="'FIRE'"><div th:replace="~{fragments/icons :: fire(${className})}"></div></th:block>
+            <th:block th:case="'WATER'"><div th:replace="~{fragments/icons :: water(${className})}"></div></th:block>
+            <th:block th:case="'LIGHTNING'"><div th:replace="~{fragments/icons :: lightning(${className})}"></div></th:block>
+            <th:block th:case="'PSYCHIC'"><div th:replace="~{fragments/icons :: psychic(${className})}"></div></th:block>
+            <th:block th:case="'GRASS'"><div th:replace="~{fragments/icons :: grass(${className})}"></div></th:block>
+            <th:block th:case="*"><div th:replace="~{fragments/icons :: star(${className})}"></div></th:block>
         </th:block>
     </th:block>
 

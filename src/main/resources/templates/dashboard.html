@@ -143,7 +143,7 @@
                 </div>
                 <div th:each="c : ${featuredCards}" class="gallery-card-unit">
                     <!-- 3D Frameless Card with Simeydotme Shaders -->
-                    <div th:class="${'tcg-card-3d holo-card ' + (c.rarity.name() == 'CROWN_RARE' ? 'crown-rare' : (c.rarity.name() == 'STAR_3' ? 'holo-immersive' : ''))}"
+                    <div th:class="${'tcg-card-3d holo-card ' + (c.rarity.name() == 'CROWN_RARE' ? 'crown-rare' : (c.rarity.name() == 'IMMERSIVE_RARE' ? 'holo-immersive' : ''))}"
                          th:data-rarity="${c.rarity.name()}"
                          th:data-name="${c.name}"
                          th:data-number="${c.cardNumber}"

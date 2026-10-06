@@ -81,35 +81,33 @@
 
         <!-- Official Pokémon Gallery Filter Bar -->
         <section class="gallery-filter-bar">
-            <div class="filter-pills-row">
-                <a th:href="@{/cards}" th:class="${selectedElement == null ? 'filter-pill-btn active' : 'filter-pill-btn'}">
-                    <span>All Cards</span>
-                </a>
-                <a th:href="@{/cards(element='FIRE')}" th:class="${selectedElement != null && selectedElement.name() == 'FIRE' ? 'filter-pill-btn active' : 'filter-pill-btn'}">
-                    <div th:replace="~{fragments/icons :: fire('icon-sm')}"></div>
-                    <span>Fire</span>
-                </a>
-                <a th:href="@{/cards(element='WATER')}" th:class="${selectedElement != null && selectedElement.name() == 'WATER' ? 'filter-pill-btn active' : 'filter-pill-btn'}">
-                    <div th:replace="~{fragments/icons :: water('icon-sm')}"></div>
-                    <span>Water</span>
-                </a>
-                <a th:href="@{/cards(element='LIGHTNING')}" th:class="${selectedElement != null && selectedElement.name() == 'LIGHTNING' ? 'filter-pill-btn active' : 'filter-pill-btn'}">
-                    <div th:replace="~{fragments/icons :: lightning('icon-sm')}"></div>
-                    <span>Lightning</span>
-                </a>
-                <a th:href="@{/cards(element='PSYCHIC')}" th:class="${selectedElement != null && selectedElement.name() == 'PSYCHIC' ? 'filter-pill-btn active' : 'filter-pill-btn'}">
-                    <div th:replace="~{fragments/icons :: psychic('icon-sm')}"></div>
-                    <span>Psychic</span>
-                </a>
-                <a th:href="@{/cards(element='GRASS')}" th:class="${selectedElement != null && selectedElement.name() == 'GRASS' ? 'filter-pill-btn active' : 'filter-pill-btn'}">
-                    <div th:replace="~{fragments/icons :: grass('icon-sm')}"></div>
-                    <span>Grass</span>
-                </a>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <!-- Element filter -->
+                <div class="filter-pills-row">
+                    <a th:href="@{${allElementsUrl}}" th:class="${selectedElement == null ? 'filter-pill-btn active' : 'filter-pill-btn'}">
+                        <span>All Cards</span>
+                    </a>
+                    <a th:each="f : ${elementFilters}" th:href="@{${f.url}}" th:class="${f.active ? 'filter-pill-btn active' : 'filter-pill-btn'}">
+                        <th:block th:replace="~{fragments/icons :: elementIcon(${f.name}, 'icon-sm')}"></th:block>
+                        <span th:text="${f.label}">Fire</span>
+                    </a>
+                </div>
+                <!-- Rarity filter -->
+                <div class="filter-pills-row">
+                    <a th:href="@{${allRaritiesUrl}}" th:class="${selectedRarity == null ? 'filter-pill-btn active' : 'filter-pill-btn'}">
+                        <span>All Rarities</span>
+                    </a>
+                    <a th:each="f : ${rarityFilters}" th:href="@{${f.url}}" th:class="${f.active ? 'filter-pill-btn active' : 'filter-pill-btn'}">
+                        <span th:text="${f.label}">Double Rare</span>
+                    </a>
+                </div>
             </div>
 
             <!-- Search Field -->
             <form th:action="@{/cards}" method="get" class="gallery-search-box">
                 <div th:replace="~{fragments/icons :: search('icon-sm')}"></div>
+                <input type="hidden" name="element" th:if="${selectedElement != null}" th:value="${selectedElement}">
+                <input type="hidden" name="rarity" th:if="${selectedRarity != null}" th:value="${selectedRarity}">
                 <input type="text" name="search" th:value="${search}" placeholder="Search Pokémon..." class="gallery-search-input">
             </form>
         </section>
@@ -121,7 +119,7 @@
             </div>
             <div th:each="c : ${cards}" class="gallery-card-unit">
                 <!-- 3D Parallax Card Unit with Simeydotme Shaders -->
-                <div th:class="${'tcg-card-3d holo-card ' + (c.rarity.name() == 'CROWN_RARE' ? 'crown-rare' : (c.rarity.name() == 'STAR_3' ? 'holo-immersive' : ''))}"
+                <div th:class="${'tcg-card-3d holo-card ' + (c.rarity.name() == 'CROWN_RARE' ? 'crown-rare' : (c.rarity.name() == 'IMMERSIVE_RARE' ? 'holo-immersive' : ''))}"
                      th:data-rarity="${c.rarity.name()}"
                      th:data-name="${c.name}"
                      th:data-number="${c.cardNumber}"
