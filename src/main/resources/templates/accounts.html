@@ -211,17 +211,11 @@
                     </div>
                     <div>
                         <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Friend Code (16 Digits)</label>
-                        <input type="text" id="accFriendCode" required placeholder="XXXX-XXXX-XXXX-XXXX" class="gallery-search-input" style="width: 100%; border-radius: 8px; font-family: 'JetBrains Mono', monospace;">
+                        <input type="text" id="accFriendCode" required placeholder="1234-5678-9012-3456" pattern="\d{4}-?\d{4}-?\d{4}-?\d{4}" title="16 digits, e.g. 1234-5678-9012-3456" maxlength="19" class="gallery-search-input" style="width: 100%; border-radius: 8px; font-family: 'JetBrains Mono', monospace;">
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div>
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Trainer Level</label>
-                            <input type="number" id="accLevel" min="1" max="100" value="20" class="gallery-search-input" style="width: 100%; border-radius: 8px;">
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Daily Trade Limit</label>
-                            <input type="number" id="accTrades" min="0" max="5" value="5" class="gallery-search-input" style="width: 100%; border-radius: 8px;">
-                        </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Buy-In Cost (THB)</label>
+                        <input type="number" id="accBuyInCost" min="0" step="0.01" value="0" class="gallery-search-input" style="width: 100%; border-radius: 8px;">
                     </div>
                     <div>
                         <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Notes (Pack Series, Source)</label>
@@ -270,8 +264,8 @@
                             <input type="number" id="pullQuantity" min="1" value="1" required class="gallery-search-input" style="width: 100%; border-radius: 8px;">
                         </div>
                         <div>
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Pack Type</label>
-                            <input type="text" id="pullPack" placeholder="e.g. Charizard Booster" class="gallery-search-input" style="width: 100%; border-radius: 8px;">
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-secondary);">Selling Price (THB)</label>
+                            <input type="number" id="pullSellingPrice" min="0" step="0.01" required placeholder="e.g. 180" class="gallery-search-input" style="width: 100%; border-radius: 8px;">
                         </div>
                     </div>
                 </div>

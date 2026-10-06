@@ -927,17 +927,20 @@ async function handleCreateAccount(event) {
     event.preventDefault();
     const code = document.getElementById('accCode').value.trim();
     const ign = document.getElementById('accInGameName').value.trim();
-    const friendCode = document.getElementById('accFriendCode').value.trim();
-    const level = parseInt(document.getElementById('accLevel').value) || 20;
-    const trades = parseInt(document.getElementById('accTrades').value) || 5;
+    const friendId = document.getElementById('accFriendCode').value.trim();
+    const buyInCost = parseFloat(document.getElementById('accBuyInCost').value) || 0;
     const notes = document.getElementById('accNotes').value.trim();
+
+    if (!FRIEND_ID_PATTERN.test(friendId)) {
+        showToast('Please enter the Friend Code as 16 digits (e.g. 1234-5678-9012-3456).', 'danger');
+        return;
+    }
 
     const payload = {
         accountCode: code,
         inGameName: ign,
-        friendCode: friendCode,
-        accountLevel: level,
-        dailyTradesRemaining: trades,
+        friendId: friendId,
+        buyInCost: buyInCost,
         notes: notes
     };
 
@@ -955,11 +958,17 @@ async function handleCreateAccount(event) {
             closeCreateAccountModal();
             setTimeout(() => window.location.reload(), 1000);
         } else {
-            showToast(result.message || 'Failed to register account', 'danger');
+            showToast(apiErrorMessage(result, 'Failed to register account'), 'danger');
         }
     } catch (e) {
         showToast('Network error: ' + e.message, 'danger');
     }
+}
+
+// Validation failures come back as { message, details: { field: reason } }; show the field reasons
+function apiErrorMessage(result, fallback) {
+    const details = result && result.details ? Object.values(result.details) : [];
+    return details.length ? details.join(' ') : ((result && result.message) || fallback);
 }
 
 // Modal 2: Record Pulled Card / Open Pack
@@ -1012,10 +1021,14 @@ async function handleAddCardSubmit(event) {
     const accountId = document.getElementById('pullAccountSelect').value;
     const cardId = document.getElementById('pullCardSelect').value;
     const quantity = parseInt(document.getElementById('pullQuantity').value) || 1;
-    const pack = document.getElementById('pullPack').value.trim();
+    const sellingPrice = parseFloat(document.getElementById('pullSellingPrice').value);
 
     if (!accountId || !cardId) {
         showToast('Please select both an account and a card', 'danger');
+        return;
+    }
+    if (isNaN(sellingPrice) || sellingPrice < 0) {
+        showToast('Please enter a selling price', 'danger');
         return;
     }
 
@@ -1023,12 +1036,11 @@ async function handleAddCardSubmit(event) {
         cardId: parseInt(cardId),
         quantity: quantity,
         condition: 'MINT',
-        sellingPrice: 100.0,
-        notes: pack || 'Booster Pack Pull'
+        sellingPrice: sellingPrice
     };
 
     try {
-        const response = await fetch(`/api/v1/accounts/${accountId}/pull-card`, {
+        const response = await fetch(`/api/v1/accounts/${accountId}/pulls`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -1041,7 +1053,7 @@ async function handleAddCardSubmit(event) {
             closeAddCardModal();
             setTimeout(() => window.location.reload(), 1000);
         } else {
-            showToast(result.message || 'Failed to record pulled card', 'danger');
+            showToast(apiErrorMessage(result, 'Failed to record pulled card'), 'danger');
         }
     } catch (e) {
         showToast('Error: ' + e.message, 'danger');
@@ -1089,7 +1101,7 @@ async function inspectAccountCards(accountId, accountCode, inGameName) {
                 cardsHtml += `
                     <div class="gallery-card-unit">
                         <!-- 3D Parallax Card Unit with Simeydotme Shaders -->
-                        <div class="tcg-card-3d holo-card ${c.rarity === 'CROWN_RARE' ? 'crown-rare' : (c.rarity === 'STAR_3' ? 'holo-immersive' : '')}"
+                        <div class="tcg-card-3d holo-card ${c.rarity === 'CROWN_RARE' ? 'crown-rare' : (c.rarity === 'IMMERSIVE_RARE' ? 'holo-immersive' : '')}"
                              data-rarity="${c.rarity}"
                              data-name="${c.cardName}"
                              data-number="${c.cardNumber}"
