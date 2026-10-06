@@ -1,13 +1,29 @@
 package com.pokevault.domain.enums;
 
 /**
- * สถานะความพร้อมในการเทรดของการ์ดในไอดีเกมร้านค้า
+ * Enumeration representing the trade availability and lifecycle state
+ * of a PokéVault store game account (GameAccount).
  */
 public enum AccountTradeStatus {
-    READY,          // พร้อมทำการเทรดทันที
-    COOLDOWN,       // ติดคูลดาวน์โควต้าการเทรดประจำวัน
-    BUSY,           // กำลังติดเทรดกับลูกค้ารายอื่น
-    BUSY_TRADING,   // กำลังส่งมอบการ์ด
-    BANNED,         // ไอดีถูกแบน
-    SUSPENDED       // ระงับการใช้งานชั่วคราว
+    /**
+     * Account is available and ready to be matched for fulfilling trade orders.
+     */
+    READY,
+
+    /**
+     * Account is currently in an active trade session with a customer.
+     */
+    BUSY_TRADING,
+
+    /**
+     * Account is on cooldown waiting for Pokémon Pocket trade restrictions/timers
+     * to reset.
+     */
+    COOLDOWN,
+
+    /**
+     * Account is temporarily suspended by store admin for maintenance or
+     * verification.
+     */
+    SUSPENDED
 }
