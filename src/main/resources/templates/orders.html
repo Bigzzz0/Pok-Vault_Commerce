@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon TCG Pocket - Orders & In-Game Trade Matching</title>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('tcg-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/pokemon-cards-holo.css}">
+</head>
+<body>
+
+    <!-- Official Pokémon TCG Style Navbar -->
+    <nav class="navbar">
+        <a th:href="@{/}" class="brand">
+            <div class="brand-emblem">
+                <div th:replace="~{fragments/icons :: pokeball('icon-md')}"></div>
+            </div>
+            <span>Pokémon TCG Pocket Gallery</span>
+        </a>
+        <div class="nav-links">
+            <a th:href="@{/}" class="nav-link">
+                <div th:replace="~{fragments/icons :: dashboard('icon-sm')}"></div>
+                <span>Exhibition</span>
+            </a>
+            <a th:href="@{/cards}" class="nav-link">
+                <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
+                <span>Card Gallery</span>
+            </a>
+            <a th:href="@{/inventory}" class="nav-link">
+                <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
+                <span>Vault Inventory</span>
+            </a>
+            <a th:href="@{/accounts}" class="nav-link">
+                <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
+                <span>Game Accounts</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-link active">
+                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                <span>Orders</span>
+            </a>
+            <a href="/swagger-ui.html" target="_blank" class="nav-link swagger-btn">
+                <span>Swagger OpenAPI</span>
+                <div th:replace="~{fragments/icons :: externalLink('icon-sm')}"></div>
+            </a>
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
+                <span class="theme-icon-sun" style="display: inline-flex;"><th:block th:replace="~{fragments/icons :: sun('icon-sm')}"></th:block></span>
+                <span class="theme-icon-moon" style="display: none;"><th:block th:replace="~{fragments/icons :: moon('icon-sm')}"></th:block></span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px;">Order Lifecycle & In-Game Trade Matching</h1>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">Manage real-time state transitions (Pending → Paid → Shipping → Completed) and allocate Game Accounts to trade cards to customers via Friend Codes</p>
+            </div>
+            <a th:href="@{/inventory}" class="btn btn-primary">
+                <div th:replace="~{fragments/icons :: plus('icon-sm')}"></div>
+                <span>Place Order in Inventory</span>
+            </a>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order Code</th>
+                        <th>Customer / In-Game ID</th>
+                        <th>Tier</th>
+                        <th>Order State Pipeline</th>
+                        <th>In-Game Trade Fulfillment</th>
+                        <th>Final Paid</th>
+                        <th>Lifecycle Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(orders)}">
+                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                            No orders recorded in the vault yet. Go to <a th:href="@{/inventory}" style="color: var(--accent-cyan); font-weight: 700;">Store Inventory</a> to create your first order!
+                        </td>
+                    </tr>
+                    <tr th:each="ord : ${orders}">
+                        <td>
+                            <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent-cyan);" th:text="${ord.orderCode}">ORD-001</span>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${#temporals.format(ord.createdAt, 'yyyy-MM-dd HH:mm')}">2026-09-06</div>
+                        </td>
+                        <td>
+                            <div style="font-weight: 600;" th:text="${ord.customerFullName != null ? ord.customerFullName : ord.username}">Ash Ketchum</div>
+                            <!-- Customer Friend ID Badge with Copy -->
+                            <div th:if="${ord.customerFriendId != null}" style="display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.25rem; background: var(--bg-surface-elevated); padding: 0.15rem 0.45rem; border-radius: 4px; border: 1px solid var(--border-color);">
+                                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-gold);" th:text="${ord.customerFriendId}">1111-2222-3333-4444</span>
+                                <button type="button" class="icon-btn" th:data-code="${ord.customerFriendId}" onclick="copyFriendCode(this.getAttribute('data-code'), this)" title="Copy Customer Friend Code" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: inline-flex; align-items: center; padding: 0;">
+                                    <div th:replace="~{fragments/icons :: copy('icon-xs')}"></div>
+                                </button>
+                            </div>
+                            <div th:if="${ord.customerInGameName != null}" style="font-size: 0.75rem; color: var(--text-secondary);" th:text="'IGN: ' + ${ord.customerInGameName}">IGN: AshMaster</div>
+                        </td>
+                        <td>
+                            <span class="rarity-pill" th:text="${ord.membershipTier}">VIP</span>
+                        </td>
+                        <td>
+                            <!-- Visual State Node Stepper -->
+                            <div class="state-pipeline">
+                                <span th:class="${'state-node ' + (ord.orderStatus.name() == 'PENDING' ? 'active-pending' : '')}">
+                                    <span>PENDING</span>
+                                </span>
+                                <span style="color: var(--text-muted);">→</span>
+                                <span th:class="${'state-node ' + (ord.orderStatus.name() == 'PAID' ? 'active-paid' : '')}">
+                                    <span>PAID</span>
+                                </span>
+                                <span style="color: var(--text-muted);">→</span>
+                                <span th:class="${'state-node ' + (ord.orderStatus.name() == 'SHIPPING' ? 'active-shipping' : '')}">
+                                    <span>SHIPPING</span>
+                                </span>
+                                <span style="color: var(--text-muted);">→</span>
+                                <span th:class="${'state-node ' + (ord.orderStatus.name() == 'COMPLETED' ? 'active-completed' : (ord.orderStatus.name() == 'CANCELLED' ? 'active-cancelled' : ''))}">
+                                    <span th:text="${ord.orderStatus.name() == 'CANCELLED' ? 'CANCELLED' : 'COMPLETED'}">COMPLETED</span>
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <!-- In-Game Trade Fulfillment Summary & Action -->
+                            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.76rem; border-color: var(--accent-cyan); color: var(--accent-cyan);"
+                                            th:data-order-id="${ord.id}"
+                                            th:data-order-code="${ord.orderCode}"
+                                            th:data-friend-id="${ord.customerFriendId != null ? ord.customerFriendId : ''}"
+                                            onclick="openTradeModal(this.dataset.orderId, this.dataset.orderCode, this.dataset.friendId)">
+                                        <div th:replace="~{fragments/icons :: sparkles('icon-xs')}"></div>
+                                        <span>Trade Manager</span>
+                                    </button>
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${ord.items != null ? ord.items.size() + ' cards in order' : '0 items'}">1 card</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="color: #10b981; font-weight: 800; font-size: 1rem;" th:text="'฿' + ${#numbers.formatDecimal(ord.finalAmount, 1, 2)}">฿405.00</div>
+                            <div th:if="${ord.discountAmount > 0}" style="color: var(--accent-gold); font-size: 0.75rem;" th:text="'Save ฿' + ${#numbers.formatDecimal(ord.discountAmount, 1, 2)}">Save ฿45.00</div>
+                        </td>
+                        <td>
+                            <!-- Contextual State Action Buttons -->
+                            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                                <!-- Actions when PENDING -->
+                                <button th:if="${ord.orderStatus.name() == 'PENDING'}" 
+                                        class="btn btn-primary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem;"
+                                        th:data-order-id="${ord.id}"
+                                        onclick="executeOrderTransition(this.dataset.orderId, 'pay')">
+                                    <div th:replace="~{fragments/icons :: creditCard('icon-sm')}"></div>
+                                    <span>Pay</span>
+                                </button>
+                                <button th:if="${ord.orderStatus.name() == 'PENDING' || ord.orderStatus.name() == 'PAID'}" 
+                                        class="btn btn-secondary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem; color: #ef4444; border-color: rgba(239,68,68,0.3);"
+                                        th:data-order-id="${ord.id}"
+                                        onclick="executeOrderTransition(this.dataset.orderId, 'cancel')">
+                                    <div th:replace="~{fragments/icons :: xCircle('icon-sm')}"></div>
+                                    <span>Cancel</span>
+                                </button>
+
+                                <!-- Action when PAID -->
+                                <button th:if="${ord.orderStatus.name() == 'PAID'}" 
+                                        class="btn btn-primary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem; background: linear-gradient(135deg, #7c3aed, #8b5cf6);"
+                                        th:data-order-id="${ord.id}"
+                                        onclick="executeOrderTransition(this.dataset.orderId, 'ship')">
+                                    <div th:replace="~{fragments/icons :: truck('icon-sm')}"></div>
+                                    <span>Start Trade</span>
+                                </button>
+
+                                <!-- Action when SHIPPING -->
+                                <button th:if="${ord.orderStatus.name() == 'SHIPPING'}" 
+                                        class="btn btn-primary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem; background: linear-gradient(135deg, #059669, #10b981);"
+                                        th:data-order-id="${ord.id}"
+                                        onclick="executeOrderTransition(this.dataset.orderId, 'complete')">
+                                    <div th:replace="~{fragments/icons :: checkCircle('icon-sm')}"></div>
+                                    <span>Complete Trade</span>
+                                </button>
+
+                                <!-- Terminal States -->
+                                <span th:if="${ord.orderStatus.name() == 'COMPLETED'}" style="color: #10b981; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                    <div th:replace="~{fragments/icons :: checkCircle('icon-sm')}"></div>
+                                    <span>Traded</span>
+                                </span>
+                                <span th:if="${ord.orderStatus.name() == 'CANCELLED'}" style="color: #ef4444; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                    <div th:replace="~{fragments/icons :: xCircle('icon-sm')}"></div>
+                                    <span>Cancelled</span>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- In-Game Trade Matching & Fulfillment Modal -->
+    <div id="tradeFulfillmentModal" class="modal-overlay" onclick="if(event.target === this) closeTradeModal()">
+        <div class="modal-container modal-wide" style="max-width: 960px;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div th:replace="~{fragments/icons :: sparkles('icon-md')}"></div>
+                    <div>
+                        <h3 class="modal-title" id="tradeModalOrderTitle">In-Game Trade Fulfillment Manager</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;" id="tradeModalCustomerSub">Customer Friend Code & Account Allocation</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeTradeModal()">
+                    <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Customer Friend Code Header Banner -->
+                <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 0.25rem;">Customer Pokémon TCG Pocket Friend ID</span>
+                        <div style="display: flex; align-items: center; gap: 0.6rem;">
+                            <span id="tradeCustomerFriendCode" style="font-family: 'JetBrains Mono', monospace; font-size: 1.15rem; font-weight: 800; color: var(--accent-gold);">No Friend Code</span>
+                            <button type="button" class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="copyCustomerModalFriendCode(this)">
+                                <div th:replace="~{fragments/icons :: copy('icon-xs')}"></div>
+                                <span>Copy ID</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="button" id="btnAutoMatch" class="btn btn-primary" onclick="triggerAutoMatch()">
+                        <div th:replace="~{fragments/icons :: sparkles('icon-sm')}"></div>
+                        <span>Auto-Match Best Trade Account</span>
+                    </button>
+                </div>
+
+                <!-- Recommendation Banner (Filled dynamically) -->
+                <div id="tradeRecommendationBanner" style="display: none; margin-bottom: 1.5rem; padding: 1rem; border-radius: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);">
+                    <!-- Recommendation details -->
+                </div>
+
+                <!-- Order Items Trade Assignment Table -->
+                <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem;">Ordered Cards & Account Allocation</h4>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Card</th>
+                                <th>Qty</th>
+                                <th>Assigned Account</th>
+                                <th>Account Friend Code</th>
+                                <th>Trade Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradeItemsTableBody">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="padding: 1.25rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color);">
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                    Step: Customer Friend Request → Send In-Game Card Trade → Complete Order
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="closeTradeModal()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/audio.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>
