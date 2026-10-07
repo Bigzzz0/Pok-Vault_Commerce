@@ -73,12 +73,12 @@ VALUES
 -- Aerodactyl ex (Mythical Island)
 ((SELECT id FROM card_expansions WHERE code = 'A1a'), '045/086', 'Aerodactyl ex', 'POKEMON', 'DOUBLE_RARE', 'FIGHTING', 140, 1, 'https://assets.pokemon-zone.com/cards/a1a/045.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
--- 3. Seed Users
+-- 3. Seed Users (Default password for all seeded users: password123)
 INSERT INTO users (username, email, password, role, created_at, updated_at)
 VALUES
-('admin', 'admin@pokevault.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKI2S', 'ADMIN', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('staff_ash', 'ash@pokevault.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKI2S', 'STAFF', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('customer_red', 'red@kanto.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKI2S', 'CUSTOMER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+('admin', 'admin@pokevault.com', '$2a$10$Sc5AiVMRiIt6i129ZqA3WOHDwxGpqrxdXpAAgRCItPVVnFGOVVhEa', 'ADMIN', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('staff_ash', 'ash@pokevault.com', '$2a$10$Sc5AiVMRiIt6i129ZqA3WOHDwxGpqrxdXpAAgRCItPVVnFGOVVhEa', 'STAFF', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('customer_red', 'red@kanto.com', '$2a$10$Sc5AiVMRiIt6i129ZqA3WOHDwxGpqrxdXpAAgRCItPVVnFGOVVhEa', 'CUSTOMER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- 4. Seed User Profiles
 INSERT INTO user_profiles (user_id, full_name, phone_number, shipping_address, membership_tier, reward_points, created_at, updated_at)

@@ -16,6 +16,11 @@ public enum AccountTradeStatus {
     BUSY_TRADING,
 
     /**
+     * Alias for BUSY_TRADING
+     */
+    BUSY,
+
+    /**
      * Account is on cooldown waiting for Pokémon Pocket trade restrictions/timers
      * to reset.
      */

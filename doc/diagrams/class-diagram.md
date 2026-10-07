@@ -61,6 +61,19 @@ classDiagram
             +handleGenericException(Exception ex) ResponseEntity~ApiResponse~
         }
 
+        class SecurityConfig {
+            -CustomUserDetailsService userDetailsService
+            +passwordEncoder() PasswordEncoder
+            +authenticationProvider() DaoAuthenticationProvider
+            +authenticationManager(AuthenticationConfiguration config) AuthenticationManager
+            +securityFilterChain(HttpSecurity http) SecurityFilterChain
+        }
+
+        class CustomUserDetailsService {
+            -UserRepository userRepository
+            +loadUserByUsername(String username) UserDetails
+        }
+
     %% ==========================================
     %% 2. APPLICATION / SERVICE LAYER (Business Logic & Orchestration)
     %% ==========================================
