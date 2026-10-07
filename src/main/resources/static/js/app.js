@@ -97,6 +97,8 @@ function init3DTilt() {
 
                 // Simeydotme shader coordinates
                 card.style.setProperty('--pointer-x', `${percentX.toFixed(1)}%`);
+                // Unitless copy: CSS calc() cannot turn a percentage into a gradient angle
+                card.style.setProperty('--pointer-n', percentX.toFixed(1));
                 card.style.setProperty('--pointer-y', `${percentY.toFixed(1)}%`);
                 card.style.setProperty('--pointer-from-center', fromCenter.toFixed(2));
                 card.style.setProperty('--rotate-x', `${rotateY}deg`);
@@ -176,6 +178,7 @@ function initInspectionFlipper() {
 
         // Update Simeydotme Shimmer & Diffraction variables on modal card
         flipperBox.style.setProperty('--pointer-x', `${percentX}%`);
+        flipperBox.style.setProperty('--pointer-n', `${percentX}`);
         flipperBox.style.setProperty('--pointer-y', `${percentY}%`);
         flipperBox.style.setProperty('--background-x', `${(35 + percentX * 0.3).toFixed(1)}%`);
         flipperBox.style.setProperty('--background-y', `${(35 + percentY * 0.3).toFixed(1)}%`);
@@ -486,6 +489,18 @@ async function submitOrder() {
 }
 
 // --- Chat Commerce Handshake Helpers ---
+// Primary: the store's Facebook Page (username or Page ID) -> m.me deep link with the summary prefilled.
+// Leave empty until the Page exists; the handshake then falls back to the personal chat link below.
+const MESSENGER_PAGE = '';
+const MESSENGER_FALLBACK_LINK = 'https://www.facebook.com/messages/t/sapphanyu.khamtum';
+
+function buildMessengerUrl(summaryMsg) {
+    if (MESSENGER_PAGE) {
+        return `https://m.me/${MESSENGER_PAGE}?text=${encodeURIComponent(summaryMsg)}`;
+    }
+    // The personal chat link ignores ?text=, the clipboard copy covers it
+    return MESSENGER_FALLBACK_LINK;
+}
 let lastChatSummaryText = '';
 
 function showChatCommerceModal(orderData, targetCard, friendId, ign) {
@@ -513,15 +528,35 @@ function showChatCommerceModal(orderData, targetCard, friendId, ign) {
     const summaryMsg = `สวัสดีครับ สั่งจองการ์ดผ่านเว็บเรียบร้อยแล้วครับ!\n• รหัสคำสั่งซื้อ: #${orderData.orderCode}\n• รายการการ์ด: ${cardTitle}\n• ยอดชำระ: ${finalAmountStr} (ส่วนลด Strategy: -฿${orderData.discountAmount.toFixed(2)})\n• รหัสเพื่อนในเกม (Friend ID): ${friendId}\n• ชื่อเทรนเนอร์ (IGN): ${ign || '-'}\nขอส่งหลักฐานการโอนเงินและนัดส่งการ์ดเทรดในเกมครับ`;
     lastChatSummaryText = summaryMsg;
 
-    if (messengerBtn) {
-        // Facebook m.me link with prefilled text parameter
-        messengerBtn.href = `https://m.me/poketcgpocketstore?text=${encodeURIComponent(summaryMsg)}`;
-    }
+    const messengerUrl = buildMessengerUrl(summaryMsg);
+    if (messengerBtn) messengerBtn.href = messengerUrl;
 
     modal.classList.add('active');
 
-    // Handshake: put the order summary on the clipboard right away so the customer can paste it in chat
-    copyToClipboard(summaryMsg, 'คัดลอกข้อความสรุปออเดอร์แล้ว! วางส่งในแชทได้ทันที');
+    // Handshake: copy the order summary first (the page must still be focused), then jump straight to Messenger
+    copyToClipboard(summaryMsg, 'คัดลอกข้อความสรุปออเดอร์แล้ว! วางส่งในแชทได้ทันที')
+        .then(() => openMessengerDeepLink(messengerUrl));
+}
+
+// Opens the deep link without waiting for a click. Browsers allow this only while the click on
+// "Confirm Booking" still counts as a user gesture; if the popup is blocked the button stays as the fallback.
+function openMessengerDeepLink(url) {
+    const hint = document.getElementById('chatHandshakeHint');
+    let opened = null;
+    try {
+        // No 'noopener' feature here: it makes window.open return null even on success
+        opened = window.open(url, '_blank');
+        if (opened) opened.opener = null;
+    } catch (e) {
+        opened = null;
+    }
+    const launched = !!opened;
+    if (hint) {
+        hint.textContent = launched
+            ? 'เปิด Messenger ให้แล้ว — วางข้อความ (Ctrl+V) แล้วกดส่งได้เลย'
+            : 'คัดลอกข้อความแล้ว — กดปุ่มด้านล่างเพื่อเปิด Messenger แล้ววาง (Ctrl+V)';
+    }
+    return launched;
 }
 
 function closeChatCommerceModal() {
@@ -630,18 +665,19 @@ function showToast(message, type = 'info') {
 
 // --- 7. Clipboard Copy Helper ---
 // --- 7. Clipboard Copy Utilities ---
+// Returns a promise that settles once the copy attempt is over (never rejects)
 function copyToClipboard(text, label = 'Copied to clipboard!') {
-    if (!text) return;
+    if (!text) return Promise.resolve();
     if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(() => {
+        return navigator.clipboard.writeText(text).then(() => {
             showToast(label, 'success');
             if (window.soundFx) window.soundFx.playClick();
         }).catch(() => {
             legacyCopy(text, label);
         });
-    } else {
-        legacyCopy(text, label);
     }
+    legacyCopy(text, label);
+    return Promise.resolve();
 }
 
 function legacyCopy(text, label) {
