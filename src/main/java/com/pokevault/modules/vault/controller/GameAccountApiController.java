@@ -1,6 +1,7 @@
 package com.pokevault.modules.vault.controller;
 
 import com.pokevault.common.response.ApiResponse;
+import com.pokevault.domain.enums.AccountTradeStatus;
 import com.pokevault.modules.vault.dto.AccountCardResponse;
 import com.pokevault.modules.vault.dto.AddPulledCardRequest;
 import com.pokevault.modules.vault.dto.GameAccountRequest;
@@ -61,5 +62,22 @@ public class GameAccountApiController {
         AccountCardResponse response = gameAccountService.addPulledCard(id, request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.ok("Pulled card recorded and added to vault successfully", response));
+    }
+
+    @GetMapping("/{id}/cards")
+    @Operation(summary = "Get cards in game account", description = "Retrieve list of all cards and inventory currently held in the specified game account")
+    public ResponseEntity<ApiResponse<List<AccountCardResponse>>> getAccountCards(@PathVariable Long id) {
+        List<AccountCardResponse> cards = gameAccountService.getAccountCards(id);
+        return ResponseEntity
+                .ok(ApiResponse.ok("Retrieved " + cards.size() + " cards from account successfully", cards));
+    }
+
+    @PatchMapping("/{id}/trade-status")
+    @Operation(summary = "Update account trade status", description = "Update the trade readiness status of a game account (e.g., READY, BUSY_TRADING, COOLDOWN, SUSPENDED)")
+    public ResponseEntity<ApiResponse<GameAccountResponse>> updateTradeStatus(
+            @PathVariable Long id,
+            @RequestParam AccountTradeStatus status) {
+        GameAccountResponse response = gameAccountService.updateTradeStatus(id, status);
+        return ResponseEntity.ok(ApiResponse.ok("Account trade status updated successfully", response));
     }
 }

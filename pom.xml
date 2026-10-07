@@ -80,6 +80,14 @@
             <version>${springdoc.version}</version>
         </dependency>
 
+        <!-- Spring Boot DevTools (auto-restart on .class change, LiveReload) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
         <!-- Spring Boot Test Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
