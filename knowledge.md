@@ -49,6 +49,14 @@ graph TD
 
     subgraph TradeMatching["Milestone 3: In-Game Trade Matching System"]
         C9 --> C10["Commit 10: TradeRecommendationResponse DTO\n(35cd653)"]
+        C10 --> C11["Commit 11: TradeMatchingService Recommendation\n(6118057)"]
+        C11 --> C12["Commit 12: Auto-Match Assignment Algorithm\n(9fcac5f)"]
+        C12 --> C13["Commit 13: Trade Matching Endpoints\n(ebc8794)"]
+    end
+
+    subgraph Testing["Milestone 4: Unit Testing & Verification"]
+        C13 --> C14["Commit 14: OrderState Unit Tests\n(c6b6942)"]
+        C14 --> C15["Commit 15: TradeMatching Unit Tests\n(86dcc4d)"]
     end
 ```
 
@@ -327,21 +335,143 @@ graph TD
 
 ---
 
-## ⏸️ Commit 11: TradeMatchingService with Account Recommendation Query (คิวงานถัดไป)
-- **Roadmap Commit 11**: `feat: implement TradeMatchingService with account recommendation query`
-- **ไฟล์เป้าหมาย**:
-  - `src/main/java/com/pokevault/modules/trade/service/TradeMatchingService.java`
-  - `src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java`
-  - `src/main/java/com/pokevault/repository/CardInventoryRepository.java` (ถ้าต้องการ custom query)
-- **สรุปสิ่งที่ต้องทำเมื่อกลับมา**:
-  - สร้าง Business Logic ใน `TradeMatchingService`:
-    - ค้นหาไอดีเกมร้านค้าที่ถือการ์ดใบที่ต้องการ และมีสถานะ `READY` พร้อมจำนวนสต็อกคงเหลือ
-    - จัดอันดับไอดีที่ดีที่สุด (Best Candidate) และรวบรวมไอดีสำรอง
-    - คืนค่าออกมาเป็น `List<TradeRecommendationResponse>` สำหรับทุกรายการในคำสั่งซื้อ
+### ✅ Commit 11: TradeMatchingService with Account Recommendation Query
+* **Commit Hash**: `6118057`
+* **Commit Message**: `feat: implement TradeMatchingService with account recommendation query`
+* **โฟลเดอร์หลัก**: `src/main/java/com/pokevault/modules/trade/service/`
+* **ไฟล์ที่สร้าง/แก้ไข**:
+  1. `src/main/java/com/pokevault/modules/trade/service/TradeMatchingService.java`
+  2. `src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java`
+
+#### 🎯 หลักการออกแบบที่ใช้ (Design Principles)
+* **Single Responsibility Principle (SRP)**: แยก Service สำหรับคำนวณและแนะนำไอดีเกมสำหรับการส่งมอบการ์ด (Trade Fulfillment) ออกมาเป็นโมดูลอิสระ ไม่ปะปนกับ Order Processing ทั่วไป
+* **Dependency Inversion Principle (DIP)**: ประกาศ `TradeMatchingService` interface และให้ `TradeMatchingServiceImpl` ทำการ implement เพื่อรองรับการ mock ใน unit test และลด coupling
+* **Information Expert & Defensive Sorting**: Service ดึงรายการคลังทั้งหมดของการ์ดใบนั้น แล้วจัดลำดับ (Sort) โดยให้ไอดีที่มีสถานะ `READY` ขึ้นก่อนสถานะอื่น และเรียงลำดับจำนวนสต็อกคงเหลือจากมากไปน้อย (`Comparator.reverseOrder()`)
+
+#### ⚙️ การทำงานของโค้ดอย่างละเอียด (Code Mechanics)
+1. **`getRecommendations(Long orderId)`**:
+   - ตรวจสอบความมีอยู่ของคำสั่งซื้อผ่าน `orderRepository.findById(orderId)` หากไม่พบจะโยน `ResourceNotFoundException`
+   - วนลูปทุก `OrderItem` ในคำสั่งซื้อ เพื่อสร้างคำแนะนำ `TradeRecommendationResponse`
+2. **`getRecommendationForItem(Long orderItemId)`**:
+   - ค้นหารายการคำสั่งซื้อเฉพาะเจาะจงผ่าน `orderItemRepository.findById(orderItemId)`
+3. **`buildRecommendationForItem(Order order, OrderItem item)`**:
+   - ค้นหา `CardInventory` ที่ถือการ์ดใบที่ต้องการผ่าน `cardInventoryRepository.findByCardId(card.getId())`
+   - กรองเฉพาะรายการที่ผูกกับ `GameAccount` และมีสต็อก `quantity > 0`
+   - คัดเลือก Best Candidate (อันดับ 1) หากมีสถานะ `READY` จะตั้งค่า `matchFound = true`
+   - รวบรวมไอดีสำรองที่เหลือใส่ใน `alternativeCandidates` เพื่อเป็นทางเลือกเสริม
 
 ---
 
-## 🗺️ 4. แผนผังความก้าวหน้า 15 Commits (Member 4 Tracker)
+### ✅ Commit 12: Auto-Match Best Account Assignment Algorithm
+* **Commit Hash**: `9fcac5f`
+* **Commit Message**: `feat: implement auto-match best account assignment algorithm`
+* **โฟลเดอร์หลัก**: `src/main/java/com/pokevault/modules/trade/service/`
+* **ไฟล์ที่สร้าง/แก้ไข**:
+  1. `src/main/java/com/pokevault/modules/trade/service/TradeMatchingService.java`
+  2. `src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java`
+
+#### 🎯 หลักการออกแบบที่ใช้ (Design Principles)
+* **High Cohesion & Business Invariant Enforcement**: บังคับใช้กฎทางธุรกิจของการเทรดการ์ด โดยระบบจะมอบหมายงานให้เฉพาะไอดีร้านค้าที่มีสถานะ `READY` และมีสต็อกการ์ดเพียงพอกับจำนวนที่สั่ง (`quantity >= requestedQuantity`) เท่านั้น
+* **Defensive Guard**: ป้องกันการ re-assign ซ้ำหากรายการนั้นได้ส่งการ์ดไปแล้ว (`TRADE_SENT`) หรือส่งมอบสำเร็จแล้ว (`COMPLETED`) เพื่อป้องกันความผิดพลาดในการส่งมอบซ้ำซ้อน
+* **Fail-Fast Principle**: โยน `InsufficientStockException` หรือ `InvalidOrderStateException` ทันทีเมื่อไม่พบไอดีที่พร้อม หรือข้อมูลการ์ดไม่สมบูรณ์ แทนการปล่อยให้เกิดข้อผิดพลาดเงียบ
+* **Transactional Consistency (ACID)**: เมธอดที่ทำการเปลี่ยนแปลงข้อมูล (`autoMatchOrderItem`, `autoMatchOrder`, `assignAccountToOrderItem`) กำกับด้วย `@Transactional` เพื่อรับประกันว่าการมอบหมาย `assignedAccount` และการเปลี่ยนสถานะเป็น `FRIEND_PENDING` จะถูกบันทึกพร้อมกันอย่างสมบูรณ์
+
+#### ⚙️ การทำงานของโค้ดอย่างละเอียด (Code Mechanics)
+1. **`autoMatchOrderItem(Long orderItemId)`**:
+   - ตรวจสอบ Guard ห้ามเปลี่ยนไอดีหากอยู่ในสถานะ `TRADE_SENT` หรือ `COMPLETED`
+   - ค้นหาคลังทั้งหมดของการ์ดใบนั้น กรองเฉพาะไอดีที่มีสถานะ `READY` และมีจำนวนการ์ด `>= item.getQuantity()`
+   - เลือกไอดีที่มีสต็อกคงเหลือมากที่สุด (`max(Comparator.comparing(CardInventory::getQuantity))`)
+   - กำหนด `item.setAssignedAccount(bestAccount)` และปรับสถานะ `item.setTradeStatus(TradeFulfillmentStatus.FRIEND_PENDING)`
+   - บันทึกลงฐานข้อมูลด้วย `orderItemRepository.save(item)` และคืนค่า `TradeRecommendationResponse` ล่าสุด
+2. **`autoMatchOrder(Long orderId)`**:
+   - ดึงคำสั่งซื้อและวนลูปเรียก `autoMatchOrderItem` ให้กับทุกรายการสินค้าในคำสั่งซื้อ คืนค่าเป็น `List<TradeRecommendationResponse>`
+3. **`assignAccountToOrderItem(Long orderItemId, Long accountId)`**:
+   - รองรับการมอบหมายไอดีแบบ Manual โดยตรวจสอบว่าไอดีเกมที่ระบุมีสถานะ `READY` และ OrderItem ยังไม่หลุดพ้นสถานะที่แก้ไขได้
+
+---
+
+### ✅ Commit 13: TradeMatchingApiController Endpoints
+* **Commit Hash**: `ebc8794`
+* **Commit Message**: `feat: add endpoints for trade recommendations and account assignment`
+* **โฟลเดอร์หลัก**: `src/main/java/com/pokevault/modules/trade/controller/`
+* **ไฟล์ที่สร้าง/แก้ไข**:
+  - `src/main/java/com/pokevault/modules/trade/controller/TradeMatchingApiController.java`
+
+#### 🎯 หลักการออกแบบที่ใช้ (Design Principles)
+* **Single Responsibility Principle (SRP)**: Controller ทำหน้าที่เพียงแปลง HTTP Request/Response, ทำ Routing, และเรียกใช้ Service Layer โดยไม่ยัดเยียด Business Logic ใน Controller
+* **Clean REST API Design & Standardized Response Format**: ทุก Endpoint ห่อผลลัพธ์ด้วย `ApiResponse<T>` เพื่อให้ Frontend/Client ได้รับ Response ที่มีโครงสร้างเป็นอันหนึ่งอันเดียวกัน
+* **API Documentation & Discoverability (OpenAPI / Swagger)**: กำกับทุก Endpoint ด้วย `@Tag`, `@Operation`, และ `@Parameter` เพื่อให้ทีมพัฒนาและผู้ทดสอบสามารถเรียกทดสอบผ่าน Swagger UI ได้ทันที
+* **Separation of Concerns (Read vs Write)**: แยก GET Endpoints สำหรับดูคำแนะนำ (Recommendation Query) ออกจาก POST Endpoints สำหรับสั่งจับคู่และเปลี่ยนสถานะ (Fulfillment Mutation)
+
+#### ⚙️ การทำงานของโค้ดอย่างละเอียด (Code Mechanics)
+1. **`GET /api/v1/trades/orders/{orderId}/recommendations`**:
+   - ดึงคำแนะนำไอดีเกมสำหรับทุกรายการสินค้าในคำสั่งซื้อ (Order)
+2. **`GET /api/v1/trades/items/{orderItemId}/recommendation`**:
+   - ดึงคำแนะนำไอดีเกมสำหรับรายการคำสั่งซื้อเดี่ยว (OrderItem)
+3. **`POST /api/v1/trades/items/{orderItemId}/auto-match`**:
+   - สั่ง Auto-Match จับคู่ไอดีเกมสถานะ `READY` ที่มีสต็อกการ์ดสูงสุดให้ OrderItem รายการนั้น และปรับเป็น `FRIEND_PENDING`
+4. **`POST /api/v1/trades/orders/{orderId}/auto-match`**:
+   - สั่ง Auto-Match จับคู่ไอดีเกมให้กับทุกรายการใน Order ในคำสั่งเดียว
+5. **`POST /api/v1/trades/items/{orderItemId}/assign?accountId={id}`**:
+   - แอดมินสั่งมอบหมายไอดีเกมแบบเจาะจง (Manual Assignment)
+
+---
+
+### ✅ Commit 14: Unit Tests for OrderState Transitions and Guards
+* **Commit Hash**: `c6b6942`
+* **Commit Message**: `test: add unit tests for OrderState transitions and guards`
+* **โฟลเดอร์หลัก**: `src/test/java/com/pokevault/modules/trade/state/`
+* **ไฟล์ที่สร้าง/แก้ไข**:
+  - `src/test/java/com/pokevault/modules/trade/state/OrderStateTest.java`
+
+#### 🎯 หลักการออกแบบที่ใช้ (Design Principles)
+* **Test Isolation & Single Responsibility**: แต่ละ Test Case รับผิดชอบตรวจสอบเฉพาะสถานะหรือเงื่อนไขทางธุรกิจหนึ่งๆ โดยแยกเป็น 7 `@Nested` Test Classes อย่างเป็นสัดส่วน
+* **Defensive Boundary & Invariant Verification**: ตรวจสอบการบังคับใช้กฎ Invariants อย่างเคร่งครัด เช่น การห้ามกดยกเลิกขณะการ์ดอยู่ในสถานะ `SHIPPING` เพื่อป้องกันการสูญเสียการ์ดฟรี (Anti-Fraud Guard)
+* **Fail-Fast Behavior Verification**: ยืนยันว่าการสั่ง Action ที่ผิดกฎ (เช่น สั่ง `ship()` ในสถานะ `PENDING`) จะต้องโยน `InvalidOrderStateException` ทันที
+* **Behavior-Driven Structure (BDD)**: ใช้ AssertJ (`assertThat`, `assertThatThrownBy`) เพื่อเขียน Assertion ที่อ่านง่ายและสื่อความหมายชัดเจน
+
+#### ⚙️ การทำงานของโค้ดอย่างละเอียด (Code Mechanics)
+1. **Happy Path Tests**: ทดสอบวงจรชีวิตคำสั่งซื้อตั้งแต่ `PENDING` -> `PAID` -> `SHIPPING` -> `COMPLETED` พร้อมตรวจสอบว่า Entity `Order` ปรับสถานะซิงค์ตามตลอดเวลา
+2. **Cancellation Flows**: ทดสอบการยกเลิกจาก `PENDING` และ `PAID` เข้าสู่ `CANCELLED`
+3. **Shipping Guard Tests**: ทดสอบความปลอดภัยว่าขณะคำสั่งซื้ออยู่ในสถานะ `SHIPPING` จะต้องโยน `InvalidOrderStateException` พร้อมข้อความ `"Cannot cancel order while cards are being shipped in game"` เสมอ และสถานะจะต้องไม่เปลี่ยนแปลง
+4. **Terminal State Protection Tests**: ทดสอบว่าสถานะสิ้นสุด (`COMPLETED` และ `CANCELLED`) จะต้องปฏิเสธทุก Action (`pay`, `ship`, `complete`, `cancel`)
+5. **Illegal Transition Tests**: ทดสอบการข้ามขั้นของสถานะทั้งหมดเพื่อพิสูจน์การทำงานของ Default Methods ใน Interface
+6. **Action String Execution Tests**: ทดสอบ `executeAction(action)` รองรับตัวพิมพ์เล็ก-ใหญ่ ตัดช่องว่างหน้าหลัง และโยน Exception สำหรับ Action ที่ไม่รู้จัก
+7. **Factory Method Tests**: ทดสอบ `OrderContext.fromOrder(order)` คืนค่า State เริ่มต้นถูกต้องตาม `OrderStatus` ของ Entity และตรวจสอบการจัดการกรณี `order == null`
+
+---
+
+### ✅ Commit 15: Unit Test for TradeMatchingServiceImpl Auto-Match Logic
+* **Commit Hash**: `86dcc4d`
+* **Commit Message**: `test: add unit test for TradeMatchingServiceImpl auto-match logic`
+* **โฟลเดอร์หลัก**: `src/test/java/com/pokevault/modules/trade/service/`
+* **ไฟล์ที่สร้าง/แก้ไข**:
+  - `src/test/java/com/pokevault/modules/trade/service/TradeMatchingServiceTest.java`
+
+#### 🎯 หลักการออกแบบที่ใช้ (Design Principles)
+* **Test Isolation via Mockito**: ใช้ `@Mock` และ `@InjectMocks` เพื่อจำลองพฤติกรรมของ Repositories (`OrderRepository`, `OrderItemRepository`, `CardInventoryRepository`, `GameAccountRepository`) โดยไม่ต้องเชื่อมต่อ Database จริง ทำให้รันเทสได้รวดเร็วและไม่มี side effects
+* **Behavior Verification & State Assertion**: ไม่เพียงตรวจสอบ Return Object แต่ยังตรวจสอบว่า Entity ถูก mutate ค่า (`setAssignedAccount`, `setTradeStatus`) และเมธอด `orderItemRepository.save(item)` ถูกเรียกจริงผ่าน `verify()`
+* **Defensive Edge Case Verification**: ทดสอบกรณีความผิดพลาดอย่างรอบด้าน ทั้งกรณีไม่มีคลังการ์ด, กรณีไม่มีไอดีสถานะ `READY`, กรณีสต็อกไม่พอ, และกรณีสั่ง Re-assign ออเดอร์ที่เริ่มส่งหรือส่งมอบเสร็จสิ้นแล้ว
+
+#### ⚙️ การทำงานของโค้ดอย่างละเอียด (Code Mechanics)
+1. **`RecommendationQueryTests`**:
+   - `testGetRecommendationsRanksBestReadyAccount`: พิสูจน์ว่าไอดีสถานะ `READY` ที่มีสต็อกการ์ดสูงสุดจะถูกคัดเลือกเป็นอันดับ 1 (Best Recommended Account) เสมอ แม้จะมีไอดีอื่นที่มีสต็อกมากกว่าแต่สถานะเป็น `BUSY` ก็ตาม
+   - `testGetRecommendationForItem`: ทดสอบการ Query แนะนำไอดีสำหรับ OrderItem เดี่ยว
+   - `testGetRecommendationsNoInventory` และ `testGetRecommendationsOnlyBusyAccount`: ทดสอบกรณีไม่พบคลัง หรือมีเฉพาะไอดีที่ไม่พร้อม จะส่งกลับ `matchFound = false` พร้อมระบุเหตุผลชัดเจน
+2. **`AutoMatchAlgorithmTests`**:
+   - `testAutoMatchOrderItemSuccess`: ทดสอบการ Auto-Match สำเร็จ บันทึกไอดีลง Entity, เปลี่ยนสถานะเป็น `FRIEND_PENDING`, และเรียก `save(item)`
+   - `testAutoMatchOrderItemInsufficientStock`: ทดสอบเมื่อสต็อกในไอดี `READY` ไม่พอกับจำนวนที่ขอซื้อ จะโยน `InsufficientStockException` และไม่บันทึกลง Database
+   - `testAutoMatchOrderItemGuardAgainstReassignment`: ทดสอบ Guard ห้าม Re-assign หากสถานะเป็น `TRADE_SENT` หรือ `COMPLETED` โดยโยน `InvalidOrderStateException`
+3. **`BatchAutoMatchTests`**:
+   - `testAutoMatchOrderSuccess`: ทดสอบการวนลูป Auto-Match ให้กับทุกรายการใน Order
+4. **`ManualAssignmentTests`**:
+   - `testManualAssignAccountSuccess`: ทดสอบการมอบหมายไอดีด้วยตนเอง (Manual)
+   - `testManualAssignAccountNotReady`: ทดสอบการปฏิเสธการมอบหมายหากไอดีเกมเป้าหมายไม่อยู่ในสถานะ `READY`
+   - `testManualAssignRejectWhenCompleted`: ทดสอบการปฏิเสธการแก้ไขหากรายการนั้น `COMPLETED` แล้ว
+
+---
+
+## 🏆 4. สรุปความก้าวหน้าครบ 15 Commits บริบูรณ์ (100% Completion)
 
 - [x] **Commit 1 (`2d9cc98`)**: `feat: create custom exceptions for stock and invalid order states`
 - [x] **Commit 2 (`aebf676`)**: `feat: implement GlobalExceptionHandler with RestControllerAdvice`
@@ -353,9 +483,113 @@ graph TD
 - [x] **Commit 8 (`2831a5f`)**: `feat: implement CompletedOrderState and CancelledOrderState with stock restore`
 - [x] **Commit 9 (`b45a9c4`)**: `feat: implement state transition endpoint in OrderApiController`
 - [x] **Commit 10 (`35cd653`)**: `feat: define TradeRecommendationResponse DTO`
-- [ ] **Commit 11**: `feat: implement TradeMatchingService with account recommendation query` *(คิวงานถัดไป)*
-- [ ] **Commit 12**: `feat: implement auto-match best account assignment algorithm`
-- [ ] **Commit 13**: `feat: add endpoints for trade recommendations and account assignment`
-- [ ] **Commit 14**: `test: add unit tests for OrderState transitions and guards`
-- [ ] **Commit 15**: `test: add unit test for TradeMatchingServiceImpl auto-match logic`
+- [x] **Commit 11 (`6118057`)**: `feat: implement TradeMatchingService with account recommendation query`
+- [x] **Commit 12 (`9fcac5f`)**: `feat: implement auto-match best account assignment algorithm`
+- [x] **Commit 13 (`ebc8794`)**: `feat: add endpoints for trade recommendations and account assignment`
+- [x] **Commit 14 (`c6b6942`)**: `test: add unit tests for OrderState transitions and guards`
+- [x] **Commit 15 (`86dcc4d`)**: `test: add unit test for TradeMatchingServiceImpl auto-match logic`
 
+🎉 **สมาชิกคนที่ 4 (นายแทนคุณ พันธ์นิกุล — 673380301-0) ดำเนินการพัฒนา ครบทั้ง 15 Commits ตามสถาปัตยกรรมและมาตรฐานวิชาเรียบร้อยสมบูรณ์ 100%**
+
+---
+
+## 🎓 5. คู่มือเตรียมตอบคำถามอาจารย์และการสอบปากเปล่า (Defense & Presentation Cheat Sheet)
+
+> ส่วนนี้จัดทำขึ้นเป็นพิเศษเพื่อให้สมาชิกคนที่ 4 สามารถใช้ทบทวน ทำความเข้าใจเชิงลึก และใช้ตอบคำถามอาจารย์ผู้ตรวจวิชา CP353002 ได้อย่างมั่นใจ ทั้งในเชิงทฤษฎีซอฟต์แวร์ (Design Principles/Patterns) และเชิงปฏิบัติการเขียนโค้ด (Implementation Mechanics)
+
+---
+
+### 🏛️ หมวดที่ 1: GoF State Pattern & สถาปัตยกรรม State Machine
+
+#### ❓ คำถามที่ 1: "ทำไมถึงเลือกใช้ GoF State Pattern แทนการใช้ `switch-case` หรือ `if-else` เช็กสถานะคำสั่งซื้อใน Service หรือ Entity ตรงๆ?"
+* **แนวทางการตอบ (Core Rationale)**:
+  1. **ขจัดปัญหา Shotgun Surgery & Spaghetti Code**: หากใช้ `switch-case` เมื่อมีสถานะใหม่เพิ่มเข้ามาในอนาคต (เช่น `REFUNDED` หรือ `DISPUTED`) เราจะต้องตามไปแก้ไข `switch-case` ในทุกๆ Controller และ Service ซึ่งเสี่ยงทำให้โค้ดเดิมพัง
+  2. **สอดคล้องกับ Open/Closed Principle (OCP)**: การใช้ State Pattern ทำให้ระบบ "เปิดรับการต่อขยายสถานะใหม่" (Open for Extension) ได้โดยการสร้างคลาสสถานะใหม่ที่ implement `OrderState` โดย "ไม่ต้องแก้ไขโค้ดสถานะเดิมแม้แต่บรรทัดเดียว" (Closed for Modification)
+  3. **Runtime Polymorphism & High Cohesion**: พฤติกรรมของ Order จะเปลี่ยนไปตาม State Object ณ ขณะนั้นแบบไดนามิก โดยแต่ละคลาสสถานะ (`PendingOrderState`, `PaidOrderState` ฯลฯ) จะดูแลเฉพาะกฎและเงื่อนไขของตัวเอง ทำให้โค้ดอ่านง่ายและแยก Unit Test ได้อิสระ 100%
+
+#### ❓ คำถามที่ 2: "ทำไมใน `OrderState` interface ถึงต้องใช้ Java Default Methods ที่โยน `InvalidOrderStateException`?"
+* **แนวทางการตอบ (Core Rationale)**:
+  1. **Fail-Fast Principle**: หากคำสั่งซื้อถูกสั่ง Action ที่ไม่ถูกต้องตามสถานะปัจจุบัน (เช่น ออเดอร์ยังรอจ่ายเงิน `PENDING` แต่ถูกสั่ง `ship()`) ระบบจะปฏิเสธและโยน Exception แจ้งข้อผิดพลาดทันที แทนการปล่อยให้ข้อมูลในระบบเสียหาย
+  2. **Interface Segregation & Ergonomics**: หากประกาศเมธอดแบบ Abstract ปกติ ทุก Concrete State จะต้องถูกบังคับให้เขียน `@Override` เมธอดที่ตัวเองไม่รองรับให้รกโค้ด การมี Default Method ที่โยน Exception เป็นค่าเริ่มต้น ทำให้คลาสลูกเลือก Override เฉพาะ Actions ที่สถานะนั้น **"อนุญาตให้ทำได้จริง"** เท่านั้น
+
+#### ❓ คำถามที่ 3: "บทบาทของ `OrderContext` คืออะไร มีไว้ทำไม และทำไมไม่ให้ Controller คุยกับ Concrete State ตรงๆ?"
+* **แนวทางการตอบ (Core Rationale)**:
+  1. **Context Object & Encapsulation**: `OrderContext` ทำหน้าที่เป็น Facade ตัวแทนของ Order ที่เปิด Interface ให้ภายนอก (Controller/Service) เรียกใช้งาน โดยซ่อนความซับซ้อนว่าภายในคือคลาสสถานะใด
+  2. **Dependency Inversion Principle (DIP)**: Controller และ Service ยึดติดกับ Abstraction (`OrderContext` และ `OrderState`) เท่านั้น ไม่ผูกติดกับ Concrete Classes ตรงๆ (Low Coupling)
+  3. **Entity Synchronization**: Context มีหน้าที่ซิงค์สถานะของ State Machine เข้ากับ Database Entity (`Order.setOrderStatus(...)`) ทุกครั้งที่เกิดการเปลี่ยนผ่านสถานะอย่างแนบเนียน
+
+---
+
+### 🛡️ หมวดที่ 2: กฎความปลอดภัยทางธุรกิจ (Business Invariants & Security)
+
+#### ❓ คำถามที่ 4: "ใน `ShippingOrderState` ทำไมต้อง Override เมธอด `cancel()` เพื่อปฏิเสธการยกเลิก? (Cancel Rejection Guard)"
+* **แนวทางการตอบ (Core Rationale)**:
+  * **Business Invariant Protection & Anti-Fraud**: ในบริบทของเกม Pokémon Pocket เมื่อร้านค้าส่งการ์ดเข้าไปในเกมแล้ว (`SHIPPING` / `TRADE_SENT`) การ์ดจะถูกล็อคในระบบเกม หากระบบอนุญาตให้ลูกค้ายกเลิกคำสั่งซื้อและคืนเงินขณะนี้ ร้านค้าจะเกิดภาวะ **Free-Card Loss (สูญเสียการ์ดฟรี)** ทันที ระบบจึงต้องมี Cancel Guard เพื่อบังคับว่า *"ห้ามยกเลิกคำสั่งซื้อขณะกำลังส่งการ์ดในเกม"* อย่างเด็ดขาด
+
+#### ❓ คำถามที่ 5: "ระบบจัดการสต็อกอย่างไรเมื่อคำสั่งซื้อถูกยกเลิก (Stock Restoration)?"
+* **แนวทางการตอบ (Core Rationale)**:
+  * ใน `CancelledOrderState(OrderContext context)` มีการเรียกเมธอด `restoreStock(context)` อัตโนมัติ เพื่อส่งสัญญาณคืนสต็อกการ์ดที่ถูกจองไว้กลับเข้าคลัง ป้องกันปัญหาสต็อกจม (Phantom Stock Allocation) และทำให้ลูกค้ารายอื่นสามารถสั่งซื้อการ์ดใบนั้นได้ต่อทันที
+
+---
+
+### ⚡ หมวดที่ 3: Global Exception Handling & Clean Architecture
+
+#### ❓ คำถามที่ 6: "`GlobalExceptionHandler` ที่ใช้ `@RestControllerAdvice` มีความเกี่ยวข้องกับ Aspect-Oriented Programming (AOP) อย่างไร?"
+* **แนวทางการตอบ (Core Rationale)**:
+  1. **Cross-Cutting Concern Separation**: การดักจับ Error และจัดรูปแบบ JSON Response เป็นงานส่วนกลางที่กระจายอยู่ทุก Controller การใช้ `@RestControllerAdvice` เป็นการใช้กลไก AOP Interceptor ของ Spring Web ดักจับ Exception ที่หลุดออกมาจาก `@RestController` ทั้งหมดมาไว้ที่จุดเดียว
+  2. **Single Responsibility Principle (SRP)**: ปลดภาระของ Controller ให้สนใจเฉพาะ Happy Path และ HTTP Routing ไม่ต้องเขียนบล็อก `try-catch` ซ้ำซ้อน
+  3. **Unified API Error Contract**: รับประกันว่า Client/Frontend จะได้รับ Error JSON Format เดียวกันเสมอ (`ErrorResponse`) ป้องกันข้อมูลภายใน (เช่น Stacktrace หรือ Table Name) รั่วไหลสู่ภายนอก
+
+---
+
+### 🤖 หมวดที่ 4: In-Game Trade Matching Algorithm
+
+#### ❓ คำถามที่ 7: "อธิบายขั้นตอนการทำงานของอัลกอริทึมค้นหาและจับคู่ไอดีเกม (`autoMatchBestAccount`)?"
+* **แนวทางการตอบ (Core Rationale)**:
+  1. **Filter Active Inventories**: ค้นหาคลังทั้งหมดที่มีการ์ดใบที่ต้องการ และกรองเฉพาะคลังที่มีไอดีเกมผูกอยู่และมีสต็อก `quantity > 0`
+  2. **Sorting Strategy (Two-Level Sorting)**:
+     - **เงื่อนไขที่ 1 (Priority)**: ให้ความสำคัญกับไอดีที่มีสถานะเป็น `AccountTradeStatus.READY` ก่อนสถานะอื่น (`BUSY`, `COOLDOWN`)
+     - **เงื่อนไขที่ 2 (Quantity)**: หากสถานะเท่ากัน ให้จัดเรียงตามจำนวนสต็อกคงเหลือจากมากไปน้อย (`Comparator.reverseOrder()`) เพื่อเลือกไอดีที่มีสต็อกสูงสุดมาใช้งาน
+  3. **State Mutation & Assignment**: เมื่อได้ Best Account จะกำหนด `item.setAssignedAccount(bestAccount)` และปรับสถานะเป็น `TradeFulfillmentStatus.FRIEND_PENDING` (รอแอดเพื่อนในเกม)
+  4. **Defensive Re-assignment Guard**: ตรวจสอบก่อนว่า `OrderItem` ต้องไม่อยู่ในสถานะ `TRADE_SENT` หรือ `COMPLETED` เพื่อป้องกันการเปลี่ยนไอดีทับซ้อน
+
+#### ❓ คำถามที่ 8: "ทำไมเมธอด Auto-match ใน Service ต้องมี `@Transactional`?"
+* **แนวทางการตอบ (Core Rationale)**:
+  * เพื่อรักษาคุณสมบัติ **ACID (Atomicity & Consistency)** ของฐานข้อมูล โดยการมอบหมายไอดี (`assignedAccount`) และการเปลี่ยนสถานะการเทรด (`tradeStatus = FRIEND_PENDING`) จะต้องถูกบันทึกลงใน Database พร้อมกัน หากเกิดข้อผิดพลาดใดๆ ขึ้นระหว่างทำงาน ข้อมูลจะถูก Rollback ทั้งหมด ไม่เกิดสภาวะข้อมูลค้างหรือผิดเพี้ยน
+
+---
+
+### 🧪 หมวดที่ 5: Testing Strategy (Unit Tests)
+
+#### ❓ คำถามที่ 9: "ทำไมใน `TradeMatchingServiceTest` ถึงใช้ Mockito แทนที่จะต่อ Database จริง?"
+* **แนวทางการตอบ (Core Rationale)**:
+  1. **Test Isolation**: การทดสอบ Unit Test ของ Service Layer มุ่งเน้นการตรวจสอบ "Business Logic และ Algorithm" ไม่ใช่การทดสอบ Database Connection
+  2. **Speed & Determinism**: การ Mock ด้วย `@Mock` ทำให้รันเทสได้เร็วระดับมิลลิวินาที ไม่ต้องรอสร้างตารางหรือรัน Migration
+  3. **Edge Case Simulation**: สามารถจำลองเงื่อนไขสุดโต่งได้ง่าย เช่น จำลองให้ Repository หาข้อมูลไม่เจอ, จำลองให้ไอดีทุกตัวติด `BUSY`, หรือจำลองสต็อกไม่พอ เพื่อทดสอบว่าโยน Exception ถูกต้องหรือไม่
+
+#### ❓ คำถามที่ 10: "ใน `OrderStateTest` มีการทดสอบครอบคลุมด้านใดบ้าง?"
+* **แนวทางการตอบ (Core Rationale)**:
+  * มีทั้งหมด 7 หมวดหมู่การทดสอบ (`@Nested`):
+    1. Happy Path Transition (`PENDING` -> `PAID` -> `SHIPPING` -> `COMPLETED`)
+    2. Cancellation Flows (`PENDING` -> `CANCELLED`, `PAID` -> `CANCELLED`)
+    3. Critical Shipping Guard (ห้ามยกเลิกขณะ `SHIPPING`)
+    4. Terminal States Protection (`COMPLETED` และ `CANCELLED` ปฏิเสธทุก Action)
+    5. Illegal Transitions (ทดสอบการข้ามขั้น)
+    6. String Action Execution (`executeAction`)
+    7. Factory Method & Entity Synchronization (`fromOrder`)
+
+---
+
+### 📊 ตารางสรุปหัวใจสำคัญของโค้ด (Cheat Sheet Matrix สำหรับเปิดดูตอนสอบ)
+
+| ส่วนของโค้ด / ไฟล์ | Design Pattern / หลักการ | เหตุผลสำคัญที่ต้องตอบอาจารย์ |
+| :--- | :--- | :--- |
+| **`OrderState` / `OrderContext`** | GoF State Pattern | ควบคุม State Machine ของออเดอร์, ขจัด `if-else`, รองรับ OCP และ Polymorphism |
+| **`OrderState.java` Default Methods** | Fail-Fast Principle | โยน `InvalidOrderStateException` เป็นค่าเริ่มต้น ป้องกัน Action ผิดกฎ |
+| **`ShippingOrderState.cancel()`** | Business Invariant Guard | ห้ามกดยกเลิกขณะส่งการ์ดในเกม ป้องกันปัญหา Free-Card Loss |
+| **`CancelledOrderState`** | Stock Restoration | คืนสต็อกการ์ดที่จองไว้กลับเข้าคลังอัตโนมัติ |
+| **`GlobalExceptionHandler`** | AOP & `@RestControllerAdvice` | รวมศูนย์การจัดการ Error, แยก Cross-Cutting Concern, คืน `ErrorResponse` มาตรฐาน |
+| **`TradeMatchingServiceImpl`** | Sorting & Filter Algorithm | คัดเลือกไอดี `READY` สต็อกสูงสุด, มี Re-assignment Guard, บันทึกผ่าน `@Transactional` |
+| **`TradeMatchingApiController`** | REST Controller & Swagger | Routing เฉพาะ HTTP, ห่อผลลัพธ์ด้วย `ApiResponse<T>`, มี OpenAPI Docs ครบ |
+| **`OrderStateTest`** | Unit Test with BDD AssertJ | แยก 7 `@Nested` suites ตรวจสอบ State Machine ทุก Transition และ Guards |
+| **`TradeMatchingServiceTest`** | Mockito Test Isolation | จำลอง Repositories ทั้งหมด ตรวจสอบทั้งผลลัพธ์และ Behavior Verification (`verify()`) |
