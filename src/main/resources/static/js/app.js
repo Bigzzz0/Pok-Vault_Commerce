@@ -521,7 +521,6 @@ function showChatCommerceModal(orderData, targetCard, friendId, ign) {
     const cardElem = document.getElementById('chatOrderCardName');
     const friendElem = document.getElementById('chatOrderFriendId');
     const finalElem = document.getElementById('chatOrderFinalAmt');
-    const messengerBtn = document.getElementById('chatMessengerBtn');
 
     const cardTitle = targetCard ? `${targetCard.cardName} (${targetCard.condition}) x${targetCard.quantity}` : 'Pokémon TCG Card';
     const finalAmountStr = `฿${orderData.finalAmount.toFixed(2)}`;
@@ -531,22 +530,20 @@ function showChatCommerceModal(orderData, targetCard, friendId, ign) {
     if (friendElem) friendElem.textContent = friendId;
     if (finalElem) finalElem.textContent = finalAmountStr;
 
-    // Compose prefilled message for Facebook Messenger
+    // Compose the order summary staff send to the customer
     const summaryMsg = `สวัสดีครับ สั่งจองการ์ดผ่านเว็บเรียบร้อยแล้วครับ!\n• รหัสคำสั่งซื้อ: #${orderData.orderCode}\n• รายการการ์ด: ${cardTitle}\n• ยอดชำระ: ${finalAmountStr} (ส่วนลด Strategy: -฿${orderData.discountAmount.toFixed(2)})\n• รหัสเพื่อนในเกม (Friend ID): ${friendId}\n• ชื่อเทรนเนอร์ (IGN): ${ign || '-'}\nขอส่งหลักฐานการโอนเงินและนัดส่งการ์ดเทรดในเกมครับ`;
     lastChatSummaryText = summaryMsg;
 
-    const messengerUrl = buildMessengerUrl(summaryMsg);
-    if (messengerBtn) messengerBtn.href = messengerUrl;
-
     modal.classList.add('active');
 
-    // Handshake: copy the order summary first (the page must still be focused), then jump straight to Messenger
-    copyToClipboard(summaryMsg, 'คัดลอกข้อความสรุปออเดอร์แล้ว! วางส่งในแชทได้ทันที')
-        .then(() => openMessengerDeepLink(messengerUrl));
+    // Handshake: copy the order summary and stay on this page (staff paste it into the chat themselves)
+    const hint = document.getElementById('chatHandshakeHint');
+    if (hint) hint.textContent = 'คัดลอกข้อความสรุปออเดอร์แล้ว — วางส่งให้ลูกค้าในแชทได้เลย';
+    copyToClipboard(summaryMsg, 'คัดลอกข้อความสรุปออเดอร์แล้ว! วางส่งในแชทได้ทันที');
 }
 
-// Opens the deep link without waiting for a click. Browsers allow this only while the click on
-// "Confirm Booking" still counts as a user gesture; if the popup is blocked the button stays as the fallback.
+// Opens the Messenger link in a new tab (used by the customer "Inbox FB" button).
+// Returns false when the browser blocks the popup so the caller can fall back.
 function openMessengerDeepLink(url) {
     const hint = document.getElementById('chatHandshakeHint');
     let opened = null;
