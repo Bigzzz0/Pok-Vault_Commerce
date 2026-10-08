@@ -1,7 +1,9 @@
 package com.pokevault.modules.trade.state;
 
 import com.pokevault.common.exception.InvalidOrderStateException;
+import com.pokevault.domain.entity.CardInventory;
 import com.pokevault.domain.entity.Order;
+import com.pokevault.domain.entity.OrderItem;
 import com.pokevault.domain.enums.OrderStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -74,6 +76,33 @@ class OrderStateTest {
             assertThat(context.getStatus()).isEqualTo(OrderStatus.CANCELLED);
             assertThat(context.getCurrentState()).isInstanceOf(CancelledOrderState.class);
             assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.CANCELLED);
+        }
+
+        @Test
+        @DisplayName("Cancelling an order returns every item's copies to its inventory")
+        void testCancelRestoresStock() {
+            CardInventory charizard = CardInventory.builder().id(10L).quantity(0).build();
+            CardInventory pikachu = CardInventory.builder().id(11L).quantity(4).build();
+            order.getItems().add(OrderItem.builder().order(order).inventory(charizard).quantity(2).build());
+            order.getItems().add(OrderItem.builder().order(order).inventory(pikachu).quantity(1).build());
+
+            context.cancel();
+
+            assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.CANCELLED);
+            assertThat(charizard.getQuantity()).isEqualTo(2);
+            assertThat(pikachu.getQuantity()).isEqualTo(5);
+        }
+
+        @Test
+        @DisplayName("Cancelling a PAID order also returns the stock")
+        void testCancelFromPaidRestoresStock() {
+            CardInventory mewtwo = CardInventory.builder().id(12L).quantity(0).build();
+            order.getItems().add(OrderItem.builder().order(order).inventory(mewtwo).quantity(1).build());
+            context.pay();
+
+            context.cancel();
+
+            assertThat(mewtwo.getQuantity()).isEqualTo(1);
         }
 
         @Test
