@@ -86,7 +86,7 @@
                     <div class="hero-stat-num" th:text="${totalOrders}">1</div>
                     <div class="hero-stat-label">Store Orders</div>
                 </div>
-                <div class="hero-stat-pill" style="border-color: rgba(245, 158, 11, 0.35);">
+                <div class="hero-stat-pill" style="border-color: rgba(245, 158, 11, 0.35);" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                     <div class="hero-stat-num" style="color: var(--accent-gold);" th:text="${lowStockCount}">0</div>
                     <div class="hero-stat-label">Low Stock Alerts</div>
                 </div>
@@ -94,13 +94,13 @@
         </header>
 
         <!-- Low Stock Telemetry Radar (Observer Pattern) -->
-        <section th:if="${lowStockCount > 0}" style="margin-bottom: 3rem;">
+        <section th:if="${lowStockCount > 0}" sec:authorize="hasAnyRole('ADMIN', 'STAFF')" style="margin-bottom: 3rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                 <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--accent-gold); display: flex; align-items: center; gap: 0.6rem;">
                     <div th:replace="~{fragments/icons :: alertTriangle('icon-md')}"></div>
                     <span>Observer Pattern Stock Telemetry (<= 3 copies remaining)</span>
                 </h2>
-                <a th:href="@{/inventory}" class="btn btn-secondary" style="font-size: 0.82rem; padding: 0.4rem 0.85rem;" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">Manage Inventory →</a>
+                <a th:href="@{/inventory}" class="btn btn-secondary" style="font-size: 0.82rem; padding: 0.4rem 0.85rem;">Manage Inventory →</a>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -161,7 +161,7 @@
                          th:data-hp="${c.hp}"
                          th:data-rarity-desc="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}"
                          th:data-desc="${c.description}"
-                         th:data-stock="${c.totalStock}"
+                         th:data-stock="${#authorization.expression('hasAnyRole(''ADMIN'', ''STAFF'')') ? c.totalStock : null}"
                          th:data-element="${c.elementType.name()}"
                          th:data-image="${c.imageUrl}"
                          onclick="handleInspectClick(this)">
@@ -192,7 +192,7 @@
                                     th:data-hp="${c.hp}"
                                     th:data-rarity="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}"
                                     th:data-desc="${c.description}"
-                                    th:data-stock="${c.totalStock}"
+                                    th:data-stock="${#authorization.expression('hasAnyRole(''ADMIN'', ''STAFF'')') ? c.totalStock : null}"
                                     th:data-element="${c.elementType.name()}"
                                     th:data-image="${c.imageUrl}"
                                     onclick="handleInspectClick(this)">
@@ -210,7 +210,7 @@
                     <div class="card-gallery-sub">
                         <div class="card-gallery-title" th:text="${c.name}">Charizard ex</div>
                         <div class="card-gallery-meta">
-                            <span class="stock-bullet" th:text="${c.totalStock} + ' in vault'">5 in vault</span>
+                            <span class="stock-bullet" th:text="${#authorization.expression('hasAnyRole(''ADMIN'', ''STAFF'')') ? c.totalStock + ' in vault' : 'In stock'}">5 in vault</span>
                             <span class="rarity-pill" th:text="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}">4 DIAMOND</span>
                         </div>
                     </div>

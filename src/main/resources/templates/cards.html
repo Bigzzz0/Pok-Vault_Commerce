@@ -137,7 +137,7 @@
                      th:data-hp="${c.hp}"
                      th:data-rarity-desc="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}"
                      th:data-desc="${c.description}"
-                     th:data-stock="${c.totalStock}"
+                     th:data-stock="${#authorization.expression('hasAnyRole(''ADMIN'', ''STAFF'')') ? c.totalStock : null}"
                      th:data-element="${c.elementType.name()}"
                      th:data-image="${c.imageUrl}"
                      onclick="handleInspectClick(this)">
@@ -168,7 +168,7 @@
                                 th:data-hp="${c.hp}"
                                 th:data-rarity="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}"
                                 th:data-desc="${c.description}"
-                                th:data-stock="${c.totalStock}"
+                                th:data-stock="${#authorization.expression('hasAnyRole(''ADMIN'', ''STAFF'')') ? c.totalStock : null}"
                                 th:data-element="${c.elementType.name()}"
                                 th:data-image="${c.imageUrl}"
                                 onclick="handleInspectClick(this)">
@@ -186,7 +186,7 @@
                 <div class="card-gallery-sub">
                     <div class="card-gallery-title" th:text="${c.name}">Charizard ex</div>
                     <div class="card-gallery-meta">
-                        <span class="stock-bullet" th:text="${c.totalStock} + ' in vault'">5 in vault</span>
+                        <span class="stock-bullet" th:text="${#authorization.expression('hasAnyRole(''ADMIN'', ''STAFF'')') ? c.totalStock + ' in vault' : 'In stock'}">5 in vault</span>
                         <span class="rarity-pill" th:text="${c.rarity.name()}">RARITY</span>
                     </div>
                 </div>
