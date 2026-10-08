@@ -171,6 +171,12 @@ public class WebViewController {
         model.addAttribute("readyAccounts", countByStatus(entities, AccountTradeStatus.READY));
         model.addAttribute("cooldownAccounts", countByStatus(entities, AccountTradeStatus.COOLDOWN));
         model.addAttribute("totalElements", entities.size());
+        // staff set each customer's membership tier here
+        model.addAttribute("customers", userRepository.findAll(Sort.by("id")).stream()
+                .filter(u -> u.getRole() == UserRole.CUSTOMER)
+                .map(this::toCustomerView)
+                .toList());
+        model.addAttribute("membershipTiers", MembershipTier.values());
         return "accounts";
     }
 
@@ -336,6 +342,8 @@ public class WebViewController {
         UserProfile profile = user.getUserProfile();
         Map<String, Object> view = new LinkedHashMap<>();
         view.put("id", user.getId());
+        view.put("username", user.getUsername());
+        view.put("email", user.getEmail());
         view.put("displayName", profile != null && profile.getFullName() != null ? profile.getFullName() : user.getUsername());
         view.put("membershipTier", profile != null && profile.getMembershipTier() != null
                 ? profile.getMembershipTier() : MembershipTier.REGULAR);

@@ -199,6 +199,39 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Customer Membership (Strategy Pattern discount tier) -->
+        <div style="margin: 3rem 0 1.25rem;">
+            <h2 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.25rem;">Customer Membership</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">The tier decides the discount on every new order: Regular 0%, VIP 10%, Wholesale 15%</p>
+        </div>
+        <div class="table-wrapper">
+            <table id="customersTable">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Membership Tier</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(customers)}">
+                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">No customers have signed up yet.</td>
+                    </tr>
+                    <tr th:each="c : ${customers}">
+                        <td style="font-weight: 700;" th:text="${c.displayName}">Red Champion</td>
+                        <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent-cyan);" th:text="${c.username}">customer_red</td>
+                        <td style="color: var(--text-secondary);" th:text="${c.email}">red@kanto.com</td>
+                        <td>
+                            <select class="select-field tier-select" th:data-user-id="${c.id}" th:data-name="${c.displayName}" th:data-current="${c.membershipTier}" onchange="updateCustomerTier(this)">
+                                <option th:each="t : ${membershipTiers}" th:value="${t}" th:text="${t}" th:selected="${t == c.membershipTier}">VIP</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </main>
 
     <!-- Modal 1: Register New Game Account -->

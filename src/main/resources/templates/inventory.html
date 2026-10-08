@@ -114,7 +114,17 @@
                             <span th:class="${'stepper-val ' + (inv.lowStock ? 'low-stock-alert' : '')}" th:text="${inv.quantity}">5</span>
                         </td>
                         <td style="color: var(--text-muted);" th:text="'฿' + ${#numbers.formatDecimal(inv.buyInPrice, 1, 2)}">฿250.00</td>
-                        <td style="color: #10b981; font-weight: 800;" th:text="'฿' + ${#numbers.formatDecimal(inv.sellingPrice, 1, 2)}">฿450.00</td>
+                        <td>
+                            <div style="display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap;">
+                                <span style="color: #10b981; font-weight: 800;" th:text="'฿' + ${#numbers.formatDecimal(inv.sellingPrice, 1, 2)}">฿450.00</span>
+                                <button type="button" class="icon-btn price-edit-btn" title="Edit retail price"
+                                        th:data-id="${inv.id}" th:data-name="${inv.cardName}" th:data-number="${inv.expansionCode + ' #' + inv.cardNumber}"
+                                        th:data-price="${inv.sellingPrice}" th:data-cost="${inv.buyInPrice}"
+                                        onclick="openPriceModal(this)">
+                                    <div th:replace="~{fragments/icons :: pencil('icon-xs')}"></div>
+                                </button>
+                            </div>
+                        </td>
                         <td>
                             <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 6px; color: #cbd5e1;" th:text="${inv.storageSlot}">SHOWCASE-01</span>
                         </td>
@@ -227,6 +237,35 @@
                     <span>Confirm Booking &amp; Proceed to Chat</span>
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Edit Retail Price Modal (ADMIN / STAFF) -->
+    <div id="priceModal" class="modal-overlay" onclick="if(event.target === this) closePriceModal()">
+        <div class="modal-container" style="max-width: 440px;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div th:replace="~{fragments/icons :: pencil('icon-md')}"></div>
+                    <div>
+                        <h3 class="modal-title" id="priceCardTitle">Edit Retail Price</h3>
+                        <span id="priceCardNumber" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan);">A1 #004</span>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closePriceModal()">
+                    <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
+                </button>
+            </div>
+            <form id="priceForm" onsubmit="submitPriceUpdate(event)">
+                <div class="modal-body">
+                    <label for="priceInput" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">Retail Price (THB)</label>
+                    <input id="priceInput" type="number" min="0" step="0.01" required class="input-field form-control">
+                    <p id="priceCostHint" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closePriceModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="priceSubmitBtn">Save Price</button>
+                </div>
+            </form>
         </div>
     </div>
 

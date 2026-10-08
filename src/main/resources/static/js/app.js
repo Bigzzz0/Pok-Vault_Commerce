@@ -293,6 +293,11 @@ function openInspection(card) {
     document.getElementById('inspectCardDesc').textContent = card.description || 'Rare Pokémon TCG Pocket collectible card.';
     document.getElementById('inspectCardRarity').textContent = card.rarityDescription || card.rarity;
     document.getElementById('inspectCardStock').textContent = card.totalStock == null ? 'In Stock' : `In Stock: ${card.totalStock} copies`;
+    const priceRow = document.getElementById('inspectCardPriceRow');
+    if (priceRow) {
+        priceRow.style.display = card.price > 0 ? '' : 'none';
+        document.getElementById('inspectCardPrice').textContent = formatBaht(card.price);
+    }
 
     // Dynamic Element Theme for Modal Glow
     const aura = document.getElementById('inspectAura');
@@ -302,6 +307,10 @@ function openInspection(card) {
 
     const modal = document.getElementById('inspectionModal');
     modal.classList.add('active');
+}
+
+function formatBaht(amount) {
+    return '฿' + (Number(amount) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function formatEnumLabel(value) {
@@ -397,6 +406,77 @@ function closeOrderModal() {
     const modal = document.getElementById('orderModal');
     modal.classList.remove('active');
     if (window.soundFx) window.soundFx.playClick();
+}
+
+// --- Back office: edit the retail price of one inventory item ---
+let currentPriceTarget = null;
+
+function openPriceModal(btn) {
+    currentPriceTarget = { id: btn.getAttribute('data-id') };
+    document.getElementById('priceCardTitle').textContent = btn.getAttribute('data-name') || 'Edit Retail Price';
+    document.getElementById('priceCardNumber').textContent = btn.getAttribute('data-number') || '';
+    const input = document.getElementById('priceInput');
+    input.value = (parseFloat(btn.getAttribute('data-price')) || 0).toFixed(2);
+    document.getElementById('priceCostHint').textContent = `Buy-in cost: ${formatBaht(btn.getAttribute('data-cost'))}`;
+    document.getElementById('priceModal').classList.add('active');
+    input.focus();
+    input.select();
+}
+
+function closePriceModal() {
+    document.getElementById('priceModal').classList.remove('active');
+}
+
+async function submitPriceUpdate(event) {
+    event.preventDefault();
+    if (!currentPriceTarget) return;
+    const price = parseFloat(document.getElementById('priceInput').value);
+    if (isNaN(price) || price < 0) {
+        showToast('Please enter a price of 0 or more.', 'danger');
+        return;
+    }
+
+    const submitBtn = document.getElementById('priceSubmitBtn');
+    submitBtn.disabled = true;
+    try {
+        const response = await fetch(`/api/v1/admin/inventories/${currentPriceTarget.id}/price?price=${encodeURIComponent(price.toFixed(2))}`, { method: 'PATCH' });
+        const result = await response.json();
+        if (response.ok && result.success) {
+            showToast(`Retail price updated to ${formatBaht(result.data.sellingPrice)}`, 'success');
+            closePriceModal();
+            setTimeout(() => window.location.reload(), 700);
+        } else {
+            showToast(apiErrorMessage(result, 'Could not update the price.'), 'danger');
+        }
+    } catch (err) {
+        showToast('Network error while updating the price: ' + err.message, 'danger');
+    } finally {
+        submitBtn.disabled = false;
+    }
+}
+
+// --- Back office: set a customer's membership tier (drives the Strategy discount) ---
+async function updateCustomerTier(select) {
+    const userId = select.getAttribute('data-user-id');
+    const previous = select.getAttribute('data-current');
+    const tier = select.value;
+    select.disabled = true;
+    try {
+        const response = await fetch(`/api/v1/admin/customers/${userId}/membership-tier?tier=${encodeURIComponent(tier)}`, { method: 'PATCH' });
+        const result = await response.json();
+        if (response.ok && result.success) {
+            select.setAttribute('data-current', tier);
+            showToast(`${select.getAttribute('data-name')} is now ${tier}`, 'success');
+        } else {
+            select.value = previous;
+            showToast(apiErrorMessage(result, 'Could not update the membership tier.'), 'danger');
+        }
+    } catch (err) {
+        select.value = previous;
+        showToast('Network error while updating the tier: ' + err.message, 'danger');
+    } finally {
+        select.disabled = false;
+    }
 }
 
 function adjustOrderQty(delta) {
