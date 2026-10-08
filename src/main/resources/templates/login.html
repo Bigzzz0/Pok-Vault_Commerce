@@ -25,6 +25,8 @@
         .field .input-field { width: 100%; }
         .login-error { background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); color: var(--accent-ruby); border-radius: 10px; padding: 0.65rem 0.9rem; font-size: 0.88rem; margin-bottom: 1rem; }
         .login-success { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; border-radius: 10px; padding: 0.65rem 0.9rem; font-size: 0.88rem; margin-bottom: 1rem; }
+        .required-mark { color: var(--accent-ruby); font-weight: 800; }
+        .required-note { color: var(--text-muted); font-size: 0.78rem; margin: -0.25rem 0 0.75rem; }
         .login-hint { text-align: center; color: var(--text-muted); font-size: 0.82rem; margin-top: 1.25rem; }
         .login-hint a { color: var(--accent-cyan); font-weight: 700; text-decoration: none; }
     </style>
@@ -79,6 +81,51 @@
                 </button>
             </form>
 
+            <div class="login-success" id="signUpSuccess" role="status" style="display: none; margin-top: 1rem;"></div>
+
+            <!-- Customer self-registration (POST /api/v1/auth/register) -->
+            <form id="signUpForm" autocomplete="on" style="display: none;" onsubmit="submitSignUp(event)">
+                <div class="login-error" id="signUpError" role="alert" style="display: none;"></div>
+
+                <div class="field">
+                    <label for="signUpFacebook">Facebook Name <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="text" id="signUpFacebook" placeholder="Name shown on your Facebook profile" maxlength="100" autocomplete="name" required>
+                </div>
+
+                <div class="field">
+                    <label for="signUpEmail">Email <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="email" id="signUpEmail" placeholder="you@example.com" maxlength="100" autocomplete="email" required>
+                </div>
+
+                <div class="field">
+                    <label for="signUpUsername">Username <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="text" id="signUpUsername" placeholder="Letters, digits and underscore" minlength="3" maxlength="50" pattern="[A-Za-z0-9_]+" autocomplete="username" required>
+                </div>
+
+                <div class="field">
+                    <label for="signUpPassword">Password <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="password" id="signUpPassword" placeholder="At least 8 characters" minlength="8" maxlength="72" autocomplete="new-password" required>
+                </div>
+
+                <div class="field">
+                    <label for="signUpConfirm">Confirm Password <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="password" id="signUpConfirm" placeholder="Re-enter your password" minlength="8" maxlength="72" autocomplete="new-password" required>
+                </div>
+
+                <p class="required-note"><span class="required-mark" aria-hidden="true">*</span> Required</p>
+
+                <button type="submit" class="btn btn-primary" id="signUpSubmit" style="width: 100%; margin-top: 0.5rem;">
+                    <span>Create Customer Account</span>
+                </button>
+            </form>
+
+            <p class="login-hint" id="signUpPrompt">
+                New here? <a href="#" onclick="showSignUp(true); return false;">Create a customer account</a>
+            </p>
+            <p class="login-hint" id="signInPrompt" style="display: none;">
+                Already have an account? <a href="#" onclick="showSignUp(false); return false;">Sign in</a>
+            </p>
+
             <p class="login-hint">
                 <a th:href="@{/}">Continue browsing as guest</a>
             </p>
@@ -101,11 +148,84 @@
             document.getElementById('submitLabel').textContent = ROLE_COPY[role].submit;
         }
 
-        // Allow deep-linking, e.g. /login?portal=manager
+        // Toggle between the sign-in form and the customer sign-up form
+        function showSignUp(show) {
+            document.getElementById('signUpForm').style.display = show ? '' : 'none';
+            document.getElementById('loginForm').style.display = show ? 'none' : '';
+            document.querySelector('.role-switch').style.display = show ? 'none' : '';
+            document.getElementById('signUpPrompt').style.display = show ? 'none' : '';
+            document.getElementById('signInPrompt').style.display = show ? '' : 'none';
+            document.querySelectorAll('.login-card > .login-error, .login-card > .login-success').forEach(function(box) {
+                box.style.display = 'none';
+            });
+            document.querySelector('.login-title').textContent = show ? 'Create your account' : 'Welcome back';
+            if (show) {
+                document.getElementById('loginSubtitle').textContent = 'Sign up as a customer to reserve cards';
+            } else {
+                selectRole('CUSTOMER');
+            }
+        }
+
+        function showSignUpError(message) {
+            var box = document.getElementById('signUpError');
+            box.textContent = message;
+            box.style.display = '';
+        }
+
+        async function submitSignUp(event) {
+            event.preventDefault();
+            var password = document.getElementById('signUpPassword').value;
+            if (password !== document.getElementById('signUpConfirm').value) {
+                showSignUpError('Passwords do not match.');
+                return;
+            }
+
+            var username = document.getElementById('signUpUsername').value.trim();
+            var submitBtn = document.getElementById('signUpSubmit');
+            submitBtn.disabled = true;
+            document.getElementById('signUpError').style.display = 'none';
+
+            try {
+                var response = await fetch('/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        facebookName: document.getElementById('signUpFacebook').value.trim(),
+                        email: document.getElementById('signUpEmail').value.trim(),
+                        username: username,
+                        password: password
+                    })
+                });
+                var result = await response.json();
+
+                if (response.ok && result.success) {
+                    document.getElementById('signUpForm').reset();
+                    showSignUp(false);
+                    document.getElementById('username').value = username;
+                    var success = document.getElementById('signUpSuccess');
+                    success.textContent = 'Account created! Sign in with your new username and password.';
+                    success.style.display = '';
+                    document.getElementById('password').focus();
+                } else {
+                    var details = result.details ? Object.values(result.details) : [];
+                    showSignUpError(details.length ? details.join(' ') : (result.message || 'Could not create the account.'));
+                }
+            } catch (e) {
+                showSignUpError('Network error: ' + e.message);
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Allow deep-linking, e.g. /login?portal=manager or /login?signup
         (function() {
-            var portal = new URLSearchParams(window.location.search).get('portal');
+            var params = new URLSearchParams(window.location.search);
+            var portal = params.get('portal');
             if (portal && portal.toUpperCase() === 'MANAGER') {
                 selectRole('MANAGER');
+            }
+            if (params.has('signup')) {
+                showSignUp(true);
             }
         })();
     </script>
