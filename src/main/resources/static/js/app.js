@@ -582,6 +582,33 @@ function copyChatOrderSummary(btn) {
     }
 }
 
+// --- Card gallery: collapsible filter panel behind the Filter button ---
+const FILTER_PANEL_KEY = 'tcg-filter-panel-open';
+
+function setFilterPanelOpen(open) {
+    const panel = document.getElementById('filterPanel');
+    const btn = document.getElementById('filterToggleBtn');
+    if (!panel || !btn) return;
+    panel.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open);
+}
+
+function toggleFilterPanel() {
+    const panel = document.getElementById('filterPanel');
+    if (!panel) return;
+    const open = !panel.classList.contains('open');
+    setFilterPanelOpen(open);
+    // Pills reload the page, so remember the choice for the rest of the visit
+    try { sessionStorage.setItem(FILTER_PANEL_KEY, open ? '1' : '0'); } catch (e) { /* storage unavailable */ }
+    if (window.soundFx) window.soundFx.playClick();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    let saved = null;
+    try { saved = sessionStorage.getItem(FILTER_PANEL_KEY); } catch (e) { /* storage unavailable */ }
+    if (saved !== null) setFilterPanelOpen(saved === '1');
+});
+
 // --- Customer self-service: Inbox FB + Create Order from the Inspect modal ---
 function inspectCardLabel() {
     const card = currentInspectCard;

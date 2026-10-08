@@ -93,10 +93,29 @@
             </div>
         </header>
 
-        <!-- Official Pokémon Gallery Filter Bar -->
-        <section class="gallery-filter-bar">
-            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <!-- Gallery toolbar: search + Filter button on the right, pills inside the collapsible panel -->
+        <section class="gallery-filter-bar" th:with="activeFilters=${(selectedElement != null ? 1 : 0) + (selectedRarity != null ? 1 : 0)}">
+            <div class="gallery-toolbar">
+                <!-- Search Field -->
+                <form th:action="@{/cards}" method="get" class="gallery-search-box">
+                    <div th:replace="~{fragments/icons :: search('icon-sm')}"></div>
+                    <input type="hidden" name="element" th:if="${selectedElement != null}" th:value="${selectedElement}">
+                    <input type="hidden" name="rarity" th:if="${selectedRarity != null}" th:value="${selectedRarity}">
+                    <input type="text" name="search" th:value="${search}" placeholder="Search Pokémon..." class="gallery-search-input">
+                </form>
+
+                <button type="button" id="filterToggleBtn" class="filter-pill-btn filter-toggle-btn"
+                        th:classappend="${activeFilters > 0} ? 'active'"
+                        th:aria-expanded="${activeFilters > 0}" aria-controls="filterPanel" onclick="toggleFilterPanel()">
+                    <div th:replace="~{fragments/icons :: filter('icon-sm')}"></div>
+                    <span>Filter</span>
+                    <span class="filter-count-badge" th:if="${activeFilters > 0}" th:text="${activeFilters}">1</span>
+                </button>
+            </div>
+
+            <div id="filterPanel" class="filter-panel" th:classappend="${activeFilters > 0} ? 'open'">
                 <!-- Element filter -->
+                <div class="filter-group-label">Element</div>
                 <div class="filter-pills-row">
                     <a th:href="@{${allElementsUrl}}" th:class="${selectedElement == null ? 'filter-pill-btn active' : 'filter-pill-btn'}">
                         <span>All Cards</span>
@@ -107,6 +126,7 @@
                     </a>
                 </div>
                 <!-- Rarity filter -->
+                <div class="filter-group-label">Rarity</div>
                 <div class="filter-pills-row">
                     <a th:href="@{${allRaritiesUrl}}" th:class="${selectedRarity == null ? 'filter-pill-btn active' : 'filter-pill-btn'}">
                         <span>All Rarities</span>
@@ -116,14 +136,6 @@
                     </a>
                 </div>
             </div>
-
-            <!-- Search Field -->
-            <form th:action="@{/cards}" method="get" class="gallery-search-box">
-                <div th:replace="~{fragments/icons :: search('icon-sm')}"></div>
-                <input type="hidden" name="element" th:if="${selectedElement != null}" th:value="${selectedElement}">
-                <input type="hidden" name="rarity" th:if="${selectedRarity != null}" th:value="${selectedRarity}">
-                <input type="text" name="search" th:value="${search}" placeholder="Search Pokémon..." class="gallery-search-input">
-            </form>
         </section>
 
         <!-- Frameless Floating Cards Showcase -->
@@ -190,14 +202,6 @@
                     </div>
                 </div>
 
-                <!-- Minimal Subtitle Beneath Card -->
-                <div class="card-gallery-sub">
-                    <div class="card-gallery-title" th:text="${c.name}">Charizard ex</div>
-                    <div class="card-gallery-meta">
-                        <span class="stock-bullet" th:text="${#authorization.expression('hasAnyRole(''ADMIN'', ''STAFF'')') ? c.totalStock + ' in vault' : 'In stock'}">5 in vault</span>
-                        <span class="rarity-pill" th:text="${c.rarity.name()}">RARITY</span>
-                    </div>
-                </div>
             </div>
         </div>
     </main>

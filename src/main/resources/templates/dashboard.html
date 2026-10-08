@@ -214,14 +214,6 @@
                         </div>
                     </div>
 
-                    <!-- Minimal Subtitle Beneath Card -->
-                    <div class="card-gallery-sub">
-                        <div class="card-gallery-title" th:text="${c.name}">Charizard ex</div>
-                        <div class="card-gallery-meta">
-                            <span class="stock-bullet" th:text="${#authorization.expression('hasAnyRole(''ADMIN'', ''STAFF'')') ? c.totalStock + ' in vault' : 'In stock'}">5 in vault</span>
-                            <span class="rarity-pill" th:text="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}">4 DIAMOND</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
