@@ -715,10 +715,12 @@ function copyCustomerModalFriendCode(btn) {
 
 // --- 8. In-Game Trade Matching & Fulfillment Manager Modal ---
 let currentTradeOrderId = null;
+let currentTradeOrderCode = null;
 let currentTradeCustomerFriendId = null;
 
 async function openTradeModal(orderId, orderCode, customerFriendId) {
     currentTradeOrderId = orderId;
+    currentTradeOrderCode = orderCode || orderId;
     currentTradeCustomerFriendId = customerFriendId || '1111-2222-3333-4444';
 
     const modal = document.getElementById('tradeFulfillmentModal');
@@ -739,13 +741,13 @@ async function openTradeModal(orderId, orderCode, customerFriendId) {
     modal.classList.add('active');
 
     try {
-        const response = await fetch(`/api/v1/orders/${orderId}/trade-recommendations`);
+        const response = await fetch(`/api/v1/trades/orders/${orderId}/recommendations`);
         const result = await response.json();
 
         if (response.ok && result.success) {
-            renderTradeModalContent(result.data);
+            renderTradeModalContent(result.data || []);
         } else {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 2rem;">Error: ${result.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 2rem;">Error: ${apiErrorMessage(result, 'Failed to load trade recommendations')}</td></tr>`;
         }
     } catch (e) {
         tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 2rem;">Network Error: ${e.message}</td></tr>`;
@@ -758,38 +760,59 @@ function closeTradeModal() {
     currentTradeOrderId = null;
 }
 
-function renderTradeModalContent(data) {
+// Accounts holding the card: the backend's recommended account first, then its alternatives
+function tradeCandidates(item) {
+    const candidates = [];
+    if (item.recommendedAccountId) {
+        candidates.push({
+            accountId: item.recommendedAccountId,
+            accountCode: item.recommendedAccountCode,
+            inGameName: item.recommendedInGameName,
+            friendId: item.recommendedFriendId,
+            tradeStatus: item.accountStatus,
+            availableStock: item.availableStock
+        });
+    }
+    return candidates.concat(item.alternativeCandidates || []);
+}
+
+// A READY account holding enough stock of every card in the order, if one exists
+function findSingleTradeAccount(items) {
+    if (!items.length) return null;
+    return tradeCandidates(items[0]).find(acc => items.every(item =>
+        tradeCandidates(item).some(c => c.accountId === acc.accountId
+            && c.tradeStatus === 'READY'
+            && c.availableStock >= item.requestedQuantity))) || null;
+}
+
+function renderTradeModalContent(items) {
     const banner = document.getElementById('tradeRecommendationBanner');
     const tbody = document.getElementById('tradeItemsTableBody');
 
     // Display recommendation insight
     if (banner) {
-        if (data.singleAccountMatchPossible && data.bestSingleAccount) {
-            banner.style.display = 'flex';
-            banner.style.justifyContent = 'space-between';
-            banner.style.alignItems = 'center';
+        const singleAccount = findSingleTradeAccount(items);
+        const unmatched = items.find(item => !item.matchFound);
+
+        if (singleAccount && items.some(item => item.currentAssignedAccountId !== singleAccount.accountId)) {
+            banner.style.display = 'block';
             banner.style.background = 'rgba(16, 185, 129, 0.12)';
             banner.style.border = '1px solid rgba(16, 185, 129, 0.35)';
             banner.innerHTML = `
-                <div>
-                    <div style="color: #10b981; font-weight: 800; font-size: 0.95rem; margin-bottom: 0.2rem;">
-                        ✨ Perfect Single-Account Trade Found!
-                    </div>
-                    <div style="font-size: 0.85rem; color: var(--text-secondary);">
-                        Account <strong>${data.bestSingleAccount.accountCode} (${data.bestSingleAccount.inGameName})</strong> owns ALL cards needed. Fulfill entire order with 1 friend trade!
-                    </div>
+                <div style="color: #10b981; font-weight: 800; font-size: 0.95rem; margin-bottom: 0.2rem;">
+                    ✨ Single-Account Trade Possible!
                 </div>
-                <button type="button" class="btn btn-primary" onclick="triggerAutoMatch()" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;">
-                    Auto-Assign Single Account
-                </button>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                    Account <strong>${singleAccount.accountCode} (${singleAccount.inGameName})</strong> holds ALL cards needed. Assign it to every card to fulfill the order with 1 friend trade.
+                </div>
             `;
-        } else if (data.recommendationMessage) {
+        } else if (unmatched) {
             banner.style.display = 'block';
             banner.style.background = 'rgba(59, 130, 246, 0.1)';
             banner.style.border = '1px solid rgba(59, 130, 246, 0.3)';
             banner.innerHTML = `
                 <div style="color: var(--accent-cyan); font-weight: 700; font-size: 0.88rem;">
-                    💡 Trade Recommendation: ${data.recommendationMessage}
+                    💡 ${unmatched.cardName || 'Order item #' + unmatched.orderItemId}: ${unmatched.recommendationReason}
                 </div>
             `;
         } else {
@@ -797,15 +820,20 @@ function renderTradeModalContent(data) {
         }
     }
 
-    if (!data.itemOptions || data.itemOptions.length === 0) {
+    if (items.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No items found in this order.</td></tr>`;
         return;
     }
 
     let rowsHtml = '';
-    data.itemOptions.forEach(item => {
+    items.forEach(item => {
         const isAssigned = !!item.currentAssignedAccountId;
-        const status = item.tradeStatus || 'UNASSIGNED';
+        const status = item.fulfillmentStatus || 'UNASSIGNED';
+        const candidates = tradeCandidates(item);
+        const assignedAccount = candidates.find(c => c.accountId === item.currentAssignedAccountId);
+        const assignedFriendCode = assignedAccount ? assignedAccount.friendId : null;
+        // Backend rejects reassignment once the trade has been sent
+        const locked = status === 'TRADE_SENT' || status === 'COMPLETED';
 
         let statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 700;">UNASSIGNED</span>`;
         if (status === 'FRIEND_PENDING') {
@@ -817,15 +845,16 @@ function renderTradeModalContent(data) {
         }
 
         // Account options dropdown
-        let selectHtml = `<select onchange="handleAccountSelectChange(${item.orderItemId}, this.value)" class="gallery-search-input" style="font-size: 0.8rem; padding: 0.3rem 0.5rem; border-radius: 6px; background: var(--bg-surface-elevated); color: var(--text-primary); max-width: 220px;">`;
+        let selectHtml = `<select onchange="handleAccountSelectChange(${item.orderItemId}, this.value)" ${locked ? 'disabled' : ''} class="gallery-search-input" style="font-size: 0.8rem; padding: 0.3rem 0.5rem; border-radius: 6px; background: var(--bg-surface-elevated); color: var(--text-primary); max-width: 220px;">`;
         selectHtml += `<option value="" ${!isAssigned ? 'selected' : ''}>-- Select Game Account --</option>`;
 
-        if (item.candidates) {
-            item.candidates.forEach(cand => {
-                const sel = (item.currentAssignedAccountId === cand.accountId) ? 'selected' : '';
-                selectHtml += `<option value="${cand.accountId}" ${sel}>${cand.accountCode} - ${cand.inGameName} (${cand.availableStock} in stock)</option>`;
-            });
-        }
+        candidates.forEach(cand => {
+            const sel = (item.currentAssignedAccountId === cand.accountId) ? 'selected' : '';
+            // Only READY accounts can be assigned
+            const ready = cand.tradeStatus === 'READY';
+            const stockLabel = `${cand.availableStock} in stock${ready ? '' : ', ' + cand.tradeStatus}`;
+            selectHtml += `<option value="${cand.accountId}" ${sel} ${ready ? '' : 'disabled'}>${cand.accountCode} - ${cand.inGameName} (${stockLabel})</option>`;
+        });
         selectHtml += `</select>`;
 
         // Action buttons based on status
@@ -852,20 +881,19 @@ function renderTradeModalContent(data) {
             <tr>
                 <td>
                     <div style="display: flex; align-items: center; gap: 0.6rem;">
-                        <img src="${item.imageUrl}" alt="${item.cardName}" style="width: 36px; height: 50px; object-fit: cover; border-radius: 4px;">
                         <div>
                             <div style="font-weight: 700; font-size: 0.88rem;">${item.cardName}</div>
                             <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">${item.cardNumber}</div>
                         </div>
                     </div>
                 </td>
-                <td style="font-weight: 700;">${item.quantityNeeded}x</td>
+                <td style="font-weight: 700;">${item.requestedQuantity}x</td>
                 <td>${selectHtml}</td>
                 <td>
-                    ${item.currentAssignedAccountFriendCode ? `
+                    ${assignedFriendCode ? `
                         <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: var(--bg-surface-elevated); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-color);">
-                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent-gold);">${item.currentAssignedAccountFriendCode}</span>
-                            <button type="button" class="icon-btn" onclick="copyFriendCode('${item.currentAssignedAccountFriendCode}', this)" title="Copy Friend Code" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: inline-flex; align-items: center; padding: 0;">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent-gold);">${assignedFriendCode}</span>
+                            <button type="button" class="icon-btn" onclick="copyFriendCode('${assignedFriendCode}', this)" title="Copy Friend Code" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: inline-flex; align-items: center; padding: 0;">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                             </button>
                         </div>
@@ -883,7 +911,7 @@ function renderTradeModalContent(data) {
 async function triggerAutoMatch() {
     if (!currentTradeOrderId) return;
     try {
-        const response = await fetch(`/api/v1/orders/${currentTradeOrderId}/auto-match`, {
+        const response = await fetch(`/api/v1/trades/orders/${currentTradeOrderId}/auto-match`, {
             method: 'POST'
         });
         const result = await response.json();
@@ -891,9 +919,9 @@ async function triggerAutoMatch() {
         if (response.ok && result.success) {
             showToast('Order cards auto-matched with optimal Game Accounts!', 'success');
             if (window.soundFx) window.soundFx.playOrderChime();
-            openTradeModal(currentTradeOrderId, currentTradeOrderId, currentTradeCustomerFriendId);
+            openTradeModal(currentTradeOrderId, currentTradeOrderCode, currentTradeCustomerFriendId);
         } else {
-            showToast(result.message || 'Auto-matching failed. Some cards may be out of stock in accounts.', 'danger');
+            showToast(apiErrorMessage(result, 'Auto-matching failed. Some cards may be out of stock in accounts.'), 'danger');
         }
     } catch (e) {
         showToast('Network error: ' + e.message, 'danger');
@@ -903,22 +931,17 @@ async function triggerAutoMatch() {
 async function handleAccountSelectChange(orderItemId, accountId) {
     if (!accountId) return;
     try {
-        const response = await fetch('/api/v1/orders/assign-trade-account', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                orderItemId: parseInt(orderItemId),
-                gameAccountId: parseInt(accountId)
-            })
+        const response = await fetch(`/api/v1/trades/items/${orderItemId}/assign?accountId=${encodeURIComponent(accountId)}`, {
+            method: 'POST'
         });
         const result = await response.json();
 
         if (response.ok && result.success) {
             showToast('Assigned Game Account for this card trade!', 'success');
             if (window.soundFx) window.soundFx.playClick();
-            openTradeModal(currentTradeOrderId, currentTradeOrderId, currentTradeCustomerFriendId);
+            openTradeModal(currentTradeOrderId, currentTradeOrderCode, currentTradeCustomerFriendId);
         } else {
-            showToast(result.message || 'Failed to assign account', 'danger');
+            showToast(apiErrorMessage(result, 'Failed to assign account'), 'danger');
         }
     } catch (e) {
         showToast('Error: ' + e.message, 'danger');
@@ -936,7 +959,7 @@ async function advanceItemTradeStatus(orderItemId, newStatus) {
         if (response.ok && result.success) {
             showToast(`Trade status updated to: ${newStatus}`, 'success');
             if (window.soundFx) window.soundFx.playClick();
-            openTradeModal(currentTradeOrderId, currentTradeOrderId, currentTradeCustomerFriendId);
+            openTradeModal(currentTradeOrderId, currentTradeOrderCode, currentTradeCustomerFriendId);
         } else {
             showToast(result.message || 'Failed to update status', 'danger');
         }
