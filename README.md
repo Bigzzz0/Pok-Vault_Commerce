@@ -8,7 +8,10 @@
 
 - [สมาชิกในทีม](#สมาชิกในทีม)
 - [ความสามารถของระบบ](#ความสามารถของระบบ)
+- [ภาพหน้าจอ](#ภาพหน้าจอ)
+- [ขั้นตอนการสั่งซื้อ](#ขั้นตอนการสั่งซื้อ)
 - [เทคโนโลยีที่ใช้](#เทคโนโลยีที่ใช้)
+- [สถาปัตยกรรม](#สถาปัตยกรรม)
 - [วิธีรันโปรเจกต์](#วิธีรันโปรเจกต์)
 - [บัญชีสำหรับทดสอบ](#บัญชีสำหรับทดสอบ)
 - [หน้าเว็บและสิทธิ์การเข้าถึง](#หน้าเว็บและสิทธิ์การเข้าถึง)
@@ -17,6 +20,8 @@
 - [โครงสร้างโปรเจกต์](#โครงสร้างโปรเจกต์)
 - [การทดสอบและ CI/CD](#การทดสอบและ-cicd)
 - [เอกสารออกแบบ](#เอกสารออกแบบ)
+- [การทำงานร่วมกันด้วย Git](#การทำงานร่วมกันด้วย-git)
+- [ข้อจำกัดที่ทราบ](#ข้อจำกัดที่ทราบ)
 - [Deployment](#deployment)
 
 ## สมาชิกในทีม
@@ -45,6 +50,30 @@
 - จับคู่บัญชีเกมที่ใช้เทรดการ์ดให้ลูกค้า ทั้งแบบเลือกเองและแบบอัตโนมัติ
 - กำหนดระดับสมาชิกของลูกค้า (REGULAR / VIP / WHOLESALE)
 
+## ภาพหน้าจอ
+
+| หน้าแรก | แกลเลอรีการ์ดและตัวกรอง |
+|---|---|
+| ![หน้าแรก](doc/screenshots/home.png) | ![แกลเลอรีการ์ด](doc/screenshots/cards.png) |
+
+| รายละเอียดการ์ด (ลูกค้า) | คลังสินค้า (พนักงาน) |
+|---|---|
+| ![รายละเอียดการ์ด](doc/screenshots/card-detail.png) | ![คลังสินค้า](doc/screenshots/inventory.png) |
+
+| คำสั่งซื้อและสถานะ (พนักงาน) | บัญชีเกมและระดับสมาชิก (พนักงาน) |
+|---|---|
+| ![คำสั่งซื้อ](doc/screenshots/orders.png) | ![บัญชีเกม](doc/screenshots/accounts.png) |
+
+## ขั้นตอนการสั่งซื้อ
+
+1. ลูกค้าเลือกการ์ดในแกลเลอรี กด **สั่งซื้อ** แล้วกรอก Friend ID ในเกม (หรือพนักงานจองแทนที่หน้าคลังสินค้า)
+2. ระบบคิดส่วนลดตามระดับสมาชิก (Strategy) หักสต็อก และสร้างคำสั่งซื้อสถานะ `PENDING` ถ้าสต็อกเหลือ 2 ใบหรือน้อยกว่า Observer จะแจ้งเตือนใน log
+3. ลูกค้าโอนเงินและแจ้งร้าน พนักงานกด **ชำระเงินแล้ว** → `PAID`
+4. พนักงานเปิด **จัดการเทรด** เพื่อเลือกบัญชีเกมที่ถือการ์ดใบนั้น (เลือกเองหรือจับคู่อัตโนมัติ) แล้วกด **เริ่มเทรด** → `SHIPPING`
+5. ร้านเพิ่มเพื่อนและส่งการ์ดให้ลูกค้าในเกม แล้วกด **เทรดสำเร็จ** → `COMPLETED`
+
+ยกเลิกได้ขณะเป็น `PENDING` หรือ `PAID` ระบบจะคืนการ์ดเข้าสต็อก การเปลี่ยนสถานะที่ไม่อยู่ในลำดับนี้ถูก State Pattern ปฏิเสธ
+
 ## เทคโนโลยีที่ใช้
 
 | ส่วน | เทคโนโลยี |
@@ -55,6 +84,29 @@
 | เอกสาร API | springdoc-openapi (Swagger UI) |
 | Build / Test | Maven Wrapper, JUnit 5, Mockito |
 | Container / CI | Docker (multi-stage), Docker Compose, GitHub Actions |
+
+## สถาปัตยกรรม
+
+Layered Architecture แยกตาม module ของแต่ละโดเมน:
+
+```
+Browser (Thymeleaf + JavaScript)
+        │  หน้าเว็บ: WebViewController        REST: /api/v1/**
+        ▼
+Controller  ──►  Service (interface + impl)  ──►  Repository (Spring Data JPA)  ──►  H2 / PostgreSQL
+                      │
+                      ├─ Strategy  : DiscountStrategy     (module order)
+                      ├─ State     : OrderState           (module trade)
+                      └─ Observer  : LowStockObserver     (module vault)
+```
+
+- **Controller** รับ request ตรวจข้อมูลด้วย Bean Validation และตอบกลับเป็น `ApiResponse`
+- **Service** เก็บ business logic ทั้งหมด และเป็นจุดที่เรียกใช้ pattern ทั้งสาม
+- **Repository / Entity** อยู่ชั้นล่างสุด ใช้ร่วมกันทุก module
+- ข้อผิดพลาดถูกแปลงเป็น response รูปแบบเดียวกันโดย `GlobalExceptionHandler`
+- Spring Security ใช้ form login + BCrypt และกำหนดสิทธิ์หน้าเว็บตามบทบาท
+
+แผนภาพฉบับเต็มอยู่ใน [เอกสารออกแบบ](#เอกสารออกแบบ)
 
 ## วิธีรันโปรเจกต์
 
@@ -212,6 +264,21 @@ GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ท�
 | Design Patterns | [doc/design-patterns.md](doc/design-patterns.md) |
 | SOLID Analysis | [doc/solid-analysis.md](doc/solid-analysis.md) |
 | โครงร่างสไลด์นำเสนอ | [doc/slide/presentation-outline.md](doc/slide/presentation-outline.md) |
+
+## การทำงานร่วมกันด้วย Git
+
+- สมาชิกแต่ละคนทำงานใน branch ของตัวเอง ตั้งชื่อแบบ `<ชื่อ>_<รหัสนักศึกษา>_<ลำดับ>` เช่น `soravit_6733802941_02`
+- ส่งงานด้วย Pull Request เข้า `develop` ต้องผ่าน CI และมีเพื่อน review ก่อน merge
+- `main` เป็น branch สำหรับส่งงาน รับงานจาก `develop`
+- commit ใช้รูปแบบ Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`)
+
+## ข้อจำกัดที่ทราบ
+
+- `/api/**` เปิดให้เรียกได้โดยไม่ต้องเข้าสู่ระบบ (ยกเว้น `/api/v1/admin/**` ที่ตรวจบทบาทเอง) เหมาะกับการสาธิตและทดสอบผ่าน Swagger ไม่เหมาะกับการใช้งานจริง
+- ปุ่ม Inbox FB เปิดแชท Facebook ของร้านในแท็บใหม่และคัดลอกข้อความให้ ผู้ใช้ต้องวางข้อความเอง
+- การ์ดในฐานข้อมูลมี 28 ใบ แต่มีรูปและสต็อก 12 ใบ แกลเลอรีแสดงเฉพาะการ์ดที่มีสต็อก
+- ข้อความ error บางส่วนจาก API ยังเป็นภาษาอังกฤษ
+- ฐานข้อมูล Docker ที่สร้างจากเวอร์ชันเก่าต้องล้างด้วย `docker compose down -v` ก่อน ข้อมูลตัวอย่างชุดใหม่จึงจะเข้าครบ
 
 ## Deployment
 
