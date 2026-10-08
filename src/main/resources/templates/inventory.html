@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="th" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémon TCG Pocket - Store Inventory Matrix</title>
+    <title>Pokémon TCG Pocket - คลังสินค้า</title>
     <script>
         (function() {
             var theme = localStorage.getItem('tcg-theme') || 'dark';
@@ -24,43 +24,43 @@
         <div class="nav-links">
             <a th:href="@{/}" class="nav-link">
                 <div th:replace="~{fragments/icons :: dashboard('icon-sm')}"></div>
-                <span>Exhibition</span>
+                <span>หน้าแรก</span>
             </a>
             <a th:href="@{/cards}" class="nav-link">
                 <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
-                <span>Card Gallery</span>
+                <span>แกลเลอรีการ์ด</span>
             </a>
             <a th:href="@{/inventory}" class="nav-link active" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                 <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
-                <span>Vault Inventory</span>
+                <span>คลังสินค้า</span>
             </a>
             <a th:href="@{/accounts}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                 <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
-                <span>Game Accounts</span>
+                <span>บัญชีเกม</span>
             </a>
             <a th:href="@{/orders}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                 <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
-                <span>Orders</span>
+                <span>คำสั่งซื้อ</span>
             </a>
             <a th:href="@{/my-orders}" class="nav-link" sec:authorize="hasRole('CUSTOMER')">
                 <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
-                <span>My Orders</span>
+                <span>คำสั่งซื้อของฉัน</span>
             </a>
             <a href="/swagger-ui.html" target="_blank" class="nav-link swagger-btn" sec:authorize="hasRole('ADMIN')">
-                <span>Swagger OpenAPI</span>
+                <span>Swagger</span>
                 <div th:replace="~{fragments/icons :: externalLink('icon-sm')}"></div>
             </a>
             <a th:href="@{/login}" class="nav-link" sec:authorize="isAnonymous()">
                 <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
-                <span>Sign In</span>
+                <span>เข้าสู่ระบบ</span>
             </a>
             <div class="nav-user" sec:authorize="isAuthenticated()">
-                <span class="nav-user-name">Hi, <strong sec:authentication="name">username</strong></span>
+                <span class="nav-user-name">สวัสดี, <strong sec:authentication="name">username</strong></span>
                 <form th:action="@{/logout}" method="post">
-                    <button type="submit" class="nav-link nav-signout-btn">Sign Out</button>
+                    <button type="submit" class="nav-link nav-signout-btn">ออกจากระบบ</button>
                 </form>
             </div>
-            <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="สลับธีม" aria-label="สลับธีม">
                 <span class="theme-icon-sun" style="display: inline-flex;"><th:block th:replace="~{fragments/icons :: sun('icon-sm')}"></th:block></span>
                 <span class="theme-icon-moon" style="display: none;"><th:block th:replace="~{fragments/icons :: moon('icon-sm')}"></th:block></span>
             </button>
@@ -71,12 +71,12 @@
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
             <div>
-                <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px;">Store Inventory & Stock Matrix</h1>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">Track physical card conditions (Mint / Near Mint / Played), vault locations, and stock levels</p>
+                <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px;">คลังสินค้าและสต็อกการ์ด</h1>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">ติดตามสภาพการ์ด (Mint / Near Mint / Played) ตำแหน่งจัดเก็บ และจำนวนสต็อก</p>
             </div>
             <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--accent-cyan); background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.25); padding: 0.45rem 1rem; border-radius: 8px;"
-                 th:text="'Tracking: ' + ${totalElements} + ' inventory items'">
-                Tracking: 14 inventory items
+                 th:text="'ทั้งหมด ' + ${totalElements} + ' รายการ'">
+                ทั้งหมด 14 รายการ
             </div>
         </div>
 
@@ -84,14 +84,14 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Item ID</th>
-                        <th>Card Item</th>
-                        <th>Condition</th>
-                        <th>Stock</th>
-                        <th>Buy-in Cost</th>
-                        <th>Retail Price</th>
-                        <th>Vault Slot</th>
-                        <th>Action</th>
+                        <th>รหัสรายการ</th>
+                        <th>การ์ด</th>
+                        <th>สภาพ</th>
+                        <th>สต็อก</th>
+                        <th>ต้นทุน</th>
+                        <th>ราคาขาย</th>
+                        <th>ช่องเก็บ</th>
+                        <th>จัดการ</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -103,7 +103,7 @@
                                 <div>
                                     <div style="font-weight: 800; font-size: 1.05rem;" th:text="${inv.cardName}">Charizard ex</div>
                                     <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);" th:text="${inv.expansionCode + ' #' + inv.cardNumber}">A1 #004</div>
-                                    <div class="low-stock-note" th:if="${inv.lowStock}">* low stock</div>
+                                    <div class="low-stock-note" th:if="${inv.lowStock}">* สต็อกใกล้หมด</div>
                                 </div>
                             </div>
                         </td>
@@ -117,7 +117,7 @@
                         <td>
                             <div style="display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap;">
                                 <span style="color: #10b981; font-weight: 800;" th:text="'฿' + ${#numbers.formatDecimal(inv.sellingPrice, 1, 2)}">฿450.00</span>
-                                <button type="button" class="icon-btn price-edit-btn" title="Edit retail price"
+                                <button type="button" class="icon-btn price-edit-btn" title="แก้ไขราคาขาย"
                                         th:data-id="${inv.id}" th:data-name="${inv.cardName}" th:data-number="${inv.expansionCode + ' #' + inv.cardNumber}"
                                         th:data-price="${inv.sellingPrice}" th:data-cost="${inv.buyInPrice}"
                                         onclick="openPriceModal(this)">
@@ -139,7 +139,7 @@
                                     th:disabled="${inv.outOfStock}"
                                     onclick="handleOrderClick(this)">
                                 <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
-                                <span th:text="${inv.outOfStock ? 'Out of Stock' : 'Create Order'}">Create Order</span>
+                                <span th:text="${inv.outOfStock ? 'สินค้าหมด' : 'สร้างคำสั่งซื้อ'}">สั่งซื้อ</span>
                             </button>
                         </td>
                     </tr>
@@ -155,7 +155,7 @@
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <div th:replace="~{fragments/icons :: receipt('icon-md')}"></div>
                     <div>
-                        <h3 class="modal-title" id="orderCardTitle">Order Item</h3>
+                        <h3 class="modal-title" id="orderCardTitle">รายการสั่งซื้อ</h3>
                         <span id="orderCardNumber" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan);">A1 #004</span>
                     </div>
                 </div>
@@ -167,7 +167,7 @@
                 <!-- Customer & Strategy Selector -->
                 <div style="margin-bottom: 1.25rem;">
                     <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">
-                        Select Customer Account (Strategy Pattern Membership Discount):
+                        เลือกบัญชีลูกค้า (ส่วนลดตามระดับสมาชิก - Strategy Pattern):
                     </label>
                     <select id="orderUserSelect" class="select-field" style="width: 100%;" onchange="updateOrderCalculation()">
                         <option th:each="c : ${customers}" th:value="${c.id}" th:data-tier="${c.membershipTier}"
@@ -178,7 +178,7 @@
                 <!-- Quantity Adjuster -->
                 <div style="margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <span style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Quantity:</span>
+                        <span style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">จำนวน:</span>
                         <span id="orderAvailableStock" style="font-size: 0.8rem; color: var(--text-muted);">Available: 5</span>
                     </div>
                     <div class="stepper-control">
@@ -195,15 +195,15 @@
                 <!-- Live Strategy Calculator Box -->
                 <div class="calc-breakdown">
                     <div class="calc-row">
-                        <span>Unit Subtotal:</span>
+                        <span>ราคารวม:</span>
                         <span id="orderCalcSubtotal">฿450.00</span>
                     </div>
                     <div class="calc-row" style="color: var(--accent-gold);">
-                        <span id="orderCalcDiscountRate">VIP Discount (10%):</span>
+                        <span id="orderCalcDiscountRate">ส่วนลด VIP (-10%):</span>
                         <span id="orderCalcDiscountAmt">-฿45.00</span>
                     </div>
                     <div class="calc-row total-row">
-                        <span>Final Price:</span>
+                        <span>ราคาสุทธิ:</span>
                         <span id="orderCalcFinal" style="color: #10b981;">฿405.00</span>
                     </div>
                 </div>
@@ -211,30 +211,30 @@
                 <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                     <div>
                         <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">
-                            Customer Friend ID (In-Game):
+                            Friend ID ของลูกค้า (ในเกม):
                         </label>
                         <input id="orderFriendIdInput" type="text" class="input-field friend-id-input" style="width: 100%; font-family: 'JetBrains Mono', monospace;" placeholder="1234-5678-9012-3456" maxlength="19" inputmode="numeric" autocomplete="off" required>
                     </div>
                     <div>
                         <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">
-                            Customer Trainer Name:
+                            ชื่อเทรนเนอร์ของลูกค้า:
                         </label>
-                        <input id="orderInGameNameInput" type="text" class="input-field" style="width: 100%;" placeholder="e.g. AshMaster" maxlength="100">
+                        <input id="orderInGameNameInput" type="text" class="input-field" style="width: 100%;" placeholder="เช่น AshMaster" maxlength="100">
                     </div>
                 </div>
 
                 <div>
                     <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">
-                        Order Note (Optional):
+                        หมายเหตุ (ไม่บังคับ):
                     </label>
-                    <input id="orderNotesInput" type="text" class="input-field" style="width: 100%;" placeholder="e.g. Sleeved in magnetic one-touch case">
+                    <input id="orderNotesInput" type="text" class="input-field" style="width: 100%;" placeholder="เช่น ใส่ซองและกรอบแม่เหล็ก">
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeOrderModal()">Cancel</button>
+                <button class="btn btn-secondary" onclick="closeOrderModal()">ยกเลิก</button>
                 <button id="orderSubmitBtn" class="btn btn-primary" onclick="submitOrder()">
                     <div th:replace="~{fragments/icons :: creditCard('icon-sm')}"></div>
-                    <span>Confirm Booking &amp; Proceed to Chat</span>
+                    <span>ยืนยันการจอง</span>
                 </button>
             </div>
         </div>
@@ -247,7 +247,7 @@
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <div th:replace="~{fragments/icons :: pencil('icon-md')}"></div>
                     <div>
-                        <h3 class="modal-title" id="priceCardTitle">Edit Retail Price</h3>
+                        <h3 class="modal-title" id="priceCardTitle">แก้ไขราคาขาย</h3>
                         <span id="priceCardNumber" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan);">A1 #004</span>
                     </div>
                 </div>
@@ -257,13 +257,13 @@
             </div>
             <form id="priceForm" onsubmit="submitPriceUpdate(event)">
                 <div class="modal-body">
-                    <label for="priceInput" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">Retail Price (THB)</label>
+                    <label for="priceInput" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">ราคาขาย (บาท)</label>
                     <input id="priceInput" type="number" min="0" step="0.01" required class="input-field form-control">
                     <p id="priceCostHint" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closePriceModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="priceSubmitBtn">Save Price</button>
+                    <button type="button" class="btn btn-secondary" onclick="closePriceModal()">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary" id="priceSubmitBtn">บันทึกราคา</button>
                 </div>
             </form>
         </div>
@@ -276,25 +276,25 @@
                 <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(16, 185, 129, 0.15); border: 2px solid #10b981; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem; color: #10b981;">
                     <div th:replace="~{fragments/icons :: checkCircle('icon-lg')}"></div>
                 </div>
-                <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-pure); margin-bottom: 0.35rem;">Order Placed & Stock Reserved!</h3>
+                <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-pure); margin-bottom: 0.35rem;">บันทึกคำสั่งซื้อและกันสต็อกแล้ว!</h3>
                 <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.25rem;">คำสั่งซื้อถูกบันทึกเข้าระบบเรียบร้อยแล้ว และกันสต็อกการ์ดไว้ให้ลูกค้าแล้ว</p>
 
                 <!-- Order Receipt Card -->
                 <div style="background: var(--bg-surface-muted); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.1rem; text-align: left; margin-bottom: 1.25rem;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.88rem;">
-                        <span style="color: var(--text-muted);">Order Code:</span>
+                        <span style="color: var(--text-muted);">รหัสคำสั่งซื้อ:</span>
                         <strong id="chatOrderCode" style="font-family: 'JetBrains Mono', monospace; color: var(--accent-cyan);">#ORD-2026-001</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.88rem;">
-                        <span style="color: var(--text-muted);">Card Item:</span>
+                        <span style="color: var(--text-muted);">การ์ด:</span>
                         <strong id="chatOrderCardName" style="color: var(--text-pure);">Mewtwo ex (MINT)</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.88rem;">
-                        <span style="color: var(--text-muted);">Your Friend ID:</span>
+                        <span style="color: var(--text-muted);">Friend ID ของลูกค้า:</span>
                         <span id="chatOrderFriendId" style="font-family: 'JetBrains Mono', monospace; color: var(--accent-gold); font-weight: 700;">1111-2222-3333-4444</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px dashed var(--border-subtle); font-size: 1rem;">
-                        <span style="font-weight: 700; color: var(--text-pure);">Total to Pay:</span>
+                        <span style="font-weight: 700; color: var(--text-pure);">ยอดชำระ:</span>
                         <strong id="chatOrderFinalAmt" style="color: #10b981; font-size: 1.15rem; font-weight: 800;">฿405.00</strong>
                     </div>
                 </div>
@@ -305,10 +305,10 @@
                 <div style="display: flex; flex-direction: column; gap: 0.65rem;">
                     <button type="button" class="btn btn-secondary" onclick="copyChatOrderSummary(this)" style="padding: 0.65rem; font-size: 0.85rem; justify-content: center;">
                         <div th:replace="~{fragments/icons :: copy('icon-sm')}"></div>
-                        <span>คัดลอกข้อความสรุปออเดอร์ (Copy Summary)</span>
+                        <span>คัดลอกข้อความสรุปออเดอร์</span>
                     </button>
                     <a th:href="@{/orders}" class="btn btn-secondary" style="padding: 0.65rem; font-size: 0.85rem; justify-content: center; border: none; color: var(--text-muted);">
-                        <span>ดูรายการคำสั่งซื้อทั้งหมด (Go to Orders)</span>
+                        <span>ดูรายการคำสั่งซื้อทั้งหมด</span>
                     </a>
                 </div>
             </div>

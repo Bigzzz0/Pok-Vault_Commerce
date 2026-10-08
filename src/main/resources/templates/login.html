@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémon TCG Pocket - Sign In</title>
+    <title>Pokémon TCG Pocket - เข้าสู่ระบบ</title>
     <script>
         (function() {
             var theme = localStorage.getItem('tcg-theme') || 'dark';
@@ -36,28 +36,28 @@
                 <span>Pokémon TCG Pocket Vault</span>
             </a>
 
-            <h1 class="login-title">Welcome back</h1>
-            <p class="login-sub" id="loginSubtitle">Sign in to your Pokémon TCG Pocket Vault account</p>
+            <h1 class="login-title">ยินดีต้อนรับกลับมา</h1>
+            <p class="login-sub" id="loginSubtitle">เข้าสู่ระบบบัญชี Pokémon TCG Pocket Vault ของคุณ</p>
 
             <div class="login-error" th:if="${param.error}" role="alert">
-                Invalid username or password. Please try again.
+                ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่
             </div>
             <div class="login-success" th:if="${param.logout}" role="status">
-                You have been signed out successfully.
+                ออกจากระบบเรียบร้อยแล้ว
             </div>
             <form th:action="@{/login}" method="post" id="loginForm" autocomplete="on">
                 <div class="field">
-                    <label for="username">Username</label>
-                    <input class="input-field" type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username" required>
+                    <label for="username">ชื่อผู้ใช้</label>
+                    <input class="input-field" type="text" id="username" name="username" placeholder="กรอกชื่อผู้ใช้" autocomplete="username" required>
                 </div>
 
                 <div class="field">
-                    <label for="password">Password</label>
-                    <input class="input-field" type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+                    <label for="password">รหัสผ่าน</label>
+                    <input class="input-field" type="password" id="password" name="password" placeholder="กรอกรหัสผ่าน" autocomplete="current-password" required>
                 </div>
 
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
-                    <span>Sign In</span>
+                    <span>เข้าสู่ระบบ</span>
                 </button>
             </form>
 
@@ -68,46 +68,46 @@
                 <div class="login-error" id="signUpError" role="alert" style="display: none;"></div>
 
                 <div class="field">
-                    <label for="signUpFacebook">Facebook Name <span class="required-mark" aria-hidden="true">*</span></label>
-                    <input class="input-field" type="text" id="signUpFacebook" placeholder="Name shown on your Facebook profile" maxlength="100" autocomplete="name" required>
+                    <label for="signUpFacebook">ชื่อ Facebook <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="text" id="signUpFacebook" placeholder="ชื่อที่แสดงบนโปรไฟล์ Facebook" maxlength="100" autocomplete="name" required>
                 </div>
 
                 <div class="field">
-                    <label for="signUpEmail">Email <span class="required-mark" aria-hidden="true">*</span></label>
+                    <label for="signUpEmail">อีเมล <span class="required-mark" aria-hidden="true">*</span></label>
                     <input class="input-field" type="email" id="signUpEmail" placeholder="you@example.com" maxlength="100" autocomplete="email" required>
                 </div>
 
                 <div class="field">
-                    <label for="signUpUsername">Username <span class="required-mark" aria-hidden="true">*</span></label>
-                    <input class="input-field" type="text" id="signUpUsername" placeholder="Letters, digits and underscore" minlength="3" maxlength="50" pattern="[A-Za-z0-9_]+" autocomplete="username" required>
+                    <label for="signUpUsername">ชื่อผู้ใช้ <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="text" id="signUpUsername" placeholder="ตัวอักษรอังกฤษ ตัวเลข และ _" minlength="3" maxlength="50" pattern="[A-Za-z0-9_]+" autocomplete="username" required>
                 </div>
 
                 <div class="field">
-                    <label for="signUpPassword">Password <span class="required-mark" aria-hidden="true">*</span></label>
-                    <input class="input-field" type="password" id="signUpPassword" placeholder="At least 8 characters" minlength="8" maxlength="72" autocomplete="new-password" required>
+                    <label for="signUpPassword">รหัสผ่าน <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="password" id="signUpPassword" placeholder="อย่างน้อย 8 ตัวอักษร" minlength="8" maxlength="72" autocomplete="new-password" required>
                 </div>
 
                 <div class="field">
-                    <label for="signUpConfirm">Confirm Password <span class="required-mark" aria-hidden="true">*</span></label>
-                    <input class="input-field" type="password" id="signUpConfirm" placeholder="Re-enter your password" minlength="8" maxlength="72" autocomplete="new-password" required>
+                    <label for="signUpConfirm">ยืนยันรหัสผ่าน <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="password" id="signUpConfirm" placeholder="กรอกรหัสผ่านอีกครั้ง" minlength="8" maxlength="72" autocomplete="new-password" required>
                 </div>
 
-                <p class="required-note"><span class="required-mark" aria-hidden="true">*</span> Required</p>
+                <p class="required-note"><span class="required-mark" aria-hidden="true">*</span> จำเป็นต้องกรอก</p>
 
                 <button type="submit" class="btn btn-primary" id="signUpSubmit" style="width: 100%; margin-top: 0.5rem;">
-                    <span>Create Customer Account</span>
+                    <span>สมัครสมาชิก</span>
                 </button>
             </form>
 
             <p class="login-hint" id="signUpPrompt">
-                New here? <a href="#" onclick="showSignUp(true); return false;">Create a customer account</a>
+                ยังไม่มีบัญชี? <a href="#" onclick="showSignUp(true); return false;">สมัครสมาชิกลูกค้า</a>
             </p>
             <p class="login-hint" id="signInPrompt" style="display: none;">
-                Already have an account? <a href="#" onclick="showSignUp(false); return false;">Sign in</a>
+                มีบัญชีอยู่แล้ว? <a href="#" onclick="showSignUp(false); return false;">เข้าสู่ระบบ</a>
             </p>
 
             <p class="login-hint">
-                <a th:href="@{/}">Continue browsing as guest</a>
+                <a th:href="@{/}">เข้าชมต่อโดยไม่เข้าสู่ระบบ</a>
             </p>
         </section>
     </main>
@@ -122,10 +122,10 @@
             document.querySelectorAll('.login-card > .login-error, .login-card > .login-success').forEach(function(box) {
                 box.style.display = 'none';
             });
-            document.querySelector('.login-title').textContent = show ? 'Create your account' : 'Welcome back';
+            document.querySelector('.login-title').textContent = show ? 'สมัครสมาชิก' : 'ยินดีต้อนรับกลับมา';
             document.getElementById('loginSubtitle').textContent = show
-                ? 'Sign up as a customer to reserve cards'
-                : 'Sign in to your Pokémon TCG Pocket Vault account';
+                ? 'สมัครสมาชิกลูกค้าเพื่อสั่งจองการ์ด'
+                : 'เข้าสู่ระบบบัญชี Pokémon TCG Pocket Vault ของคุณ';
         }
 
         function showSignUpError(message) {
@@ -138,7 +138,7 @@
             event.preventDefault();
             var password = document.getElementById('signUpPassword').value;
             if (password !== document.getElementById('signUpConfirm').value) {
-                showSignUpError('Passwords do not match.');
+                showSignUpError('รหัสผ่านทั้งสองช่องไม่ตรงกัน');
                 return;
             }
 
@@ -165,15 +165,15 @@
                     showSignUp(false);
                     document.getElementById('username').value = username;
                     var success = document.getElementById('signUpSuccess');
-                    success.textContent = 'Account created! Sign in with your new username and password.';
+                    success.textContent = 'สมัครสมาชิกสำเร็จ! เข้าสู่ระบบด้วยชื่อผู้ใช้และรหัสผ่านใหม่ได้เลย';
                     success.style.display = '';
                     document.getElementById('password').focus();
                 } else {
                     var details = result.details ? Object.values(result.details) : [];
-                    showSignUpError(details.length ? details.join(' ') : (result.message || 'Could not create the account.'));
+                    showSignUpError(details.length ? details.join(' ') : (result.message || 'ไม่สามารถสมัครสมาชิกได้'));
                 }
             } catch (e) {
-                showSignUpError('Network error: ' + e.message);
+                showSignUpError('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + e.message);
             } finally {
                 submitBtn.disabled = false;
             }

@@ -85,7 +85,7 @@ class RegistrationServiceTest {
 
         assertThatThrownBy(() -> registrationService.registerCustomer(request()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Username is already taken");
+                .hasMessageContaining("ชื่อผู้ใช้นี้ถูกใช้แล้ว");
 
         verify(userRepository, never()).save(any(User.class));
     }
@@ -98,7 +98,7 @@ class RegistrationServiceTest {
 
         assertThatThrownBy(() -> registrationService.registerCustomer(request()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Email is already registered");
+                .hasMessageContaining("อีเมลนี้ถูกใช้สมัครแล้ว");
 
         verify(userRepository, never()).save(any(User.class));
     }

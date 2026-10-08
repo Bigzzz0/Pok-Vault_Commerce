@@ -18,25 +18,25 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegisterRequest {
 
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 50, message = "Username must be 3-50 characters")
-    @Pattern(regexp = "^[A-Za-z0-9_]+$", message = "Username may contain only letters, digits and underscore")
+    @NotBlank(message = "กรุณากรอกชื่อผู้ใช้")
+    @Size(min = 3, max = 50, message = "ชื่อผู้ใช้ต้องยาว 3-50 ตัวอักษร")
+    @Pattern(regexp = "^[A-Za-z0-9_]+$", message = "ชื่อผู้ใช้ใช้ได้เฉพาะตัวอักษรอังกฤษ ตัวเลข และ _")
     private String username;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email format is invalid")
-    @Size(max = 100, message = "Email must not exceed 100 characters")
+    @NotBlank(message = "กรุณากรอกอีเมล")
+    @Email(message = "รูปแบบอีเมลไม่ถูกต้อง")
+    @Size(max = 100, message = "อีเมลต้องยาวไม่เกิน 100 ตัวอักษร")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, max = 72, message = "Password must be 8-72 characters")
+    @NotBlank(message = "กรุณากรอกรหัสผ่าน")
+    @Size(min = 8, max = 72, message = "รหัสผ่านต้องยาว 8-72 ตัวอักษร")
     private String password;
 
     // ชื่อ Facebook ที่ลูกค้าใช้ทักแชทร้าน — เก็บลง user_profiles.full_name
-    @NotBlank(message = "Facebook name is required")
-    @Size(max = 100, message = "Facebook name must not exceed 100 characters")
+    @NotBlank(message = "กรุณากรอกชื่อ Facebook")
+    @Size(max = 100, message = "ชื่อ Facebook ต้องยาวไม่เกิน 100 ตัวอักษร")
     private String facebookName;
 
-    @Size(max = 20, message = "Phone number must not exceed 20 characters")
+    @Size(max = 20, message = "เบอร์โทรต้องยาวไม่เกิน 20 ตัวอักษร")
     private String phoneNumber;
 }

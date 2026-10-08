@@ -23,8 +23,8 @@ function setTheme(theme, playAudio = true) {
 
     const toggleBtns = document.querySelectorAll('.theme-toggle-btn');
     toggleBtns.forEach(btn => {
-        btn.setAttribute('title', theme === 'dark' ? 'Switch to Clean Studio Light' : 'Switch to Pitch-Black Obsidian Vault');
-        btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to Clean Studio Light' : 'Switch to Pitch-Black Obsidian Vault');
+        btn.setAttribute('title', theme === 'dark' ? 'เปลี่ยนเป็นธีมสว่าง' : 'เปลี่ยนเป็นธีมมืด');
+        btn.setAttribute('aria-label', theme === 'dark' ? 'เปลี่ยนเป็นธีมสว่าง' : 'เปลี่ยนเป็นธีมมืด');
         const sunIcon = btn.querySelector('.theme-icon-sun');
         const moonIcon = btn.querySelector('.theme-icon-moon');
         if (sunIcon && moonIcon) {
@@ -47,7 +47,7 @@ function toggleTheme() {
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
     const nextTheme = current === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme, true);
-    showToast(`Switched to ${nextTheme === 'dark' ? 'Pitch-Black Obsidian Vault' : 'Clean Studio Gallery'}`, 'info');
+    showToast(`เปลี่ยนเป็น${nextTheme === 'dark' ? 'ธีมมืด' : 'ธีมสว่าง'}แล้ว`, 'info');
 }
 
 // --- 1. 3D Holographic Parallax Tilt & Specular Light Engine ---
@@ -288,11 +288,11 @@ function openInspection(card) {
     // Pokémon cards show HP; Trainer cards have none, so show their type instead (TRAINER_SUPPORTER -> Trainer Supporter)
     const kindElem = document.getElementById('inspectCardHp');
     const isPokemon = card.hp > 0;
-    kindElem.textContent = isPokemon ? `HP ${card.hp}` : formatEnumLabel(card.cardType);
+    kindElem.textContent = isPokemon ? `HP ${card.hp}` : (CARD_TYPE_LABELS[card.cardType] || formatEnumLabel(card.cardType));
     kindElem.classList.toggle('is-trainer', !isPokemon);
-    document.getElementById('inspectCardDesc').textContent = card.description || 'Rare Pokémon TCG Pocket collectible card.';
+    document.getElementById('inspectCardDesc').textContent = card.description || 'การ์ดสะสม Pokémon TCG Pocket';
     document.getElementById('inspectCardRarity').textContent = card.rarityDescription || card.rarity;
-    document.getElementById('inspectCardStock').textContent = card.totalStock == null ? 'In Stock' : `In Stock: ${card.totalStock} copies`;
+    document.getElementById('inspectCardStock').textContent = card.totalStock == null ? 'มีสินค้า' : `มีสินค้า: ${card.totalStock} ใบ`;
     const priceRow = document.getElementById('inspectCardPriceRow');
     if (priceRow) {
         priceRow.style.display = card.price > 0 ? '' : 'none';
@@ -312,6 +312,8 @@ function openInspection(card) {
 function formatBaht(amount) {
     return '฿' + (Number(amount) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+
+const CARD_TYPE_LABELS = { POKEMON: 'โปเกมอน', TRAINER_SUPPORTER: 'เทรนเนอร์ ซัพพอร์ต', TRAINER_ITEM: 'เทรนเนอร์ ไอเท็ม' };
 
 function formatEnumLabel(value) {
     return (value || '').split('_').filter(Boolean)
@@ -375,7 +377,7 @@ const FRIEND_ID_PATTERN = /^\d{4}-\d{4}-\d{4}-\d{4}$|^\d{16}$/;
 
 function openOrderModal(inventoryId, cardName, cardNumber, condition, unitPrice, availableStock) {
     if (availableStock <= 0) {
-        showToast('This item is currently out of stock!', 'danger');
+        showToast('การ์ดใบนี้หมดสต็อกแล้ว', 'danger');
         return;
     }
 
@@ -391,7 +393,7 @@ function openOrderModal(inventoryId, cardName, cardNumber, condition, unitPrice,
 
     document.getElementById('orderCardTitle').textContent = `${cardName} (${condition})`;
     document.getElementById('orderCardNumber').textContent = cardNumber;
-    document.getElementById('orderAvailableStock').textContent = `Available: ${availableStock} in store`;
+    document.getElementById('orderAvailableStock').textContent = `มีในร้าน: ${availableStock} ใบ`;
     document.getElementById('orderQtyInput').value = 1;
     document.getElementById('orderQtyInput').max = availableStock;
 
@@ -413,11 +415,11 @@ let currentPriceTarget = null;
 
 function openPriceModal(btn) {
     currentPriceTarget = { id: btn.getAttribute('data-id') };
-    document.getElementById('priceCardTitle').textContent = btn.getAttribute('data-name') || 'Edit Retail Price';
+    document.getElementById('priceCardTitle').textContent = btn.getAttribute('data-name') || 'แก้ไขราคาขาย';
     document.getElementById('priceCardNumber').textContent = btn.getAttribute('data-number') || '';
     const input = document.getElementById('priceInput');
     input.value = (parseFloat(btn.getAttribute('data-price')) || 0).toFixed(2);
-    document.getElementById('priceCostHint').textContent = `Buy-in cost: ${formatBaht(btn.getAttribute('data-cost'))}`;
+    document.getElementById('priceCostHint').textContent = `ต้นทุน: ${formatBaht(btn.getAttribute('data-cost'))}`;
     document.getElementById('priceModal').classList.add('active');
     input.focus();
     input.select();
@@ -432,7 +434,7 @@ async function submitPriceUpdate(event) {
     if (!currentPriceTarget) return;
     const price = parseFloat(document.getElementById('priceInput').value);
     if (isNaN(price) || price < 0) {
-        showToast('Please enter a price of 0 or more.', 'danger');
+        showToast('กรุณากรอกราคาตั้งแต่ 0 ขึ้นไป', 'danger');
         return;
     }
 
@@ -442,14 +444,14 @@ async function submitPriceUpdate(event) {
         const response = await fetch(`/api/v1/admin/inventories/${currentPriceTarget.id}/price?price=${encodeURIComponent(price.toFixed(2))}`, { method: 'PATCH' });
         const result = await response.json();
         if (response.ok && result.success) {
-            showToast(`Retail price updated to ${formatBaht(result.data.sellingPrice)}`, 'success');
+            showToast(`อัปเดตราคาขายเป็น ${formatBaht(result.data.sellingPrice)} แล้ว`, 'success');
             closePriceModal();
             setTimeout(() => window.location.reload(), 700);
         } else {
-            showToast(apiErrorMessage(result, 'Could not update the price.'), 'danger');
+            showToast(apiErrorMessage(result, 'อัปเดตราคาไม่สำเร็จ'), 'danger');
         }
     } catch (err) {
-        showToast('Network error while updating the price: ' + err.message, 'danger');
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + err.message, 'danger');
     } finally {
         submitBtn.disabled = false;
     }
@@ -466,14 +468,14 @@ async function updateCustomerTier(select) {
         const result = await response.json();
         if (response.ok && result.success) {
             select.setAttribute('data-current', tier);
-            showToast(`${select.getAttribute('data-name')} is now ${tier}`, 'success');
+            showToast(`${select.getAttribute('data-name')} เป็นสมาชิกระดับ ${tier} แล้ว`, 'success');
         } else {
             select.value = previous;
-            showToast(apiErrorMessage(result, 'Could not update the membership tier.'), 'danger');
+            showToast(apiErrorMessage(result, 'อัปเดตระดับสมาชิกไม่สำเร็จ'), 'danger');
         }
     } catch (err) {
         select.value = previous;
-        showToast('Network error while updating the tier: ' + err.message, 'danger');
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + err.message, 'danger');
     } finally {
         select.disabled = false;
     }
@@ -506,7 +508,7 @@ function updateOrderCalculation() {
     const finalAmount = Math.max(0, subtotal - discountAmount);
 
     document.getElementById('orderCalcSubtotal').textContent = `฿${subtotal.toFixed(2)}`;
-    document.getElementById('orderCalcDiscountRate').textContent = `${tier} (-${(discountRate * 100).toFixed(0)}%)`;
+    document.getElementById('orderCalcDiscountRate').textContent = `ส่วนลด ${tier} (-${(discountRate * 100).toFixed(0)}%)`;
     document.getElementById('orderCalcDiscountAmt').textContent = `-฿${discountAmount.toFixed(2)}`;
     document.getElementById('orderCalcFinal').textContent = `฿${finalAmount.toFixed(2)}`;
 }
@@ -524,7 +526,7 @@ async function submitOrder() {
     const customerInGameName = ignInput ? ignInput.value.trim() : '';
 
     if (!FRIEND_ID_PATTERN.test(customerFriendId)) {
-        showToast('Please enter the customer Friend ID as 16 digits (e.g. 1234-5678-9012-3456).', 'danger');
+        showToast('กรุณากรอก Friend ID ของลูกค้าให้ครบ 16 หลัก (เช่น 1234-5678-9012-3456)', 'danger');
         if (friendIdInput) friendIdInput.focus();
         return;
     }
@@ -546,7 +548,7 @@ async function submitOrder() {
     const submitLabel = submitBtn.querySelector('span') || submitBtn;
     const submitLabelText = submitLabel.textContent;
     submitBtn.disabled = true;
-    submitLabel.textContent = "Processing...";
+    submitLabel.textContent = "กำลังบันทึก...";
 
     try {
         const response = await fetch('/api/v1/orders', {
@@ -559,16 +561,16 @@ async function submitOrder() {
 
         if (response.ok && result.success) {
             if (window.soundFx) window.soundFx.playOrderChime();
-            showToast(`Order ${result.data.orderCode} created! Strategy Discount: -฿${result.data.discountAmount}`, 'success');
+            showToast(`สร้างคำสั่งซื้อ ${result.data.orderCode} แล้ว! ส่วนลด: -฿${result.data.discountAmount}`, 'success');
             closeOrderModal();
             
             // Trigger Chat Commerce Handshake Modal
             showChatCommerceModal(result.data, currentOrderTarget, customerFriendId, customerInGameName);
         } else {
-            showToast(result.message || 'Order failed. Please check stock.', 'danger');
+            showToast(result.message || 'สั่งซื้อไม่สำเร็จ กรุณาตรวจสอบสต็อก', 'danger');
         }
     } catch (err) {
-        showToast('Network error while placing order: ' + err.message, 'danger');
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + err.message, 'danger');
     } finally {
         submitBtn.disabled = false;
         submitLabel.textContent = submitLabelText;
@@ -707,7 +709,7 @@ function openCustomerOrderModal() {
     const card = currentInspectCard;
     if (!modal || !card) return;
     if (!card.inventoryId) {
-        showToast('This card cannot be ordered online right now. Please inbox the store.', 'danger');
+        showToast('การ์ดใบนี้ยังสั่งซื้อออนไลน์ไม่ได้ กรุณา Inbox หาร้าน', 'danger');
         return;
     }
 
@@ -742,7 +744,7 @@ async function submitCustomerOrder(event) {
 
     if (!card || !card.inventoryId || !userId) return;
     if (!FRIEND_ID_PATTERN.test(friendId)) {
-        showToast('Please enter your Friend ID as 16 digits (e.g. 1234-5678-9012-3456).', 'danger');
+        showToast('กรุณากรอก Friend ID ให้ครบ 16 หลัก (เช่น 1234-5678-9012-3456)', 'danger');
         friendInput.focus();
         return;
     }
@@ -768,10 +770,10 @@ async function submitCustomerOrder(event) {
             if (window.soundFx) window.soundFx.playOrderChime();
             showCustomerOrderDone(result.data, friendId, ign);
         } else {
-            showToast(apiErrorMessage(result, 'Order failed. The card may be out of stock.'), 'danger');
+            showToast(apiErrorMessage(result, 'สั่งซื้อไม่สำเร็จ การ์ดอาจหมดสต็อกแล้ว'), 'danger');
         }
     } catch (err) {
-        showToast('Network error while placing order: ' + err.message, 'danger');
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + err.message, 'danger');
     } finally {
         submitBtn.disabled = false;
     }
@@ -791,31 +793,31 @@ function showCustomerOrderDone(order, friendId, ign) {
 
     // No automatic jump to Messenger here: the customer stays on the confirmation and can inbox the store if they want
     document.getElementById('customerOrderDoneHint').textContent =
-        'ติดตามสถานะออเดอร์ได้ที่ My Orders — หากต้องการคุยกับร้าน กด Inbox FB (ข้อความสรุปจะถูกคัดลอกให้)';
-    showToast(`Order ${order.orderCode} created!`, 'success');
+        'ติดตามสถานะออเดอร์ได้ที่หน้า "คำสั่งซื้อของฉัน" — หากต้องการคุยกับร้าน กด Inbox FB (ข้อความสรุปจะถูกคัดลอกให้)';
+    showToast(`สร้างคำสั่งซื้อ ${order.orderCode} แล้ว!`, 'success');
 }
 
 // --- 5. Order State Machine Transition Action ---
 const ORDER_TRANSITIONS = {
     pay: {
-        title: 'Confirm Payment', from: ['PENDING', 'active-pending'], to: ['PAID', 'active-paid'],
-        message: 'Mark this order as paid? Do this after the customer\'s transfer has been checked.',
-        confirm: 'Mark as Paid', background: ''
+        title: 'ยืนยันการชำระเงิน', from: ['PENDING', 'active-pending'], to: ['PAID', 'active-paid'],
+        message: 'บันทึกว่าคำสั่งซื้อนี้ชำระเงินแล้ว? ควรทำหลังตรวจสอบยอดโอนของลูกค้าแล้ว',
+        confirm: 'ชำระเงินแล้ว', background: ''
     },
     ship: {
-        title: 'Start In-Game Trade', from: ['PAID', 'active-paid'], to: ['SHIPPING', 'active-shipping'],
-        message: 'Start sending the cards to the customer through in-game trade?',
-        confirm: 'Start Trade', background: 'linear-gradient(135deg, #7c3aed, #8b5cf6)'
+        title: 'เริ่มเทรดในเกม', from: ['PAID', 'active-paid'], to: ['SHIPPING', 'active-shipping'],
+        message: 'เริ่มส่งการ์ดให้ลูกค้าผ่านการเทรดในเกม?',
+        confirm: 'เริ่มเทรด', background: 'linear-gradient(135deg, #7c3aed, #8b5cf6)'
     },
     complete: {
-        title: 'Complete Trade', from: ['SHIPPING', 'active-shipping'], to: ['COMPLETED', 'active-completed'],
-        message: 'Confirm the customer has received every card? A completed order cannot be changed.',
-        confirm: 'Complete Trade', background: 'linear-gradient(135deg, #059669, #10b981)'
+        title: 'ยืนยันเทรดสำเร็จ', from: ['SHIPPING', 'active-shipping'], to: ['COMPLETED', 'active-completed'],
+        message: 'ยืนยันว่าลูกค้าได้รับการ์ดครบแล้ว? คำสั่งซื้อที่เสร็จสิ้นแล้วจะแก้ไขไม่ได้',
+        confirm: 'เทรดสำเร็จ', background: 'linear-gradient(135deg, #059669, #10b981)'
     },
     cancel: {
-        title: 'Cancel Order', from: null, to: ['CANCELLED', 'active-cancelled'],
-        message: 'Cancel this order? The reserved cards go back into stock. This cannot be undone.',
-        confirm: 'Cancel Order', background: 'linear-gradient(135deg, #dc2626, #ef4444)', dismiss: 'Keep Order'
+        title: 'ยกเลิกคำสั่งซื้อ', from: null, to: ['CANCELLED', 'active-cancelled'],
+        message: 'ยกเลิกคำสั่งซื้อนี้? การ์ดที่จองไว้จะกลับเข้าสต็อก และไม่สามารถย้อนกลับได้',
+        confirm: 'ยกเลิกคำสั่งซื้อ', background: 'linear-gradient(135deg, #dc2626, #ef4444)', dismiss: 'ไม่ยกเลิก'
     }
 };
 let pendingOrderTransition = null;
@@ -825,7 +827,7 @@ function executeOrderTransition(orderId, action, orderCode) {
     const modal = document.getElementById('transitionModal');
     const config = ORDER_TRANSITIONS[action];
     if (!modal || !config) {
-        if (confirm(`Are you sure you want to transition Order #${orderId} with action: '${action}'?`)) {
+        if (confirm(`ยืนยันเปลี่ยนสถานะคำสั่งซื้อ #${orderId} (${action})?`)) {
             runOrderTransition(orderId, action);
         }
         return;
@@ -833,7 +835,7 @@ function executeOrderTransition(orderId, action, orderCode) {
 
     pendingOrderTransition = { orderId, action };
     document.getElementById('transitionTitle').textContent = config.title;
-    document.getElementById('transitionOrderCode').textContent = orderCode || `Order #${orderId}`;
+    document.getElementById('transitionOrderCode').textContent = orderCode || `คำสั่งซื้อ #${orderId}`;
     // The "from" badge mirrors the order's current state in its table row
     const actionBtn = document.querySelector(`.order-actions button[data-order-id="${orderId}"]`);
     const currentNode = actionBtn ? actionBtn.closest('tr').querySelector('.state-node[class*="active-"]') : null;
@@ -844,7 +846,7 @@ function executeOrderTransition(orderId, action, orderCode) {
     toNode.textContent = config.to[0];
     toNode.className = 'state-node ' + config.to[1];
     document.getElementById('transitionMessage').textContent = config.message;
-    document.getElementById('transitionDismissBtn').textContent = config.dismiss || 'Back';
+    document.getElementById('transitionDismissBtn').textContent = config.dismiss || 'ย้อนกลับ';
     const confirmBtn = document.getElementById('transitionConfirmBtn');
     confirmBtn.textContent = config.confirm;
     confirmBtn.style.background = config.background;
@@ -874,13 +876,13 @@ async function runOrderTransition(orderId, action) {
 
         if (response.ok && result.success) {
             if (window.soundFx) window.soundFx.playOrderChime();
-            showToast(`Order status successfully transitioned to: ${result.data.orderStatus}`, 'success');
+            showToast(`เปลี่ยนสถานะคำสั่งซื้อเป็น ${result.data.orderStatus} แล้ว`, 'success');
             setTimeout(() => window.location.reload(), 1000);
         } else {
-            showToast(result.message || 'State transition rejected by State Pattern rules!', 'danger');
+            showToast(result.message || 'เปลี่ยนสถานะไม่ได้ (ไม่ผ่านกฎของ State Pattern)', 'danger');
         }
     } catch (e) {
-        showToast('Network error during state transition: ' + e.message, 'danger');
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + e.message, 'danger');
     }
 }
 
@@ -916,7 +918,7 @@ function showToast(message, type = 'info') {
 // --- 7. Clipboard Copy Helper ---
 // --- 7. Clipboard Copy Utilities ---
 // Returns a promise that settles once the copy attempt is over (never rejects)
-function copyToClipboard(text, label = 'Copied to clipboard!') {
+function copyToClipboard(text, label = 'คัดลอกแล้ว!') {
     if (!text) return Promise.resolve();
     if (navigator.clipboard) {
         return navigator.clipboard.writeText(text).then(() => {
@@ -942,7 +944,7 @@ function legacyCopy(text, label) {
         showToast(label, 'success');
         if (window.soundFx) window.soundFx.playClick();
     } catch (err) {
-        showToast('Failed to copy', 'danger');
+        showToast('คัดลอกไม่สำเร็จ', 'danger');
     }
     document.body.removeChild(textarea);
 }
@@ -1005,12 +1007,12 @@ async function openTradeModal(orderId, orderCode, customerFriendId) {
 
     if (!modal || !tbody) return;
 
-    if (title) title.textContent = `In-Game Trade Manager - Order #${orderCode || orderId}`;
-    if (sub) sub.textContent = `Customer Friend ID: ${currentTradeCustomerFriendId}`;
+    if (title) title.textContent = `จัดการเทรดในเกม - คำสั่งซื้อ #${orderCode || orderId}`;
+    if (sub) sub.textContent = `Friend ID ของลูกค้า: ${currentTradeCustomerFriendId}`;
     if (fcElem) fcElem.textContent = currentTradeCustomerFriendId;
     if (banner) banner.style.display = 'none';
 
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">Calculating trade allocations from Game Accounts Vault...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">กำลังคำนวณบัญชีที่ใช้เทรด...</td></tr>`;
     modal.classList.add('active');
 
     try {
@@ -1020,10 +1022,10 @@ async function openTradeModal(orderId, orderCode, customerFriendId) {
         if (response.ok && result.success) {
             renderTradeModalContent(result.data || []);
         } else {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 2rem;">Error: ${apiErrorMessage(result, 'Failed to load trade recommendations')}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 2rem;">เกิดข้อผิดพลาด: ${apiErrorMessage(result, 'โหลดคำแนะนำการเทรดไม่สำเร็จ')}</td></tr>`;
         }
     } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 2rem;">Network Error: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 2rem;">เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ${e.message}</td></tr>`;
     }
 }
 
@@ -1073,10 +1075,10 @@ function renderTradeModalContent(items) {
             banner.style.border = '1px solid rgba(16, 185, 129, 0.35)';
             banner.innerHTML = `
                 <div style="color: #10b981; font-weight: 800; font-size: 0.95rem; margin-bottom: 0.2rem;">
-                    ✨ Single-Account Trade Possible!
+                    ✨ เทรดจบได้ในบัญชีเดียว!
                 </div>
                 <div style="font-size: 0.85rem; color: var(--text-secondary);">
-                    Account <strong>${singleAccount.accountCode} (${singleAccount.inGameName})</strong> holds ALL cards needed. Assign it to every card to fulfill the order with 1 friend trade.
+                    บัญชี <strong>${singleAccount.accountCode} (${singleAccount.inGameName})</strong> มีการ์ดครบทุกใบ เลือกบัญชีนี้ให้ทุกการ์ดเพื่อปิดออเดอร์ด้วยการเพิ่มเพื่อนครั้งเดียว
                 </div>
             `;
         } else if (unmatched) {
@@ -1085,7 +1087,7 @@ function renderTradeModalContent(items) {
             banner.style.border = '1px solid rgba(59, 130, 246, 0.3)';
             banner.innerHTML = `
                 <div style="color: var(--accent-cyan); font-weight: 700; font-size: 0.88rem;">
-                    💡 ${unmatched.cardName || 'Order item #' + unmatched.orderItemId}: ${unmatched.recommendationReason}
+                    💡 ${unmatched.cardName || 'รายการ #' + unmatched.orderItemId}: ${unmatched.recommendationReason}
                 </div>
             `;
         } else {
@@ -1094,7 +1096,7 @@ function renderTradeModalContent(items) {
     }
 
     if (items.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No items found in this order.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">ไม่พบรายการในคำสั่งซื้อนี้</td></tr>`;
         return;
     }
 
@@ -1108,24 +1110,24 @@ function renderTradeModalContent(items) {
         // Backend rejects reassignment once the trade has been sent
         const locked = status === 'TRADE_SENT' || status === 'COMPLETED';
 
-        let statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 700;">UNASSIGNED</span>`;
+        let statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 700;">ยังไม่เลือกบัญชี</span>`;
         if (status === 'FRIEND_PENDING') {
-            statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-weight: 700;">🤝 FRIEND PENDING</span>`;
+            statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-weight: 700;">🤝 รอเพิ่มเพื่อน</span>`;
         } else if (status === 'TRADE_SENT') {
-            statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #3b82f6; font-weight: 700;">📤 TRADE SENT</span>`;
+            statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #3b82f6; font-weight: 700;">📤 ส่งเทรดแล้ว</span>`;
         } else if (status === 'COMPLETED') {
-            statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 700;">✓ COMPLETED</span>`;
+            statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 700;">✓ สำเร็จ</span>`;
         }
 
         // Account options dropdown
         let selectHtml = `<select onchange="handleAccountSelectChange(${item.orderItemId}, this.value)" ${locked ? 'disabled' : ''} class="gallery-search-input" style="font-size: 0.8rem; padding: 0.3rem 0.5rem; border-radius: 6px; background: var(--bg-surface-elevated); color: var(--text-primary); max-width: 220px;">`;
-        selectHtml += `<option value="" ${!isAssigned ? 'selected' : ''}>-- Select Game Account --</option>`;
+        selectHtml += `<option value="" ${!isAssigned ? 'selected' : ''}>-- เลือกบัญชีเกม --</option>`;
 
         candidates.forEach(cand => {
             const sel = (item.currentAssignedAccountId === cand.accountId) ? 'selected' : '';
             // Only READY accounts can be assigned
             const ready = cand.tradeStatus === 'READY';
-            const stockLabel = `${cand.availableStock} in stock${ready ? '' : ', ' + cand.tradeStatus}`;
+            const stockLabel = `มี ${cand.availableStock} ใบ${ready ? '' : ', ' + cand.tradeStatus}`;
             selectHtml += `<option value="${cand.accountId}" ${sel} ${ready ? '' : 'disabled'}>${cand.accountCode} - ${cand.inGameName} (${stockLabel})</option>`;
         });
         selectHtml += `</select>`;
@@ -1136,17 +1138,17 @@ function renderTradeModalContent(items) {
             if (status === 'UNASSIGNED' || status === 'FRIEND_PENDING') {
                 actionButtons += `
                     <button class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="advanceItemTradeStatus(${item.orderItemId}, 'TRADE_SENT')">
-                        Mark Trade Sent
+                        ส่งเทรดแล้ว
                     </button>
                 `;
             } else if (status === 'TRADE_SENT') {
                 actionButtons += `
                     <button class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="advanceItemTradeStatus(${item.orderItemId}, 'COMPLETED')">
-                        Complete In-Game Trade
+                        เทรดในเกมสำเร็จ
                     </button>
                 `;
             } else if (status === 'COMPLETED') {
-                actionButtons += `<span style="color: #10b981; font-size: 0.8rem; font-weight: 700;">Traded In-Game</span>`;
+                actionButtons += `<span style="color: #10b981; font-size: 0.8rem; font-weight: 700;">เทรดในเกมแล้ว</span>`;
             }
         }
 
@@ -1166,7 +1168,7 @@ function renderTradeModalContent(items) {
                     ${assignedFriendCode ? `
                         <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: var(--bg-surface-elevated); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-color);">
                             <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent-gold);">${assignedFriendCode}</span>
-                            <button type="button" class="icon-btn" onclick="copyFriendCode('${assignedFriendCode}', this)" title="Copy Friend Code" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: inline-flex; align-items: center; padding: 0;">
+                            <button type="button" class="icon-btn" onclick="copyFriendCode('${assignedFriendCode}', this)" title="คัดลอก Friend Code" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: inline-flex; align-items: center; padding: 0;">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                             </button>
                         </div>
@@ -1190,14 +1192,14 @@ async function triggerAutoMatch() {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            showToast('Order cards auto-matched with optimal Game Accounts!', 'success');
+            showToast('จับคู่บัญชีเกมให้การ์ดในออเดอร์แล้ว!', 'success');
             if (window.soundFx) window.soundFx.playOrderChime();
             openTradeModal(currentTradeOrderId, currentTradeOrderCode, currentTradeCustomerFriendId);
         } else {
-            showToast(apiErrorMessage(result, 'Auto-matching failed. Some cards may be out of stock in accounts.'), 'danger');
+            showToast(apiErrorMessage(result, 'จับคู่อัตโนมัติไม่สำเร็จ การ์ดบางใบอาจไม่มีในบัญชีเกม'), 'danger');
         }
     } catch (e) {
-        showToast('Network error: ' + e.message, 'danger');
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + e.message, 'danger');
     }
 }
 
@@ -1210,14 +1212,14 @@ async function handleAccountSelectChange(orderItemId, accountId) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            showToast('Assigned Game Account for this card trade!', 'success');
+            showToast('เลือกบัญชีเกมสำหรับเทรดการ์ดใบนี้แล้ว!', 'success');
             if (window.soundFx) window.soundFx.playClick();
             openTradeModal(currentTradeOrderId, currentTradeOrderCode, currentTradeCustomerFriendId);
         } else {
-            showToast(apiErrorMessage(result, 'Failed to assign account'), 'danger');
+            showToast(apiErrorMessage(result, 'เลือกบัญชีไม่สำเร็จ'), 'danger');
         }
     } catch (e) {
-        showToast('Error: ' + e.message, 'danger');
+        showToast('เกิดข้อผิดพลาด: ' + e.message, 'danger');
     }
 }
 
@@ -1230,14 +1232,14 @@ async function advanceItemTradeStatus(orderItemId, newStatus) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            showToast(`Trade status updated to: ${newStatus}`, 'success');
+            showToast(`อัปเดตสถานะเทรดเป็น ${newStatus} แล้ว`, 'success');
             if (window.soundFx) window.soundFx.playClick();
             openTradeModal(currentTradeOrderId, currentTradeOrderCode, currentTradeCustomerFriendId);
         } else {
-            showToast(result.message || 'Failed to update status', 'danger');
+            showToast(result.message || 'อัปเดตสถานะไม่สำเร็จ', 'danger');
         }
     } catch (e) {
-        showToast('Error: ' + e.message, 'danger');
+        showToast('เกิดข้อผิดพลาด: ' + e.message, 'danger');
     }
 }
 
@@ -1264,7 +1266,7 @@ async function handleCreateAccount(event) {
     const notes = document.getElementById('accNotes').value.trim();
 
     if (!FRIEND_ID_PATTERN.test(friendId)) {
-        showToast('Please enter the Friend Code as 16 digits (e.g. 1234-5678-9012-3456).', 'danger');
+        showToast('กรุณากรอก Friend Code ให้ครบ 16 หลัก (เช่น 1234-5678-9012-3456)', 'danger');
         return;
     }
 
@@ -1285,15 +1287,15 @@ async function handleCreateAccount(event) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            showToast(`Account ${result.data.accountCode} registered in vault!`, 'success');
+            showToast(`เพิ่มบัญชี ${result.data.accountCode} แล้ว!`, 'success');
             if (window.soundFx) window.soundFx.playOrderChime();
             closeCreateAccountModal();
             setTimeout(() => window.location.reload(), 1000);
         } else {
-            showToast(apiErrorMessage(result, 'Failed to register account'), 'danger');
+            showToast(apiErrorMessage(result, 'เพิ่มบัญชีไม่สำเร็จ'), 'danger');
         }
     } catch (e) {
-        showToast('Network error: ' + e.message, 'danger');
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + e.message, 'danger');
     }
 }
 
@@ -1315,7 +1317,7 @@ async function ensureCardsListLoaded() {
         const result = await response.json();
         if (response.ok && result.success) {
             cachedCardsList = result.data;
-            let options = '<option value="" disabled selected>Select Card</option>';
+            let options = '<option value="" disabled selected>เลือกการ์ด</option>';
             result.data.forEach(c => {
                 options += `<option value="${c.id}">${c.expansionCode} #${c.cardNumber} - ${c.name} (${c.rarity})</option>`;
             });
@@ -1356,11 +1358,11 @@ async function handleAddCardSubmit(event) {
     const sellingPrice = parseFloat(document.getElementById('pullSellingPrice').value);
 
     if (!accountId || !cardId) {
-        showToast('Please select both an account and a card', 'danger');
+        showToast('กรุณาเลือกทั้งบัญชีและการ์ด', 'danger');
         return;
     }
     if (isNaN(sellingPrice) || sellingPrice < 0) {
-        showToast('Please enter a selling price', 'danger');
+        showToast('กรุณากรอกราคาขาย', 'danger');
         return;
     }
 
@@ -1380,15 +1382,15 @@ async function handleAddCardSubmit(event) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            showToast(`Pulled card recorded in account stock!`, 'success');
+            showToast(`บันทึกการ์ดเข้าบัญชีแล้ว!`, 'success');
             if (window.soundFx) window.soundFx.playOrderChime();
             closeAddCardModal();
             setTimeout(() => window.location.reload(), 1000);
         } else {
-            showToast(apiErrorMessage(result, 'Failed to record pulled card'), 'danger');
+            showToast(apiErrorMessage(result, 'บันทึกการ์ดไม่สำเร็จ'), 'danger');
         }
     } catch (e) {
-        showToast('Error: ' + e.message, 'danger');
+        showToast('เกิดข้อผิดพลาด: ' + e.message, 'danger');
     }
 }
 
@@ -1402,9 +1404,9 @@ async function inspectAccountCards(accountId, accountCode, inGameName) {
 
     if (!modal || !grid) return;
 
-    if (title) title.textContent = `Account ${accountCode} (${inGameName}) Inventory`;
-    if (sub) sub.textContent = `Pulled cards stored in this game account, ready for trading`;
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">Opening account card vault...</div>';
+    if (title) title.textContent = `การ์ดในบัญชี ${accountCode} (${inGameName})`;
+    if (sub) sub.textContent = `การ์ดที่เปิดได้ในบัญชีเกมนี้ พร้อมสำหรับเทรด`;
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">กำลังโหลดการ์ดในบัญชี...</div>';
     modal.classList.add('active');
     if (window.soundFx) window.soundFx.playInspect();
 
@@ -1414,14 +1416,14 @@ async function inspectAccountCards(accountId, accountCode, inGameName) {
 
         if (response.ok && result.success) {
             const cards = result.data;
-            if (summary) summary.textContent = `Total Unique Cards: ${cards.length}`;
+            if (summary) summary.textContent = `ทั้งหมด ${cards.length} ชนิด`;
 
             if (cards.length === 0) {
                 grid.innerHTML = `
                     <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
-                        <p style="font-size: 1.1rem; margin-bottom: 1rem;">No cards pulled in this account yet.</p>
+                        <p style="font-size: 1.1rem; margin-bottom: 1rem;">บัญชีนี้ยังไม่มีการ์ด</p>
                         <button class="btn btn-primary" onclick="closeAccountCardsModal(); openAddCardForAccount(${accountId});">
-                            Open Pack / Pull First Card
+                            บันทึกการ์ดใบแรก
                         </button>
                     </div>
                 `;
@@ -1463,7 +1465,7 @@ async function inspectAccountCards(accountId, accountCode, inGameName) {
                         <div class="card-gallery-sub">
                             <div class="card-gallery-title">${c.cardName}</div>
                             <div class="card-gallery-meta">
-                                <span class="stock-bullet" style="color: #10b981; font-weight: 700;">${c.quantity}x in account</span>
+                                <span class="stock-bullet" style="color: #10b981; font-weight: 700;">มี ${c.quantity} ใบในบัญชี</span>
                                 <span class="rarity-pill">${c.rarity}</span>
                             </div>
                         </div>
@@ -1474,10 +1476,10 @@ async function inspectAccountCards(accountId, accountCode, inGameName) {
             grid.innerHTML = cardsHtml;
             init3DTilt();
         } else {
-            grid.innerHTML = `<div style="grid-column: 1/-1; color: #ef4444; padding: 2rem;">Error: ${result.message}</div>`;
+            grid.innerHTML = `<div style="grid-column: 1/-1; color: #ef4444; padding: 2rem;">เกิดข้อผิดพลาด: ${result.message}</div>`;
         }
     } catch (e) {
-        grid.innerHTML = `<div style="grid-column: 1/-1; color: #ef4444; padding: 2rem;">Network Error: ${e.message}</div>`;
+        grid.innerHTML = `<div style="grid-column: 1/-1; color: #ef4444; padding: 2rem;">เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ${e.message}</div>`;
     }
 }
 

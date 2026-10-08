@@ -27,10 +27,10 @@ public class RegistrationServiceImpl implements RegistrationService {
         String email = request.getEmail().trim().toLowerCase();
 
         if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("Username is already taken: " + username);
+            throw new IllegalArgumentException("ชื่อผู้ใช้นี้ถูกใช้แล้ว: " + username);
         }
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email is already registered: " + email);
+            throw new IllegalArgumentException("อีเมลนี้ถูกใช้สมัครแล้ว: " + email);
         }
 
         // สมัครผ่านหน้าเว็บได้เฉพาะ CUSTOMER เท่านั้น ไม่รับ role จาก request

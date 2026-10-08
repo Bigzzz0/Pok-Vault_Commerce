@@ -30,7 +30,7 @@ public class StoreAdminServiceImpl implements StoreAdminService {
     @Transactional
     public Map<String, Object> updateSellingPrice(Long inventoryId, BigDecimal sellingPrice) {
         if (sellingPrice == null || sellingPrice.signum() < 0) {
-            throw new IllegalArgumentException("Selling price must be zero or more");
+            throw new IllegalArgumentException("ราคาขายต้องตั้งแต่ 0 ขึ้นไป");
         }
         CardInventory inventory = inventoryRepository.findById(inventoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("CardInventory", "id", inventoryId));
@@ -50,13 +50,13 @@ public class StoreAdminServiceImpl implements StoreAdminService {
     @Transactional
     public Map<String, Object> updateMembershipTier(Long userId, MembershipTier tier) {
         if (tier == null) {
-            throw new IllegalArgumentException("Membership tier is required");
+            throw new IllegalArgumentException("กรุณาเลือกระดับสมาชิก");
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         // ระดับสมาชิกมีผลกับส่วนลด (Strategy) ของลูกค้าเท่านั้น
         if (user.getRole() != UserRole.CUSTOMER) {
-            throw new IllegalArgumentException("Membership tier can only be set for customers");
+            throw new IllegalArgumentException("กำหนดระดับสมาชิกได้เฉพาะบัญชีลูกค้า");
         }
 
         UserProfile profile = user.getUserProfile();

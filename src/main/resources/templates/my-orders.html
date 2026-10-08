@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="th" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémon TCG Pocket - My Orders</title>
+    <title>Pokémon TCG Pocket - คำสั่งซื้อของฉัน</title>
     <script>
         (function() {
             var theme = localStorage.getItem('tcg-theme') || 'dark';
@@ -26,43 +26,43 @@
         <div class="nav-links">
             <a th:href="@{/}" class="nav-link">
                 <div th:replace="~{fragments/icons :: dashboard('icon-sm')}"></div>
-                <span>Exhibition</span>
+                <span>หน้าแรก</span>
             </a>
             <a th:href="@{/cards}" class="nav-link">
                 <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
-                <span>Card Gallery</span>
+                <span>แกลเลอรีการ์ด</span>
             </a>
             <a th:href="@{/inventory}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                 <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
-                <span>Vault Inventory</span>
+                <span>คลังสินค้า</span>
             </a>
             <a th:href="@{/accounts}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                 <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
-                <span>Game Accounts</span>
+                <span>บัญชีเกม</span>
             </a>
             <a th:href="@{/orders}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                 <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
-                <span>Orders</span>
+                <span>คำสั่งซื้อ</span>
             </a>
             <a th:href="@{/my-orders}" class="nav-link active" sec:authorize="hasRole('CUSTOMER')">
                 <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
-                <span>My Orders</span>
+                <span>คำสั่งซื้อของฉัน</span>
             </a>
             <a href="/swagger-ui.html" target="_blank" class="nav-link swagger-btn" sec:authorize="hasRole('ADMIN')">
-                <span>Swagger OpenAPI</span>
+                <span>Swagger</span>
                 <div th:replace="~{fragments/icons :: externalLink('icon-sm')}"></div>
             </a>
             <a th:href="@{/login}" class="nav-link" sec:authorize="isAnonymous()">
                 <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
-                <span>Sign In</span>
+                <span>เข้าสู่ระบบ</span>
             </a>
             <div class="nav-user" sec:authorize="isAuthenticated()">
-                <span class="nav-user-name">Hi, <strong sec:authentication="name">username</strong></span>
+                <span class="nav-user-name">สวัสดี, <strong sec:authentication="name">username</strong></span>
                 <form th:action="@{/logout}" method="post">
-                    <button type="submit" class="nav-link nav-signout-btn">Sign Out</button>
+                    <button type="submit" class="nav-link nav-signout-btn">ออกจากระบบ</button>
                 </form>
             </div>
-            <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="สลับธีม" aria-label="สลับธีม">
                 <span class="theme-icon-sun" style="display: inline-flex;"><th:block th:replace="~{fragments/icons :: sun('icon-sm')}"></th:block></span>
                 <span class="theme-icon-moon" style="display: none;"><th:block th:replace="~{fragments/icons :: moon('icon-sm')}"></th:block></span>
             </button>
@@ -73,12 +73,12 @@
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
             <div>
-                <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px;">My Orders</h1>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">Track the cards you reserved and where each order is in the trade pipeline</p>
+                <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px;">คำสั่งซื้อของฉัน</h1>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">ติดตามการ์ดที่คุณจองไว้ และสถานะของแต่ละคำสั่งซื้อ</p>
             </div>
             <a th:href="@{/cards}" class="btn btn-primary">
                 <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
-                <span>Browse Card Gallery</span>
+                <span>ดูแกลเลอรีการ์ด</span>
             </a>
         </div>
 
@@ -87,17 +87,17 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Order Code</th>
-                        <th>Cards</th>
-                        <th>Your Friend ID</th>
-                        <th>Order Status</th>
-                        <th>Total</th>
+                        <th>รหัสคำสั่งซื้อ</th>
+                        <th>การ์ด</th>
+                        <th>Friend ID ของคุณ</th>
+                        <th>สถานะคำสั่งซื้อ</th>
+                        <th>ยอดรวม</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:if="${#lists.isEmpty(orders)}">
                         <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 3rem;">
-                            You have no orders yet. Browse the <a th:href="@{/cards}" style="color: var(--accent-cyan); font-weight: 700;">Card Gallery</a> and contact the store to reserve a card.
+                            คุณยังไม่มีคำสั่งซื้อ ลองดูที่ <a th:href="@{/cards}" style="color: var(--accent-cyan); font-weight: 700;">แกลเลอรีการ์ด</a> แล้วสั่งจองการ์ดได้เลย
                         </td>
                     </tr>
                     <tr th:each="ord : ${orders}">
@@ -139,7 +139,7 @@
                         </td>
                         <td>
                             <div style="color: #10b981; font-weight: 800; font-size: 1rem;" th:text="'฿' + ${#numbers.formatDecimal(ord.finalAmount, 1, 2)}">฿405.00</div>
-                            <div th:if="${ord.discountAmount > 0}" style="color: var(--accent-gold); font-size: 0.75rem;" th:text="'Save ฿' + ${#numbers.formatDecimal(ord.discountAmount, 1, 2)}">Save ฿45.00</div>
+                            <div th:if="${ord.discountAmount > 0}" style="color: var(--accent-gold); font-size: 0.75rem;" th:text="'ประหยัด ฿' + ${#numbers.formatDecimal(ord.discountAmount, 1, 2)}">Save ฿45.00</div>
                         </td>
                     </tr>
                 </tbody>

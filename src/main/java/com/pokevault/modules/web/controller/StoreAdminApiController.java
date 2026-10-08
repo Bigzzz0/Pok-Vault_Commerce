@@ -43,7 +43,7 @@ public class StoreAdminApiController {
         if (denied != null) {
             return denied;
         }
-        return ResponseEntity.ok(ApiResponse.ok("Selling price updated", storeAdminService.updateSellingPrice(inventoryId, price)));
+        return ResponseEntity.ok(ApiResponse.ok("อัปเดตราคาขายแล้ว", storeAdminService.updateSellingPrice(inventoryId, price)));
     }
 
     @PatchMapping("/customers/{userId}/membership-tier")
@@ -55,18 +55,18 @@ public class StoreAdminApiController {
         if (denied != null) {
             return denied;
         }
-        return ResponseEntity.ok(ApiResponse.ok("Membership tier updated", storeAdminService.updateMembershipTier(userId, tier)));
+        return ResponseEntity.ok(ApiResponse.ok("อัปเดตระดับสมาชิกแล้ว", storeAdminService.updateMembershipTier(userId, tier)));
     }
 
     // /api/** เปิด permitAll ใน SecurityConfig จึงต้องเช็ก role ของ session ที่นี่เอง
     private ResponseEntity<ApiResponse<Map<String, Object>>> denyUnlessBackOffice(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Please sign in as store staff"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("กรุณาเข้าสู่ระบบด้วยบัญชีพนักงาน"));
         }
         boolean backOffice = authentication.getAuthorities().stream()
                 .anyMatch(a -> BACK_OFFICE_ROLES.contains(a.getAuthority()));
         if (!backOffice) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("Only store staff can do this"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("เฉพาะพนักงานร้านเท่านั้นที่ทำรายการนี้ได้"));
         }
         return null;
     }

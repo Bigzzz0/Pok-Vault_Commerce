@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="th" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémon TCG Pocket - Access Denied</title>
+    <title>Pokémon TCG Pocket - ไม่มีสิทธิ์เข้าถึง</title>
     <script>
         (function() {
             var theme = localStorage.getItem('tcg-theme') || 'dark';
@@ -25,16 +25,16 @@
     <main class="denied-shell">
         <section class="denied-card">
             <div class="denied-code">403</div>
-            <h1 class="denied-title">Staff only area</h1>
+            <h1 class="denied-title">พื้นที่สำหรับพนักงานเท่านั้น</h1>
             <p class="denied-sub">
-                <span sec:authorize="isAuthenticated()">You are signed in as <strong sec:authentication="name">username</strong>, a customer account.</span>
-                Vault Inventory, Game Accounts and Orders are for store staff.
+                <span sec:authorize="isAuthenticated()">คุณเข้าสู่ระบบด้วยบัญชี <strong sec:authentication="name">username</strong> ซึ่งเป็นบัญชีลูกค้า</span>
+                หน้าคลังสินค้า บัญชีเกม และคำสั่งซื้อ ใช้ได้เฉพาะพนักงานร้าน
             </p>
             <div class="denied-actions">
-                <a th:href="@{/cards}" class="btn btn-primary">Browse Card Gallery</a>
-                <a th:href="@{/}" class="btn btn-secondary">Home</a>
+                <a th:href="@{/cards}" class="btn btn-primary">ดูแกลเลอรีการ์ด</a>
+                <a th:href="@{/}" class="btn btn-secondary">หน้าแรก</a>
                 <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
-                    <button type="submit" class="btn btn-secondary">Sign in as staff</button>
+                    <button type="submit" class="btn btn-secondary">เข้าสู่ระบบด้วยบัญชีพนักงาน</button>
                 </form>
             </div>
         </section>

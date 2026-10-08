@@ -33,7 +33,7 @@ public class AuthApiController {
     public ResponseEntity<ApiResponse<UserProfileResponse>> register(@Valid @RequestBody RegisterRequest request) {
         UserProfileResponse response = registrationService.registerCustomer(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.ok("Customer account created successfully", response));
+                .body(ApiResponse.ok("สมัครสมาชิกสำเร็จ", response));
     }
 
     // username / email ซ้ำ ตอบ 409 แทน 500 ของ handler กลาง

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&display=swap');
 @import url('pokemon-cards-holo.css');
 
 /* ==========================================================================
@@ -122,7 +122,7 @@
 }
 
 body {
-  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Outfit', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: var(--bg-canvas);
   background-image: var(--body-bg-gradient);
   background-repeat: no-repeat;

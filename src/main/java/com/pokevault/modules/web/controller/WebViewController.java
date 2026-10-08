@@ -231,13 +231,20 @@ public class WebViewController {
                 .build().encode().toUriString();
     }
 
+    private static final Map<String, String> THAI_FILTER_LABELS = Map.ofEntries(
+            Map.entry("FIRE", "ไฟ"), Map.entry("WATER", "น้ำ"), Map.entry("GRASS", "หญ้า"),
+            Map.entry("LIGHTNING", "สายฟ้า"), Map.entry("PSYCHIC", "พลังจิต"), Map.entry("FIGHTING", "ต่อสู้"),
+            Map.entry("DARKNESS", "ความมืด"), Map.entry("METAL", "โลหะ"), Map.entry("DRAGON", "มังกร"),
+            Map.entry("COLORLESS", "ไร้สี"), Map.entry("POKEMON", "โปเกมอน"),
+            Map.entry("TRAINER_SUPPORTER", "เทรนเนอร์ ซัพพอร์ต"), Map.entry("TRAINER_ITEM", "เทรนเนอร์ ไอเท็ม"));
+
     private Map<String, Object> toFilterView(Enum<?> value, boolean active, String url) {
         Map<String, Object> view = new LinkedHashMap<>();
         view.put("name", value.name());
-        // DOUBLE_RARE -> "Double Rare"
-        view.put("label", Arrays.stream(value.name().split("_"))
+        // Thai label for elements / card types; rarities keep the printed name (DOUBLE_RARE -> "Double Rare")
+        view.put("label", THAI_FILTER_LABELS.getOrDefault(value.name(), Arrays.stream(value.name().split("_"))
                 .map(w -> w.charAt(0) + w.substring(1).toLowerCase())
-                .collect(Collectors.joining(" ")));
+                .collect(Collectors.joining(" "))));
         view.put("active", active);
         view.put("url", url);
         return view;
