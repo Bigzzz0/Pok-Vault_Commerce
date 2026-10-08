@@ -48,6 +48,16 @@
                 <span>Swagger OpenAPI</span>
                 <div th:replace="~{fragments/icons :: externalLink('icon-sm')}"></div>
             </a>
+            <a th:href="@{/login}" class="nav-link" sec:authorize="isAnonymous()">
+                <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
+                <span>Sign In</span>
+            </a>
+            <div class="nav-user" sec:authorize="isAuthenticated()">
+                <span class="nav-user-name">Hi, <strong sec:authentication="name">username</strong></span>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="nav-link nav-signout-btn">Sign Out</button>
+                </form>
+            </div>
             <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
                 <span class="theme-icon-sun" style="display: inline-flex;"><th:block th:replace="~{fragments/icons :: sun('icon-sm')}"></th:block></span>
                 <span class="theme-icon-moon" style="display: none;"><th:block th:replace="~{fragments/icons :: moon('icon-sm')}"></th:block></span>
