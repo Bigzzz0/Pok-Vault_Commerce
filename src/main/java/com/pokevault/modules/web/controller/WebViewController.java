@@ -12,6 +12,7 @@ import com.pokevault.domain.enums.CardType;
 import com.pokevault.domain.enums.ElementType;
 import com.pokevault.domain.enums.MembershipTier;
 import com.pokevault.domain.enums.Rarity;
+import com.pokevault.modules.vault.observer.LowStockObserver;
 import com.pokevault.repository.CardExpansionRepository;
 import com.pokevault.repository.CardInventoryRepository;
 import com.pokevault.repository.CardRepository;
@@ -48,7 +49,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class WebViewController {
 
-    private static final int LOW_STOCK_THRESHOLD = 3;
     private static final int FEATURED_CARD_LIMIT = 6;
     private static final String CARD_IMAGE_DIR = "/images/cards/";
     private static final String CARD_BACK_IMAGE = CARD_IMAGE_DIR + "card-back.jpg";
@@ -75,12 +75,6 @@ public class WebViewController {
         Map<Long, Integer> stockByCard = stockByCard(inventories);
         Map<Long, CardInventory> offerByCard = offerByCard(inventories);
 
-        List<Map<String, Object>> lowStock = inventories.stream()
-                .filter(inv -> inv.getQuantity() != null && inv.getQuantity() <= LOW_STOCK_THRESHOLD)
-                .sorted(Comparator.comparing(CardInventory::getQuantity))
-                .map(this::toInventoryView)
-                .toList();
-
         List<Map<String, Object>> featured = cardRepository.findAll(Sort.by(Sort.Direction.DESC, "rarity")).stream()
                 .filter(c -> isInVault(c, stockByCard))
                 .limit(FEATURED_CARD_LIMIT)
@@ -90,8 +84,6 @@ public class WebViewController {
         model.addAttribute("totalCards", cardRepository.count());
         model.addAttribute("totalExpansions", expansionRepository.count());
         model.addAttribute("totalOrders", orderRepository.count());
-        model.addAttribute("lowStockCount", lowStock.size());
-        model.addAttribute("lowStockItems", lowStock);
         model.addAttribute("featuredCards", featured);
         return "dashboard";
     }
@@ -315,6 +307,9 @@ public class WebViewController {
         view.put("condition", inv.getCondition());
         view.put("conditionLabel", inv.getCondition());
         view.put("quantity", inv.getQuantity());
+        // same threshold the backend observer alerts on, so the page and the logs agree
+        view.put("lowStock", inv.getQuantity() != null && inv.getQuantity() <= LowStockObserver.LOW_STOCK_THRESHOLD);
+        view.put("outOfStock", inv.getQuantity() == null || inv.getQuantity() <= 0);
         view.put("buyInPrice", inv.getBuyInPrice());
         view.put("sellingPrice", inv.getSellingPrice());
         view.put("storageSlot", inv.getStorageSlot());

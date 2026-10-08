@@ -718,40 +718,6 @@ function showCustomerOrderDone(order, friendId, ign) {
     showToast(`Order ${order.orderCode} created!`, 'success');
 }
 
-// --- 4. Quick Stock Stepper (Inventory Page) ---
-async function quickAdjustStock(inventoryId, delta) {
-    const qtyElem = document.getElementById(`stockQty_${inventoryId}`);
-    if (!qtyElem) return;
-
-    let currentQty = parseInt(qtyElem.textContent) || 0;
-    let newQty = currentQty + delta;
-    if (newQty < 0) return;
-
-    qtyElem.textContent = newQty;
-
-    try {
-        const response = await fetch(`/api/v1/inventories/${inventoryId}/stock?quantity=${newQty}`, {
-            method: 'PATCH'
-        });
-        const result = await response.json();
-
-        if (response.ok) {
-            showToast(`Stock updated for item #${inventoryId}: ${newQty} in vault`, 'success');
-            if (newQty <= 3) {
-                qtyElem.classList.add('low-stock-alert');
-            } else {
-                qtyElem.classList.remove('low-stock-alert');
-            }
-        } else {
-            qtyElem.textContent = currentQty;
-            showToast(result.message || 'Failed to update stock', 'danger');
-        }
-    } catch (e) {
-        qtyElem.textContent = currentQty;
-        showToast('Error communicating with server', 'danger');
-    }
-}
-
 // --- 5. Order State Machine Transition Action ---
 async function executeOrderTransition(orderId, action) {
     if (!confirm(`Are you sure you want to transition Order #${orderId} with action: '${action}'?`)) {
@@ -839,8 +805,31 @@ function legacyCopy(text, label) {
     document.body.removeChild(textarea);
 }
 
+// Friend ID inputs: digits only, capped at 16, with a dash after every 4th digit
+function formatFriendId(value) {
+    return (value || '').replace(/\D/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1-');
+}
+
+document.addEventListener('input', (event) => {
+    const input = event.target;
+    if (!input.classList || !input.classList.contains('friend-id-input')) return;
+
+    // keep the caret after the same digit it followed before reformatting
+    const digitsBeforeCaret = input.value.slice(0, input.selectionStart).replace(/\D/g, '').length;
+    const formatted = formatFriendId(input.value);
+    input.value = formatted;
+
+    let caret = 0;
+    for (let seen = 0; seen < digitsBeforeCaret && caret < formatted.length; caret++) {
+        if (/\d/.test(formatted[caret])) seen++;
+    }
+    input.setSelectionRange(caret, caret);
+});
+
 function copyFriendCode(code, btn) {
-    copyToClipboard(code, `Friend Code ${code} copied!`);
+    // The game's friend search takes the 16 digits without dashes
+    const digits = (code || '').replace(/\D/g, '');
+    copyToClipboard(digits, `Friend Code ${digits} copied!`);
     if (btn) {
         const origColor = btn.style.color;
         btn.style.color = '#10b981';

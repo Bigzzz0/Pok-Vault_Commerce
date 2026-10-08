@@ -147,6 +147,7 @@ body {
   transition: transform 0.2s ease, stroke 0.2s ease;
 }
 
+.icon-xs { width: 0.85rem; height: 0.85rem; flex-shrink: 0; }
 .icon-sm { width: 1rem; height: 1rem; }
 .icon-md { width: 1.35rem; height: 1.35rem; }
 .icon-lg { width: 1.85rem; height: 1.85rem; }
@@ -808,7 +809,8 @@ body {
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-subtle);
   border-radius: 18px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   box-shadow: var(--shadow-card);
   transition: background 0.3s ease, border-color 0.3s ease;
 }
@@ -929,6 +931,17 @@ tr:hover td {
   color: #a5b4fc;
   border: 1px solid rgba(99, 102, 241, 0.3);
   text-transform: uppercase;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 [data-theme="light"] .rarity-pill {
@@ -1266,4 +1279,62 @@ tr:hover td {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1.5rem;
   }
+}
+
+/* Inventory rows with stock at or below the low-stock threshold */
+.low-stock-note {
+  color: var(--accent-ruby);
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-top: 0.15rem;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  filter: grayscale(0.6);
+}
+
+/* Full-width form controls inside modals */
+.form-control {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+select.form-control {
+  cursor: pointer;
+}
+
+/* Account vault inspector: cards grid with captions that stay inside each tile */
+.account-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1rem 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+.account-cards-grid .gallery-card-unit {
+  min-width: 0;
+}
+
+.account-cards-grid .card-gallery-sub {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  box-sizing: border-box;
+}
+
+.account-cards-grid .card-gallery-title {
+  max-width: 100%;
+}
+
+.account-cards-grid .card-gallery-meta {
+  flex-wrap: wrap;
 }

@@ -47,7 +47,7 @@
                 <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
                 <span>My Orders</span>
             </a>
-            <a href="/swagger-ui.html" target="_blank" class="nav-link swagger-btn">
+            <a href="/swagger-ui.html" target="_blank" class="nav-link swagger-btn" sec:authorize="hasRole('ADMIN')">
                 <span>Swagger OpenAPI</span>
                 <div th:replace="~{fragments/icons :: externalLink('icon-sm')}"></div>
             </a>
@@ -90,53 +90,8 @@
                     <div class="hero-stat-num" th:text="${totalOrders}">1</div>
                     <div class="hero-stat-label">Store Orders</div>
                 </div>
-                <div class="hero-stat-pill" style="border-color: rgba(245, 158, 11, 0.35);" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
-                    <div class="hero-stat-num" style="color: var(--accent-gold);" th:text="${lowStockCount}">0</div>
-                    <div class="hero-stat-label">Low Stock Alerts</div>
-                </div>
             </div>
         </header>
-
-        <!-- Low Stock Telemetry Radar (Observer Pattern) -->
-        <section th:if="${lowStockCount > 0}" sec:authorize="hasAnyRole('ADMIN', 'STAFF')" style="margin-bottom: 3rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-                <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--accent-gold); display: flex; align-items: center; gap: 0.6rem;">
-                    <div th:replace="~{fragments/icons :: alertTriangle('icon-md')}"></div>
-                    <span>Observer Pattern Stock Telemetry (<= 3 copies remaining)</span>
-                </h2>
-                <a th:href="@{/inventory}" class="btn btn-secondary" style="font-size: 0.82rem; padding: 0.4rem 0.85rem;">Manage Inventory →</a>
-            </div>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Card Item</th>
-                            <th>Condition</th>
-                            <th>Stock Remaining</th>
-                            <th>Vault Location</th>
-                            <th>Retail Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="item : ${lowStockItems}">
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 0.85rem;">
-                                    <img th:src="${item.imageUrl}" th:alt="${item.cardName}" class="inv-card-thumb" loading="lazy">
-                                    <div>
-                                        <div style="font-weight: 800;" th:text="${item.cardName}">Charizard ex</div>
-                                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);" th:text="${item.expansionCode + ' #' + item.cardNumber}">A1 #004</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><span class="rarity-pill" th:text="${item.conditionLabel}">MINT</span></td>
-                            <td style="color: var(--accent-ruby); font-weight: 800; font-family: 'JetBrains Mono', monospace;" th:text="${item.quantity}">1</td>
-                            <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent-blue); font-weight: 600;" th:text="${item.storageSlot}">SHOWCASE-01</td>
-                            <td style="color: var(--accent-emerald); font-weight: 800;" th:text="'฿' + ${#numbers.formatDecimal(item.sellingPrice, 1, 2)}">฿450.00</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
 
         <!-- Featured Frameless Cards Showcase -->
         <section>
