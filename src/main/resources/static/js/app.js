@@ -796,11 +796,76 @@ function showCustomerOrderDone(order, friendId, ign) {
 }
 
 // --- 5. Order State Machine Transition Action ---
-async function executeOrderTransition(orderId, action) {
-    if (!confirm(`Are you sure you want to transition Order #${orderId} with action: '${action}'?`)) {
+const ORDER_TRANSITIONS = {
+    pay: {
+        title: 'Confirm Payment', from: ['PENDING', 'active-pending'], to: ['PAID', 'active-paid'],
+        message: 'Mark this order as paid? Do this after the customer\'s transfer has been checked.',
+        confirm: 'Mark as Paid', background: ''
+    },
+    ship: {
+        title: 'Start In-Game Trade', from: ['PAID', 'active-paid'], to: ['SHIPPING', 'active-shipping'],
+        message: 'Start sending the cards to the customer through in-game trade?',
+        confirm: 'Start Trade', background: 'linear-gradient(135deg, #7c3aed, #8b5cf6)'
+    },
+    complete: {
+        title: 'Complete Trade', from: ['SHIPPING', 'active-shipping'], to: ['COMPLETED', 'active-completed'],
+        message: 'Confirm the customer has received every card? A completed order cannot be changed.',
+        confirm: 'Complete Trade', background: 'linear-gradient(135deg, #059669, #10b981)'
+    },
+    cancel: {
+        title: 'Cancel Order', from: null, to: ['CANCELLED', 'active-cancelled'],
+        message: 'Cancel this order? The reserved cards go back into stock. This cannot be undone.',
+        confirm: 'Cancel Order', background: 'linear-gradient(135deg, #dc2626, #ef4444)', dismiss: 'Keep Order'
+    }
+};
+let pendingOrderTransition = null;
+
+// Asks for confirmation in a modal, then runs the transition
+function executeOrderTransition(orderId, action, orderCode) {
+    const modal = document.getElementById('transitionModal');
+    const config = ORDER_TRANSITIONS[action];
+    if (!modal || !config) {
+        if (confirm(`Are you sure you want to transition Order #${orderId} with action: '${action}'?`)) {
+            runOrderTransition(orderId, action);
+        }
         return;
     }
 
+    pendingOrderTransition = { orderId, action };
+    document.getElementById('transitionTitle').textContent = config.title;
+    document.getElementById('transitionOrderCode').textContent = orderCode || `Order #${orderId}`;
+    // The "from" badge mirrors the order's current state in its table row
+    const actionBtn = document.querySelector(`.order-actions button[data-order-id="${orderId}"]`);
+    const currentNode = actionBtn ? actionBtn.closest('tr').querySelector('.state-node[class*="active-"]') : null;
+    const fromNode = document.getElementById('transitionFrom');
+    fromNode.textContent = currentNode ? currentNode.textContent.trim() : (config.from ? config.from[0] : 'CURRENT');
+    fromNode.className = currentNode ? currentNode.className : 'state-node ' + (config.from ? config.from[1] : '');
+    const toNode = document.getElementById('transitionTo');
+    toNode.textContent = config.to[0];
+    toNode.className = 'state-node ' + config.to[1];
+    document.getElementById('transitionMessage').textContent = config.message;
+    document.getElementById('transitionDismissBtn').textContent = config.dismiss || 'Back';
+    const confirmBtn = document.getElementById('transitionConfirmBtn');
+    confirmBtn.textContent = config.confirm;
+    confirmBtn.style.background = config.background;
+    confirmBtn.disabled = false;
+    modal.classList.add('active');
+}
+
+function closeTransitionModal() {
+    document.getElementById('transitionModal').classList.remove('active');
+    pendingOrderTransition = null;
+}
+
+async function confirmOrderTransition() {
+    if (!pendingOrderTransition) return;
+    const { orderId, action } = pendingOrderTransition;
+    document.getElementById('transitionConfirmBtn').disabled = true;
+    await runOrderTransition(orderId, action);
+    closeTransitionModal();
+}
+
+async function runOrderTransition(orderId, action) {
     try {
         const response = await fetch(`/api/v1/orders/${orderId}/status?action=${action}`, {
             method: 'PATCH'

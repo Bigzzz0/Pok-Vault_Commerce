@@ -177,7 +177,8 @@
                                 <button th:if="${ord.orderStatus.name() == 'PENDING'}" 
                                         class="btn btn-primary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem;"
                                         th:data-order-id="${ord.id}"
-                                        onclick="executeOrderTransition(this.dataset.orderId, 'pay')">
+                                        th:data-order-code="${ord.orderCode}"
+                                        onclick="executeOrderTransition(this.dataset.orderId, 'pay', this.dataset.orderCode)">
                                     <div th:replace="~{fragments/icons :: creditCard('icon-sm')}"></div>
                                     <span>Pay</span>
                                 </button>
@@ -185,7 +186,8 @@
                                 <button th:if="${ord.orderStatus.name() == 'PAID'}" 
                                         class="btn btn-primary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem; background: linear-gradient(135deg, #7c3aed, #8b5cf6);"
                                         th:data-order-id="${ord.id}"
-                                        onclick="executeOrderTransition(this.dataset.orderId, 'ship')">
+                                        th:data-order-code="${ord.orderCode}"
+                                        onclick="executeOrderTransition(this.dataset.orderId, 'ship', this.dataset.orderCode)">
                                     <div th:replace="~{fragments/icons :: truck('icon-sm')}"></div>
                                     <span>Start Trade</span>
                                 </button>
@@ -194,7 +196,8 @@
                                 <button th:if="${ord.orderStatus.name() == 'SHIPPING'}" 
                                         class="btn btn-primary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem; background: linear-gradient(135deg, #059669, #10b981);"
                                         th:data-order-id="${ord.id}"
-                                        onclick="executeOrderTransition(this.dataset.orderId, 'complete')">
+                                        th:data-order-code="${ord.orderCode}"
+                                        onclick="executeOrderTransition(this.dataset.orderId, 'complete', this.dataset.orderCode)">
                                     <div th:replace="~{fragments/icons :: checkCircle('icon-sm')}"></div>
                                     <span>Complete Trade</span>
                                 </button>
@@ -203,7 +206,8 @@
                                 <button th:if="${ord.orderStatus.name() == 'PENDING' || ord.orderStatus.name() == 'PAID'}" 
                                         class="btn btn-secondary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem; color: #ef4444; border-color: rgba(239,68,68,0.3);"
                                         th:data-order-id="${ord.id}"
-                                        onclick="executeOrderTransition(this.dataset.orderId, 'cancel')">
+                                        th:data-order-code="${ord.orderCode}"
+                                        onclick="executeOrderTransition(this.dataset.orderId, 'cancel', this.dataset.orderCode)">
                                     <div th:replace="~{fragments/icons :: xCircle('icon-sm')}"></div>
                                     <span>Cancel</span>
                                 </button>
@@ -224,6 +228,31 @@
             </table>
         </div>
     </main>
+
+    <!-- Order state transition confirmation -->
+    <div id="transitionModal" class="modal-overlay" onclick="if(event.target === this) closeTransitionModal()">
+        <div class="modal-container" style="max-width: 440px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="transitionTitle">Confirm</h3>
+                <button type="button" class="modal-close-btn" onclick="closeTransitionModal()">
+                    <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <div id="transitionOrderCode" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 1.25rem; color: var(--accent-cyan); margin-bottom: 0.85rem;">ORD-2026-001</div>
+                <div class="state-pipeline" style="justify-content: center; margin-bottom: 1rem;">
+                    <span id="transitionFrom" class="state-node">PENDING</span>
+                    <span style="color: var(--text-muted);">→</span>
+                    <span id="transitionTo" class="state-node">PAID</span>
+                </div>
+                <p id="transitionMessage" style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;"></p>
+            </div>
+            <div class="modal-footer transition-footer">
+                <button type="button" class="btn btn-secondary" id="transitionDismissBtn" onclick="closeTransitionModal()">Back</button>
+                <button type="button" class="btn btn-primary" id="transitionConfirmBtn" onclick="confirmOrderTransition()">Confirm</button>
+            </div>
+        </div>
+    </div>
 
     <!-- In-Game Trade Matching & Fulfillment Modal -->
     <div id="tradeFulfillmentModal" class="modal-overlay" onclick="if(event.target === this) closeTradeModal()">

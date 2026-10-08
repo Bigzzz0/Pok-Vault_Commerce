@@ -929,6 +929,15 @@ tr:hover td {
   padding: 4px 7px;
 }
 
+.modal-footer.transition-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.transition-footer .btn {
+  justify-content: center;
+}
+
 .orders-table .state-pipeline {
   gap: 0.3rem;
 }
