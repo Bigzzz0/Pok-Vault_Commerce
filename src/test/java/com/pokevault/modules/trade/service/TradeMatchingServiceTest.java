@@ -92,7 +92,7 @@ class TradeMatchingServiceTest {
                 .accountCode("ACC-BUSY-01")
                 .inGameName("Green_Trader")
                 .friendId("7777-8888-9999")
-                .tradeStatus(AccountTradeStatus.BUSY)
+                .tradeStatus(AccountTradeStatus.BUSY_TRADING)
                 .build();
 
         // readyAccount1 มี 5 ใบ, readyAccount2 มี 2 ใบ, busyAccount มี 10 ใบ

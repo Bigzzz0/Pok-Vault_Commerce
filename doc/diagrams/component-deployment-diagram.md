@@ -36,6 +36,8 @@ flowchart TB
             WebPageCtrl["WebViewController\n(@Controller)"]
             ExAdvice["GlobalExceptionHandler\n(@RestControllerAdvice)"]
             OpenAPI["SpringDoc OpenAPI / Swagger\n(API Documentation)"]
+            SecConfig["SecurityConfig & FilterChain\n(Spring Security 6 Engine)"]
+            UserSec["CustomUserDetailsService\n(Spring Security UserDetails Provider)"]
         end
 
         %% Service Layer Components
