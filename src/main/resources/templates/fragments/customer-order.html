@@ -43,7 +43,7 @@
                     <input id="customerOrderIgn" type="text" class="input-field" style="width: 100%;" placeholder="Your trainer name" maxlength="100">
                 </div>
                 <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 1rem;">
-                    Member discounts are applied automatically. After ordering, send the summary to the store on Messenger to arrange payment and the in-game trade.
+                    Member discounts are applied automatically. You can track this order in My Orders.
                 </p>
             </div>
             <div class="modal-footer">
@@ -55,7 +55,7 @@
             </div>
         </form>
 
-        <!-- Step 2: confirmation + Messenger handshake -->
+        <!-- Step 2: confirmation (Messenger is optional) -->
         <div id="customerOrderDone" style="display: none;">
             <div class="modal-body" style="text-align: center;">
                 <div style="color: #10b981; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.35rem;">Order created!</div>
@@ -64,10 +64,10 @@
                 <p id="customerOrderDoneHint" style="font-size: 0.85rem; color: var(--text-secondary);"></p>
             </div>
             <div class="modal-footer">
-                <a th:href="@{/my-orders}" class="btn btn-secondary">View My Orders</a>
-                <a id="customerOrderMessengerBtn" href="#" target="_blank" rel="noopener" class="btn btn-primary" onclick="copyChatOrderSummary()">
-                    <span>Open Messenger</span>
+                <a id="customerOrderMessengerBtn" href="#" target="_blank" rel="noopener" class="btn btn-secondary" onclick="copyChatOrderSummary()" style="border-color: #0084ff; color: #0084ff;">
+                    <span>Inbox FB</span>
                 </a>
+                <a th:href="@{/my-orders}" class="btn btn-primary">View My Orders</a>
             </div>
         </div>
     </div>

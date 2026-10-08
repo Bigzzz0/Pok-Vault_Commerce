@@ -712,13 +712,10 @@ function showCustomerOrderDone(order, friendId, ign) {
     document.getElementById('customerOrderForm').style.display = 'none';
     document.getElementById('customerOrderDone').style.display = '';
 
-    // Same handshake as the staff booking flow: copy the summary first, then jump to Messenger
-    const hint = document.getElementById('customerOrderDoneHint');
-    copyToClipboard(summary, 'คัดลอกข้อความสรุปออเดอร์แล้ว! วางส่งในแชทได้ทันที').then(() => {
-        hint.textContent = openMessengerDeepLink(url)
-            ? 'เปิด Messenger ให้แล้ว — วางข้อความ (Ctrl+V) แล้วกดส่งได้เลย'
-            : 'คัดลอกข้อความแล้ว — กดปุ่ม Open Messenger แล้ววาง (Ctrl+V)';
-    });
+    // No automatic jump to Messenger here: the customer stays on the confirmation and can inbox the store if they want
+    document.getElementById('customerOrderDoneHint').textContent =
+        'ติดตามสถานะออเดอร์ได้ที่ My Orders — หากต้องการคุยกับร้าน กด Inbox FB (ข้อความสรุปจะถูกคัดลอกให้)';
+    showToast(`Order ${order.orderCode} created!`, 'success');
 }
 
 // --- 4. Quick Stock Stepper (Inventory Page) ---
