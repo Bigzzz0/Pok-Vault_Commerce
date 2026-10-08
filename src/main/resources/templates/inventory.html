@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,15 +30,15 @@
                 <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
                 <span>Card Gallery</span>
             </a>
-            <a th:href="@{/inventory}" class="nav-link active">
+            <a th:href="@{/inventory}" class="nav-link active" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                 <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
                 <span>Vault Inventory</span>
             </a>
-            <a th:href="@{/accounts}" class="nav-link">
+            <a th:href="@{/accounts}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                 <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
                 <span>Game Accounts</span>
             </a>
-            <a th:href="@{/orders}" class="nav-link">
+            <a th:href="@{/orders}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                 <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
                 <span>Orders</span>
             </a>
