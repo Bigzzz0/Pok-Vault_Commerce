@@ -14,6 +14,7 @@ import com.pokevault.domain.enums.MembershipTier;
 import com.pokevault.domain.enums.Rarity;
 import com.pokevault.domain.enums.UserRole;
 import com.pokevault.modules.vault.observer.LowStockObserver;
+import com.pokevault.modules.web.service.GuestCustomerInitializer;
 import com.pokevault.repository.CardExpansionRepository;
 import com.pokevault.repository.CardInventoryRepository;
 import com.pokevault.repository.CardRepository;
@@ -142,9 +143,10 @@ public class WebViewController {
                 .map(this::toInventoryView)
                 .toList();
 
-        // staff book on behalf of customers only
+        // staff book on behalf of customers only; the shared guest account (Facebook orders) goes last
         List<Map<String, Object>> customers = userRepository.findAll(Sort.by("id")).stream()
                 .filter(u -> u.getRole() == UserRole.CUSTOMER)
+                .sorted(Comparator.comparing(this::isGuest))
                 .map(this::toCustomerView)
                 .toList();
 
@@ -173,7 +175,7 @@ public class WebViewController {
         model.addAttribute("totalElements", entities.size());
         // staff set each customer's membership tier here
         model.addAttribute("customers", userRepository.findAll(Sort.by("id")).stream()
-                .filter(u -> u.getRole() == UserRole.CUSTOMER)
+                .filter(u -> u.getRole() == UserRole.CUSTOMER && !isGuest(u))
                 .map(this::toCustomerView)
                 .toList());
         model.addAttribute("membershipTiers", MembershipTier.values());
@@ -336,6 +338,10 @@ public class WebViewController {
         view.put("notes", account.getNotes());
         view.put("totalCardsCount", totalCards);
         return view;
+    }
+
+    private boolean isGuest(User user) {
+        return GuestCustomerInitializer.GUEST_USERNAME.equals(user.getUsername());
     }
 
     private Map<String, Object> toCustomerView(User user) {
