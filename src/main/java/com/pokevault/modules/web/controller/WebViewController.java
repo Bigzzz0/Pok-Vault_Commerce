@@ -8,6 +8,7 @@ import com.pokevault.domain.entity.OrderItem;
 import com.pokevault.domain.entity.User;
 import com.pokevault.domain.entity.UserProfile;
 import com.pokevault.domain.enums.AccountTradeStatus;
+import com.pokevault.domain.enums.CardType;
 import com.pokevault.domain.enums.ElementType;
 import com.pokevault.domain.enums.MembershipTier;
 import com.pokevault.domain.enums.Rarity;
@@ -98,10 +99,12 @@ public class WebViewController {
     @GetMapping("/cards")
     public String cards(@RequestParam(required = false) String element,
                         @RequestParam(required = false) String rarity,
+                        @RequestParam(required = false) String type,
                         @RequestParam(required = false) String search,
                         Model model) {
         ElementType selectedElement = parseEnum(ElementType.class, element);
         Rarity selectedRarity = parseEnum(Rarity.class, rarity);
+        CardType selectedType = parseEnum(CardType.class, type);
         String keyword = search == null ? "" : search.trim().toLowerCase();
         List<CardInventory> inventories = inventoryRepository.findAll();
         Map<Long, Integer> stockByCard = stockByCard(inventories);
@@ -113,6 +116,7 @@ public class WebViewController {
                 .filter(c -> selectedElement == null || selectedElement
                         == (c.getElementType() != null ? c.getElementType() : ElementType.COLORLESS))
                 .filter(c -> selectedRarity == null || c.getRarity() == selectedRarity)
+                .filter(c -> selectedType == null || c.getCardType() == selectedType)
                 .filter(c -> keyword.isEmpty() || c.getName().toLowerCase().contains(keyword))
                 .map(c -> toCardView(c, stockByCard, offerByCard.get(c.getId())))
                 .toList();
@@ -121,15 +125,20 @@ public class WebViewController {
         model.addAttribute("totalElements", cards.size());
         model.addAttribute("selectedElement", selectedElement);
         model.addAttribute("selectedRarity", selectedRarity);
+        model.addAttribute("selectedType", selectedType);
         model.addAttribute("search", search);
-        // each pill keeps the other filter and the search term, so the filters combine
-        model.addAttribute("allElementsUrl", cardsUrl(null, selectedRarity, search));
+        // each pill keeps the other filters and the search term, so the filters combine
+        model.addAttribute("allElementsUrl", cardsUrl(null, selectedRarity, selectedType, search));
         model.addAttribute("elementFilters", Arrays.stream(ElementType.values())
-                .map(e -> toFilterView(e, e == selectedElement, cardsUrl(e, selectedRarity, search)))
+                .map(e -> toFilterView(e, e == selectedElement, cardsUrl(e, selectedRarity, selectedType, search)))
                 .toList());
-        model.addAttribute("allRaritiesUrl", cardsUrl(selectedElement, null, search));
+        model.addAttribute("allRaritiesUrl", cardsUrl(selectedElement, null, selectedType, search));
         model.addAttribute("rarityFilters", Arrays.stream(Rarity.values())
-                .map(r -> toFilterView(r, r == selectedRarity, cardsUrl(selectedElement, r, search)))
+                .map(r -> toFilterView(r, r == selectedRarity, cardsUrl(selectedElement, r, selectedType, search)))
+                .toList());
+        model.addAttribute("allTypesUrl", cardsUrl(selectedElement, selectedRarity, null, search));
+        model.addAttribute("typeFilters", Arrays.stream(CardType.values())
+                .map(t -> toFilterView(t, t == selectedType, cardsUrl(selectedElement, selectedRarity, t, search)))
                 .toList());
         return "cards";
     }
@@ -210,10 +219,11 @@ public class WebViewController {
         }
     }
 
-    private String cardsUrl(ElementType element, Rarity rarity, String search) {
+    private String cardsUrl(ElementType element, Rarity rarity, CardType type, String search) {
         return UriComponentsBuilder.fromPath("/cards")
                 .queryParamIfPresent("element", Optional.ofNullable(element))
                 .queryParamIfPresent("rarity", Optional.ofNullable(rarity))
+                .queryParamIfPresent("type", Optional.ofNullable(type))
                 .queryParamIfPresent("search", Optional.ofNullable(search).filter(v -> !v.isBlank()))
                 .build().encode().toUriString();
     }

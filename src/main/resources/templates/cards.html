@@ -94,13 +94,14 @@
         </header>
 
         <!-- Gallery toolbar: search + Filter button on the right, pills inside the collapsible panel -->
-        <section class="gallery-filter-bar" th:with="activeFilters=${(selectedElement != null ? 1 : 0) + (selectedRarity != null ? 1 : 0)}">
+        <section class="gallery-filter-bar" th:with="activeFilters=${(selectedElement != null ? 1 : 0) + (selectedRarity != null ? 1 : 0) + (selectedType != null ? 1 : 0)}">
             <div class="gallery-toolbar">
                 <!-- Search Field -->
                 <form th:action="@{/cards}" method="get" class="gallery-search-box">
                     <div th:replace="~{fragments/icons :: search('icon-sm')}"></div>
                     <input type="hidden" name="element" th:if="${selectedElement != null}" th:value="${selectedElement}">
                     <input type="hidden" name="rarity" th:if="${selectedRarity != null}" th:value="${selectedRarity}">
+                    <input type="hidden" name="type" th:if="${selectedType != null}" th:value="${selectedType}">
                     <input type="text" name="search" th:value="${search}" placeholder="Search Pokémon..." class="gallery-search-input">
                 </form>
 
@@ -133,6 +134,16 @@
                     </a>
                     <a th:each="f : ${rarityFilters}" th:href="@{${f.url}}" th:class="${f.active ? 'filter-pill-btn active' : 'filter-pill-btn'}">
                         <span th:text="${f.label}">Double Rare</span>
+                    </a>
+                </div>
+                <!-- Card type filter -->
+                <div class="filter-group-label">Card Type</div>
+                <div class="filter-pills-row">
+                    <a th:href="@{${allTypesUrl}}" th:class="${selectedType == null ? 'filter-pill-btn active' : 'filter-pill-btn'}">
+                        <span>All Types</span>
+                    </a>
+                    <a th:each="f : ${typeFilters}" th:href="@{${f.url}}" th:class="${f.active ? 'filter-pill-btn active' : 'filter-pill-btn'}">
+                        <span th:text="${f.name == 'POKEMON' ? 'Pokémon' : f.label}">Trainer Supporter</span>
                     </a>
                 </div>
             </div>
