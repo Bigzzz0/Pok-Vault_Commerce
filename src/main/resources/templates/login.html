@@ -24,6 +24,7 @@
         .field label { font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
         .field .input-field { width: 100%; }
         .login-error { background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); color: var(--accent-ruby); border-radius: 10px; padding: 0.65rem 0.9rem; font-size: 0.88rem; margin-bottom: 1rem; }
+        .login-success { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; border-radius: 10px; padding: 0.65rem 0.9rem; font-size: 0.88rem; margin-bottom: 1rem; }
         .login-hint { text-align: center; color: var(--text-muted); font-size: 0.82rem; margin-top: 1.25rem; }
         .login-hint a { color: var(--accent-cyan); font-weight: 700; text-decoration: none; }
     </style>
@@ -52,6 +53,9 @@
 
             <div class="login-error" th:if="${param.error}" role="alert">
                 Invalid username or password. Please try again.
+            </div>
+            <div class="login-success" th:if="${param.logout}" role="status">
+                You have been signed out successfully.
             </div>
             <div class="login-error" th:if="${param.denied}" role="alert">
                 This account does not have access to the selected portal.
