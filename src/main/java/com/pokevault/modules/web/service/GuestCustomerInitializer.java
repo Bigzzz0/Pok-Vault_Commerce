@@ -25,7 +25,7 @@ public class GuestCustomerInitializer implements ApplicationRunner {
 
     public static final String GUEST_USERNAME = "guest_fb";
     private static final String GUEST_EMAIL = "guest_fb@pokevault.local";
-    private static final String GUEST_DISPLAY_NAME = "Guest - Facebook order";
+    private static final String GUEST_DISPLAY_NAME = "Facebook Guest";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

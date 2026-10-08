@@ -117,7 +117,7 @@
                             </div>
                         </td>
                         <td>
-                            <div style="display: flex; align-items: center; gap: 0.5rem; white-space: nowrap;">
+                            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.2rem 0.5rem;">
                                 <span style="font-weight: 600;" th:text="${ord.customerFullName != null ? ord.customerFullName : ord.username}">Ash Ketchum</span>
                                 <span class="rarity-pill" th:if="${ord.membershipTier != null}" th:text="${ord.membershipTier}">VIP</span>
                             </div>
@@ -172,8 +172,8 @@
                         </td>
                         <td>
                             <!-- Contextual State Action Buttons -->
-                            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
-                                <!-- Actions when PENDING -->
+                            <div class="order-actions">
+                                <!-- Action when PENDING -->
                                 <button th:if="${ord.orderStatus.name() == 'PENDING'}" 
                                         class="btn btn-primary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem;"
                                         th:data-order-id="${ord.id}"
@@ -181,14 +181,6 @@
                                     <div th:replace="~{fragments/icons :: creditCard('icon-sm')}"></div>
                                     <span>Pay</span>
                                 </button>
-                                <button th:if="${ord.orderStatus.name() == 'PENDING' || ord.orderStatus.name() == 'PAID'}" 
-                                        class="btn btn-secondary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem; color: #ef4444; border-color: rgba(239,68,68,0.3);"
-                                        th:data-order-id="${ord.id}"
-                                        onclick="executeOrderTransition(this.dataset.orderId, 'cancel')">
-                                    <div th:replace="~{fragments/icons :: xCircle('icon-sm')}"></div>
-                                    <span>Cancel</span>
-                                </button>
-
                                 <!-- Action when PAID -->
                                 <button th:if="${ord.orderStatus.name() == 'PAID'}" 
                                         class="btn btn-primary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem; background: linear-gradient(135deg, #7c3aed, #8b5cf6);"
@@ -205,6 +197,15 @@
                                         onclick="executeOrderTransition(this.dataset.orderId, 'complete')">
                                     <div th:replace="~{fragments/icons :: checkCircle('icon-sm')}"></div>
                                     <span>Complete Trade</span>
+                                </button>
+
+                                <!-- Cancel always sits under the forward action -->
+                                <button th:if="${ord.orderStatus.name() == 'PENDING' || ord.orderStatus.name() == 'PAID'}" 
+                                        class="btn btn-secondary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem; color: #ef4444; border-color: rgba(239,68,68,0.3);"
+                                        th:data-order-id="${ord.id}"
+                                        onclick="executeOrderTransition(this.dataset.orderId, 'cancel')">
+                                    <div th:replace="~{fragments/icons :: xCircle('icon-sm')}"></div>
+                                    <span>Cancel</span>
                                 </button>
 
                                 <!-- Terminal States -->

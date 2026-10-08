@@ -910,6 +910,25 @@ tr:hover td {
   padding-left: 1.4rem;
 }
 
+/* Lifecycle buttons: one per line, same width, Cancel last */
+.order-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 8.75rem;
+}
+
+.order-actions .btn {
+  width: 100%;
+  min-height: 1.9rem;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.orders-table .state-node {
+  padding: 4px 7px;
+}
+
 .orders-table .state-pipeline {
   gap: 0.3rem;
 }
