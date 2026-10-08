@@ -12,6 +12,7 @@ import com.pokevault.domain.enums.CardType;
 import com.pokevault.domain.enums.ElementType;
 import com.pokevault.domain.enums.MembershipTier;
 import com.pokevault.domain.enums.Rarity;
+import com.pokevault.domain.enums.UserRole;
 import com.pokevault.modules.vault.observer.LowStockObserver;
 import com.pokevault.repository.CardExpansionRepository;
 import com.pokevault.repository.CardInventoryRepository;
@@ -141,7 +142,9 @@ public class WebViewController {
                 .map(this::toInventoryView)
                 .toList();
 
+        // staff book on behalf of customers only
         List<Map<String, Object>> customers = userRepository.findAll(Sort.by("id")).stream()
+                .filter(u -> u.getRole() == UserRole.CUSTOMER)
                 .map(this::toCustomerView)
                 .toList();
 
