@@ -293,7 +293,8 @@ function openInspection(card) {
     document.getElementById('inspectCardHp').textContent = card.hp > 0 ? `HP ${card.hp}` : '';
     document.getElementById('inspectCardDesc').textContent = card.description || 'Rare Pokémon TCG Pocket collectible card.';
     document.getElementById('inspectCardRarity').textContent = card.rarityDescription || card.rarity;
-    document.getElementById('inspectCardStock').textContent = `In Stock: ${card.totalStock || 0} copies`;
+    // Stock counts are staff-only: the page omits data-stock for customers and guests
+    document.getElementById('inspectCardStock').textContent = card.totalStock == null ? 'In Stock' : `In Stock: ${card.totalStock} copies`;
 
     // Dynamic Element Theme for Modal Glow
     const aura = document.getElementById('inspectAura');
@@ -314,7 +315,7 @@ function handleInspectClick(elem) {
         rarity: elem.getAttribute('data-rarity') || elem.getAttribute('data-rarity-desc'),
         rarityDescription: elem.getAttribute('data-rarity-desc') || elem.getAttribute('data-rarity'),
         description: elem.getAttribute('data-desc'),
-        totalStock: parseInt(elem.getAttribute('data-stock')) || 0,
+        totalStock: elem.hasAttribute('data-stock') ? (parseInt(elem.getAttribute('data-stock')) || 0) : null,
         elementType: elem.getAttribute('data-element'),
         imageUrl: elem.getAttribute('data-image')
     };
