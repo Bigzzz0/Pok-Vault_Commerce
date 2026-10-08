@@ -125,7 +125,7 @@
         <!-- Frameless Floating Cards Showcase -->
         <div class="gallery-cards-grid">
             <div th:if="${#lists.isEmpty(cards)}" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
-                No cards in the vault yet. Record a pull in <a th:href="@{/accounts}"><strong>Accounts</strong></a> to stock the gallery.
+                No cards in the vault yet.<span sec:authorize="hasAnyRole('ADMIN', 'STAFF')"> Record a pull in <a th:href="@{/accounts}"><strong>Accounts</strong></a> to stock the gallery.</span>
             </div>
             <div th:each="c : ${cards}" class="gallery-card-unit">
                 <!-- 3D Parallax Card Unit with Simeydotme Shaders -->
@@ -175,7 +175,7 @@
                             <div th:replace="~{fragments/icons :: eye('icon-sm')}"></div>
                             <span>Inspect 3D</span>
                         </button>
-                        <a th:href="@{/inventory}" class="card-action-btn btn-act-buy">
+                        <a th:href="@{/inventory}" class="card-action-btn btn-act-buy" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                             <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
                             <span>Vault Stock</span>
                         </a>
@@ -245,7 +245,7 @@
                         </div>
 
                         <div style="display: flex; gap: 0.75rem;">
-                            <a th:href="@{/inventory}" class="btn btn-primary" style="flex: 1;">
+                            <a th:href="@{/inventory}" class="btn btn-primary" style="flex: 1;" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                                 <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
                                 <span>Check Store Inventory</span>
                             </a>
