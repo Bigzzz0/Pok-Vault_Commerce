@@ -143,10 +143,10 @@ public class WebViewController {
                 .map(this::toInventoryView)
                 .toList();
 
-        // staff book on behalf of customers only; the shared guest account (Facebook orders) goes last
+        // staff book on behalf of customers only; the shared guest account (Facebook orders) comes first as the default
         List<Map<String, Object>> customers = userRepository.findAll(Sort.by("id")).stream()
                 .filter(u -> u.getRole() == UserRole.CUSTOMER)
-                .sorted(Comparator.comparing(this::isGuest))
+                .sorted(Comparator.comparing((User u) -> !isGuest(u)))
                 .map(this::toCustomerView)
                 .toList();
 
