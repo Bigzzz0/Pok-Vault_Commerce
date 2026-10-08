@@ -281,6 +281,7 @@ public class WebViewController {
         view.put("cardNumber", card.getCardNumber());
         view.put("expansionCode", card.getExpansion() != null ? card.getExpansion().getCode() : null);
         view.put("rarity", card.getRarity());
+        view.put("cardType", card.getCardType());
         view.put("rarityDescription", null);
         // Trainer/Item cards have no element, but the templates call elementType.name() unconditionally
         view.put("elementType", card.getElementType() != null ? card.getElementType() : ElementType.COLORLESS);

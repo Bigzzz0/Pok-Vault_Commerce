@@ -225,7 +225,6 @@ function initInspectionFlipper() {
 function toggleCardFlip() {
     isCardFlipped = !isCardFlipped;
     const flipperBox = document.getElementById('inspectFlipperBox');
-    const label = document.getElementById('inspectFlipLabel');
 
     // The entry spin leaves an inline rotateY(0deg) behind, which outranks the .is-flipped rule
     const flipperInner = document.getElementById('inspectFlipperInner');
@@ -244,9 +243,6 @@ function toggleCardFlip() {
         flipperBox.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
     }
 
-    if (label) {
-        label.textContent = isCardFlipped ? 'Flip Card (Front)' : 'Flip Card (Back)';
-    }
 
     if (window.soundFx) {
         window.soundFx.playInspect();
@@ -270,10 +266,6 @@ function openInspection(card) {
             flipperBox.setAttribute('data-rarity', card.rarity);
         }
     }
-    const label = document.getElementById('inspectFlipLabel');
-    if (label) {
-        label.textContent = 'Flip Card (Back)';
-    }
 
     // 3D Entry Flip Animation (Smooth 360-degree spin on arrival)
     const flipperInner = document.getElementById('inspectFlipperInner');
@@ -293,10 +285,13 @@ function openInspection(card) {
 
     document.getElementById('inspectCardNumber').textContent = `${card.expansionCode || 'A1'} #${card.cardNumber}`;
     document.getElementById('inspectCardName').textContent = card.name;
-    document.getElementById('inspectCardHp').textContent = card.hp > 0 ? `HP ${card.hp}` : '';
+    // Pokémon cards show HP; Trainer cards have none, so show their type instead (TRAINER_SUPPORTER -> Trainer Supporter)
+    const kindElem = document.getElementById('inspectCardHp');
+    const isPokemon = card.hp > 0;
+    kindElem.textContent = isPokemon ? `HP ${card.hp}` : formatEnumLabel(card.cardType);
+    kindElem.classList.toggle('is-trainer', !isPokemon);
     document.getElementById('inspectCardDesc').textContent = card.description || 'Rare Pokémon TCG Pocket collectible card.';
     document.getElementById('inspectCardRarity').textContent = card.rarityDescription || card.rarity;
-    // Stock counts are staff-only: the page omits data-stock for customers and guests
     document.getElementById('inspectCardStock').textContent = card.totalStock == null ? 'In Stock' : `In Stock: ${card.totalStock} copies`;
 
     // Dynamic Element Theme for Modal Glow
@@ -307,6 +302,11 @@ function openInspection(card) {
 
     const modal = document.getElementById('inspectionModal');
     modal.classList.add('active');
+}
+
+function formatEnumLabel(value) {
+    return (value || '').split('_').filter(Boolean)
+        .map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ');
 }
 
 function handleInspectClick(elem) {
@@ -321,6 +321,7 @@ function handleInspectClick(elem) {
         totalStock: elem.hasAttribute('data-stock') ? (parseInt(elem.getAttribute('data-stock')) || 0) : null,
         elementType: elem.getAttribute('data-element'),
         imageUrl: elem.getAttribute('data-image'),
+        cardType: elem.getAttribute('data-card-type'),
         inventoryId: parseInt(elem.getAttribute('data-inventory-id')) || null,
         price: parseFloat(elem.getAttribute('data-price')) || 0
     };

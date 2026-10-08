@@ -165,7 +165,8 @@
                          th:data-hp="${c.hp}"
                          th:data-rarity-desc="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}"
                          th:data-desc="${c.description}"
-                         th:data-stock="${#authorization.expression('hasAnyRole(''ADMIN'', ''STAFF'')') ? c.totalStock : null}"
+                         th:data-stock="${c.totalStock}"
+                         th:data-card-type="${c.cardType}"
                          th:data-inventory-id="${c.orderInventoryId}"
                          th:data-price="${c.price}"
                          th:data-element="${c.elementType.name()}"
@@ -198,7 +199,8 @@
                                     th:data-hp="${c.hp}"
                                     th:data-rarity="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}"
                                     th:data-desc="${c.description}"
-                                    th:data-stock="${#authorization.expression('hasAnyRole(''ADMIN'', ''STAFF'')') ? c.totalStock : null}"
+                                    th:data-stock="${c.totalStock}"
+                                    th:data-card-type="${c.cardType}"
                                     th:data-inventory-id="${c.orderInventoryId}"
                                     th:data-price="${c.price}"
                                     th:data-element="${c.elementType.name()}"
@@ -225,7 +227,7 @@
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <div th:replace="~{fragments/icons :: eye('icon-md')}"></div>
-                    <h3 class="modal-title" id="inspectCardName">Inspect Pokémon Card</h3>
+                    <h3 class="modal-title">Detail Card</h3>
                 </div>
                 <button class="modal-close-btn" onclick="closeInspection()">
                     <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
@@ -251,16 +253,15 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="inspect-flip-btn" onclick="toggleCardFlip()">
-                            <div th:replace="~{fragments/icons :: flip('icon-sm')}"></div>
-                            <span id="inspectFlipLabel">Flip Card (Back)</span>
-                        </button>
+                        <div class="inspect-flip-hint">Click card to flip</div>
                     </div>
                     <!-- Right: Official Card Attributes & Vault Telemetry -->
-                    <div>
+                    <div class="inspect-info-col">
                         <div id="inspectAura" style="margin-bottom: 1.25rem;">
                             <span id="inspectCardNumber" style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: var(--accent-cyan);">A1 #004</span>
-                            <h2 id="inspectCardHp" style="color: #ef4444; margin: 0.4rem 0; font-size: 2rem; font-weight: 900;">HP 180</h2>
+                            <h2 id="inspectCardName" style="margin: 0.35rem 0 0.15rem; font-size: 1.7rem; font-weight: 900; letter-spacing: -0.5px;">Card Name</h2>
+                            <!-- HP for Pokémon cards, the card type (e.g. Trainer Supporter) for the rest -->
+                            <div id="inspectCardHp" class="inspect-card-kind">HP 180</div>
                         </div>
                         <p id="inspectCardDesc" style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.7; font-size: 1rem;"></p>
                         
@@ -269,12 +270,12 @@
                             <span id="inspectCardStock" class="stock-pill" style="font-size: 0.85rem; padding: 6px 14px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; font-weight: 700;">STOCK</span>
                         </div>
 
-                        <div style="display: flex; gap: 0.75rem;">
-                            <a th:href="@{/inventory}" class="btn btn-primary" style="flex: 1;" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+                        <!-- Actions pinned to the bottom of the column, equal widths -->
+                        <div class="inspect-actions">
+                            <a th:href="@{/inventory}" class="btn btn-primary" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                                 <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
                                 <span>Check Store Inventory</span>
                             </a>
-                            <button class="btn btn-secondary" onclick="closeInspection()">Close</button>
                             <button type="button" class="btn btn-secondary" sec:authorize="!hasAnyRole('ADMIN', 'STAFF')" onclick="inboxStoreAboutCard()" style="border-color: #0084ff; color: #0084ff;">
                                 <span>Inbox FB</span>
                             </button>

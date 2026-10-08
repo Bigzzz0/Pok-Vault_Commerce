@@ -1101,29 +1101,43 @@ tr:hover td {
 }
 
 /* 3D Flip Action Pill */
-.inspect-flip-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.55rem 1.25rem;
-  border-radius: 30px;
-  background: var(--bg-surface-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.inspect-flip-hint {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
-.inspect-flip-btn:hover {
-  color: var(--accent-blue);
-  border-color: var(--accent-blue);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+/* Info column fills the card's height so the actions sit on its bottom edge */
+.inspect-info-col {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.inspect-card-kind {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #ef4444;
+}
+
+.inspect-card-kind.is-trainer {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--accent-gold);
+}
+
+/* Equal-width columns, however many actions the role gets */
+.inspect-actions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.inspect-actions > * {
+  justify-content: center;
 }
 
 /* Strategy Order Modal Calculator */
