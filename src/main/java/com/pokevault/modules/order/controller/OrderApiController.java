@@ -1,5 +1,8 @@
 package com.pokevault.modules.order.controller;
 
+import com.pokevault.domain.enums.TradeFulfillmentStatus;
+import com.pokevault.modules.order.dto.OrderItemResponse;
+
 import com.pokevault.common.response.ApiResponse;
 import com.pokevault.modules.order.dto.OrderResponse;
 import com.pokevault.modules.order.dto.PlaceOrderRequest;
@@ -39,7 +42,8 @@ public class OrderApiController {
             @Parameter(description = "Action to execute (pay, ship, complete, cancel)", example = "pay") @RequestParam String action) {
 
         OrderResponse response = orderService.transitionOrderStatus(id, action);
-        return ResponseEntity.ok(ApiResponse.ok("Order status updated successfully to " + response.getOrderStatus(), response));
+        return ResponseEntity
+                .ok(ApiResponse.ok("Order status updated successfully to " + response.getOrderStatus(), response));
     }
 
     @GetMapping("/{id}")
@@ -55,4 +59,16 @@ public class OrderApiController {
         List<OrderResponse> orders = orderService.getAllOrders();
         return ResponseEntity.ok(ApiResponse.ok("Retrieved " + orders.size() + " orders successfully", orders));
     }
+
+    @PatchMapping("/{id}/items/{itemId}/trade-status")
+    @Operation(summary = "Update order item trade status", description = "Update in-game trade fulfillment status for a specific card item in the order (e.g., FRIEND_PENDING, TRADE_SENT, COMPLETED)")
+    public ResponseEntity<ApiResponse<OrderItemResponse>> updateItemTradeStatus(
+            @Parameter(description = "Order ID", example = "1") @PathVariable Long id,
+            @Parameter(description = "Order Item ID", example = "1") @PathVariable Long itemId,
+            @Parameter(description = "New trade fulfillment status", example = "TRADE_SENT") @RequestParam TradeFulfillmentStatus status) {
+
+        OrderItemResponse response = orderService.updateItemTradeStatus(id, itemId, status);
+        return ResponseEntity.ok(ApiResponse.ok("Order item trade status updated successfully", response));
+    }
+
 }
