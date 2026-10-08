@@ -4,6 +4,7 @@ import com.pokevault.domain.entity.Card;
 import com.pokevault.domain.entity.CardInventory;
 import com.pokevault.domain.entity.GameAccount;
 import com.pokevault.domain.entity.Order;
+import com.pokevault.domain.entity.OrderItem;
 import com.pokevault.domain.entity.User;
 import com.pokevault.domain.entity.UserProfile;
 import com.pokevault.domain.enums.AccountTradeStatus;
@@ -23,9 +24,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -56,10 +59,20 @@ public class WebViewController {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
 
+    /** Id of the signed-in user for the customer order form; null for guests. */
+    @ModelAttribute("currentUserId")
+    public Long currentUserId(Principal principal) {
+        if (principal == null) {
+            return null;
+        }
+        return userRepository.findByUsername(principal.getName()).map(User::getId).orElse(null);
+    }
+
     @GetMapping("/")
     public String dashboard(Model model) {
         List<CardInventory> inventories = inventoryRepository.findAll();
         Map<Long, Integer> stockByCard = stockByCard(inventories);
+        Map<Long, CardInventory> offerByCard = offerByCard(inventories);
 
         List<Map<String, Object>> lowStock = inventories.stream()
                 .filter(inv -> inv.getQuantity() != null && inv.getQuantity() <= LOW_STOCK_THRESHOLD)
@@ -70,7 +83,7 @@ public class WebViewController {
         List<Map<String, Object>> featured = cardRepository.findAll(Sort.by(Sort.Direction.DESC, "rarity")).stream()
                 .filter(c -> isInVault(c, stockByCard))
                 .limit(FEATURED_CARD_LIMIT)
-                .map(c -> toCardView(c, stockByCard))
+                .map(c -> toCardView(c, stockByCard, offerByCard.get(c.getId())))
                 .toList();
 
         model.addAttribute("totalCards", cardRepository.count());
@@ -90,7 +103,9 @@ public class WebViewController {
         ElementType selectedElement = parseEnum(ElementType.class, element);
         Rarity selectedRarity = parseEnum(Rarity.class, rarity);
         String keyword = search == null ? "" : search.trim().toLowerCase();
-        Map<Long, Integer> stockByCard = stockByCard(inventoryRepository.findAll());
+        List<CardInventory> inventories = inventoryRepository.findAll();
+        Map<Long, Integer> stockByCard = stockByCard(inventories);
+        Map<Long, CardInventory> offerByCard = offerByCard(inventories);
 
         List<Map<String, Object>> cards = cardRepository.findAll(Sort.by("expansion.code", "cardNumber")).stream()
                 .filter(c -> isInVault(c, stockByCard))
@@ -99,7 +114,7 @@ public class WebViewController {
                         == (c.getElementType() != null ? c.getElementType() : ElementType.COLORLESS))
                 .filter(c -> selectedRarity == null || c.getRarity() == selectedRarity)
                 .filter(c -> keyword.isEmpty() || c.getName().toLowerCase().contains(keyword))
-                .map(c -> toCardView(c, stockByCard))
+                .map(c -> toCardView(c, stockByCard, offerByCard.get(c.getId())))
                 .toList();
 
         model.addAttribute("cards", cards);
@@ -170,6 +185,20 @@ public class WebViewController {
         return "orders";
     }
 
+    /** Read-only order history of the signed-in user; /orders stays the staff console for every order. */
+    @GetMapping("/my-orders")
+    public String myOrders(Principal principal, Model model) {
+        List<Map<String, Object>> orders = userRepository.findByUsername(principal.getName())
+                .map(user -> orderRepository.findByUserId(user.getId()))
+                .orElse(List.of()).stream()
+                .sorted(Comparator.comparing(Order::getId).reversed())
+                .map(this::toMyOrderView)
+                .toList();
+
+        model.addAttribute("orders", orders);
+        return "my-orders";
+    }
+
     private <E extends Enum<E>> E parseEnum(Class<E> type, String value) {
         if (value == null || value.isBlank()) {
             return null;
@@ -213,6 +242,15 @@ public class WebViewController {
                         Collectors.summingInt(CardInventory::getQuantity)));
     }
 
+    /** The stock row a customer order is placed against: the cheapest one that still has copies. */
+    private Map<Long, CardInventory> offerByCard(List<CardInventory> inventories) {
+        return inventories.stream()
+                .filter(inv -> inv.getCard() != null && inv.getQuantity() != null && inv.getQuantity() > 0)
+                .filter(inv -> inv.getSellingPrice() != null)
+                .collect(Collectors.toMap(inv -> inv.getCard().getId(), inv -> inv,
+                        (a, b) -> a.getSellingPrice().compareTo(b.getSellingPrice()) <= 0 ? a : b));
+    }
+
     private long countByStatus(List<GameAccount> accounts, AccountTradeStatus status) {
         return accounts.stream().filter(a -> a.getTradeStatus() == status).count();
     }
@@ -236,7 +274,7 @@ public class WebViewController {
         return CARD_BACK_IMAGE;
     }
 
-    private Map<String, Object> toCardView(Card card, Map<Long, Integer> stockByCard) {
+    private Map<String, Object> toCardView(Card card, Map<Long, Integer> stockByCard, CardInventory offer) {
         Map<String, Object> view = new LinkedHashMap<>();
         view.put("id", card.getId());
         view.put("name", card.getName());
@@ -250,6 +288,8 @@ public class WebViewController {
         view.put("description", null);
         view.put("imageUrl", resolveImageUrl(card));
         view.put("totalStock", stockByCard.getOrDefault(card.getId(), 0));
+        view.put("orderInventoryId", offer != null ? offer.getId() : null);
+        view.put("price", offer != null ? offer.getSellingPrice() : null);
         return view;
     }
 
@@ -310,6 +350,22 @@ public class WebViewController {
         view.put("items", order.getItems());
         view.put("discountAmount", order.getDiscountAmount());
         view.put("finalAmount", order.getFinalAmount());
+        return view;
+    }
+
+    private Map<String, Object> toMyOrderView(Order order) {
+        Map<String, Object> view = toOrderView(order);
+        view.put("items", order.getItems().stream().map(this::toOrderItemView).toList());
+        return view;
+    }
+
+    private Map<String, Object> toOrderItemView(OrderItem item) {
+        Card card = item.getInventory() != null ? item.getInventory().getCard() : null;
+        Map<String, Object> view = new LinkedHashMap<>();
+        view.put("cardName", card != null ? card.getName() : "Unknown card");
+        view.put("imageUrl", card != null ? resolveImageUrl(card) : CARD_BACK_IMAGE);
+        view.put("quantity", item.getQuantity());
+        view.put("unitPrice", item.getUnitPrice());
         return view;
     }
 }

@@ -42,6 +42,10 @@
                 <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
                 <span>Orders</span>
             </a>
+            <a th:href="@{/my-orders}" class="nav-link" sec:authorize="hasRole('CUSTOMER')">
+                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                <span>My Orders</span>
+            </a>
             <a href="/swagger-ui.html" target="_blank" class="nav-link swagger-btn">
                 <span>Swagger OpenAPI</span>
                 <div th:replace="~{fragments/icons :: externalLink('icon-sm')}"></div>

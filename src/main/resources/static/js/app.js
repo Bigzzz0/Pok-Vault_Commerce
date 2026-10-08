@@ -253,7 +253,10 @@ function toggleCardFlip() {
     }
 }
 
+let currentInspectCard = null;
+
 function openInspection(card) {
+    currentInspectCard = card;
     activeCardData = card;
     if (window.soundFx) window.soundFx.playInspect();
 
@@ -317,7 +320,9 @@ function handleInspectClick(elem) {
         description: elem.getAttribute('data-desc'),
         totalStock: elem.hasAttribute('data-stock') ? (parseInt(elem.getAttribute('data-stock')) || 0) : null,
         elementType: elem.getAttribute('data-element'),
-        imageUrl: elem.getAttribute('data-image')
+        imageUrl: elem.getAttribute('data-image'),
+        inventoryId: parseInt(elem.getAttribute('data-inventory-id')) || null,
+        price: parseFloat(elem.getAttribute('data-price')) || 0
     };
     openInspection(card);
 }
@@ -575,6 +580,117 @@ function copyChatOrderSummary(btn) {
         span.textContent = '✓ คัดลอกสำเร็จแล้ว!';
         setTimeout(() => span.textContent = orig, 2000);
     }
+}
+
+// --- Customer self-service: Inbox FB + Create Order from the Inspect modal ---
+function inspectCardLabel() {
+    const card = currentInspectCard;
+    return card ? `${card.name} (${card.expansionCode || 'A1'} #${card.cardNumber})` : 'Pokémon TCG Card';
+}
+
+// Copies an enquiry about the inspected card, then opens the store's Messenger chat
+function inboxStoreAboutCard() {
+    const message = `สวัสดีครับ สนใจการ์ด ${inspectCardLabel()} ครับ ยังมีของอยู่ไหมครับ`;
+    const url = buildMessengerUrl(message);
+    copyToClipboard(message, 'คัดลอกข้อความแล้ว! วางส่งในแชทได้ทันที').then(() => {
+        if (!openMessengerDeepLink(url)) window.location.href = url;
+    });
+}
+
+function openCustomerOrderModal() {
+    const modal = document.getElementById('customerOrderModal');
+    const card = currentInspectCard;
+    if (!modal || !card) return;
+    if (!card.inventoryId) {
+        showToast('This card cannot be ordered online right now. Please inbox the store.', 'danger');
+        return;
+    }
+
+    document.getElementById('customerOrderCardName').textContent = card.name;
+    document.getElementById('customerOrderCardNumber').textContent = `${card.expansionCode || 'A1'} #${card.cardNumber}`;
+    document.getElementById('customerOrderPrice').textContent = `฿${card.price.toFixed(2)}`;
+    document.getElementById('customerOrderForm').style.display = '';
+    document.getElementById('customerOrderDone').style.display = 'none';
+
+    closeInspection();
+    modal.classList.add('active');
+    document.getElementById('customerOrderFriendId').focus();
+}
+
+function closeCustomerOrderModal() {
+    const modal = document.getElementById('customerOrderModal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    // After a successful order the stock changed, so refresh the gallery
+    if (document.getElementById('customerOrderDone').style.display !== 'none') {
+        setTimeout(() => window.location.reload(), 300);
+    }
+}
+
+async function submitCustomerOrder(event) {
+    event.preventDefault();
+    const card = currentInspectCard;
+    const userId = parseInt(document.getElementById('customerOrderUserId').value);
+    const friendInput = document.getElementById('customerOrderFriendId');
+    const friendId = friendInput.value.trim();
+    const ign = document.getElementById('customerOrderIgn').value.trim();
+
+    if (!card || !card.inventoryId || !userId) return;
+    if (!FRIEND_ID_PATTERN.test(friendId)) {
+        showToast('Please enter your Friend ID as 16 digits (e.g. 1234-5678-9012-3456).', 'danger');
+        friendInput.focus();
+        return;
+    }
+
+    const submitBtn = document.getElementById('customerOrderSubmit');
+    submitBtn.disabled = true;
+
+    try {
+        const response = await fetch('/api/v1/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userId: userId,
+                customerFriendId: friendId,
+                customerInGameName: ign,
+                items: [{ inventoryId: card.inventoryId, quantity: 1 }],
+                notes: 'Online Vault Order'
+            })
+        });
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            if (window.soundFx) window.soundFx.playOrderChime();
+            showCustomerOrderDone(result.data, friendId, ign);
+        } else {
+            showToast(apiErrorMessage(result, 'Order failed. The card may be out of stock.'), 'danger');
+        }
+    } catch (err) {
+        showToast('Network error while placing order: ' + err.message, 'danger');
+    } finally {
+        submitBtn.disabled = false;
+    }
+}
+
+function showCustomerOrderDone(order, friendId, ign) {
+    const finalAmount = `฿${order.finalAmount.toFixed(2)}`;
+    const summary = `สวัสดีครับ สั่งจองการ์ดผ่านเว็บเรียบร้อยแล้วครับ!\n• รหัสคำสั่งซื้อ: #${order.orderCode}\n• รายการการ์ด: ${inspectCardLabel()} x1\n• ยอดชำระ: ${finalAmount} (ส่วนลด Strategy: -฿${order.discountAmount.toFixed(2)})\n• รหัสเพื่อนในเกม (Friend ID): ${friendId}\n• ชื่อเทรนเนอร์ (IGN): ${ign || '-'}\nขอส่งหลักฐานการโอนเงินและนัดส่งการ์ดเทรดในเกมครับ`;
+    lastChatSummaryText = summary;
+    const url = buildMessengerUrl(summary);
+
+    document.getElementById('customerOrderDoneCode').textContent = `#${order.orderCode}`;
+    document.getElementById('customerOrderDoneAmount').textContent = finalAmount;
+    document.getElementById('customerOrderMessengerBtn').href = url;
+    document.getElementById('customerOrderForm').style.display = 'none';
+    document.getElementById('customerOrderDone').style.display = '';
+
+    // Same handshake as the staff booking flow: copy the summary first, then jump to Messenger
+    const hint = document.getElementById('customerOrderDoneHint');
+    copyToClipboard(summary, 'คัดลอกข้อความสรุปออเดอร์แล้ว! วางส่งในแชทได้ทันที').then(() => {
+        hint.textContent = openMessengerDeepLink(url)
+            ? 'เปิด Messenger ให้แล้ว — วางข้อความ (Ctrl+V) แล้วกดส่งได้เลย'
+            : 'คัดลอกข้อความแล้ว — กดปุ่ม Open Messenger แล้ววาง (Ctrl+V)';
+    });
 }
 
 // --- 4. Quick Stock Stepper (Inventory Page) ---

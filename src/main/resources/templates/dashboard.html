@@ -43,6 +43,10 @@
                 <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
                 <span>Orders</span>
             </a>
+            <a th:href="@{/my-orders}" class="nav-link" sec:authorize="hasRole('CUSTOMER')">
+                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                <span>My Orders</span>
+            </a>
             <a href="/swagger-ui.html" target="_blank" class="nav-link swagger-btn">
                 <span>Swagger OpenAPI</span>
                 <div th:replace="~{fragments/icons :: externalLink('icon-sm')}"></div>
@@ -162,6 +166,8 @@
                          th:data-rarity-desc="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}"
                          th:data-desc="${c.description}"
                          th:data-stock="${#authorization.expression('hasAnyRole(''ADMIN'', ''STAFF'')') ? c.totalStock : null}"
+                         th:data-inventory-id="${c.orderInventoryId}"
+                         th:data-price="${c.price}"
                          th:data-element="${c.elementType.name()}"
                          th:data-image="${c.imageUrl}"
                          onclick="handleInspectClick(this)">
@@ -193,6 +199,8 @@
                                     th:data-rarity="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}"
                                     th:data-desc="${c.description}"
                                     th:data-stock="${#authorization.expression('hasAnyRole(''ADMIN'', ''STAFF'')') ? c.totalStock : null}"
+                                    th:data-inventory-id="${c.orderInventoryId}"
+                                    th:data-price="${c.price}"
                                     th:data-element="${c.elementType.name()}"
                                     th:data-image="${c.imageUrl}"
                                     onclick="handleInspectClick(this)">
@@ -275,12 +283,25 @@
                                 <span>Check Store Inventory</span>
                             </a>
                             <button class="btn btn-secondary" onclick="closeInspection()">Close</button>
+                            <button type="button" class="btn btn-secondary" sec:authorize="!hasAnyRole('ADMIN', 'STAFF')" onclick="inboxStoreAboutCard()" style="border-color: #0084ff; color: #0084ff;">
+                                <span>Inbox FB</span>
+                            </button>
+                            <a th:href="@{/login}" class="btn btn-primary" sec:authorize="isAnonymous()" title="Sign in to create an order">
+                                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                                <span>Create Order</span>
+                            </a>
+                            <button type="button" class="btn btn-primary" sec:authorize="hasRole('CUSTOMER')" onclick="openCustomerOrderModal()">
+                                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                                <span>Create Order</span>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div th:replace="~{fragments/customer-order :: modal}" sec:authorize="hasRole('CUSTOMER')"></div>
 
     <script th:src="@{/js/audio.js}"></script>
     <script th:src="@{/js/app.js}"></script>

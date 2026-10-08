@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Customer self-service order modal, opened from the Inspect modal's "Create Order" button -->
+<div th:fragment="modal" id="customerOrderModal" class="modal-overlay" onclick="if(event.target === this) closeCustomerOrderModal()">
+    <div class="modal-container" style="max-width: 480px;">
+        <div class="modal-header">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div th:replace="~{fragments/icons :: receipt('icon-md')}"></div>
+                <h3 class="modal-title">Create Order</h3>
+            </div>
+            <button class="modal-close-btn" onclick="closeCustomerOrderModal()">
+                <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
+            </button>
+        </div>
+
+        <!-- Step 1: order form -->
+        <form id="customerOrderForm" onsubmit="submitCustomerOrder(event)">
+            <input type="hidden" id="customerOrderUserId" th:value="${currentUserId}">
+            <div class="modal-body">
+                <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.9rem 1.1rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                    <div>
+                        <div id="customerOrderCardName" style="font-weight: 800;">Card name</div>
+                        <div id="customerOrderCardNumber" style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent-cyan);">A1 #000</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div id="customerOrderPrice" style="color: var(--accent-emerald); font-weight: 800; font-size: 1.1rem;">฿0.00</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">1 card</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label for="customerOrderFriendId" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">
+                        Your Friend ID (In-Game) <span style="color: var(--accent-ruby); font-weight: 800;" aria-hidden="true">*</span>
+                    </label>
+                    <input id="customerOrderFriendId" type="text" class="input-field" style="width: 100%; font-family: 'JetBrains Mono', monospace;" placeholder="1234-5678-9012-3456" maxlength="19" inputmode="numeric" pattern="\d{4}-\d{4}-\d{4}-\d{4}|\d{16}" title="16 digits, e.g. 1234-5678-9012-3456" required>
+                </div>
+                <div>
+                    <label for="customerOrderIgn" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">
+                        In-Game Name (optional)
+                    </label>
+                    <input id="customerOrderIgn" type="text" class="input-field" style="width: 100%;" placeholder="Your trainer name" maxlength="100">
+                </div>
+                <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 1rem;">
+                    Member discounts are applied automatically. After ordering, send the summary to the store on Messenger to arrange payment and the in-game trade.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCustomerOrderModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="customerOrderSubmit">
+                    <div th:replace="~{fragments/icons :: checkCircle('icon-sm')}"></div>
+                    <span>Confirm Order</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- Step 2: confirmation + Messenger handshake -->
+        <div id="customerOrderDone" style="display: none;">
+            <div class="modal-body" style="text-align: center;">
+                <div style="color: #10b981; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.35rem;">Order created!</div>
+                <div id="customerOrderDoneCode" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 1.3rem; color: var(--accent-cyan);">#ORD-000</div>
+                <div id="customerOrderDoneAmount" style="color: var(--accent-emerald); font-weight: 800; margin: 0.35rem 0 1rem;">฿0.00</div>
+                <p id="customerOrderDoneHint" style="font-size: 0.85rem; color: var(--text-secondary);"></p>
+            </div>
+            <div class="modal-footer">
+                <a th:href="@{/my-orders}" class="btn btn-secondary">View My Orders</a>
+                <a id="customerOrderMessengerBtn" href="#" target="_blank" rel="noopener" class="btn btn-primary" onclick="copyChatOrderSummary()">
+                    <span>Open Messenger</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
