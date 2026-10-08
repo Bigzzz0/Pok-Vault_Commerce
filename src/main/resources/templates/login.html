@@ -17,9 +17,6 @@
         .login-brand { display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin-bottom: 1.25rem; color: var(--text-pure); font-weight: 800; text-decoration: none; }
         .login-title { text-align: center; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
         .login-sub { text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin: 0.25rem 0 1.5rem; }
-        .role-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; background: var(--bg-surface-muted); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 0.3rem; margin-bottom: 1.5rem; }
-        .role-tab { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem; border: none; border-radius: 9px; background: transparent; color: var(--text-secondary); font-family: inherit; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s ease; }
-        .role-tab.active { background: linear-gradient(135deg, var(--accent-blue), #1d4ed8); color: #fff; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3); }
         .field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
         .field label { font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
         .field .input-field { width: 100%; }
@@ -40,18 +37,7 @@
             </a>
 
             <h1 class="login-title">Welcome back</h1>
-            <p class="login-sub" id="loginSubtitle">Sign in to browse cards and track your orders</p>
-
-            <div class="role-switch" role="tablist" aria-label="Account type">
-                <button type="button" class="role-tab active" id="tabCustomer" role="tab" aria-selected="true" onclick="selectRole('CUSTOMER')">
-                    <span th:replace="~{fragments/icons :: users('icon-sm')}"></span>
-                    <span>Customer</span>
-                </button>
-                <button type="button" class="role-tab" id="tabManager" role="tab" aria-selected="false" onclick="selectRole('MANAGER')">
-                    <span th:replace="~{fragments/icons :: package('icon-sm')}"></span>
-                    <span>Manager</span>
-                </button>
-            </div>
+            <p class="login-sub" id="loginSubtitle">Sign in to your Pokémon TCG Pocket Vault account</p>
 
             <div class="login-error" th:if="${param.error}" role="alert">
                 Invalid username or password. Please try again.
@@ -59,13 +45,7 @@
             <div class="login-success" th:if="${param.logout}" role="status">
                 You have been signed out successfully.
             </div>
-            <div class="login-error" th:if="${param.denied}" role="alert">
-                This account does not have access to the selected portal.
-            </div>
-
             <form th:action="@{/login}" method="post" id="loginForm" autocomplete="on">
-                <input type="hidden" name="portal" id="portalInput" value="CUSTOMER">
-
                 <div class="field">
                     <label for="username">Username</label>
                     <input class="input-field" type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username" required>
@@ -77,7 +57,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
-                    <span id="submitLabel">Sign in as Customer</span>
+                    <span>Sign In</span>
                 </button>
             </form>
 
@@ -133,37 +113,19 @@
     </main>
 
     <script>
-        var ROLE_COPY = {
-            CUSTOMER: { subtitle: 'Sign in to browse cards and track your orders', submit: 'Sign in as Customer' },
-            MANAGER: { subtitle: 'Sign in to manage inventory, accounts and orders', submit: 'Sign in as Manager' }
-        };
-
-        function selectRole(role) {
-            document.getElementById('portalInput').value = role;
-            document.getElementById('tabCustomer').classList.toggle('active', role === 'CUSTOMER');
-            document.getElementById('tabManager').classList.toggle('active', role === 'MANAGER');
-            document.getElementById('tabCustomer').setAttribute('aria-selected', role === 'CUSTOMER');
-            document.getElementById('tabManager').setAttribute('aria-selected', role === 'MANAGER');
-            document.getElementById('loginSubtitle').textContent = ROLE_COPY[role].subtitle;
-            document.getElementById('submitLabel').textContent = ROLE_COPY[role].submit;
-        }
-
         // Toggle between the sign-in form and the customer sign-up form
         function showSignUp(show) {
             document.getElementById('signUpForm').style.display = show ? '' : 'none';
             document.getElementById('loginForm').style.display = show ? 'none' : '';
-            document.querySelector('.role-switch').style.display = show ? 'none' : '';
             document.getElementById('signUpPrompt').style.display = show ? 'none' : '';
             document.getElementById('signInPrompt').style.display = show ? '' : 'none';
             document.querySelectorAll('.login-card > .login-error, .login-card > .login-success').forEach(function(box) {
                 box.style.display = 'none';
             });
             document.querySelector('.login-title').textContent = show ? 'Create your account' : 'Welcome back';
-            if (show) {
-                document.getElementById('loginSubtitle').textContent = 'Sign up as a customer to reserve cards';
-            } else {
-                selectRole('CUSTOMER');
-            }
+            document.getElementById('loginSubtitle').textContent = show
+                ? 'Sign up as a customer to reserve cards'
+                : 'Sign in to your Pokémon TCG Pocket Vault account';
         }
 
         function showSignUpError(message) {
@@ -217,17 +179,10 @@
             }
         }
 
-        // Allow deep-linking, e.g. /login?portal=manager or /login?signup
-        (function() {
-            var params = new URLSearchParams(window.location.search);
-            var portal = params.get('portal');
-            if (portal && portal.toUpperCase() === 'MANAGER') {
-                selectRole('MANAGER');
-            }
-            if (params.has('signup')) {
-                showSignUp(true);
-            }
-        })();
+        // Allow deep-linking to the sign-up form: /login?signup
+        if (new URLSearchParams(window.location.search).has('signup')) {
+            showSignUp(true);
+        }
     </script>
 </body>
 </html>
