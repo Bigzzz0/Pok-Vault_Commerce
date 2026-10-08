@@ -84,12 +84,12 @@
 
         <!-- Orders Table -->
         <div class="table-wrapper">
-            <table>
+            <table class="orders-table">
                 <thead>
                     <tr>
                         <th>Order Code</th>
+                        <th>Card Item</th>
                         <th>Customer / In-Game ID</th>
-                        <th>Tier</th>
                         <th>Order State Pipeline</th>
                         <th>In-Game Trade Fulfillment</th>
                         <th>Final Paid</th>
@@ -104,22 +104,31 @@
                     </tr>
                     <tr th:each="ord : ${orders}">
                         <td>
-                            <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent-cyan);" th:text="${ord.orderCode}">ORD-001</span>
+                            <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent-cyan); white-space: nowrap;" th:text="${ord.orderCode}">ORD-001</span>
                             <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${#temporals.format(ord.createdAt, 'yyyy-MM-dd HH:mm')}">2026-09-06</div>
                         </td>
                         <td>
-                            <div style="font-weight: 600;" th:text="${ord.customerFullName != null ? ord.customerFullName : ord.username}">Ash Ketchum</div>
+                            <div th:each="item : ${ord.items}" style="display: flex; align-items: center; gap: 0.85rem; margin: 0.2rem 0;">
+                                <img th:src="${item.imageUrl}" th:alt="${item.cardName}" class="inv-card-thumb" loading="lazy">
+                                <div>
+                                    <div style="font-weight: 800; font-size: 1.05rem; white-space: nowrap;" th:text="${item.cardName}">Charizard ex</div>
+                                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); white-space: nowrap;" th:text="${item.expansionCode + ' #' + item.cardNumber + ' x' + item.quantity}">A1 #004 x1</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; white-space: nowrap;">
+                                <span style="font-weight: 600;" th:text="${ord.customerFullName != null ? ord.customerFullName : ord.username}">Ash Ketchum</span>
+                                <span class="rarity-pill" th:if="${ord.membershipTier != null}" th:text="${ord.membershipTier}">VIP</span>
+                            </div>
                             <!-- Customer Friend ID Badge with Copy -->
                             <div th:if="${ord.customerFriendId != null}" style="display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.25rem; background: var(--bg-surface-elevated); padding: 0.15rem 0.45rem; border-radius: 4px; border: 1px solid var(--border-color);">
-                                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-gold);" th:text="${ord.customerFriendId}">1111-2222-3333-4444</span>
+                                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-gold); white-space: nowrap;" th:text="${ord.customerFriendId}">1111-2222-3333-4444</span>
                                 <button type="button" class="icon-btn" th:data-code="${ord.customerFriendId}" onclick="copyFriendCode(this.getAttribute('data-code'), this)" title="Copy Customer Friend Code" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: inline-flex; align-items: center; padding: 0;">
                                     <div th:replace="~{fragments/icons :: copy('icon-xs')}"></div>
                                 </button>
                             </div>
                             <div th:if="${ord.customerInGameName != null}" style="font-size: 0.75rem; color: var(--text-secondary);" th:text="'IGN: ' + ${ord.customerInGameName}">IGN: AshMaster</div>
-                        </td>
-                        <td>
-                            <span class="rarity-pill" th:text="${ord.membershipTier}">VIP</span>
                         </td>
                         <td>
                             <!-- Visual State Node Stepper -->

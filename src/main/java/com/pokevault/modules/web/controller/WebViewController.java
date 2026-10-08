@@ -196,7 +196,7 @@ public class WebViewController {
                 .map(user -> orderRepository.findByUserId(user.getId()))
                 .orElse(List.of()).stream()
                 .sorted(Comparator.comparing(Order::getId).reversed())
-                .map(this::toMyOrderView)
+                .map(this::toOrderView)
                 .toList();
 
         model.addAttribute("orders", orders);
@@ -356,15 +356,9 @@ public class WebViewController {
         view.put("customerInGameName", order.getCustomerInGameName());
         view.put("membershipTier", profile != null ? profile.getMembershipTier() : null);
         view.put("orderStatus", order.getOrderStatus());
-        view.put("items", order.getItems());
+        view.put("items", order.getItems().stream().map(this::toOrderItemView).toList());
         view.put("discountAmount", order.getDiscountAmount());
         view.put("finalAmount", order.getFinalAmount());
-        return view;
-    }
-
-    private Map<String, Object> toMyOrderView(Order order) {
-        Map<String, Object> view = toOrderView(order);
-        view.put("items", order.getItems().stream().map(this::toOrderItemView).toList());
         return view;
     }
 
@@ -373,6 +367,8 @@ public class WebViewController {
         Map<String, Object> view = new LinkedHashMap<>();
         view.put("cardName", card != null ? card.getName() : "Unknown card");
         view.put("imageUrl", card != null ? resolveImageUrl(card) : CARD_BACK_IMAGE);
+        view.put("expansionCode", card != null && card.getExpansion() != null ? card.getExpansion().getCode() : null);
+        view.put("cardNumber", card != null ? card.getCardNumber() : null);
         view.put("quantity", item.getQuantity());
         view.put("unitPrice", item.getUnitPrice());
         return view;

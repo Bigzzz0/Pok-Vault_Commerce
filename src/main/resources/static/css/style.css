@@ -898,6 +898,22 @@ tr:hover td {
 }
 
 /* --- State Machine Pipeline --- */
+/* Orders console has 7 dense columns: tighter cells keep it inside the frame */
+.orders-table th,
+.orders-table td {
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+}
+
+.orders-table th:first-child,
+.orders-table td:first-child {
+  padding-left: 1.4rem;
+}
+
+.orders-table .state-pipeline {
+  gap: 0.3rem;
+}
+
 .state-pipeline {
   display: flex;
   align-items: center;
