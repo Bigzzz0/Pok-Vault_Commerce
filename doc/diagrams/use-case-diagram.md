@@ -234,7 +234,7 @@ flowchart LR
 #### Main Success Scenario
 1. แอดมินเปิดหน้าจอ `/orders` และตรวจสอบหมายเลขคำสั่งซื้อที่ลูกค้าแจ้งในแชท Facebook
 2. แอดมินคลิกปุ่ม "Trade Manager" ประจำออเดอร์นั้น
-3. หน้าต่าง Trade Management Modal เปิดขึ้น ระบบส่งคำขอไปยัง `GET /api/v1/orders/{id}/trade-recommendations`
+3. หน้าต่าง Trade Management Modal เปิดขึ้น ระบบส่งคำขอไปยัง `GET /api/v1/trades/orders/{id}/recommendations`
 4. `TradeMatchingServiceImpl` ดำเนินการค้นหาในฐานข้อมูล:
    * ค้นหา `CardInventory` ที่ตรงกับ `card_id` ในออเดอร์ และมี `quantity > 0`
    * ตรวจสอบสถานะของ `GameAccount` ที่เป็นเจ้าของสต็อกการ์ดใบนั้น ต้องเป็น `tradeStatus == READY`
@@ -275,3 +275,13 @@ flowchart LR
   3. ระบบวนลูปคืนจำนวนสต็อกการ์ดกลับเข้าคลัง `inventory.restoreStock(item.getQuantity())`
   4. สถานะออเดอร์เปลี่ยนเป็น `CANCELLED`
   5. หากออเดอร์อยู่ในสถานะ `SHIPPING` (ส่งการ์ดเข้าไปในเกมแล้ว) ระบบจะปฏิเสธการยกเลิก และโยน `InvalidOrderStateException` ทันที ป้องกันการสูญเสียทรัพย์สินของร้าน
+
+## เงื่อนไข implementation ล่าสุด
+
+ตรวจเทียบโค้ด commit `ea2dcd7` วันที่ 9 ตุลาคม 2026; รอบนี้แก้เอกสาร ไม่ได้รันทดสอบใหม่
+
+- Trade candidates ต้องเป็นการ์ดและสภาพเดียวกับรายการที่จอง, บัญชี READY และจำนวนเพียงพอ; reservation ตรวจ inventory id
+- ก่อนปิด Order ทุก item ต้องเป็น COMPLETED; เปลี่ยน item ด้วย API trade-status ตามลำดับ FRIEND_PENDING → TRADE_SENT → COMPLETED
+- การเพิ่มเพื่อน, รับเงิน และคืนเงินทำโดยร้านในเกม/แชท ไม่ได้เรียก game API หรือ payment gateway
+- เปลี่ยนสถานะ Order ผ่าน REST ได้เฉพาะ ADMIN/STAFF; ลูกค้าติดต่อร้านเพื่อขอยกเลิก
+- Account CRUD มี PUT และ DELETE; การลบบัญชีที่มี inventory หรือ assigned order item ตอบ 409

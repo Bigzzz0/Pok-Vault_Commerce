@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon TCG Pocket - ไม่มีสิทธิ์เข้าถึง</title>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('tcg-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .denied-shell { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+        .denied-card { width: 100%; max-width: 460px; text-align: center; background: var(--bg-surface-card); border: 1px solid var(--border-subtle); border-radius: 18px; padding: 2.25rem 2rem; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35); backdrop-filter: blur(12px); }
+        .denied-code { font-size: 3rem; font-weight: 800; letter-spacing: -1px; color: var(--accent-ruby); line-height: 1; }
+        .denied-title { font-size: 1.4rem; font-weight: 800; margin: 0.5rem 0 0.4rem; }
+        .denied-sub { color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 1.5rem; }
+        .denied-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+        .denied-actions form { margin: 0; }
+    </style>
+</head>
+<body>
+    <main class="denied-shell">
+        <section class="denied-card">
+            <div class="denied-code">403</div>
+            <h1 class="denied-title">พื้นที่สำหรับพนักงานเท่านั้น</h1>
+            <p class="denied-sub">
+                <span sec:authorize="isAuthenticated()">คุณเข้าสู่ระบบด้วยบัญชี <strong sec:authentication="name">username</strong> ซึ่งเป็นบัญชีลูกค้า</span>
+                หน้าคลังสินค้า บัญชีเกม และคำสั่งซื้อ ใช้ได้เฉพาะพนักงานร้าน
+            </p>
+            <div class="denied-actions">
+                <a th:href="@{/cards}" class="btn btn-primary">ดูแกลเลอรีการ์ด</a>
+                <a th:href="@{/}" class="btn btn-secondary">หน้าแรก</a>
+                <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+                    <button type="submit" class="btn btn-secondary">เข้าสู่ระบบด้วยบัญชีพนักงาน</button>
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon TCG Pocket - คำสั่งซื้อและการเทรดในเกม</title>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('tcg-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/ux-improvements.css}">
+    <link rel="stylesheet" th:href="@{/css/pokemon-cards-holo.css}">
+</head>
+<body>
+
+    <!-- Official Pokémon TCG Style Navbar -->
+    <nav class="navbar">
+        <a th:href="@{/}" class="brand">
+            <div class="brand-emblem">
+                <div th:replace="~{fragments/icons :: pokeball('icon-md')}"></div>
+            </div>
+            <span>Pokémon TCG Pocket Gallery</span>
+        </a>
+        <button type="button" class="nav-menu-toggle" aria-expanded="false" aria-controls="siteNavigation">เมนู</button>
+        <div class="nav-links" id="siteNavigation">
+            <a th:href="@{/}" class="nav-link">
+                <div th:replace="~{fragments/icons :: dashboard('icon-sm')}"></div>
+                <span>หน้าแรก</span>
+            </a>
+            <a th:href="@{/cards}" data-gallery-return class="nav-link">
+                <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
+                <span>แกลเลอรีการ์ด</span>
+            </a>
+            <a th:href="@{/inventory}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+                <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
+                <span>คลังสินค้า</span>
+            </a>
+            <a th:href="@{/accounts}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+                <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
+                <span>บัญชีเกม</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-link active" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                <span>คำสั่งซื้อ</span>
+            </a>
+            <a th:href="@{/my-orders}" class="nav-link" sec:authorize="hasRole('CUSTOMER')">
+                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                <span>คำสั่งซื้อของฉัน</span>
+            </a>
+            <a href="/swagger-ui.html" target="_blank" class="nav-link swagger-btn" sec:authorize="hasRole('ADMIN')">
+                <span>Swagger</span>
+                <div th:replace="~{fragments/icons :: externalLink('icon-sm')}"></div>
+            </a>
+            <a th:href="@{/login}" class="nav-link" sec:authorize="isAnonymous()">
+                <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
+                <span>เข้าสู่ระบบ</span>
+            </a>
+            <div class="nav-user" sec:authorize="isAuthenticated()">
+                <span class="nav-user-name">สวัสดี, <strong sec:authentication="name">username</strong></span>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="nav-link nav-signout-btn">ออกจากระบบ</button>
+                </form>
+            </div>
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="สลับธีม" aria-label="สลับธีม">
+                <span class="theme-icon-sun" style="display: inline-flex;"><th:block th:replace="~{fragments/icons :: sun('icon-sm')}"></th:block></span>
+                <span class="theme-icon-moon" style="display: none;"><th:block th:replace="~{fragments/icons :: moon('icon-sm')}"></th:block></span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px;">คำสั่งซื้อและการเทรดในเกม</h1>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">ตรวจสอบการชำระเงิน จับคู่บัญชี และติดตามการส่งการ์ดผ่านการเทรดในเกม</p>
+            </div>
+            <a th:href="@{/inventory}" class="btn btn-primary">
+                <div th:replace="~{fragments/icons :: plus('icon-sm')}"></div>
+                <span>สร้างคำสั่งซื้อที่คลังสินค้า</span>
+            </a>
+        </div>
+
+
+        <section class="orders-filter-toolbar" aria-label="กรองคำสั่งซื้อ">
+            <label>ค้นหาออเดอร์ ลูกค้า หรือการ์ด<input id="orderSearch" class="input-field" type="search" placeholder="รหัสออเดอร์ ชื่อลูกค้า หรือชื่อการ์ด"></label>
+            <label>สถานะ<select id="orderStatusFilter" class="input-field"><option value="all">ทั้งหมด</option><option value="PENDING">รอชำระเงิน</option><option value="PAID">ชำระแล้ว</option><option value="SHIPPING">กำลังเทรด</option><option value="COMPLETED">เสร็จสิ้น</option><option value="CANCELLED">ยกเลิกแล้ว</option></select></label>
+            <button type="button" class="btn btn-secondary" id="orderFilterReset">ล้างตัวกรอง</button>
+            <span id="orderFilterCount" role="status" aria-live="polite"></span>
+        </section>
+        <p id="orderFilterEmpty" hidden>ไม่พบออเดอร์ตามเงื่อนไขนี้ ลองเปลี่ยนคำค้นหาหรือล้างตัวกรอง</p>
+        <!-- Orders Table -->
+        <div class="table-wrapper">
+            <table class="orders-table responsive-data-table">
+                <thead>
+                    <tr>
+                        <th>รหัสคำสั่งซื้อ</th>
+                        <th>การ์ด</th>
+                        <th>ลูกค้า / Friend ID</th>
+                        <th>สถานะคำสั่งซื้อ</th>
+                        <th>การเทรดในเกม</th>
+                        <th>ยอดชำระ</th>
+                        <th>จัดการสถานะ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(orders)}">
+                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                            ยังไม่มีคำสั่งซื้อในระบบ ไปที่ <a th:href="@{/inventory}" style="color: var(--accent-cyan); font-weight: 700;">คลังสินค้า</a> เพื่อสร้างคำสั่งซื้อแรก
+                        </td>
+                    </tr>
+                    <tr th:each="ord : ${orders}" th:data-order-status="${ord.orderStatus.name()}">
+                        <td data-label="รหัสคำสั่งซื้อ">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent-cyan); white-space: nowrap;" th:text="${ord.orderCode}">ORD-001</span>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${#temporals.format(ord.createdAt, 'yyyy-MM-dd HH:mm')}">2026-09-06</div>
+                        </td>
+                        <td data-label="การ์ด">
+                            <div th:each="item : ${ord.items}" style="display: flex; align-items: center; gap: 0.85rem; margin: 0.2rem 0;">
+                                <img th:src="${item.imageUrl}" th:alt="${item.cardName}" class="inv-card-thumb" loading="lazy">
+                                <div>
+                                    <div style="font-weight: 800; font-size: 1.05rem; white-space: nowrap;" th:text="${item.cardName}">Charizard ex</div>
+                                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); white-space: nowrap;" th:text="${item.expansionCode + ' #' + item.cardNumber + ' x' + item.quantity}">A1 #004 x1</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td data-label="ลูกค้า / Friend ID">
+                            <details class="order-secondary-details" open><summary>ข้อมูลลูกค้าและ Friend ID</summary><div class="order-secondary-content">
+                            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.2rem 0.5rem;">
+                                <span style="font-weight: 600;" th:text="${ord.customerFullName != null ? ord.customerFullName : ord.username}">Ash Ketchum</span>
+                                <span class="rarity-pill" th:if="${ord.membershipTier != null}" th:text="${ord.membershipTier}">VIP</span>
+                            </div>
+                            <!-- Customer Friend ID Badge with Copy -->
+                            <div th:if="${ord.customerFriendId != null}" style="display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.25rem; background: var(--bg-surface-elevated); padding: 0.15rem 0.45rem; border-radius: 4px; border: 1px solid var(--border-color);">
+                                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-gold); white-space: nowrap;" th:text="${ord.customerFriendId}">1111-2222-3333-4444</span>
+                                <button type="button" class="icon-btn" th:data-code="${ord.customerFriendId}" onclick="copyFriendCode(this.getAttribute('data-code'), this)" title="คัดลอก Friend Code ของลูกค้า" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: inline-flex; align-items: center; padding: 0;">
+                                    <div th:replace="~{fragments/icons :: copy('icon-xs')}"></div>
+                                </button>
+                            </div>
+                            <div th:if="${ord.customerInGameName != null}" style="font-size: 0.75rem; color: var(--text-secondary);" th:text="'IGN: ' + ${ord.customerInGameName}">IGN: AshMaster</div>
+                        </div></details>
+                        </td>
+                        <td data-label="สถานะคำสั่งซื้อ">
+                            <!-- Visual State Node Stepper -->
+                            <div class="state-pipeline">
+                                <span th:class="${'state-node ' + (ord.orderStatus.name() == 'PENDING' ? 'active-pending' : '')}">
+                                    <span>รอชำระเงิน</span>
+                                </span>
+                                <span style="color: var(--text-muted);">→</span>
+                                <span th:class="${'state-node ' + (ord.orderStatus.name() == 'PAID' ? 'active-paid' : '')}">
+                                    <span>ชำระแล้ว</span>
+                                </span>
+                                <span style="color: var(--text-muted);">→</span>
+                                <span th:class="${'state-node ' + (ord.orderStatus.name() == 'SHIPPING' ? 'active-shipping' : '')}">
+                                    <span>กำลังเทรด</span>
+                                </span>
+                                <span style="color: var(--text-muted);">→</span>
+                                <span th:class="${'state-node ' + (ord.orderStatus.name() == 'COMPLETED' ? 'active-completed' : (ord.orderStatus.name() == 'CANCELLED' ? 'active-cancelled' : ''))}">
+                                    <span th:text="${ord.orderStatus.name() == 'CANCELLED' ? 'ยกเลิกแล้ว' : 'เสร็จสิ้น'}">COMPLETED</span>
+                                </span>
+                            </div>
+                        </td>
+                        <td data-label="การเทรดในเกม">
+                            <!-- In-Game Trade Fulfillment Summary & Action -->
+                            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.76rem; border-color: var(--accent-cyan); color: var(--accent-cyan);"
+                                            th:data-order-id="${ord.id}"
+                                            th:data-order-code="${ord.orderCode}"
+                                            th:data-friend-id="${ord.customerFriendId != null ? ord.customerFriendId : ''}"
+                                            onclick="openTradeModal(this.dataset.orderId, this.dataset.orderCode, this.dataset.friendId)">
+                                        <div th:replace="~{fragments/icons :: sparkles('icon-xs')}"></div>
+                                        <span>จัดการเทรด</span>
+                                    </button>
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${ord.items != null ? ord.items.size() + ' รายการในออเดอร์' : '0 รายการ'}">1 card</div>
+                            </div>
+                        </td>
+                        <td data-label="ยอดชำระ">
+                            <div style="color: #10b981; font-weight: 800; font-size: 1rem;" th:text="'฿' + ${#numbers.formatDecimal(ord.finalAmount, 1, 'COMMA', 2, 'POINT')}">฿405.00</div>
+                            <div th:if="${ord.discountAmount > 0}" style="color: var(--accent-gold); font-size: 0.75rem;" th:text="'ประหยัด ฿' + ${#numbers.formatDecimal(ord.discountAmount, 1, 'COMMA', 2, 'POINT')}">Save ฿45.00</div>
+                        </td>
+                        <td data-label="จัดการสถานะ">
+                            <p class="order-next-step" th:switch="${ord.orderStatus.name()}">
+                                <span th:case="'PENDING'">ตรวจสอบหลักฐานและยอดชำระก่อนเปลี่ยนสถานะ</span>
+                                <span th:case="'PAID'">จับคู่บัญชีและนัดเทรดกับลูกค้า</span>
+                                <span th:case="'SHIPPING'">ตรวจสอบว่าลูกค้าได้รับการ์ดครบก่อนปิดออเดอร์</span>
+                                <span th:case="'COMPLETED'">ดำเนินการครบแล้ว</span>
+                                <span th:case="'CANCELLED'">ออเดอร์ยกเลิกแล้ว</span>
+                            </p>
+                            <!-- Contextual State Action Buttons -->
+                            <div class="order-actions">
+                                <!-- Action when PENDING -->
+                                <button th:if="${ord.orderStatus.name() == 'PENDING'}" 
+                                        class="btn btn-primary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem;"
+                                        th:data-order-id="${ord.id}"
+                                        th:data-order-code="${ord.orderCode}"
+                                        onclick="executeOrderTransition(this.dataset.orderId, 'pay', this.dataset.orderCode)">
+                                    <div th:replace="~{fragments/icons :: creditCard('icon-sm')}"></div>
+                                    <span>ชำระเงินแล้ว</span>
+                                </button>
+                                <!-- Action when PAID -->
+                                <button th:if="${ord.orderStatus.name() == 'PAID'}" 
+                                        class="btn btn-primary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem; background: linear-gradient(135deg, #7c3aed, #8b5cf6);"
+                                        th:data-order-id="${ord.id}"
+                                        th:data-order-code="${ord.orderCode}"
+                                        onclick="executeOrderTransition(this.dataset.orderId, 'ship', this.dataset.orderCode)">
+                                    <div th:replace="~{fragments/icons :: truck('icon-sm')}"></div>
+                                    <span>เริ่มเทรด</span>
+                                </button>
+
+                                <!-- Action when SHIPPING -->
+                                <button th:if="${ord.orderStatus.name() == 'SHIPPING'}" 
+                                        class="btn btn-primary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem; background: linear-gradient(135deg, #059669, #10b981);"
+                                        th:data-order-id="${ord.id}"
+                                        th:data-order-code="${ord.orderCode}"
+                                        onclick="executeOrderTransition(this.dataset.orderId, 'complete', this.dataset.orderCode)">
+                                    <div th:replace="~{fragments/icons :: checkCircle('icon-sm')}"></div>
+                                    <span>เทรดสำเร็จ</span>
+                                </button>
+
+                                <!-- Cancel always sits under the forward action -->
+                                <button th:if="${ord.orderStatus.name() == 'PENDING' || ord.orderStatus.name() == 'PAID'}" 
+                                        class="btn btn-secondary" style="padding: 0.35rem 0.7rem; font-size: 0.78rem; color: #ef4444; border-color: rgba(239,68,68,0.3);"
+                                        th:data-order-id="${ord.id}"
+                                        th:data-order-code="${ord.orderCode}"
+                                        onclick="executeOrderTransition(this.dataset.orderId, 'cancel', this.dataset.orderCode)">
+                                    <div th:replace="~{fragments/icons :: xCircle('icon-sm')}"></div>
+                                    <span>ยกเลิก</span>
+                                </button>
+
+                                <!-- Terminal States -->
+                                <span th:if="${ord.orderStatus.name() == 'COMPLETED'}" style="color: #10b981; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                    <div th:replace="~{fragments/icons :: checkCircle('icon-sm')}"></div>
+                                    <span>เทรดแล้ว</span>
+                                </span>
+                                <span th:if="${ord.orderStatus.name() == 'CANCELLED'}" style="color: #ef4444; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                    <div th:replace="~{fragments/icons :: xCircle('icon-sm')}"></div>
+                                    <span>ยกเลิกแล้ว</span>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Order state transition confirmation -->
+    <div id="transitionModal" class="modal-overlay" onclick="if(event.target === this) closeTransitionModal()" role="dialog" aria-modal="true" aria-hidden="true" inert>
+        <div class="modal-container" style="max-width: 440px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="transitionTitle">ยืนยัน</h3>
+                <button type="button" class="modal-close-btn" aria-label="ปิดหน้าต่าง" onclick="closeTransitionModal()">
+                    <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <div id="transitionOrderCode" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 1.25rem; color: var(--accent-cyan); margin-bottom: 0.85rem;">ORD-2026-001</div>
+                <div class="state-pipeline" style="justify-content: center; margin-bottom: 1rem;">
+                    <span id="transitionFrom" class="state-node">PENDING</span>
+                    <span style="color: var(--text-muted);">→</span>
+                    <span id="transitionTo" class="state-node">PAID</span>
+                </div>
+                <p id="transitionError" class="field-error" role="alert" hidden></p>
+                <p id="transitionMessage" style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;"></p>
+            </div>
+            <div class="modal-footer transition-footer">
+                <button type="button" class="btn btn-secondary" id="transitionDismissBtn" onclick="closeTransitionModal()">ย้อนกลับ</button>
+                <button type="button" class="btn btn-primary" id="transitionConfirmBtn" onclick="confirmOrderTransition()">ยืนยัน</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- In-Game Trade Matching & Fulfillment Modal -->
+    <div id="tradeFulfillmentModal" class="modal-overlay" onclick="if(event.target === this) closeTradeModal()" role="dialog" aria-modal="true" aria-hidden="true" inert>
+        <div class="modal-container modal-wide" style="max-width: 960px;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div th:replace="~{fragments/icons :: sparkles('icon-md')}"></div>
+                    <div>
+                        <h3 class="modal-title" id="tradeModalOrderTitle">จัดการเทรดในเกม</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;" id="tradeModalCustomerSub">Friend Code ของลูกค้าและการจับคู่บัญชี</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" aria-label="ปิดหน้าต่าง" onclick="closeTradeModal()">
+                    <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Customer Friend Code Header Banner -->
+                <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 0.25rem;">Friend ID ของลูกค้าใน Pokémon TCG Pocket</span>
+                        <div style="display: flex; align-items: center; gap: 0.6rem;">
+                            <span id="tradeCustomerFriendCode" style="font-family: 'JetBrains Mono', monospace; font-size: 1.15rem; font-weight: 800; color: var(--accent-gold);">ไม่มี Friend Code</span>
+                            <button type="button" class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="copyCustomerModalFriendCode(this)">
+                                <div th:replace="~{fragments/icons :: copy('icon-xs')}"></div>
+                                <span>คัดลอก ID</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="button" id="btnAutoMatch" class="btn btn-primary" onclick="triggerAutoMatch()">
+                        <div th:replace="~{fragments/icons :: sparkles('icon-sm')}"></div>
+                        <span>จับคู่บัญชีเทรดอัตโนมัติ</span>
+                    </button>
+                </div>
+
+                <!-- Recommendation Banner (Filled dynamically) -->
+                <div id="tradeRecommendationBanner" style="display: none; margin-bottom: 1.5rem; padding: 1rem; border-radius: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);">
+                    <!-- Recommendation details -->
+                </div>
+
+                <!-- Order Items Trade Assignment Table -->
+                <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem;">การ์ดที่สั่งและบัญชีที่ใช้เทรด</h4>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>การ์ด</th>
+                                <th>จำนวน</th>
+                                <th>บัญชีที่ใช้เทรด</th>
+                                <th>Friend Code ของบัญชี</th>
+                                <th>สถานะเทรด</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradeItemsTableBody">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="padding: 1.25rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color);">
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                    ขั้นตอน: ลูกค้าส่งคำขอเป็นเพื่อน → ส่งการ์ดผ่านเทรดในเกม → ปิดคำสั่งซื้อ
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="closeTradeModal()">เสร็จสิ้น</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/audio.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
+    <script th:src="@{/js/ux-improvements.js}"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderStockAndSecurityTest$ReassignAccountTests" time="0.016" tests="5" errors="0" skipped="0" failures="0">
+  <testcase name="reassignAccount_PreservesOriginalUnitPriceAndTotalAmount" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$ReassignAccountTests" time="0.003">
+    <system-out>2026-10-09T20:32:03.653+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Reassigned OrderItem [501] to GameAccount [VAULT-ACC-B] (Trainer_B) and transferred stock cleanly
+</system-out>
+  </testcase>
+  <testcase name="reassignAccount_TargetAccountHasSufficientMint_TransfersStockCleanly" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$ReassignAccountTests" time="0.002">
+    <system-out>2026-10-09T20:32:03.655+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Reassigned OrderItem [501] to GameAccount [VAULT-ACC-B] (Trainer_B) and transferred stock cleanly
+</system-out>
+  </testcase>
+  <testcase name="reassignAccount_TargetAccountOnlyHasPlayed_ThrowsExceptionAndRejects" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$ReassignAccountTests" time="0.002" />
+  <testcase name="reassignAccount_InsufficientStock_FailsAndAllInventoriesUnchanged" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$ReassignAccountTests" time="0.002" />
+  <testcase name="cancelOrder_AfterReassign_RestoresStockToLatestHoldingInventory" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$ReassignAccountTests" time="0.002">
+    <system-out>2026-10-09T20:32:03.664+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Transitioning order id: 101 from current status: PENDING with action: cancel
+2026-10-09T20:32:03.664+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : Order reached terminal state: CANCELLED
+2026-10-09T20:32:03.664+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: Triggering automatic stock restoration for Order: com.pokevault.domain.entity.Order@491314c1
+2026-10-09T20:32:03.664+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: Restored 1 copies to inventory id: 1002 (now 3 in vault)
+2026-10-09T20:32:03.664+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Order id: 101 successfully transitioned to status: CANCELLED
+</system-out>
+  </testcase>
+</testsuite>

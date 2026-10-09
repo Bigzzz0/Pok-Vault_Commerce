@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon TCG Pocket - คำสั่งซื้อของฉัน</title>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('tcg-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/ux-improvements.css}">
+    <link rel="stylesheet" th:href="@{/css/pokemon-cards-holo.css}">
+</head>
+<body>
+
+    <!-- Official Pokémon TCG Style Navbar -->
+    <nav class="navbar">
+        <a th:href="@{/}" class="brand">
+            <div class="brand-emblem">
+                <div th:replace="~{fragments/icons :: pokeball('icon-md')}"></div>
+            </div>
+            <span>Pokémon TCG Pocket Gallery</span>
+        </a>
+        <button type="button" class="nav-menu-toggle" aria-expanded="false" aria-controls="siteNavigation">เมนู</button>
+        <div class="nav-links" id="siteNavigation">
+            <a th:href="@{/}" class="nav-link">
+                <div th:replace="~{fragments/icons :: dashboard('icon-sm')}"></div>
+                <span>หน้าแรก</span>
+            </a>
+            <a th:href="@{/cards}" data-gallery-return class="nav-link">
+                <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
+                <span>แกลเลอรีการ์ด</span>
+            </a>
+            <a th:href="@{/inventory}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+                <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
+                <span>คลังสินค้า</span>
+            </a>
+            <a th:href="@{/accounts}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+                <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
+                <span>บัญชีเกม</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                <span>คำสั่งซื้อ</span>
+            </a>
+            <a th:href="@{/my-orders}" class="nav-link active" sec:authorize="hasRole('CUSTOMER')">
+                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                <span>คำสั่งซื้อของฉัน</span>
+            </a>
+            <a href="/swagger-ui.html" target="_blank" class="nav-link swagger-btn" sec:authorize="hasRole('ADMIN')">
+                <span>Swagger</span>
+                <div th:replace="~{fragments/icons :: externalLink('icon-sm')}"></div>
+            </a>
+            <a th:href="@{/login}" class="nav-link" sec:authorize="isAnonymous()">
+                <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
+                <span>เข้าสู่ระบบ</span>
+            </a>
+            <div class="nav-user" sec:authorize="isAuthenticated()">
+                <span class="nav-user-name">สวัสดี, <strong sec:authentication="name">username</strong></span>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="nav-link nav-signout-btn">ออกจากระบบ</button>
+                </form>
+            </div>
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="สลับธีม" aria-label="สลับธีม">
+                <span class="theme-icon-sun" style="display: inline-flex;"><th:block th:replace="~{fragments/icons :: sun('icon-sm')}"></th:block></span>
+                <span class="theme-icon-moon" style="display: none;"><th:block th:replace="~{fragments/icons :: moon('icon-sm')}"></th:block></span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px;">คำสั่งซื้อของฉัน</h1>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">ติดตามการ์ดที่คุณจองไว้ และสถานะของแต่ละคำสั่งซื้อ</p>
+            </div>
+            <a th:href="@{/cards}" data-gallery-return class="btn btn-primary">
+                <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
+                <span>ดูแกลเลอรีการ์ด</span>
+            </a>
+        </div>
+
+        <!-- Orders of the signed-in user only (read-only) -->
+        <div class="table-wrapper">
+            <table class="responsive-data-table">
+                <thead>
+                    <tr>
+                        <th>รหัสคำสั่งซื้อ</th>
+                        <th>การ์ด</th>
+                        <th>Friend ID ของคุณ</th>
+                        <th>สถานะคำสั่งซื้อ</th>
+                        <th>ยอดรวม</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(orders)}">
+                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                            คุณยังไม่มีคำสั่งซื้อ ลองดูที่ <a th:href="@{/cards}" style="color: var(--accent-cyan); font-weight: 700;">แกลเลอรีการ์ด</a> แล้วสั่งจองการ์ดได้เลย
+                        </td>
+                    </tr>
+                    <tr th:each="ord : ${orders}" th:data-order-status="${ord.orderStatus.name()}">
+                        <td data-label="รหัสคำสั่งซื้อ">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent-cyan);" th:text="${ord.orderCode}">ORD-001</span>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${#temporals.format(ord.createdAt, 'yyyy-MM-dd HH:mm')}">2026-09-06</div>
+                        </td>
+                        <td data-label="การ์ด">
+                            <div th:each="item : ${ord.items}" style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
+                                <img th:src="${item.imageUrl}" th:alt="${item.cardName}" class="inv-card-thumb" loading="lazy">
+                                <div>
+                                    <div style="font-weight: 700; font-size: 0.88rem;" th:text="${item.cardName}">Charizard ex</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${item.quantity + ' x ฿' + #numbers.formatDecimal(item.unitPrice, 1, 'COMMA', 2, 'POINT')}">1 x ฿450.00</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td data-label="Friend ID ของคุณ">
+                            <details class="order-secondary-details" open><summary>Friend ID และข้อมูลเพิ่มเติม</summary><div class="order-secondary-content">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-gold);" th:text="${ord.customerFriendId != null ? ord.customerFriendId : '-'}">1111-2222-3333-4444</span>
+                            <div th:if="${ord.customerInGameName != null}" style="font-size: 0.75rem; color: var(--text-secondary);" th:text="'IGN: ' + ${ord.customerInGameName}">IGN: AshMaster</div>
+                        </div></details>
+                        </td>
+                        <td data-label="สถานะคำสั่งซื้อ">
+                            <div class="state-pipeline">
+                                <span th:class="${'state-node ' + (ord.orderStatus.name() == 'PENDING' ? 'active-pending' : '')}">
+                                    <span>รอชำระเงิน</span>
+                                </span>
+                                <span style="color: var(--text-muted);">→</span>
+                                <span th:class="${'state-node ' + (ord.orderStatus.name() == 'PAID' ? 'active-paid' : '')}">
+                                    <span>ชำระแล้ว</span>
+                                </span>
+                                <span style="color: var(--text-muted);">→</span>
+                                <span th:class="${'state-node ' + (ord.orderStatus.name() == 'SHIPPING' ? 'active-shipping' : '')}">
+                                    <span>กำลังเทรด</span>
+                                </span>
+                                <span style="color: var(--text-muted);">→</span>
+                                <span th:class="${'state-node ' + (ord.orderStatus.name() == 'COMPLETED' ? 'active-completed' : (ord.orderStatus.name() == 'CANCELLED' ? 'active-cancelled' : ''))}">
+                                    <span th:text="${ord.orderStatus.name() == 'CANCELLED' ? 'ยกเลิกแล้ว' : 'เสร็จสิ้น'}">COMPLETED</span>
+                                </span>
+                            </div>
+                        
+                            <p class="order-next-step" th:switch="${ord.orderStatus.name()}">
+                                <span th:case="'PENDING'">ขั้นตอนถัดไป: ติดต่อร้านพร้อมรหัสออเดอร์ เพื่อชำระเงินและนัดเทรด</span>
+                                <span th:case="'PAID'">ชำระเงินแล้ว เตรียมบัญชีเกมและรอร้านนัดเทรด</span>
+                                <span th:case="'SHIPPING'">กำลังเทรด ตรวจสอบคำขอเป็นเพื่อนและรายการเทรดในเกม</span>
+                                <span th:case="'COMPLETED'">ส่งการ์ดครบแล้ว ขอบคุณที่สั่งซื้อกับร้าน</span>
+                                <span th:case="'CANCELLED'">ออเดอร์นี้ยกเลิกแล้ว หากมีคำถามให้ติดต่อร้านพร้อมรหัสออเดอร์</span>
+                            </p>
+                            <button type="button" class="btn btn-secondary order-contact-button"
+                                    th:if="${ord.orderStatus.name() == 'PENDING' or ord.orderStatus.name() == 'PAID' or ord.orderStatus.name() == 'SHIPPING'}"
+                                    th:data-order-code="${ord.orderCode}" th:data-order-amount="${ord.finalAmount}"
+                                    onclick="contactStoreAboutOrder(this)">ติดต่อร้านเรื่องออเดอร์นี้</button>
+                        </td>
+                        <td data-label="ยอดรวม">
+                            <div style="color: #10b981; font-weight: 800; font-size: 1rem;" th:text="'฿' + ${#numbers.formatDecimal(ord.finalAmount, 1, 'COMMA', 2, 'POINT')}">฿405.00</div>
+                            <div th:if="${ord.discountAmount > 0}" style="color: var(--accent-gold); font-size: 0.75rem;" th:text="'ประหยัด ฿' + ${#numbers.formatDecimal(ord.discountAmount, 1, 'COMMA', 2, 'POINT')}">Save ฿45.00</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script th:src="@{/js/audio.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
+    <script th:src="@{/js/ux-improvements.js}"></script>
+</body>
+</html>

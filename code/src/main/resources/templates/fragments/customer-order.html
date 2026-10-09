@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Customer self-service order modal, opened from the Inspect modal's "Create Order" button -->
+<div th:fragment="modal" id="customerOrderModal" class="modal-overlay" onclick="if(event.target === this) closeCustomerOrderModal()" role="dialog" aria-modal="true" aria-hidden="true" inert>
+    <div class="modal-container" style="max-width: 480px;">
+        <div class="modal-header">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div th:replace="~{fragments/icons :: receipt('icon-md')}"></div>
+                <h3 class="modal-title">สั่งซื้อ</h3>
+            </div>
+            <button class="modal-close-btn" aria-label="ปิดหน้าต่าง" onclick="closeCustomerOrderModal()">
+                <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
+            </button>
+        </div>
+
+        <!-- Step 1: order form -->
+        <form novalidate id="customerOrderForm" onsubmit="submitCustomerOrder(event)">
+            <input type="hidden" id="customerOrderUserId" th:value="${currentUserId}">
+            <div class="modal-body">
+                <p class="booking-guidance">จองการ์ด → ติดต่อร้านและชำระเงิน → รับการ์ดผ่านเทรด</p>
+                <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.9rem 1.1rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                    <div>
+                        <div id="customerOrderCardName" style="font-weight: 800;">ชื่อการ์ด</div>
+                        <div id="customerOrderCardNumber" style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent-cyan);">A1 #000</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="order-price-label">ราคาก่อนส่วนลดสมาชิก</div>
+                        <div id="customerOrderPrice" style="color: var(--accent-emerald); font-weight: 800; font-size: 1.1rem;">฿0.00</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">จำนวน 1 ใบ</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label for="customerOrderFriendId" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">
+                        Friend ID ของคุณ (ในเกม) <span style="color: var(--accent-ruby); font-weight: 800;" aria-hidden="true">*</span>
+                    </label>
+                    <input id="customerOrderFriendId" aria-describedby="customerFriendHelp customerFriendCount customerFriendError" type="text" class="input-field friend-id-input" style="width: 100%; font-family: 'JetBrains Mono', monospace;" placeholder="1234-5678-9012-3456" maxlength="19" inputmode="numeric" pattern="\d{4}-\d{4}-\d{4}-\d{4}|\d{16}" title="16 หลัก เช่น 1234-5678-9012-3456" required>
+                    <div class="field-hint-row"><small id="customerFriendHelp">รหัสเพื่อน 16 หลัก เช่น 1234-5678-9012-3456</small><small id="customerFriendCount">0/16</small></div>
+                    <p id="customerFriendError" class="field-error" role="alert" hidden></p>
+                </div>
+                <div>
+                    <label for="customerOrderIgn" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">
+                        ชื่อในเกม (ไม่บังคับ)
+                    </label>
+                    <input id="customerOrderIgn" type="text" class="input-field" style="width: 100%;" placeholder="ชื่อเทรนเนอร์ของคุณ" maxlength="100">
+                </div>
+                <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 1rem;">
+                    ระบบจะคำนวณส่วนลดสมาชิกและแสดงยอดสุทธิหลังยืนยันการจอง การยืนยันนี้ยังไม่ใช่การชำระเงิน
+                </p>
+            </div>
+            <p id="customerOrderError" class="booking-error" role="alert" hidden></p>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCustomerOrderModal()">ยกเลิก</button>
+                <button type="submit" class="btn btn-primary" id="customerOrderSubmit">
+                    <div th:replace="~{fragments/icons :: checkCircle('icon-sm')}"></div>
+                    <span>ยืนยันคำสั่งซื้อ</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- Step 2: confirmation (Messenger is optional) -->
+        <div id="customerOrderDone" style="display: none;">
+            <div class="modal-body" style="text-align: center;">
+                <div style="color: #10b981; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.35rem;">บันทึกการจองแล้ว</div>
+                <div id="customerOrderDoneCode" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 1.3rem; color: var(--accent-cyan);">#ORD-000</div>
+                <div id="customerOrderDoneAmount" style="color: var(--accent-emerald); font-weight: 800; margin: 0.35rem 0 1rem;">฿0.00</div>
+                <p id="customerOrderDoneHint" style="font-size: 0.85rem; color: var(--text-secondary);"></p>
+            </div>
+            <div class="modal-footer">
+                <a id="customerOrderMessengerBtn" href="#" target="_blank" rel="noopener" class="btn btn-secondary" onclick="copyChatOrderSummary()" style="border-color: #0084ff; color: #0084ff;">
+                    <span>ติดต่อร้าน</span>
+                </a>
+                <a th:href="@{/my-orders}" class="btn btn-primary">ดูคำสั่งซื้อของฉัน</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

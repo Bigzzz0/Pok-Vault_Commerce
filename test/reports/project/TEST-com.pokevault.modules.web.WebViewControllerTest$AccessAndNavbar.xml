@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar" time="0.156" tests="11" errors="0" skipped="0" failures="0">
+  <testcase name="customer_SeesMyOrdersAndSignOut_ButNotStaffMenu" classname="com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar" time="0.028">
+    <system-out>2026-10-09T20:32:07.861+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar]: AccessAndNavbar does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T20:32:07.870+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.pokevault.PokevaultApplication for test class com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar
+</system-out>
+  </testcase>
+  <testcase name="guest_CanBrowsePublicPages_AndSeesSignInOnly" classname="com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar" time="0.045" />
+  <testcase name="staff_SeesStaffMenu_AndCsrfProtectedSignOut" classname="com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar" time="0.026" />
+  <testcase name="guest_IsRedirectedToLogin_FromProtectedPages(String)[1]" classname="com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar" time="0.003" />
+  <testcase name="guest_IsRedirectedToLogin_FromProtectedPages(String)[2]" classname="com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar" time="0.002" />
+  <testcase name="guest_IsRedirectedToLogin_FromProtectedPages(String)[3]" classname="com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar" time="0.001" />
+  <testcase name="guest_IsRedirectedToLogin_FromProtectedPages(String)[4]" classname="com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar" time="0.001" />
+  <testcase name="customer_IsForbidden_FromStaffPages(String)[1]" classname="com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar" time="0.001" />
+  <testcase name="customer_IsForbidden_FromStaffPages(String)[2]" classname="com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar" time="0.001" />
+  <testcase name="customer_IsForbidden_FromStaffPages(String)[3]" classname="com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar" time="0.002" />
+  <testcase name="admin_SeesSwaggerLink" classname="com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar" time="0.025" />
+</testsuite>

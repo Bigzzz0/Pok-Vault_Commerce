@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderStockAndSecurityTest$LastCardMatchingTests" time="0.012" tests="1" errors="0" skipped="0" failures="0">
+  <testcase name="bookLastCard_StillCanAutoMatchSuccessfully" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$LastCardMatchingTests" time="0.01">
+    <system-out>2026-10-09T20:32:03.678+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.t.s.TradeMatchingServiceImpl       : Successfully auto-matched account VAULT-ACC-A (Trainer_A) to OrderItem id: 501 for card: Charizard ex (condition: MINT)
+</system-out>
+  </testcase>
+</testsuite>

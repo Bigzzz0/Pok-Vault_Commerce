@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.catalog.CatalogSchemaSqlTest" time="1.374" tests="6" errors="0" skipped="0" failures="0">
+  <testcase name="cardNumberAtMaximumLengthAndNullTrainerElementCanBePersisted" classname="com.pokevault.modules.catalog.CatalogSchemaSqlTest" time="0.009">
+    <system-out>2026-10-09T20:31:59.216+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.pokevault.modules.catalog.CatalogSchemaSqlTest]: CatalogSchemaSqlTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T20:31:59.217+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.pokevault.PokevaultApplication for test class com.pokevault.modules.catalog.CatalogSchemaSqlTest
+2026-10-09T20:31:59.222+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.3)
+
+2026-10-09T20:31:59.243+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.catalog.CatalogSchemaSqlTest       : Starting CatalogSchemaSqlTest using Java 21.0.10 with PID 43300 (started by User in C:\Users\User\Downloads\PokéVault_Commerce\code)
+2026-10-09T20:31:59.243+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.catalog.CatalogSchemaSqlTest       : The following 1 profile is active: "schema-test"
+2026-10-09T20:31:59.547+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-09T20:31:59.580+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 32 ms. Found 8 JPA repository interfaces.
+2026-10-09T20:31:59.644+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-10-09T20:31:59.645+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection conn21: url=jdbc:h2:mem:catalog-sql-tests user=SA
+2026-10-09T20:31:59.646+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-10-09T20:31:59.708+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-10-09T20:31:59.711+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-10-09T20:31:59.723+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-09T20:31:59.725+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-2)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-09T20:31:59.823+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-09T20:31:59.835+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-09T20:32:00.088+07:00  WARN 43300 --- [tcg-pocket-inventory] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-10-09T20:32:00.099+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-10-09T20:32:00.099+07:00  WARN 43300 --- [tcg-pocket-inventory] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2026-10-09T20:32:00.200+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-09T20:32:00.455+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.catalog.CatalogSchemaSqlTest       : Started CatalogSchemaSqlTest in 1.234 seconds (process running for 20.93)
+2026-10-09T20:32:00.521+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.w.s.GuestCustomerInitializer       : Created shared guest customer [ID: 4]: username=guest_fb
+</system-out>
+  </testcase>
+  <testcase name="overlongAddressIsRejectedBeforeCreatingProfile" classname="com.pokevault.modules.catalog.CatalogSchemaSqlTest" time="0.016" />
+  <testcase name="addressServiceCanCreateProfileWithoutFullNameAgainstRealSql" classname="com.pokevault.modules.catalog.CatalogSchemaSqlTest" time="0.01" />
+  <testcase name="schemaLengthsAndNullabilityMatchCoreEntityContract" classname="com.pokevault.modules.catalog.CatalogSchemaSqlTest" time="0.013" />
+  <testcase name="sqlRejectsCardNumberLongerThanTwentyEvenWithoutRequestValidation" classname="com.pokevault.modules.catalog.CatalogSchemaSqlTest" time="0.007">
+    <system-out>2026-10-09T20:32:00.577+07:00  WARN 43300 --- [tcg-pocket-inventory] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 22001, SQLState: 22001
+2026-10-09T20:32:00.578+07:00 ERROR 43300 --- [tcg-pocket-inventory] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Value too long for column "CARD_NUMBER CHARACTER VARYING(20)": "'xxxxxxxxxxxxxxxxxxxxx' (21)"; SQL statement:
+insert into cards (card_number,card_type,created_at,element_type,expansion_id,hp,image_url,name,rarity,retreat_cost,updated_at,id) values (?,?,?,?,?,?,?,?,?,?,?,default) [22001-232]
+</system-out>
+  </testcase>
+  <testcase name="realSqlSeedContainsAtLeastTwentyCardsAndAllExpansionsHaveRequiredFields" classname="com.pokevault.modules.catalog.CatalogSchemaSqlTest" time="0.008" />
+</testsuite>
