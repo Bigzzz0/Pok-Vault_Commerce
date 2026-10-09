@@ -1,19 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.state.OrderStateTest$CancelledOrderStateEdgeCaseTests" time="0.005" tests="3" errors="0" skipped="0" failures="0">
-  <testcase name="testRestoreStockSkipsInvalidItems" classname="com.pokevault.modules.trade.state.OrderStateTest$CancelledOrderStateEdgeCaseTests" time="0.004">
-    <system-out>16:48:26.335 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- Order reached terminal state: CANCELLED
-16:48:26.336 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- CancelledOrderState: Triggering automatic stock restoration for Order: com.pokevault.domain.entity.Order@31006a75
-16:48:26.336 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- CancelledOrderState: Restored 3 copies to inventory id: 50 (now 13 in vault)
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.state.OrderStateTest$CancelledOrderStateEdgeCaseTests" time="0.002" tests="3" errors="0" skipped="0" failures="0">
+  <testcase name="testRestoreStockSkipsInvalidItems" classname="com.pokevault.modules.trade.state.OrderStateTest$CancelledOrderStateEdgeCaseTests" time="0.0">
+    <system-out>2026-10-09T18:10:27.809+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : Order reached terminal state: CANCELLED
+2026-10-09T18:10:27.809+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: Triggering automatic stock restoration for Order: com.pokevault.domain.entity.Order@69eb668b
+2026-10-09T18:10:27.809+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: Restored 3 copies to inventory id: 50 (now 13 in vault)
 </system-out>
   </testcase>
   <testcase name="testRestoreStockNullContextAndOrder" classname="com.pokevault.modules.trade.state.OrderStateTest$CancelledOrderStateEdgeCaseTests" time="0.0">
-    <system-out>16:48:26.336 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- Order reached terminal state: CANCELLED without context
-16:48:26.336 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- CancelledOrderState: No order attached to context, skipping automatic stock restoration.
-16:48:26.336 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- CancelledOrderState: No order attached to context, skipping automatic stock restoration.
+    <system-out>2026-10-09T18:10:27.810+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : Order reached terminal state: CANCELLED without context
+2026-10-09T18:10:27.810+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: No order attached to context, skipping automatic stock restoration.
+2026-10-09T18:10:27.810+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: No order attached to context, skipping automatic stock restoration.
 </system-out>
   </testcase>
   <testcase name="testDefaultConstructor" classname="com.pokevault.modules.trade.state.OrderStateTest$CancelledOrderStateEdgeCaseTests" time="0.0">
-    <system-out>16:48:26.337 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- Order reached terminal state: CANCELLED without context
+    <system-out>2026-10-09T18:10:27.810+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : Order reached terminal state: CANCELLED without context
 </system-out>
   </testcase>
 </testsuite>

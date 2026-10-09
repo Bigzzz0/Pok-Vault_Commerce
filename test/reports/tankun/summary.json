@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-10-09T16:51:47.532751+07:00",
+  "generated_at": "2026-10-09T18:11:02.750698+07:00",
   "owner": "นายแทนคุณ พันธ์นิกุล 673380301-0",
   "branch": "Tankun_6733803010_01",
   "role": "Trade Matching, GoF State Pattern & Global Exception Handling Specialist",
   "command": "mvnw.cmd test",
   "whole_suite": {
-    "tests": 145,
+    "tests": 288,
     "failures": 0,
     "errors": 0,
     "skipped": 0
   },
   "tankun_scope": {
-    "tests": 74,
+    "tests": 87,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -23,12 +23,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.064,
+      "seconds": 0.122,
       "cases": [
         {
           "name": "testTradeStateConflictException",
           "result": "passed",
-          "seconds": 0.048
+          "seconds": 0.077
         },
         {
           "name": "testInvalidOrderStateException",
@@ -39,46 +39,51 @@
     },
     {
       "suite": "com.pokevault.modules.order.OrderApiControllerTest",
-      "tests": 13,
+      "tests": 15,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 1.992,
+      "seconds": 0.187,
       "cases": [
         {
           "name": "updateItemTradeStatus_InvalidStatus_Returns400",
           "result": "passed",
-          "seconds": 1.819
+          "seconds": 0.062
         },
         {
           "name": "updateItemTradeStatus_AccessDenied_Returns403",
           "result": "passed",
-          "seconds": 0.029
+          "seconds": 0.009
         },
         {
           "name": "transitionOrderStatus_MissingActionParam_Returns400",
           "result": "passed",
-          "seconds": 0.012
+          "seconds": 0.008
         },
         {
           "name": "transitionOrderStatus_OrderNotFound_Returns404",
           "result": "passed",
-          "seconds": 0.013
+          "seconds": 0.008
         },
         {
           "name": "transitionOrderStatus_InvalidStateTransition_Returns409",
           "result": "passed",
-          "seconds": 0.01
+          "seconds": 0.008
         },
         {
           "name": "transitionOrderStatus_Pay_Returns200",
           "result": "passed",
-          "seconds": 0.038
+          "seconds": 0.014
         },
         {
           "name": "updateItemTradeStatus_Success_Returns200",
           "result": "passed",
-          "seconds": 0.014
+          "seconds": 0.012
+        },
+        {
+          "name": "transitionOrderStatus_Complete_Returns200",
+          "result": "passed",
+          "seconds": 0.007
         },
         {
           "name": "updateItemTradeStatus_StateConflict_Returns409",
@@ -88,10 +93,15 @@
         {
           "name": "transitionOrderStatus_Ship_Returns200",
           "result": "passed",
-          "seconds": 0.009
+          "seconds": 0.007
         },
         {
           "name": "updateItemTradeStatus_NotFound_Returns404",
+          "result": "passed",
+          "seconds": 0.007
+        },
+        {
+          "name": "transitionOrderStatus_Complete_IncompleteItems_Returns409",
           "result": "passed",
           "seconds": 0.008
         },
@@ -108,7 +118,7 @@
         {
           "name": "transitionOrderStatus_Cancel_Returns200",
           "result": "passed",
-          "seconds": 0.007
+          "seconds": 0.008
         }
       ]
     },
@@ -118,12 +128,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.025,
+      "seconds": 0.019,
       "cases": [
         {
           "name": "handleInvalidOrderState_Returns409",
           "result": "passed",
-          "seconds": 0.007
+          "seconds": 0.001
         },
         {
           "name": "handleInsufficientStock_Returns400",
@@ -133,12 +143,12 @@
         {
           "name": "handleTypeMismatch_Returns400",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.001
         },
         {
           "name": "handleTradeStateConflict_Returns409",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.0
         },
         {
           "name": "handleIllegalArgument_Returns400",
@@ -153,7 +163,7 @@
         {
           "name": "handleGeneralException_Returns500",
           "result": "passed",
-          "seconds": 0.006
+          "seconds": 0.012
         },
         {
           "name": "handleMissingParameter_Returns400",
@@ -163,7 +173,7 @@
         {
           "name": "handleAccessDenied_Returns403",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.0
         },
         {
           "name": "handleNoResourceFound_Returns404",
@@ -178,12 +188,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.184,
+      "seconds": 0.185,
       "cases": [
         {
           "name": "autoMatchOrderItem_AlreadyCompleted_Returns409",
           "result": "passed",
-          "seconds": 0.043
+          "seconds": 0.064
         },
         {
           "name": "getItemRecommendation_NotFound_Returns404",
@@ -193,47 +203,47 @@
         {
           "name": "autoMatchOrder_NotFound_Returns404",
           "result": "passed",
-          "seconds": 0.01
+          "seconds": 0.009
         },
         {
           "name": "getItemRecommendation_Success_Returns200",
           "result": "passed",
-          "seconds": 0.019
+          "seconds": 0.01
         },
         {
           "name": "autoMatchOrder_Success_Returns200",
           "result": "passed",
-          "seconds": 0.021
+          "seconds": 0.023
         },
         {
           "name": "assignAccountToOrderItem_Success_Returns200",
           "result": "passed",
-          "seconds": 0.013
+          "seconds": 0.009
         },
         {
           "name": "assignAccountToOrderItem_MissingAccountId_Returns400",
           "result": "passed",
-          "seconds": 0.008
+          "seconds": 0.01
         },
         {
           "name": "autoMatchOrderItem_Success_Returns200",
           "result": "passed",
-          "seconds": 0.01
+          "seconds": 0.008
         },
         {
           "name": "getOrderRecommendations_Success_Returns200",
           "result": "passed",
-          "seconds": 0.01
+          "seconds": 0.009
         },
         {
           "name": "autoMatchOrderItem_InsufficientStock_Returns400",
           "result": "passed",
-          "seconds": 0.007
+          "seconds": 0.008
         },
         {
           "name": "assignAccountToOrderItem_AccountNotReady_Returns409",
           "result": "passed",
-          "seconds": 0.008
+          "seconds": 0.007
         },
         {
           "name": "getOrderRecommendations_NotFound_Returns404",
@@ -243,7 +253,7 @@
         {
           "name": "assignAccountToOrderItem_AccountNotFound_Returns404",
           "result": "passed",
-          "seconds": 0.012
+          "seconds": 0.008
         }
       ]
     },
@@ -253,12 +263,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.02,
+      "seconds": 0.001,
       "cases": [
         {
           "name": "testBuilderAndGetters",
           "result": "passed",
-          "seconds": 0.019
+          "seconds": 0.0
         },
         {
           "name": "testDefaultAlternativeCandidates",
@@ -274,21 +284,26 @@
     },
     {
       "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest$AutoMatchAlgorithmTests",
-      "tests": 4,
+      "tests": 6,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.013,
+      "seconds": 0.148,
       "cases": [
         {
           "name": "testAutoMatchOrderItemInsufficientStock",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.135
         },
         {
           "name": "testAutoMatchOrderItemSuccess",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.005
+        },
+        {
+          "name": "testAutoMatchOrderItemRejectedWhenOrderCompleted",
+          "result": "passed",
+          "seconds": 0.001
         },
         {
           "name": "testAutoMatchOrderItemNoReadyAccounts",
@@ -299,46 +314,86 @@
           "name": "testAutoMatchOrderItemGuardAgainstReassignment",
           "result": "passed",
           "seconds": 0.002
+        },
+        {
+          "name": "testAutoMatchOrderItemRejectedWhenOrderCancelled",
+          "result": "passed",
+          "seconds": 0.001
         }
       ]
     },
     {
       "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest$BatchAutoMatchTests",
-      "tests": 1,
+      "tests": 2,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.007,
+      "seconds": 0.005,
       "cases": [
         {
           "name": "testAutoMatchOrderSuccess",
           "result": "passed",
-          "seconds": 0.007
+          "seconds": 0.003
+        },
+        {
+          "name": "testAutoMatchOrderRejectedWhenOrderCancelled",
+          "result": "passed",
+          "seconds": 0.002
         }
       ]
     },
     {
       "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest$ManualAssignmentTests",
-      "tests": 3,
+      "tests": 9,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.258,
+      "seconds": 0.017,
       "cases": [
         {
           "name": "testManualAssignRejectWhenCompleted",
           "result": "passed",
-          "seconds": 0.247
+          "seconds": 0.002
         },
         {
-          "name": "testManualAssignAccountNotReady",
+          "name": "testManualAssignRejectedWhenTargetAccountHasInsufficientStock",
           "result": "passed",
           "seconds": 0.003
         },
         {
+          "name": "testManualAssignRejectedWhenOrderCancelled",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "testManualAssignRejectedWhenAccountDoesNotHoldCard",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "testManualAssignRejectWhenTradeSent",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "testManualAssignAccountNotReady",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "testManualAssignLastAvailableCardSuccess",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "testManualAssignRejectedWhenOrderCompleted",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
           "name": "testManualAssignAccountSuccess",
           "result": "passed",
-          "seconds": 0.008
+          "seconds": 0.001
         }
       ]
     },
@@ -348,12 +403,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.008,
+      "seconds": 0.006,
       "cases": [
         {
           "name": "testGetRecommendationForItem",
           "result": "passed",
-          "seconds": 0.003
+          "seconds": 0.001
         },
         {
           "name": "testGetRecommendationsNoInventory",
@@ -363,12 +418,12 @@
         {
           "name": "testGetRecommendationsOnlyBusyAccount",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.001
         },
         {
           "name": "testGetRecommendationsRanksBestReadyAccount",
           "result": "passed",
-          "seconds": 0.0
+          "seconds": 0.001
         }
       ]
     },
@@ -378,7 +433,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.29,
+      "seconds": 0.18,
       "cases": []
     },
     {
@@ -387,17 +442,17 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.002,
+      "seconds": 0.007,
       "cases": [
         {
           "name": "testCancelFromPending",
           "result": "passed",
-          "seconds": 0.0
+          "seconds": 0.003
         },
         {
           "name": "testCancelFromPaidRestoresStock",
           "result": "passed",
-          "seconds": 0.0
+          "seconds": 0.001
         },
         {
           "name": "testCancelFromPaid",
@@ -417,12 +472,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.005,
+      "seconds": 0.002,
       "cases": [
         {
           "name": "testRestoreStockSkipsInvalidItems",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.0
         },
         {
           "name": "testRestoreStockNullContextAndOrder",
@@ -442,17 +497,17 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.002,
+      "seconds": 0.004,
       "cases": [
         {
           "name": "testExecuteActionValidStrings",
           "result": "passed",
-          "seconds": 0.0
+          "seconds": 0.001
         },
         {
           "name": "testExecuteActionInvalidStrings",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.003
         }
       ]
     },
@@ -462,7 +517,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.004,
+      "seconds": 0.002,
       "cases": [
         {
           "name": "testFromOrderNullOrder",
@@ -472,7 +527,7 @@
         {
           "name": "testFromOrderStateMapping",
           "result": "passed",
-          "seconds": 0.003
+          "seconds": 0.001
         }
       ]
     },
@@ -482,7 +537,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.0,
+      "seconds": 0.001,
       "cases": [
         {
           "name": "testFullOrderLifecycle",
@@ -527,12 +582,12 @@
         {
           "name": "testConstructors",
           "result": "passed",
-          "seconds": 0.0
+          "seconds": 0.001
         },
         {
           "name": "testSetStateSyncsOrder",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.0
         },
         {
           "name": "testSafeDelegationWhenStateIsNull",
@@ -543,16 +598,26 @@
     },
     {
       "suite": "com.pokevault.modules.trade.state.OrderStateTest$ShippingGuardTests",
-      "tests": 1,
+      "tests": 3,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.003,
+      "seconds": 0.002,
       "cases": [
+        {
+          "name": "testCompleteRejectedWhenItemsNotAllCompleted",
+          "result": "passed",
+          "seconds": 0.001
+        },
         {
           "name": "testCancelRejectedWhileShipping",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.001
+        },
+        {
+          "name": "testCompleteRejectedWhenOrderHasNoItems",
+          "result": "passed",
+          "seconds": 0.0
         }
       ]
     },
@@ -567,7 +632,7 @@
         {
           "name": "testCancelledStateIsTerminal",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.003
         },
         {
           "name": "testCompletedStateIsTerminal",

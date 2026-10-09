@@ -4,7 +4,7 @@
 > **บทบาท**: Trade Matching, GoF State Pattern & Global Exception Handling Specialist  
 > **Branch**: `Tankun_6733803010_01`  
 > **วิชา**: CP353002 Principles of Software Design and Development (Spring Boot 3.4.3 / Java 17)  
-> **ผลการทดสอบทั้งหมดของคนที่ 4**: ✅ **7 Test Classes / 74 Test Scenarios (100% BUILD SUCCESS — 0 Failures, 0 Errors)**  
+> **ผลการทดสอบทั้งหมดของคนที่ 4**: ✅ **7 Test Classes / 87 Test Scenarios (100% BUILD SUCCESS — 0 Failures, 0 Errors)**  
 > **เวลาประมวลผลเฉลี่ย**: ~2-4 วินาที  
 
 ---
@@ -12,13 +12,13 @@
 ## 📑 สารบัญ (Table of Contents)
 
 1. [ขอบเขตงานและคลาสที่สมาชิกคนที่ 4 รับผิดชอบ](#1-ขอบเขตงานและคลาสที่สมาชิกคนที่-4-รับผิดชอบ)
-2. [สรุปผลและตารางคลาสทดสอบทั้งหมดของคนที่ 4 (74 เคส)](#2-สรุปผลและตารางคลาสทดสอบทั้งหมดของคนที่-4-74-เคส)
+2. [สรุปผลและตารางคลาสทดสอบทั้งหมดของคนที่ 4 (87 เคส)](#2-สรุปผลและตารางคลาสทดสอบทั้งหมดของคนที่-4-87-เคส)
 3. [คำสั่งและวิธีรันเทสเฉพาะของสมาชิกคนที่ 4](#3-คำสั่งและวิธีรันเทสเฉพาะของสมาชิกคนที่-4)
 4. [เจาะลึกรายละเอียดแต่ละ Test Suite ของสมาชิกคนที่ 4](#4-เจาะลึกรายละเอียดแต่ละ-test-suite-ของสมาชิกคนที่-4)
-   - [4.1 OrderStateTest — GoF State Pattern Lifecycle & Guards (21 เคส)](#41-orderstatetest--gof-state-pattern-lifecycle--guards-21-เคส)
-   - [4.2 TradeMatchingServiceTest — Auto-Match & Two-Tier Recommendation (12 เคส)](#42-tradematchingservicetest--auto-match--two-tier-recommendation-12-เคส)
+   - [4.1 OrderStateTest — GoF State Pattern Lifecycle & Guards (23 เคส)](#41-orderstatetest--gof-state-pattern-lifecycle--guards-23-เคส)
+   - [4.2 TradeMatchingServiceTest — Auto-Match & Two-Tier Recommendation (21 เคส)](#42-tradematchingservicetest--auto-match--two-tier-recommendation-21-เคส)
    - [4.3 TradeMatchingApiControllerTest — Trade REST API Endpoints (13 เคส)](#43-tradematchingapicontrollertest--trade-rest-api-endpoints-13-เคส)
-   - [4.4 OrderApiControllerTest — State Transitions & Trade Status Lifecycle (13 เคส)](#44-orderapicontrollertest--state-transitions--trade-status-lifecycle-13-เคส)
+   - [4.4 OrderApiControllerTest — State Transitions & Trade Status Lifecycle (15 เคส)](#44-orderapicontrollertest--state-transitions--trade-status-lifecycle-15-เคส)
    - [4.5 GlobalExceptionHandlerTest — Centralized HTTP Error Handling (10 เคส)](#45-globalexceptionhandlertest--centralized-http-error-handling-10-เคส)
    - [4.6 TradeRecommendationResponseTest — Trade DTO & Candidate Model (3 เคส)](#46-traderecommendationresponsetest--trade-dto--candidate-model-3-เคส)
    - [4.7 CustomExceptionTest — Custom Domain Exceptions (2 เคส)](#47-customexceptiontest--custom-domain-exceptions-2-เคส)
@@ -42,7 +42,7 @@
 
 ---
 
-## 2. สรุปผลและตารางคลาสทดสอบทั้งหมดของคนที่ 4 (74 เคส)
+## 2. สรุปผลและตารางคลาสทดสอบทั้งหมดของคนที่ 4 (87 เคส)
 
 คลาสทดสอบทั้งหมดด้านล่างนี้ถูกสร้างขึ้นเพื่อทดสอบคลาสของ**นายแทนคุณ พันธ์นิกุล**โดยเฉพาะ:
 
@@ -50,10 +50,10 @@
 src/test/java/com/pokevault/
 ├── common/
 │   └── exception/
-│       └── CustomExceptionTest.java                  [ 2 เคส ] ✅ Passed
+│       └── CustomExceptionTest.java                  [  2 เคส ] ✅ Passed
 ├── modules/
 │   ├── order/
-│   │   └── OrderApiControllerTest.java               [ 13 เคส ] ✅ Passed
+│   │   └── OrderApiControllerTest.java               [ 15 เคส ] ✅ Passed
 │   └── trade/
 │       ├── advice/
 │       │   └── GlobalExceptionHandlerTest.java       [ 10 เคส ] ✅ Passed
@@ -62,21 +62,21 @@ src/test/java/com/pokevault/
 │       ├── dto/
 │       │   └── TradeRecommendationResponseTest.java  [  3 เคส ] ✅ Passed
 │       ├── service/
-│       │   └── TradeMatchingServiceTest.java         [ 12 เคส ] ✅ Passed
+│       │   └── TradeMatchingServiceTest.java         [ 21 เคส ] ✅ Passed
 │       └── state/
-│           └── OrderStateTest.java                   [ 21 เคส ] ✅ Passed
+│           └── OrderStateTest.java                   [ 23 เคส ] ✅ Passed
 ```
 
 | # | Test Suite Class | แพ็กเกจ (Package) | ขอบเขตการทดสอบที่รับผิดชอบ | จำนวนเคส | ผลลัพธ์ |
 | :---: | :--- | :--- | :--- | :---: | :---: |
-| 1 | **`OrderStateTest`** | `com.pokevault.modules.trade.state` | วงจรชีวิต GoF State Machine ทุก Transition, Anti-Fraud Guard ป้องกันยกเลิกระหว่างส่งมอบ, ระบบคืนสต็อกการ์ดอัตโนมัติ (Stock Restoration), และ Null-safety Edge Cases | **21 เคส** | ✅ PASS |
-| 2 | **`TradeMatchingServiceTest`** | `com.pokevault.modules.trade.service` | อัลกอริทึม Auto-Match Stock-Maximization, การสร้าง Recommendation 2 ระดับ, การจ่ายงานทั้งคำสั่งซื้อ (Batch), และการมอบหมายไอดีแบบ Manual | **12 เคส** | ✅ PASS |
+| 1 | **`OrderStateTest`** | `com.pokevault.modules.trade.state` | วงจรชีวิต GoF State Machine ทุก Transition, Anti-Fraud Guard ป้องกันยกเลิกระหว่างส่งมอบ, Completion Guard ป้องกันปิดออเดอร์ก่อนเทรดครบ (409), ระบบคืนสต็อกการ์ดอัตโนมัติ (Stock Restoration), และ Null-safety Edge Cases | **23 เคส** | ✅ PASS |
+| 2 | **`TradeMatchingServiceTest`** | `com.pokevault.modules.trade.service` | อัลกอริทึม Auto-Match Stock-Maximization, การสร้าง Recommendation 2 ระดับ, ตรวจสอบ Terminal State Orders (CANCELLED/COMPLETED), ตรวจสอบบัญชีถือการ์ดและสต็อกพอ, และการจองใบสุดท้าย | **21 เคส** | ✅ PASS |
 | 3 | **`TradeMatchingApiControllerTest`** | `com.pokevault.modules.trade.controller` | MockMvc ครบทั้ง 5 REST API Endpoints ของ Trade Matching, การตรวจสอบ Parameter, และการแปลงสถานะ HTTP (200, 400, 404, 409) | **13 เคส** | ✅ PASS |
-| 4 | **`OrderApiControllerTest`** | `com.pokevault.modules.order` | MockMvc ทดสอบ State Transition API (`PATCH /status?action=...`) และ Trade Status Lifecycle API (`PATCH /trade-status?status=...`) พร้อมตรวจจับสิทธิ์ (403) | **13 เคส** | ✅ PASS |
+| 4 | **`OrderApiControllerTest`** | `com.pokevault.modules.order` | MockMvc ทดสอบ State Transition API (`PATCH /status?action=complete` 200/409) และ Trade Status Lifecycle API (`PATCH /trade-status?status=...`) พร้อมตรวจจับสิทธิ์ (403) | **15 เคส** | ✅ PASS |
 | 5 | **`GlobalExceptionHandlerTest`** | `com.pokevault.modules.trade.advice` | การดักจับ Exception รวมศูนย์และแปลงเป็น JSON `ErrorResponse` ระดับระบบ ครอบคลุม 404, 409, 400, 403, 500 ครบถ้วน | **10 เคส** | ✅ PASS |
 | 6 | **`TradeRecommendationResponseTest`** | `com.pokevault.modules.trade.dto` | ทดสอบ DTO, Builder Pattern, Default Empty List และ Inner Class `CandidateAccountResponse` | **3 เคส** | ✅ PASS |
 | 7 | **`CustomExceptionTest`** | `com.pokevault.common.exception` | ทดสอบ Custom Exception Classes: `TradeStateConflictException` และ `InvalidOrderStateException` ทั้งแบบระบุ Message และแบบห่อหุ้ม Cause | **2 เคส** | ✅ PASS |
-| **รวม** | **7 Test Classes** | — | **ชุดทดสอบคลาสของสมาชิกคนที่ 4 ทั้งหมด** | **74 เคส** | **100% PASS** |
+| **รวม** | **7 Test Classes** | — | **ชุดทดสอบคลาสของสมาชิกคนที่ 4 ทั้งหมด** | **87 เคส** | **100% PASS** |
 
 ---
 
@@ -89,7 +89,7 @@ src/test/java/com/pokevault/
 $env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot"
 $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
-# รันชุดเทสของสมาชิกคนที่ 4 ทั้ง 7 คลาส (74 เคส)
+# รันชุดเทสของสมาชิกคนที่ 4 ทั้ง 7 คลาส (87 เคส)
 .\mvnw.cmd test "-Dtest=OrderStateTest,TradeMatchingServiceTest,TradeMatchingApiControllerTest,OrderApiControllerTest,GlobalExceptionHandlerTest,TradeRecommendationResponseTest,CustomExceptionTest"
 ```
 
@@ -98,20 +98,20 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 > [INFO] Running com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest
 > [INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0
 > [INFO] Running com.pokevault.modules.order.OrderApiControllerTest
-> [INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0
+> [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
 > [INFO] Running com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest
 > [INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
 > [INFO] Running com.pokevault.modules.trade.service.TradeMatchingServiceTest
-> [INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
-> [INFO] Running com.pokevault.modules.trade.state.OrderStateTest
 > [INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
+> [INFO] Running com.pokevault.modules.trade.state.OrderStateTest
+> [INFO] Tests run: 23, Failures: 0, Errors: 0, Skipped: 0
 > [INFO] Running com.pokevault.modules.trade.dto.TradeRecommendationResponseTest
 > [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
 > [INFO] Running com.pokevault.common.exception.CustomExceptionTest
 > [INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 > [INFO] 
 > [INFO] Results:
-> [INFO] Tests run: 74, Failures: 0, Errors: 0, Skipped: 0
+> [INFO] Tests run: 87, Failures: 0, Errors: 0, Skipped: 0
 > [INFO] ------------------------------------------------------------------------
 > [INFO] BUILD SUCCESS
 > [INFO] ------------------------------------------------------------------------
@@ -146,13 +146,15 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 ## 4. เจาะลึกรายละเอียดแต่ละ Test Suite ของสมาชิกคนที่ 4
 
-### 4.1 `OrderStateTest` — GoF State Pattern Lifecycle & Guards (21 เคส)
+### 4.1 `OrderStateTest` — GoF State Pattern Lifecycle & Guards (23 เคส)
 * **ไฟล์**: [`src/test/java/com/pokevault/modules/trade/state/OrderStateTest.java`](file:///e:/Coding/Pok-Vault_Commerce/src/test/java/com/pokevault/modules/trade/state/OrderStateTest.java)
 * **คลาสที่ถูกทดสอบ**: `OrderContext`, `OrderState`, `PendingOrderState`, `PaidOrderState`, `ShippingOrderState`, `CompletedOrderState`, `CancelledOrderState`
 * **ประเด็นที่ทดสอบ (9 Nested Classes)**:
   1. `HappyPathTests`: วงจรชีวิตปกติครบกระบวนการ `PENDING` ➔ `PAID` ➔ `SHIPPING` ➔ `COMPLETED`
   2. `CancellationTests`: การยกเลิกจาก `PENDING` และ `PAID` ➔ สั่งคืนสต็อกเข้าคลังอัตโนมัติ (`restoreStock`)
-  3. `ShippingGuardTests` (**Anti-Fraud Guard**): ปฏิเสธการยกเลิกคำสั่งซื้อเมื่ออยู่ในสถานะ `SHIPPING` ป้องกันการขอยกเลิกขณะการ์ดถูกส่งในเกมไปแล้ว
+  3. `ShippingGuardTests` (**Anti-Fraud Guard & Completion Guard**):
+     - ปฏิเสธการยกเลิกคำสั่งซื้อเมื่ออยู่ในสถานะ `SHIPPING` ป้องกันการขอยกเลิกขณะการ์ดถูกส่งในเกมไปแล้ว
+     - ปฏิเสธการปิดออเดอร์ (`complete()`) หากออเดอร์ไม่มีรายการสินค้า หรือสินค้ายังเทรดไม่ครบทุกชิ้น (โยน `TradeStateConflictException` 409)
   4. `TerminalStateTests`: สถานะ `COMPLETED` และ `CANCELLED` ปฏิเสธทุก Action ซ้ำซ้อน
   5. `IllegalTransitionTests`: ปฏิเสธการข้ามสถานะที่ไม่ได้รับอนุญาต เช่น สั่ง `ship()` ขณะเป็น `PENDING`
   6. `ExecuteActionStringTests`: ทดสอบการรัน Action ผ่านข้อความตัวอักษร Case-insensitive ("PAY", "ship", "complete")
@@ -162,7 +164,7 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 ---
 
-### 4.2 `TradeMatchingServiceTest` — Auto-Match & Two-Tier Recommendation (12 เคส)
+### 4.2 `TradeMatchingServiceTest` — Auto-Match & Two-Tier Recommendation (21 เคส)
 * **ไฟล์**: [`src/test/java/com/pokevault/modules/trade/service/TradeMatchingServiceTest.java`](file:///e:/Coding/Pok-Vault_Commerce/src/test/java/com/pokevault/modules/trade/service/TradeMatchingServiceTest.java)
 * **คลาสที่ถูกทดสอบ**: `TradeMatchingServiceImpl` (Implementing `TradeMatchingService`)
 * **ประเด็นที่ทดสอบ (4 Nested Classes)**:
@@ -173,11 +175,19 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
      - จับคู่บัญชีที่มีสต็อกมากที่สุดให้อัตโนมัติและปรับสถานะ `OrderItem.tradeStatus` เป็น `FRIEND_PENDING`
      - หากไม่มีไอดีเกมใดมีสต็อกเพียงพอ โยน `InsufficientStockException`
      - หากสินค้าเทรดเสร็จสิ้นแล้ว (`COMPLETED`) ปฏิเสธการจับคู่ใหม่ (`InvalidOrderStateException`)
+     - หากออเดอร์อยู่ในสถานะ `CANCELLED` หรือ `COMPLETED` ปฏิเสธการจับคู่ (`TradeStateConflictException` 409)
   3. `BatchAutoMatchTests`:
      - ฟังก์ชัน `autoMatchOrder(orderId)` ทำการจับคู่อัตโนมัติครบทุกรายการสินค้าในคำสั่งซื้อ
+     - ปฏิเสธการจับคู่เมื่อออเดอร์อยู่ในสถานะ `CANCELLED` (409)
   4. `ManualAssignmentTests`:
      - พนักงานเลือกกำหนดไอดีเกมเองผ่าน `assignAccountToOrderItem(orderItemId, accountId)`
      - ปฏิเสธการมอบหมายหากบัญชีไม่ได้อยู่ในสถานะ `READY`
+     - ปฏิเสธการมอบหมายหากออเดอร์อยู่ในสถานะ `CANCELLED` หรือ `COMPLETED` (409)
+     - ปฏิเสธการสลับไอดีหากสินค้าอยู่ในสถานะ `TRADE_SENT` หรือ `COMPLETED`
+     - ปฏิเสธหากบัญชีเป้าหมายไม่มีการ์ดใบที่สั่งซื้อ (`InsufficientStockException`)
+     - ปฏิเสธหากบัญชีเป้าหมายมีสต็อกไม่เพียงพอ (`InsufficientStockException`)
+     - สลับบัญชีแล้วซิงค์การจองสต็อกตรงกัน (คืนสต็อกคลังเดิม หักสต็อกคลังใหม่)
+     - รองรับการจองการ์ดใบสุดท้ายในคลัง (หักสต็อกเหลือ 0 สำเร็จ)
 
 ---
 
@@ -193,13 +203,15 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 ---
 
-### 4.4 `OrderApiControllerTest` — State Transitions & Trade Status Lifecycle (13 เคส)
+### 4.4 `OrderApiControllerTest` — State Transitions & Trade Status Lifecycle (15 เคส)
 * **ไฟล์**: [`src/test/java/com/pokevault/modules/order/OrderApiControllerTest.java`](file:///e:/Coding/Pok-Vault_Commerce/src/test/java/com/pokevault/modules/order/OrderApiControllerTest.java)
 * **คลาสที่ถูกทดสอบ**: `OrderApiController` (ส่วนที่สมาชิกคนที่ 4 รับผิดชอบ)
 * **ประเด็นที่ทดสอบ**:
   - **State Pattern Transition Endpoints**:
     - `PATCH /api/v1/orders/{id}/status?action=pay` ➔ 200 OK (สถานะกลายเป็น `PAID`)
     - `PATCH /api/v1/orders/{id}/status?action=ship` ➔ 200 OK (สถานะกลายเป็น `SHIPPING`)
+    - `PATCH /api/v1/orders/{id}/status?action=complete` ➔ 200 OK (สถานะกลายเป็น `COMPLETED` เมื่อเทรดครบ)
+    - `PATCH /api/v1/orders/{id}/status?action=complete` ➔ 409 CONFLICT (เมื่อยังมีรายการที่ยังเทรดไม่เสร็จ)
     - `PATCH /api/v1/orders/{id}/status?action=cancel` ➔ 200 OK (สถานะกลายเป็น `CANCELLED`)
     - 409 CONFLICT: เมื่อขัดแย้งกับกฎสถานะ (เช่น ขอยกเลิกระหว่างขนส่ง)
     - 404 NOT FOUND: เมื่อไม่พบออเดอร์

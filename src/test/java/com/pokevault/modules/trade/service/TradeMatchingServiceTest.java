@@ -3,12 +3,14 @@ package com.pokevault.modules.trade.service;
 import com.pokevault.common.exception.InsufficientStockException;
 import com.pokevault.common.exception.InvalidOrderStateException;
 import com.pokevault.common.exception.ResourceNotFoundException;
+import com.pokevault.common.exception.TradeStateConflictException;
 import com.pokevault.domain.entity.Card;
 import com.pokevault.domain.entity.CardInventory;
 import com.pokevault.domain.entity.GameAccount;
 import com.pokevault.domain.entity.Order;
 import com.pokevault.domain.entity.OrderItem;
 import com.pokevault.domain.enums.AccountTradeStatus;
+import com.pokevault.domain.enums.OrderStatus;
 import com.pokevault.domain.enums.TradeFulfillmentStatus;
 import com.pokevault.modules.trade.dto.TradeRecommendationResponse;
 import com.pokevault.repository.CardInventoryRepository;
@@ -281,6 +283,32 @@ class TradeMatchingServiceTest {
 
             verify(orderItemRepository, never()).save(any());
         }
+
+        @Test
+        @DisplayName("autoMatchOrderItem should throw TradeStateConflictException when order is CANCELLED (จับคู่หลังยกเลิก)")
+        void testAutoMatchOrderItemRejectedWhenOrderCancelled() {
+            sampleOrder.setOrderStatus(OrderStatus.CANCELLED);
+            when(orderItemRepository.findById(501L)).thenReturn(Optional.of(sampleItem));
+
+            assertThatThrownBy(() -> tradeMatchingService.autoMatchOrderItem(501L))
+                    .isInstanceOf(TradeStateConflictException.class)
+                    .hasMessageContaining("Cannot auto-match account for order in terminal status: CANCELLED");
+
+            verify(orderItemRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("autoMatchOrderItem should throw TradeStateConflictException when order is COMPLETED")
+        void testAutoMatchOrderItemRejectedWhenOrderCompleted() {
+            sampleOrder.setOrderStatus(OrderStatus.COMPLETED);
+            when(orderItemRepository.findById(501L)).thenReturn(Optional.of(sampleItem));
+
+            assertThatThrownBy(() -> tradeMatchingService.autoMatchOrderItem(501L))
+                    .isInstanceOf(TradeStateConflictException.class)
+                    .hasMessageContaining("Cannot auto-match account for order in terminal status: COMPLETED");
+
+            verify(orderItemRepository, never()).save(any());
+        }
     }
 
     @Nested
@@ -303,6 +331,17 @@ class TradeMatchingServiceTest {
             assertThat(sampleItem.getTradeStatus()).isEqualTo(TradeFulfillmentStatus.FRIEND_PENDING);
 
             verify(orderItemRepository, times(1)).save(sampleItem);
+        }
+
+        @Test
+        @DisplayName("autoMatchOrder should throw TradeStateConflictException when order is CANCELLED (จับคู่หลังยกเลิก)")
+        void testAutoMatchOrderRejectedWhenOrderCancelled() {
+            sampleOrder.setOrderStatus(OrderStatus.CANCELLED);
+            when(orderRepository.findById(1001L)).thenReturn(Optional.of(sampleOrder));
+
+            assertThatThrownBy(() -> tradeMatchingService.autoMatchOrder(1001L))
+                    .isInstanceOf(TradeStateConflictException.class)
+                    .hasMessageContaining("Cannot auto-match accounts for order in terminal status: CANCELLED");
         }
     }
 
@@ -352,6 +391,108 @@ class TradeMatchingServiceTest {
 
             verify(gameAccountRepository, never()).findById(any());
             verify(orderItemRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("assignAccountToOrderItem should reject re-assignment when status is TRADE_SENT")
+        void testManualAssignRejectWhenTradeSent() {
+            sampleItem.setTradeStatus(TradeFulfillmentStatus.TRADE_SENT);
+            when(orderItemRepository.findById(501L)).thenReturn(Optional.of(sampleItem));
+
+            assertThatThrownBy(() -> tradeMatchingService.assignAccountToOrderItem(501L, 20L))
+                    .isInstanceOf(InvalidOrderStateException.class)
+                    .hasMessageContaining("Cannot reassign account for OrderItem in status: TRADE_SENT");
+
+            verify(gameAccountRepository, never()).findById(any());
+            verify(orderItemRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("assignAccountToOrderItem should throw TradeStateConflictException when order is CANCELLED (จับคู่หลังยกเลิก)")
+        void testManualAssignRejectedWhenOrderCancelled() {
+            sampleOrder.setOrderStatus(OrderStatus.CANCELLED);
+            when(orderItemRepository.findById(501L)).thenReturn(Optional.of(sampleItem));
+
+            assertThatThrownBy(() -> tradeMatchingService.assignAccountToOrderItem(501L, 20L))
+                    .isInstanceOf(TradeStateConflictException.class)
+                    .hasMessageContaining("Cannot assign account for order in terminal status: CANCELLED");
+
+            verify(gameAccountRepository, never()).findById(any());
+            verify(orderItemRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("assignAccountToOrderItem should throw TradeStateConflictException when order is COMPLETED")
+        void testManualAssignRejectedWhenOrderCompleted() {
+            sampleOrder.setOrderStatus(OrderStatus.COMPLETED);
+            when(orderItemRepository.findById(501L)).thenReturn(Optional.of(sampleItem));
+
+            assertThatThrownBy(() -> tradeMatchingService.assignAccountToOrderItem(501L, 20L))
+                    .isInstanceOf(TradeStateConflictException.class)
+                    .hasMessageContaining("Cannot assign account for order in terminal status: COMPLETED");
+
+            verify(gameAccountRepository, never()).findById(any());
+            verify(orderItemRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("assignAccountToOrderItem should reject when target account does not hold the card (เลือกบัญชีที่ไม่มีการ์ด)")
+        void testManualAssignRejectedWhenAccountDoesNotHoldCard() {
+            when(orderItemRepository.findById(501L)).thenReturn(Optional.of(sampleItem));
+            when(gameAccountRepository.findById(20L)).thenReturn(Optional.of(readyAccount2));
+            when(cardInventoryRepository.findByCardId(1L)).thenReturn(List.of(readyInventory1));
+
+            assertThatThrownBy(() -> tradeMatchingService.assignAccountToOrderItem(501L, 20L))
+                    .isInstanceOf(InsufficientStockException.class)
+                    .hasMessageContaining("Selected account ACC-READY-02 does not hold card: Charizard ex");
+
+            verify(orderItemRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("assignAccountToOrderItem should reject when target account has insufficient stock (สต็อกไม่พอ)")
+        void testManualAssignRejectedWhenTargetAccountHasInsufficientStock() {
+            sampleItem.setQuantity(5);
+            readyInventory2.setQuantity(2);
+
+            when(orderItemRepository.findById(501L)).thenReturn(Optional.of(sampleItem));
+            when(gameAccountRepository.findById(20L)).thenReturn(Optional.of(readyAccount2));
+            when(cardInventoryRepository.findByCardId(1L)).thenReturn(List.of(readyInventory2));
+
+            assertThatThrownBy(() -> tradeMatchingService.assignAccountToOrderItem(501L, 20L))
+                    .isInstanceOf(InsufficientStockException.class)
+                    .hasMessageContaining("Selected account ACC-READY-02 has insufficient stock for card: Charizard ex (Available: 2, Requested: 5)");
+
+            verify(orderItemRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("assignAccountToOrderItem should succeed and deduct stock to 0 when booking the last card (จองใบสุดท้าย)")
+        void testManualAssignLastAvailableCardSuccess() {
+            sampleItem.setQuantity(2);
+            readyInventory1.setQuantity(5);
+            readyInventory2.setQuantity(2);
+
+            when(orderItemRepository.findById(501L)).thenReturn(Optional.of(sampleItem));
+            when(gameAccountRepository.findById(20L)).thenReturn(Optional.of(readyAccount2));
+            when(cardInventoryRepository.findByCardId(1L)).thenReturn(List.of(readyInventory2));
+            when(orderItemRepository.save(any(OrderItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            TradeRecommendationResponse response = tradeMatchingService.assignAccountToOrderItem(501L, 20L);
+
+            assertThat(response).isNotNull();
+            assertThat(sampleItem.getAssignedAccount()).isEqualTo(readyAccount2);
+            assertThat(sampleItem.getTradeStatus()).isEqualTo(TradeFulfillmentStatus.FRIEND_PENDING);
+            assertThat(sampleItem.getInventory()).isEqualTo(readyInventory2);
+
+            // จองใบสุดท้าย: คลังเป้าหมายลดเหลือ 0
+            assertThat(readyInventory2.getQuantity()).isEqualTo(0);
+            // คืนสต็อกให้คลังเดิม: 5 + 2 = 7
+            assertThat(readyInventory1.getQuantity()).isEqualTo(7);
+
+            verify(cardInventoryRepository, times(1)).save(readyInventory1);
+            verify(cardInventoryRepository, times(1)).save(readyInventory2);
+            verify(orderItemRepository, times(1)).save(sampleItem);
         }
     }
 }

@@ -1,10 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.service.TradeMatchingServiceTest$AutoMatchAlgorithmTests" time="0.013" tests="4" errors="0" skipped="0" failures="0">
-  <testcase name="testAutoMatchOrderItemInsufficientStock" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$AutoMatchAlgorithmTests" time="0.005" />
-  <testcase name="testAutoMatchOrderItemSuccess" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$AutoMatchAlgorithmTests" time="0.004">
-    <system-out>16:48:26.314 [main] INFO com.pokevault.modules.trade.service.TradeMatchingServiceImpl -- Successfully auto-matched account ACC-READY-01 (Red_Trader) to OrderItem id: 501 for card: Charizard ex
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.service.TradeMatchingServiceTest$AutoMatchAlgorithmTests" time="0.148" tests="6" errors="0" skipped="0" failures="0">
+  <testcase name="testAutoMatchOrderItemInsufficientStock" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$AutoMatchAlgorithmTests" time="0.135" />
+  <testcase name="testAutoMatchOrderItemSuccess" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$AutoMatchAlgorithmTests" time="0.005">
+    <system-out>2026-10-09T18:10:27.759+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.s.TradeMatchingServiceImpl       : Successfully auto-matched account ACC-READY-01 (Red_Trader) to OrderItem id: 501 for card: Charizard ex
 </system-out>
   </testcase>
+  <testcase name="testAutoMatchOrderItemRejectedWhenOrderCompleted" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$AutoMatchAlgorithmTests" time="0.001" />
   <testcase name="testAutoMatchOrderItemNoReadyAccounts" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$AutoMatchAlgorithmTests" time="0.002" />
   <testcase name="testAutoMatchOrderItemGuardAgainstReassignment" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$AutoMatchAlgorithmTests" time="0.002" />
+  <testcase name="testAutoMatchOrderItemRejectedWhenOrderCancelled" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$AutoMatchAlgorithmTests" time="0.001" />
 </testsuite>

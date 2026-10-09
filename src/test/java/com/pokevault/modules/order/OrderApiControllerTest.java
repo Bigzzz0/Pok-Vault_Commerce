@@ -200,6 +200,38 @@ class OrderApiControllerTest {
     }
 
     @Test
+    @DisplayName("200 OK: PATCH /api/v1/orders/{id}/status?action=complete สำเร็จเมื่อทุกรายการเทรดเสร็จสิ้น")
+    void transitionOrderStatus_Complete_Returns200() throws Exception {
+        OrderResponse response = OrderResponse.builder()
+                .id(1L)
+                .orderCode("ORD-2026-001")
+                .orderStatus(OrderStatus.COMPLETED)
+                .build();
+
+        when(orderService.transitionOrderStatus(1L, "complete")).thenReturn(response);
+
+        mockMvc.perform(patch("/api/v1/orders/1/status")
+                        .param("action", "complete"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.orderStatus").value("COMPLETED"));
+    }
+
+    @Test
+    @DisplayName("409 Conflict: PATCH /api/v1/orders/{id}/status?action=complete เมื่อยังเทรดไม่ครบทุกรายการ")
+    void transitionOrderStatus_Complete_IncompleteItems_Returns409() throws Exception {
+        when(orderService.transitionOrderStatus(1L, "complete"))
+                .thenThrow(new TradeStateConflictException("Cannot complete order: not all items have reached COMPLETED trade status"));
+
+        mockMvc.perform(patch("/api/v1/orders/1/status")
+                        .param("action", "complete"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.error").value("STATE_CONFLICT"))
+                .andExpect(jsonPath("$.message").value("Cannot complete order: not all items have reached COMPLETED trade status"));
+    }
+
+    @Test
     @DisplayName("409 Conflict: PATCH /api/v1/orders/{id}/status ขัดต่อกฎสถานะ (เช่น ยกเลิกระหว่าง SHIPPING)")
     void transitionOrderStatus_InvalidStateTransition_Returns409() throws Exception {
         when(orderService.transitionOrderStatus(1L, "cancel"))

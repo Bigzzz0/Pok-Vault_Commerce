@@ -161,10 +161,10 @@ lines += [
     "",
     "- ทดสอบเฉพาะไฟล์ที่เกี่ยวข้องกับสถาปัตยกรรมของสมาชิกคนที่ 4 ไม่แตะต้องโค้ด Production นอกขอบเขต",
     "- MockMvc ใช้ Standalone Setup ร่วมกับ `@ExtendWith(MockitoExtension.class)` เพื่อความรวดเร็วระดับมิลลิวินาที และหลีกเลี่ยงความขัดแย้งของ Sliced Context กับ `@EnableJpaAuditing`",
-    "- ผลการทดสอบ Unit Tests ทั้ง 74 เคส ยืนยันว่า Business Invariants, State Machine, และ Trade Fulfillment Sequence ทำงานได้อย่างถูกต้องสมบูรณ์ 100%",
+    f"- ผลการทดสอบ Unit Tests ทั้ง {tankun_total['tests']} เคส ยืนยันว่า Business Invariants, State Machine, และ Trade Fulfillment Sequence ทำงานได้อย่างถูกต้องสมบูรณ์ 100%",
     "- ผลรายกรณีแบบละเอียดดูได้จาก `summary.json` และ JUnit XML ในโฟลเดอร์นี้",
     "",
-    "## ผลรายกรณี (All 74 Test Cases)",
+    f"## ผลรายกรณี (All {tankun_total['tests']} Test Cases)",
     ""
 ]
 

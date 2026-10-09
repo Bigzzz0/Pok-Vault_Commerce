@@ -1,90 +1,102 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderApiControllerTest" time="1.992" tests="13" errors="0" skipped="0" failures="0">
-  <testcase name="updateItemTradeStatus_InvalidStatus_Returns400" classname="com.pokevault.modules.order.OrderApiControllerTest" time="1.819">
-    <system-out>16:48:24.946 [main] INFO org.hibernate.validator.internal.util.Version -- HV000001: Hibernate Validator 8.0.2.Final
-16:48:25.484 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:48:25.484 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:48:25.487 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 2 ms
-16:48:25.547 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Method argument type mismatch (400): Parameter 'status' has invalid value: 'UNKNOWN_STATUS' at path /api/v1/orders/1/items/10/trade-status
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderApiControllerTest" time="0.187" tests="15" errors="0" skipped="0" failures="0">
+  <testcase name="updateItemTradeStatus_InvalidStatus_Returns400" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.062">
+    <system-out>2026-10-09T18:10:23.606+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.606+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.607+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-10-09T18:10:23.613+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Method argument type mismatch (400): Parameter 'status' has invalid value: 'UNKNOWN_STATUS' at path /api/v1/orders/1/items/10/trade-status
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_AccessDenied_Returns403" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.029">
-    <system-out>16:48:25.623 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:48:25.623 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:48:25.623 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
-16:48:25.639 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Access denied (403): Only ADMIN and STAFF can update trade status at path /api/v1/orders/1/items/10/trade-status
+  <testcase name="updateItemTradeStatus_AccessDenied_Returns403" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.009">
+    <system-out>2026-10-09T18:10:23.621+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.621+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.621+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:10:23.622+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Access denied (403): Only ADMIN and STAFF can update trade status at path /api/v1/orders/1/items/10/trade-status
 </system-out>
   </testcase>
-  <testcase name="transitionOrderStatus_MissingActionParam_Returns400" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.012">
-    <system-out>16:48:25.650 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:48:25.650 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:48:25.650 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
-16:48:25.653 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Missing request parameter (400): Required parameter 'action' is missing at path /api/v1/orders/1/status
+  <testcase name="transitionOrderStatus_MissingActionParam_Returns400" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.008">
+    <system-out>2026-10-09T18:10:23.628+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.628+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.628+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:10:23.631+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Missing request parameter (400): Required parameter 'action' is missing at path /api/v1/orders/1/status
 </system-out>
   </testcase>
-  <testcase name="transitionOrderStatus_OrderNotFound_Returns404" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.013">
-    <system-out>16:48:25.663 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:48:25.663 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:48:25.663 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
-16:48:25.666 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Resource/URL not found (404): Order not found with id : '999' at path /api/v1/orders/999/status
+  <testcase name="transitionOrderStatus_OrderNotFound_Returns404" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.008">
+    <system-out>2026-10-09T18:10:23.637+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.637+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.637+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:10:23.638+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): Order not found with id : '999' at path /api/v1/orders/999/status
 </system-out>
   </testcase>
-  <testcase name="transitionOrderStatus_InvalidStateTransition_Returns409" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.01">
-    <system-out>16:48:25.674 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:48:25.674 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:48:25.674 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
-16:48:25.676 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- State conflict error (409): Cannot cancel order while cards are being shipped in game at path /api/v1/orders/1/status
+  <testcase name="transitionOrderStatus_InvalidStateTransition_Returns409" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.008">
+    <system-out>2026-10-09T18:10:23.645+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.645+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.646+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-10-09T18:10:23.647+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : State conflict error (409): Cannot cancel order while cards are being shipped in game at path /api/v1/orders/1/status
 </system-out>
   </testcase>
-  <testcase name="transitionOrderStatus_Pay_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.038">
-    <system-out>16:48:25.684 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:48:25.684 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:48:25.684 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="transitionOrderStatus_Pay_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.014">
+    <system-out>2026-10-09T18:10:23.653+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.653+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.653+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_Success_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.014">
-    <system-out>16:48:25.723 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:48:25.724 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:48:25.724 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="updateItemTradeStatus_Success_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.012">
+    <system-out>2026-10-09T18:10:23.669+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.669+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.669+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+</system-out>
+  </testcase>
+  <testcase name="transitionOrderStatus_Complete_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.007">
+    <system-out>2026-10-09T18:10:23.680+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.680+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.680+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
   <testcase name="updateItemTradeStatus_StateConflict_Returns409" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.009">
-    <system-out>16:48:25.738 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:48:25.738 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:48:25.738 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
-16:48:25.740 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- State conflict error (409): Order must be in SHIPPING status at path /api/v1/orders/1/items/10/trade-status
+    <system-out>2026-10-09T18:10:23.687+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.687+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.688+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-10-09T18:10:23.689+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : State conflict error (409): Order must be in SHIPPING status at path /api/v1/orders/1/items/10/trade-status
 </system-out>
   </testcase>
-  <testcase name="transitionOrderStatus_Ship_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.009">
-    <system-out>16:48:25.747 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:48:25.747 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:48:25.747 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="transitionOrderStatus_Ship_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.007">
+    <system-out>2026-10-09T18:10:23.697+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.697+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.697+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_NotFound_Returns404" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.008">
-    <system-out>16:48:25.757 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:48:25.757 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:48:25.757 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
-16:48:25.758 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Resource/URL not found (404): Order not found with id : '999' at path /api/v1/orders/999/items/10/trade-status
+  <testcase name="updateItemTradeStatus_NotFound_Returns404" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.007">
+    <system-out>2026-10-09T18:10:23.704+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.704+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.704+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:10:23.706+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): Order not found with id : '999' at path /api/v1/orders/999/items/10/trade-status
+</system-out>
+  </testcase>
+  <testcase name="transitionOrderStatus_Complete_IncompleteItems_Returns409" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.008">
+    <system-out>2026-10-09T18:10:23.712+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.713+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.713+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:10:23.714+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : State conflict error (409): Cannot complete order: not all items have reached COMPLETED trade status at path /api/v1/orders/1/status
 </system-out>
   </testcase>
   <testcase name="updateItemTradeStatus_Completed_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.008">
-    <system-out>16:48:25.764 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:48:25.764 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:48:25.764 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+    <system-out>2026-10-09T18:10:23.720+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.720+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.721+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
 </system-out>
   </testcase>
   <testcase name="updateItemTradeStatus_UnsupportedStatus_Returns400" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.008">
-    <system-out>16:48:25.773 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:48:25.773 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:48:25.773 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
-16:48:25.775 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Illegal argument error (400): Unsupported trade status: UNASSIGNED. Only TRADE_SENT and COMPLETED are allowed. at path /api/v1/orders/1/items/10/trade-status
+    <system-out>2026-10-09T18:10:23.729+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.729+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.729+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:10:23.731+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Illegal argument error (400): Unsupported trade status: UNASSIGNED. Only TRADE_SENT and COMPLETED are allowed. at path /api/v1/orders/1/items/10/trade-status
 </system-out>
   </testcase>
-  <testcase name="transitionOrderStatus_Cancel_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.007">
-    <system-out>16:48:25.780 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:48:25.780 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:48:25.780 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="transitionOrderStatus_Cancel_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.008">
+    <system-out>2026-10-09T18:10:23.735+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:10:23.735+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:10:23.736+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
 </testsuite>

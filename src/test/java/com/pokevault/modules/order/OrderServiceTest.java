@@ -567,4 +567,87 @@ class OrderServiceTest {
                 verify(orderRepository, never()).save(any());
         }
 
+        @Test
+        @DisplayName("transitionOrderStatus: complete สำเร็จเมื่อออเดอร์อยู่ใน SHIPPING และทุก OrderItem เป็น COMPLETED")
+        void transitionOrderStatus_Complete_Success() {
+                GameAccount account = GameAccount.builder().id(100L).accountCode("ACC-001").build();
+                OrderItem item = OrderItem.builder()
+                                .id(10L)
+                                .quantity(1)
+                                .assignedAccount(account)
+                                .tradeStatus(TradeFulfillmentStatus.COMPLETED)
+                                .build();
+
+                Order order = Order.builder()
+                                .id(1L)
+                                .orderCode("ORD-2026-001")
+                                .orderStatus(OrderStatus.SHIPPING)
+                                .build();
+                order.addItem(item);
+
+                when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+                when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+                OrderResponse response = orderService.transitionOrderStatus(1L, "complete");
+
+                assertThat(response).isNotNull();
+                assertThat(response.getOrderStatus()).isEqualTo(OrderStatus.COMPLETED);
+                assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.COMPLETED);
+                verify(orderRepository, times(1)).save(order);
+        }
+
+        @Test
+        @DisplayName("transitionOrderStatus: โยน TradeStateConflictException เมื่อปิดออเดอร์ (complete) ขณะยังมีรายการที่ยังเทรดไม่เสร็จ")
+        void transitionOrderStatus_Complete_IncompleteItems_ThrowsConflict() {
+                GameAccount account = GameAccount.builder().id(100L).accountCode("ACC-001").build();
+                OrderItem item1 = OrderItem.builder()
+                                .id(10L)
+                                .quantity(1)
+                                .assignedAccount(account)
+                                .tradeStatus(TradeFulfillmentStatus.COMPLETED)
+                                .build();
+                OrderItem item2 = OrderItem.builder()
+                                .id(20L)
+                                .quantity(1)
+                                .assignedAccount(account)
+                                .tradeStatus(TradeFulfillmentStatus.TRADE_SENT)
+                                .build();
+
+                Order order = Order.builder()
+                                .id(1L)
+                                .orderCode("ORD-2026-001")
+                                .orderStatus(OrderStatus.SHIPPING)
+                                .build();
+                order.addItem(item1);
+                order.addItem(item2);
+
+                when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+                assertThatThrownBy(() -> orderService.transitionOrderStatus(1L, "complete"))
+                                .isInstanceOf(TradeStateConflictException.class)
+                                .hasMessageContaining("not all items have reached COMPLETED trade status");
+
+                assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.SHIPPING);
+                verify(orderRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("transitionOrderStatus: โยน TradeStateConflictException เมื่อปิดออเดอร์ (complete) แต่ออเดอร์ไม่มีรายการสินค้า")
+        void transitionOrderStatus_Complete_NoItems_ThrowsConflict() {
+                Order order = Order.builder()
+                                .id(1L)
+                                .orderCode("ORD-2026-001")
+                                .orderStatus(OrderStatus.SHIPPING)
+                                .build();
+
+                when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+                assertThatThrownBy(() -> orderService.transitionOrderStatus(1L, "complete"))
+                                .isInstanceOf(TradeStateConflictException.class)
+                                .hasMessageContaining("order has no items");
+
+                assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.SHIPPING);
+                verify(orderRepository, never()).save(any());
+        }
+
 }
