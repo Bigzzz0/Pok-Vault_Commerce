@@ -52,6 +52,7 @@ function toggleTheme() {
 
 // --- 1. 3D Holographic Parallax Tilt & Specular Light Engine ---
 function init3DTilt() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const cards = document.querySelectorAll('.holo-card:not(#inspectFlipperBox), .tcg-card-3d:not(#inspectFlipperBox)');
 
     cards.forEach(card => {
@@ -212,11 +213,9 @@ function initInspectionFlipper() {
     document.addEventListener('keydown', (e) => {
         const modal = document.getElementById('inspectionModal');
         if (modal && modal.classList.contains('active')) {
-            if (e.code === 'Space' || e.key === 'f' || e.key === 'F') {
+            if ((e.code === 'Space' || e.key === 'f' || e.key === 'F') && e.target === document.getElementById('inspectFlipperBox')) {
                 e.preventDefault();
                 toggleCardFlip();
-            } else if (e.key === 'Escape') {
-                closeInspection();
             }
         }
     });
@@ -267,20 +266,17 @@ function openInspection(card) {
         }
     }
 
-    // 3D Entry Flip Animation (Smooth 360-degree spin on arrival)
+    // Start on the front; the existing flip interaction stays available.
     const flipperInner = document.getElementById('inspectFlipperInner');
     if (flipperInner) {
-        flipperInner.style.transition = 'none';
-        flipperInner.style.transform = 'rotateY(-360deg)';
-        setTimeout(() => {
-            flipperInner.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
-            flipperInner.style.transform = 'rotateY(0deg)';
-        }, 50);
+        flipperInner.style.transition = '';
+        flipperInner.style.transform = '';
     }
 
     const imgElem = document.getElementById('inspectCardImg');
     if (imgElem && card.imageUrl) {
         imgElem.src = card.imageUrl;
+        imgElem.alt = card.name;
     }
 
     document.getElementById('inspectCardNumber').textContent = `${card.expansionCode || 'A1'} #${card.cardNumber}`;
@@ -291,7 +287,7 @@ function openInspection(card) {
     kindElem.textContent = isPokemon ? `HP ${card.hp}` : (CARD_TYPE_LABELS[card.cardType] || formatEnumLabel(card.cardType));
     kindElem.classList.toggle('is-trainer', !isPokemon);
     document.getElementById('inspectCardDesc').textContent = card.description || 'การ์ดสะสม Pokémon TCG Pocket';
-    document.getElementById('inspectCardRarity').textContent = card.rarityDescription || card.rarity;
+    document.getElementById('inspectCardRarity').textContent = formatRarityLabel(card.rarityDescription || card.rarity);
     document.getElementById('inspectCardStock').textContent = card.totalStock == null ? 'มีสินค้า' : `มีสินค้า: ${card.totalStock} ใบ`;
     const priceRow = document.getElementById('inspectCardPriceRow');
     if (priceRow) {
@@ -346,7 +342,8 @@ function handleOrderClick(btn) {
     const condition = btn.getAttribute('data-condition');
     const price = btn.getAttribute('data-price');
     const stock = btn.getAttribute('data-stock');
-    openOrderModal(id, name, number, condition, price, stock);
+    const imageUrl = btn.getAttribute('data-image');
+    openOrderModal(id, name, number, condition, price, stock, imageUrl);
 }
 
 function closeInspection() {
@@ -375,7 +372,7 @@ const TIER_DISCOUNTS = {
 };
 const FRIEND_ID_PATTERN = /^\d{4}-\d{4}-\d{4}-\d{4}$|^\d{16}$/;
 
-function openOrderModal(inventoryId, cardName, cardNumber, condition, unitPrice, availableStock) {
+function openOrderModal(inventoryId, cardName, cardNumber, condition, unitPrice, availableStock, imageUrl = '') {
     if (availableStock <= 0) {
         showToast('การ์ดใบนี้หมดสต็อกแล้ว', 'danger');
         return;
@@ -391,8 +388,18 @@ function openOrderModal(inventoryId, cardName, cardNumber, condition, unitPrice,
         quantity: 1
     };
 
-    document.getElementById('orderCardTitle').textContent = `${cardName} (${condition})`;
+    document.getElementById('orderCardTitle').textContent = `${cardName} (${formatConditionLabel(condition)})`;
     document.getElementById('orderCardNumber').textContent = cardNumber;
+    const preview = document.getElementById('orderCardPreview');
+    if (preview) {
+        const previewButton = document.getElementById('orderCardPreviewButton');
+        previewButton.hidden = !imageUrl;
+        previewButton.setAttribute('aria-label', `ขยายภาพ ${cardName} ${cardNumber}`);
+        preview.alt = `${cardName} (${cardNumber})`;
+        preview.onerror = () => { previewButton.hidden = true; };
+        if (imageUrl) preview.src = imageUrl;
+        else preview.removeAttribute('src');
+    }
     document.getElementById('orderAvailableStock').textContent = `มีในร้าน: ${availableStock} ใบ`;
     document.getElementById('orderQtyInput').value = 1;
     document.getElementById('orderQtyInput').max = availableStock;
@@ -507,10 +514,10 @@ function updateOrderCalculation() {
     const discountAmount = subtotal * discountRate;
     const finalAmount = Math.max(0, subtotal - discountAmount);
 
-    document.getElementById('orderCalcSubtotal').textContent = `฿${subtotal.toFixed(2)}`;
+    document.getElementById('orderCalcSubtotal').textContent = formatBaht(subtotal);
     document.getElementById('orderCalcDiscountRate').textContent = `ส่วนลด ${tier} (-${(discountRate * 100).toFixed(0)}%)`;
-    document.getElementById('orderCalcDiscountAmt').textContent = `-฿${discountAmount.toFixed(2)}`;
-    document.getElementById('orderCalcFinal').textContent = `฿${finalAmount.toFixed(2)}`;
+    document.getElementById('orderCalcDiscountAmt').textContent = '-' + formatBaht(discountAmount);
+    document.getElementById('orderCalcFinal').textContent = formatBaht(finalAmount);
 }
 
 async function submitOrder() {
@@ -605,7 +612,7 @@ function showChatCommerceModal(orderData, targetCard, friendId, ign) {
     const finalElem = document.getElementById('chatOrderFinalAmt');
 
     const cardTitle = targetCard ? `${targetCard.cardName} (${targetCard.condition}) x${targetCard.quantity}` : 'Pokémon TCG Card';
-    const finalAmountStr = `฿${orderData.finalAmount.toFixed(2)}`;
+    const finalAmountStr = formatBaht(orderData.finalAmount);
 
     if (codeElem) codeElem.textContent = `#${orderData.orderCode}`;
     if (cardElem) cardElem.textContent = cardTitle;
@@ -613,7 +620,7 @@ function showChatCommerceModal(orderData, targetCard, friendId, ign) {
     if (finalElem) finalElem.textContent = finalAmountStr;
 
     // Compose the order summary staff send to the customer
-    const summaryMsg = `สวัสดีครับ สั่งจองการ์ดผ่านเว็บเรียบร้อยแล้วครับ!\n• รหัสคำสั่งซื้อ: #${orderData.orderCode}\n• รายการการ์ด: ${cardTitle}\n• ยอดชำระ: ${finalAmountStr} (ส่วนลด Strategy: -฿${orderData.discountAmount.toFixed(2)})\n• รหัสเพื่อนในเกม (Friend ID): ${friendId}\n• ชื่อเทรนเนอร์ (IGN): ${ign || '-'}\nขอส่งหลักฐานการโอนเงินและนัดส่งการ์ดเทรดในเกมครับ`;
+    const summaryMsg = `สวัสดีครับ สั่งจองการ์ดผ่านเว็บเรียบร้อยแล้วครับ!\n• รหัสคำสั่งซื้อ: #${orderData.orderCode}\n• รายการการ์ด: ${cardTitle}\n• ยอดชำระ: ${finalAmountStr} (ส่วนลดสมาชิก: -฿${orderData.discountAmount.toFixed(2)})\n• รหัสเพื่อนในเกม (Friend ID): ${friendId}\n• ชื่อเทรนเนอร์ (IGN): ${ign || '-'}\nขอส่งหลักฐานการโอนเงินและนัดส่งการ์ดเทรดในเกมครับ`;
     lastChatSummaryText = summaryMsg;
 
     modal.classList.add('active');
@@ -713,9 +720,13 @@ function openCustomerOrderModal() {
         return;
     }
 
+    showCustomerBookingError('');
     document.getElementById('customerOrderCardName').textContent = card.name;
     document.getElementById('customerOrderCardNumber').textContent = `${card.expansionCode || 'A1'} #${card.cardNumber}`;
-    document.getElementById('customerOrderPrice').textContent = `฿${card.price.toFixed(2)}`;
+    document.getElementById('customerOrderPrice').textContent = formatBaht(card.price);
+    modal.inert = false;
+    modal.setAttribute('aria-hidden', 'false');
+    if (typeof updateCustomerFriendFeedback === 'function') updateCustomerFriendFeedback(false);
     document.getElementById('customerOrderForm').style.display = '';
     document.getElementById('customerOrderDone').style.display = 'none';
 
@@ -726,7 +737,7 @@ function openCustomerOrderModal() {
 
 function closeCustomerOrderModal() {
     const modal = document.getElementById('customerOrderModal');
-    if (!modal) return;
+    if (!modal || document.getElementById('customerOrderSubmit')?.disabled) return;
     modal.classList.remove('active');
     // After a successful order the stock changed, so refresh the gallery
     if (document.getElementById('customerOrderDone').style.display !== 'none') {
@@ -736,6 +747,7 @@ function closeCustomerOrderModal() {
 
 async function submitCustomerOrder(event) {
     event.preventDefault();
+    if (document.getElementById('customerOrderSubmit').disabled) return;
     const card = currentInspectCard;
     const userId = parseInt(document.getElementById('customerOrderUserId').value);
     const friendInput = document.getElementById('customerOrderFriendId');
@@ -744,13 +756,13 @@ async function submitCustomerOrder(event) {
 
     if (!card || !card.inventoryId || !userId) return;
     if (!FRIEND_ID_PATTERN.test(friendId)) {
-        showToast('กรุณากรอก Friend ID ให้ครบ 16 หลัก (เช่น 1234-5678-9012-3456)', 'danger');
+        if (typeof updateCustomerFriendFeedback === 'function') updateCustomerFriendFeedback(true);
         friendInput.focus();
         return;
     }
 
-    const submitBtn = document.getElementById('customerOrderSubmit');
-    submitBtn.disabled = true;
+    setCustomerBookingBusy(true);
+    showCustomerBookingError('');
 
     try {
         const response = await fetch('/api/v1/orders', {
@@ -770,18 +782,18 @@ async function submitCustomerOrder(event) {
             if (window.soundFx) window.soundFx.playOrderChime();
             showCustomerOrderDone(result.data, friendId, ign);
         } else {
-            showToast(apiErrorMessage(result, 'สั่งซื้อไม่สำเร็จ การ์ดอาจหมดสต็อกแล้ว'), 'danger');
+            showCustomerBookingError(apiErrorMessage(result, 'จองไม่สำเร็จ การ์ดอาจหมดสต็อกแล้ว กรุณาตรวจสอบและลองอีกครั้ง'));
         }
     } catch (err) {
-        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + err.message, 'danger');
+        showCustomerBookingError('การเชื่อมต่อขัดข้อง ข้อมูลที่กรอกยังอยู่ กรุณาตรวจสอบคำสั่งซื้อของฉันก่อนยืนยันซ้ำ');
     } finally {
-        submitBtn.disabled = false;
+        setCustomerBookingBusy(false);
     }
 }
 
 function showCustomerOrderDone(order, friendId, ign) {
-    const finalAmount = `฿${order.finalAmount.toFixed(2)}`;
-    const summary = `สวัสดีครับ สั่งจองการ์ดผ่านเว็บเรียบร้อยแล้วครับ!\n• รหัสคำสั่งซื้อ: #${order.orderCode}\n• รายการการ์ด: ${inspectCardLabel()} x1\n• ยอดชำระ: ${finalAmount} (ส่วนลด Strategy: -฿${order.discountAmount.toFixed(2)})\n• รหัสเพื่อนในเกม (Friend ID): ${friendId}\n• ชื่อเทรนเนอร์ (IGN): ${ign || '-'}\nขอส่งหลักฐานการโอนเงินและนัดส่งการ์ดเทรดในเกมครับ`;
+    const finalAmount = formatBaht(order.finalAmount);
+    const summary = `สวัสดีครับ สั่งจองการ์ดผ่านเว็บเรียบร้อยแล้วครับ!\n• รหัสคำสั่งซื้อ: #${order.orderCode}\n• รายการการ์ด: ${inspectCardLabel()} x1\n• ยอดชำระ: ${finalAmount} (ส่วนลดสมาชิก: -฿${order.discountAmount.toFixed(2)})\n• รหัสเพื่อนในเกม (Friend ID): ${friendId}\n• ชื่อเทรนเนอร์ (IGN): ${ign || '-'}\nขอส่งหลักฐานการโอนเงินและนัดส่งการ์ดเทรดในเกมครับ`;
     lastChatSummaryText = summary;
     const url = buildMessengerUrl(summary);
 
@@ -793,7 +805,7 @@ function showCustomerOrderDone(order, friendId, ign) {
 
     // No automatic jump to Messenger here: the customer stays on the confirmation and can inbox the store if they want
     document.getElementById('customerOrderDoneHint').textContent =
-        'ติดตามสถานะออเดอร์ได้ที่หน้า "คำสั่งซื้อของฉัน" — หากต้องการคุยกับร้าน กด Inbox FB (ข้อความสรุปจะถูกคัดลอกให้)';
+        'ขั้นตอนถัดไป: ติดต่อร้านเพื่อชำระเงินและนัดเทรดการ์ด ปุ่มติดต่อร้านจะคัดลอกสรุปออเดอร์ให้ หรือดูสถานะได้ที่คำสั่งซื้อของฉัน';
     showToast(`สร้างคำสั่งซื้อ ${order.orderCode} แล้ว!`, 'success');
 }
 
@@ -834,6 +846,9 @@ function executeOrderTransition(orderId, action, orderCode) {
     }
 
     pendingOrderTransition = { orderId, action };
+    const error = document.getElementById('transitionError');
+    error.hidden = true;
+    error.textContent = '';
     document.getElementById('transitionTitle').textContent = config.title;
     document.getElementById('transitionOrderCode').textContent = orderCode || `คำสั่งซื้อ #${orderId}`;
     // The "from" badge mirrors the order's current state in its table row
@@ -843,7 +858,7 @@ function executeOrderTransition(orderId, action, orderCode) {
     fromNode.textContent = currentNode ? currentNode.textContent.trim() : (config.from ? config.from[0] : 'CURRENT');
     fromNode.className = currentNode ? currentNode.className : 'state-node ' + (config.from ? config.from[1] : '');
     const toNode = document.getElementById('transitionTo');
-    toNode.textContent = config.to[0];
+    toNode.textContent = formatOrderStatus(config.to[0]);
     toNode.className = 'state-node ' + config.to[1];
     document.getElementById('transitionMessage').textContent = config.message;
     document.getElementById('transitionDismissBtn').textContent = config.dismiss || 'ย้อนกลับ';
@@ -855,6 +870,7 @@ function executeOrderTransition(orderId, action, orderCode) {
 }
 
 function closeTransitionModal() {
+    if (document.getElementById('transitionConfirmBtn').disabled) return;
     document.getElementById('transitionModal').classList.remove('active');
     pendingOrderTransition = null;
 }
@@ -862,9 +878,21 @@ function closeTransitionModal() {
 async function confirmOrderTransition() {
     if (!pendingOrderTransition) return;
     const { orderId, action } = pendingOrderTransition;
-    document.getElementById('transitionConfirmBtn').disabled = true;
-    await runOrderTransition(orderId, action);
-    closeTransitionModal();
+    const button = document.getElementById('transitionConfirmBtn');
+    if (button.disabled) return;
+    const label = button.textContent;
+    button.disabled = true;
+    button.textContent = 'กำลังบันทึก...';
+    const modal = document.getElementById('transitionModal');
+    modal.setAttribute('aria-busy', 'true');
+    const dismissButtons = [...modal.querySelectorAll('button')].filter(item => item !== button);
+    dismissButtons.forEach(item => item.disabled = true);
+    const success = await runOrderTransition(orderId, action);
+    button.disabled = false;
+    button.textContent = label;
+    dismissButtons.forEach(item => item.disabled = false);
+    modal.setAttribute('aria-busy', 'false');
+    if (success) closeTransitionModal();
 }
 
 async function runOrderTransition(orderId, action) {
@@ -878,12 +906,14 @@ async function runOrderTransition(orderId, action) {
             if (window.soundFx) window.soundFx.playOrderChime();
             showToast(`เปลี่ยนสถานะคำสั่งซื้อเป็น ${result.data.orderStatus} แล้ว`, 'success');
             setTimeout(() => window.location.reload(), 1000);
+            return true;
         } else {
-            showToast(result.message || 'เปลี่ยนสถานะไม่ได้ (ไม่ผ่านกฎของ State Pattern)', 'danger');
+            showTransitionError(result.message || 'เปลี่ยนสถานะไม่ได้ กรุณาตรวจสอบสถานะปัจจุบันแล้วลองอีกครั้ง');
         }
     } catch (e) {
-        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + e.message, 'danger');
+        showTransitionError('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาลองอีกครั้ง');
     }
+    return false;
 }
 
 // --- 6. Futuristic Toast Notifications ---

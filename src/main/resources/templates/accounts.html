@@ -11,6 +11,7 @@
         })();
     </script>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/ux-improvements.css}">
     <link rel="stylesheet" th:href="@{/css/pokemon-cards-holo.css}">
 </head>
 <body>
@@ -23,12 +24,13 @@
             </div>
             <span>Pokémon TCG Pocket Gallery</span>
         </a>
-        <div class="nav-links">
+        <button type="button" class="nav-menu-toggle" aria-expanded="false" aria-controls="siteNavigation">เมนู</button>
+        <div class="nav-links" id="siteNavigation">
             <a th:href="@{/}" class="nav-link">
                 <div th:replace="~{fragments/icons :: dashboard('icon-sm')}"></div>
                 <span>หน้าแรก</span>
             </a>
-            <a th:href="@{/cards}" class="nav-link">
+            <a th:href="@{/cards}" data-gallery-return class="nav-link">
                 <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
                 <span>แกลเลอรีการ์ด</span>
             </a>
@@ -175,7 +177,7 @@
                             <span class="rarity-pill" th:text="${acc.totalCardsCount != null ? acc.totalCardsCount + ' ใบ' : '0 ใบ'}">3 cards</span>
                         </td>
                         <td>
-                            <span style="font-weight: 700; color: var(--accent-cyan);" th:text="${acc.buyInCost != null ? '฿' + #numbers.formatDecimal(acc.buyInCost, 1, 2) : '฿0.00'}">฿250.00</span>
+                            <span style="font-weight: 700; color: var(--accent-cyan);" th:text="${acc.buyInCost != null ? '฿' + #numbers.formatDecimal(acc.buyInCost, 1, 'COMMA', 2, 'POINT') : '฿0.00'}">฿250.00</span>
                         </td>
                         <td>
                             <div style="display: flex; gap: 0.4rem; white-space: nowrap;">
@@ -200,7 +202,7 @@
             </table>
         </div>
 
-        <!-- Customer Membership (Strategy Pattern discount tier) -->
+        <!-- Customer Membership (ระดับสมาชิก discount tier) -->
         <div style="margin: 3rem 0 1.25rem;">
             <h2 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.25rem;">ระดับสมาชิกของลูกค้า</h2>
             <p style="color: var(--text-secondary); font-size: 0.9rem;">ระดับสมาชิกกำหนดส่วนลดของออเดอร์ใหม่ทุกรายการ: Regular 0%, VIP 10%, Wholesale 15%</p>
@@ -235,14 +237,14 @@
     </main>
 
     <!-- Modal 1: Register New Game Account -->
-    <div id="createAccountModal" class="modal-overlay" onclick="if(event.target === this) closeCreateAccountModal()">
+    <div id="createAccountModal" class="modal-overlay" onclick="if(event.target === this) closeCreateAccountModal()" role="dialog" aria-modal="true" aria-hidden="true" inert>
         <div class="modal-container" style="max-width: 520px;">
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <div th:replace="~{fragments/icons :: users('icon-md')}"></div>
                     <h3 class="modal-title">เพิ่มบัญชีเกม</h3>
                 </div>
-                <button class="modal-close-btn" onclick="closeCreateAccountModal()">
+                <button class="modal-close-btn" aria-label="ปิดหน้าต่าง" onclick="closeCreateAccountModal()">
                     <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
                 </button>
             </div>
@@ -278,14 +280,14 @@
     </div>
 
     <!-- Modal 2: Record Pulled Card (Open Pack) -->
-    <div id="addCardModal" class="modal-overlay" onclick="if(event.target === this) closeAddCardModal()">
+    <div id="addCardModal" class="modal-overlay" onclick="if(event.target === this) closeAddCardModal()" role="dialog" aria-modal="true" aria-hidden="true" inert>
         <div class="modal-container" style="max-width: 520px;">
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <div th:replace="~{fragments/icons :: sparkles('icon-md')}"></div>
                     <h3 class="modal-title">บันทึกการ์ดที่เปิดได้</h3>
                 </div>
-                <button class="modal-close-btn" onclick="closeAddCardModal()">
+                <button class="modal-close-btn" aria-label="ปิดหน้าต่าง" onclick="closeAddCardModal()">
                     <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
                 </button>
             </div>
@@ -325,7 +327,7 @@
     </div>
 
     <!-- Modal 3: Account Cards Vault Inspector (Drawer with 3D Holo Cards) -->
-    <div id="accountCardsModal" class="modal-overlay" onclick="if(event.target === this) closeAccountCardsModal()">
+    <div id="accountCardsModal" class="modal-overlay" onclick="if(event.target === this) closeAccountCardsModal()" role="dialog" aria-modal="true" aria-hidden="true" inert>
         <div class="modal-container modal-wide" style="max-width: 960px;">
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -335,7 +337,7 @@
                         <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;" id="drawerAccountSub">การ์ดที่เปิดได้และพร้อมเทรด</p>
                     </div>
                 </div>
-                <button class="modal-close-btn" onclick="closeAccountCardsModal()">
+                <button class="modal-close-btn" aria-label="ปิดหน้าต่าง" onclick="closeAccountCardsModal()">
                     <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
                 </button>
             </div>
@@ -354,5 +356,6 @@
 
     <script th:src="@{/js/audio.js}"></script>
     <script th:src="@{/js/app.js}"></script>
+    <script th:src="@{/js/ux-improvements.js}"></script>
 </body>
 </html>
