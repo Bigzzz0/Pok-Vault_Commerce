@@ -190,12 +190,13 @@ docker compose up --build
 | Card Catalog | `GET /cards`, `GET /cards/paged`, `GET /cards/{id}`, `GET /cards/search`, `POST /cards`, `PUT /cards/{id}`, `DELETE /cards/{id}` | คนที่ 1 |
 | Card Catalog | `GET /cards/expansions`, `GET /cards/expansions/{code}`, `GET /cards/expansions/{code}/cards` | คนที่ 1 |
 | Game Account Vault | `POST /accounts`, `GET /accounts`, `GET /accounts/{id}`, `POST /accounts/{id}/pulls`, `GET /accounts/{id}/cards`, `PATCH /accounts/{id}/trade-status` | คนที่ 2 |
-| Order | `POST /orders`, `GET /orders`, `GET /orders/{id}`, `PATCH /orders/{id}/status?action=` | คนที่ 3, 4 |
+| Order | `POST /orders`, `GET /orders`, `GET /orders/{id}`, `PATCH /orders/{id}/status?action=`, `PATCH /orders/{orderId}/items/{orderItemId}/trade-status?status=` | คนที่ 3, 4 |
 | Trade Matching | `GET /trades/orders/{orderId}/recommendations`, `GET /trades/items/{orderItemId}/recommendation`, `POST /trades/orders/{orderId}/auto-match`, `POST /trades/items/{orderItemId}/auto-match`, `POST /trades/items/{orderItemId}/assign?accountId=` | คนที่ 4 |
 | Auth | `POST /auth/register` | คนที่ 5 |
 | Store Admin | `PATCH /admin/inventories/{inventoryId}/price?price=`, `PATCH /admin/customers/{userId}/membership-tier?tier=` | คนที่ 5 |
 
 ค่า `action` ของ `PATCH /orders/{id}/status` คือ `pay`, `ship`, `complete` หรือ `cancel`
+ค่า `status` ของ `PATCH /orders/{orderId}/items/{orderItemId}/trade-status` คือ `TRADE_SENT` หรือ `COMPLETED` (เฉพาะ ADMIN และ STAFF, ซิงค์สถานะออเดอร์เป็น COMPLETED อัตโนมัติเมื่อเทรดครบ)
 
 ทุก response ใช้รูปแบบเดียวกัน:
 
