@@ -19,6 +19,7 @@ python test/generate_sikarin_report.py
 python test/generate_sapphanyu_report.py
 python test/generate_tanapoom_report.py
 python test/generate_tankun_report.py
+python test/generate_soravit_report.py
 ```
 
 หากต้องการรายงานรวมและ metadata รอบเดียวกัน ให้เก็บ build log และใช้ generator รวมหลัง Maven จบ:
@@ -40,9 +41,10 @@ Generator รวมตรวจยอดใน log เทียบ XML และ
 | สัพพัญญู | Account/Inventory, Observer, ขอบเขต Order ที่รายงานระบุ | [Sapphanyu](reports/sapphanyu/TEST-REPORT.md) |
 | ธนภูมิ | Order, Strategy, stock/ownership และ reassign | [Tanapoom](reports/tanapoom/TEST-REPORT.md) |
 | แทนคุณ | State, Matching, controller/exception mapping | [Tankun](reports/tankun/TEST-REPORT.md) |
+| สรวิชญ์ | หน้าเว็บ (controller/service/View DTO), สิทธิ์ตามบทบาทบนหน้าเว็บ, สมัครสมาชิก, งานหลังบ้าน, Swagger/Health | [Soravit](reports/soravit/TEST-REPORT.md) |
 
 Scope บางส่วนทับซ้อนกัน จึงห้ามบวกยอดรายสมาชิกเป็นยอดทั้งระบบ ให้ใช้ยอด Surefire ของการรันทั้งหมดหนึ่งรอบ
-ชุด Web/Swagger/config tests ดู `test/java`; ไม่อนุมานว่ามีรายงานคนที่ 5 หากยังไม่ได้จัดทำ
+รายงานของสรวิชญ์สร้างแยกด้วย `generate_soravit_report.py` และบันทึก commit/สภาพแวดล้อมของรอบที่รันไว้ในรายงานเอง จึงอาจเป็นคนละรอบกับรายงานรวม
 Raw results อยู่ `code/target/surefire-reports`; XML ที่บันทึกในรายงานบาง scope ตัด machine properties/logs ออก
 H2 PostgreSQL mode ไม่ใช่ PostgreSQL จริง และ unit tests ไม่ยืนยัน cloud deployment หรือ manual migration
 

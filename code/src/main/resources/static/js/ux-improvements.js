@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initOrderFilters();
     initGalleryHistory();
     initOrderSecondaryDetails();
+    initMyOrdersAutoRefresh();
     document.querySelectorAll('[data-label="สภาพ"] .rarity-pill').forEach(label => {
         label.textContent = formatConditionLabel(label.textContent.trim());
     });
@@ -43,6 +44,49 @@ function initOrderSecondaryDetails() {
     const update = () => details.forEach(element => element.open = !breakpoint.matches);
     breakpoint.addEventListener('change', update);
     update();
+}
+
+// /my-orders is rendered on the server, so a status the store changes would only show after F5.
+// Re-fetch the page every few seconds while the tab is visible and swap in the rows when they differ.
+const MY_ORDERS_REFRESH_MS = 8000;
+
+function initMyOrdersAutoRefresh() {
+    const body = document.getElementById('myOrdersBody');
+    if (!body) return;
+    // compare text, not HTML: the page toggles <details open> on narrow screens
+    const signature = element => element.textContent.replace(/\s+/g, ' ').trim();
+    const narrowScreen = window.matchMedia('(max-width: 768px)');
+    let timer = null;
+    let busy = false;
+
+    const refresh = async () => {
+        if (busy || document.hidden) return;
+        busy = true;
+        try {
+            const response = await fetch(window.location.pathname, { headers: { 'X-Requested-With': 'fetch' } });
+            // signed out or session expired: the server sends the login page, so stop asking
+            if (!response.ok || response.redirected) {
+                clearInterval(timer);
+                return;
+            }
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            const latest = page.getElementById('myOrdersBody');
+            if (latest && signature(latest) !== signature(body)) {
+                body.innerHTML = latest.innerHTML;
+                body.querySelectorAll('.order-secondary-details').forEach(details => details.open = !narrowScreen.matches);
+                if (window.soundFx) window.soundFx.playOrderChime();
+                showToast('สถานะคำสั่งซื้อของคุณอัปเดตแล้ว', 'success');
+            }
+        } catch (e) {
+            // offline or server restarting: keep the current rows and try again on the next tick
+        } finally {
+            busy = false;
+        }
+    };
+
+    timer = setInterval(refresh, MY_ORDERS_REFRESH_MS);
+    // catch up at once when the customer comes back to the tab
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
 }
 
 const bookingControlStates = new WeakMap();

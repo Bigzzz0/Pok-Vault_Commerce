@@ -92,3 +92,4 @@
 - [สัพพัญญู](../sapphanyu/TEST-REPORT.md)
 - [ธนภูมิ](../tanapoom/TEST-REPORT.md)
 - [แทนคุณ](../tankun/TEST-REPORT.md)
+- [สรวิชญ์](../soravit/TEST-REPORT.md) (สร้างแยกด้วย generate_soravit_report.py)
