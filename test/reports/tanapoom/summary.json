@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-09T16:59:20.958353+07:00",
+  "generated_at": "2026-10-09T17:07:22.301578+07:00",
   "owner": "Tanapoom Chantra 673380272-1 (Member 3)",
   "command": "mvnw.cmd test",
   "whole_suite": {
-    "tests": 231,
+    "tests": 263,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -21,12 +21,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.073,
+      "seconds": 0.085,
       "cases": [
         {
           "name": "testTradeStateConflictException",
           "result": "passed",
-          "seconds": 0.053
+          "seconds": 0.062
         },
         {
           "name": "testInvalidOrderStateException",
@@ -41,22 +41,22 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 1.29,
+      "seconds": 1.318,
       "cases": [
         {
           "name": "loadUserByUsername_WhenUserExists_ShouldReturnUserDetails",
           "result": "passed",
-          "seconds": 1.141
+          "seconds": 1.174
         },
         {
           "name": "passwordEncoder_MatchesRawPassword",
           "result": "passed",
-          "seconds": 0.14
+          "seconds": 0.134
         },
         {
           "name": "loadUserByUsername_WhenUserNotFound_ShouldThrowException",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.006
         }
       ]
     },
@@ -66,22 +66,22 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.033,
+      "seconds": 0.04,
       "cases": [
         {
           "name": "deductStockReducesQuantityWhenStockIsAvailable",
           "result": "passed",
-          "seconds": 0.013
+          "seconds": 0.014
         },
         {
           "name": "pricesCannotBeNegative",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "name": "restoreStockIncreasesQuantity",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.002
         },
         {
           "name": "stockChangesRequirePositiveQuantities",
@@ -91,7 +91,7 @@
         {
           "name": "deductStockRejectsRequestsExceedingAvailableQuantity",
           "result": "passed",
-          "seconds": 0.009
+          "seconds": 0.006
         }
       ]
     },
@@ -101,47 +101,47 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 1.778,
+      "seconds": 1.597,
       "cases": [
         {
           "name": "searchUsesLiteralRouteRatherThanIdRoute",
           "result": "passed",
-          "seconds": 0.967
+          "seconds": 0.972
         },
         {
           "name": "listBindsFiltersAndReturnsData",
           "result": "passed",
-          "seconds": 0.069
+          "seconds": 0.064
         },
         {
           "name": "paginationBindsPageSizeAndDescendingSort",
           "result": "passed",
-          "seconds": 0.04
+          "seconds": 0.032
         },
         {
           "name": "invalidCreateReturns400WithoutCallingService(String)[1]",
           "result": "passed",
-          "seconds": 0.226
+          "seconds": 0.185
         },
         {
           "name": "invalidCreateReturns400WithoutCallingService(String)[2]",
           "result": "passed",
-          "seconds": 0.034
+          "seconds": 0.021
         },
         {
           "name": "invalidCreateReturns400WithoutCallingService(String)[3]",
           "result": "passed",
-          "seconds": 0.033
+          "seconds": 0.023
         },
         {
           "name": "invalidCreateReturns400WithoutCallingService(String)[4]",
           "result": "passed",
-          "seconds": 0.03
+          "seconds": 0.025
         },
         {
           "name": "invalidCreateReturns400WithoutCallingService(String)[5]",
           "result": "passed",
-          "seconds": 0.029
+          "seconds": 0.018
         },
         {
           "name": "invalidCreateReturns400WithoutCallingService(String)[6]",
@@ -151,52 +151,52 @@
         {
           "name": "invalidCreateReturns400WithoutCallingService(String)[7]",
           "result": "passed",
-          "seconds": 0.026
+          "seconds": 0.022
         },
         {
           "name": "invalidCreateReturns400WithoutCallingService(String)[8]",
           "result": "passed",
-          "seconds": 0.025
+          "seconds": 0.024
         },
         {
           "name": "invalidCreateReturns400WithoutCallingService(String)[9]",
           "result": "passed",
-          "seconds": 0.027
+          "seconds": 0.022
         },
         {
           "name": "deleteReturns204WithEmptyBody",
           "result": "passed",
-          "seconds": 0.018
+          "seconds": 0.016
         },
         {
           "name": "createReturns201AndBindsRequest",
           "result": "passed",
-          "seconds": 0.032
+          "seconds": 0.023
         },
         {
           "name": "updateReturns200",
           "result": "passed",
-          "seconds": 0.02
+          "seconds": 0.019
         },
         {
           "name": "getCardReturns200",
           "result": "passed",
-          "seconds": 0.016
+          "seconds": 0.012
         },
         {
           "name": "expansionRoutesDelegateToService",
           "result": "passed",
-          "seconds": 0.029
+          "seconds": 0.021
         },
         {
           "name": "missingCardReturns404",
           "result": "passed",
-          "seconds": 0.029
+          "seconds": 0.018
         },
         {
           "name": "defaultPaginationUsesCardNumberAscending",
           "result": "passed",
-          "seconds": 0.046
+          "seconds": 0.015
         }
       ]
     },
@@ -206,12 +206,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.248,
+      "seconds": 0.175,
       "cases": [
         {
           "name": "createPersistsActualRequestFields",
           "result": "passed",
-          "seconds": 0.2
+          "seconds": 0.126
         },
         {
           "name": "blankSearchReturnsAllCards(String)[1]",
@@ -236,27 +236,27 @@
         {
           "name": "searchTrimsQueryBeforeRepositoryCall",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.005
         },
         {
           "name": "allExpansionsMapToResponses",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.003
         },
         {
           "name": "updateMissingCardDoesNotWrite",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.003
         },
         {
           "name": "updateMissingExpansionDoesNotMutateExistingCard",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.003
         },
         {
           "name": "expansionCardsMapToResponse",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.004
         },
         {
           "name": "emptyPagePreservesRequestedPageAndSort",
@@ -281,12 +281,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.03,
+      "seconds": 0.04,
       "cases": [
         {
           "name": "deleteCard_CardExists_DeletesSuccessfully",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.005
         },
         {
           "name": "getExpansionByCode_ValidCode_ReturnsExpansion",
@@ -296,7 +296,7 @@
         {
           "name": "createCard_ValidRequest_ReturnsCardResponse",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "name": "getCardsPaged_WithPagination_ReturnsPageResponse",
@@ -311,17 +311,17 @@
         {
           "name": "getAllCards_WithFilter_ReturnsFilteredCards",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.003
         },
         {
           "name": "getCardById_CardExists_ReturnsCard",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.004
         },
         {
           "name": "getExpansionByCode_NotFound_ThrowsException",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.004
         },
         {
           "name": "createCard_ExpansionNotFound_ThrowsException",
@@ -331,22 +331,22 @@
         {
           "name": "getAllCards_NoFilter_ReturnsAllCards",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.002
         },
         {
           "name": "searchCards_ValidQuery_ReturnsMatchingCards",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.002
         },
         {
           "name": "deleteCard_CardNotFound_ThrowsException",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.002
         },
         {
           "name": "updateCard_CardExists_ReturnsUpdatedCardResponse",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.001
         }
       ]
     },
@@ -356,12 +356,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 5.084,
+      "seconds": 4.554,
       "cases": [
         {
           "name": "auditCreationTimestampIsRetainedOnUpdate",
           "result": "passed",
-          "seconds": 0.177
+          "seconds": 0.159
         },
         {
           "name": "duplicateCardNumberWithinSameExpansionIsRejected",
@@ -371,17 +371,17 @@
         {
           "name": "sameCardNumberInDifferentExpansionsIsAllowed",
           "result": "passed",
-          "seconds": 0.043
+          "seconds": 0.044
         },
         {
           "name": "realSearchAndExpansionQueriesFindMatchingCards",
           "result": "passed",
-          "seconds": 0.051
+          "seconds": 0.048
         },
         {
           "name": "userProfileCascadesAndCanBeQueriedAfterReload",
           "result": "passed",
-          "seconds": 0.032
+          "seconds": 0.03
         },
         {
           "name": "removingUserProfileDeletesOrphan",
@@ -391,7 +391,7 @@
         {
           "name": "realSpecificationCombinesAllFiltersAndSortsBeforePaging",
           "result": "passed",
-          "seconds": 0.045
+          "seconds": 0.037
         }
       ]
     },
@@ -401,12 +401,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.068,
+      "seconds": 0.064,
       "cases": [
         {
           "name": "missingRewardProfileThrowsNotFound",
           "result": "passed",
-          "seconds": 0.056
+          "seconds": 0.052
         },
         {
           "name": "profileMapsMembershipAndContactFields",
@@ -416,7 +416,7 @@
         {
           "name": "absentProfileReturnsZeroPointsAndNullAddress",
           "result": "passed",
-          "seconds": 0.0
+          "seconds": 0.001
         },
         {
           "name": "missingUserCannotBeRead",
@@ -426,12 +426,12 @@
         {
           "name": "missingUserCannotUpdateAddress",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.001
         },
         {
           "name": "addressUpdatePreservesExistingMembershipAndPoints",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.002
         },
         {
           "name": "rewardPointsComeFromProfileRepository",
@@ -441,7 +441,7 @@
         {
           "name": "addressUpdateCreatesAndLinksMissingProfile",
           "result": "passed",
-          "seconds": 0.0
+          "seconds": 0.001
         }
       ]
     },
@@ -451,32 +451,32 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.127,
+      "seconds": 0.012,
       "cases": [
         {
           "name": "wholesaleStrategy_RoundingPrecisionHalfUp",
           "result": "passed",
-          "seconds": 0.054
+          "seconds": 0.002
         },
         {
           "name": "vipStrategy_RoundingPrecisionHalfUp",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.0
         },
         {
           "name": "calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[1]",
           "result": "passed",
-          "seconds": 0.009
+          "seconds": 0.0
         },
         {
           "name": "calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[2]",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.0
         },
         {
           "name": "calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[3]",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.0
         },
         {
           "name": "calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[4]",
@@ -491,22 +491,22 @@
         {
           "name": "calculateDiscount_NullTier_FallsBackToRegularStrategy",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.001
         },
         {
           "name": "discountService_NullConstructorList_DefaultsToEmptyListAndThrowsOnLookup",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.0
         },
         {
           "name": "discountService_EmptyStrategiesList_ThrowsIllegalStateException",
           "result": "passed",
-          "seconds": 0.0
+          "seconds": 0.001
         },
         {
           "name": "calculateDiscount_VeryLargeSubtotal_MaintainsPrecision",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.0
         }
       ]
     },
@@ -516,17 +516,17 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.008,
+      "seconds": 0.003,
       "cases": [
         {
           "name": "testRegularDiscountStrategy",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.0
         },
         {
           "name": "testDiscountServiceCalculation",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.0
         },
         {
           "name": "testWholesaleDiscountStrategy",
@@ -536,12 +536,12 @@
         {
           "name": "testVipDiscountStrategy",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.0
         },
         {
           "name": "testGetApplicableStrategy",
           "result": "passed",
-          "seconds": 0.0
+          "seconds": 0.001
         },
         {
           "name": "testDiscountServiceEdgeCases",
@@ -556,27 +556,27 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.247,
+      "seconds": 0.212,
       "cases": [
         {
           "name": "updateItemTradeStatus_InvalidStatus_Returns400",
           "result": "passed",
-          "seconds": 0.071
+          "seconds": 0.055
         },
         {
           "name": "updateItemTradeStatus_AccessDenied_Returns403",
           "result": "passed",
-          "seconds": 0.015
+          "seconds": 0.01
         },
         {
           "name": "transitionOrderStatus_MissingActionParam_Returns400",
           "result": "passed",
-          "seconds": 0.012
+          "seconds": 0.01
         },
         {
           "name": "transitionOrderStatus_OrderNotFound_Returns404",
           "result": "passed",
-          "seconds": 0.02
+          "seconds": 0.012
         },
         {
           "name": "transitionOrderStatus_InvalidStateTransition_Returns409",
@@ -586,32 +586,32 @@
         {
           "name": "transitionOrderStatus_Pay_Returns200",
           "result": "passed",
-          "seconds": 0.015
+          "seconds": 0.013
         },
         {
           "name": "updateItemTradeStatus_Success_Returns200",
           "result": "passed",
-          "seconds": 0.014
+          "seconds": 0.016
         },
         {
           "name": "updateItemTradeStatus_StateConflict_Returns409",
           "result": "passed",
-          "seconds": 0.016
+          "seconds": 0.013
         },
         {
           "name": "transitionOrderStatus_Ship_Returns200",
           "result": "passed",
-          "seconds": 0.014
+          "seconds": 0.01
         },
         {
           "name": "updateItemTradeStatus_NotFound_Returns404",
           "result": "passed",
-          "seconds": 0.013
+          "seconds": 0.012
         },
         {
           "name": "updateItemTradeStatus_Completed_Returns200",
           "result": "passed",
-          "seconds": 0.013
+          "seconds": 0.012
         },
         {
           "name": "updateItemTradeStatus_UnsupportedStatus_Returns400",
@@ -621,7 +621,7 @@
         {
           "name": "transitionOrderStatus_Cancel_Returns200",
           "result": "passed",
-          "seconds": 0.016
+          "seconds": 0.022
         }
       ]
     },
@@ -631,87 +631,87 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 2.538,
+      "seconds": 0.396,
       "cases": [
         {
           "name": "createOrder_MissingUserId_Returns400",
           "result": "passed",
-          "seconds": 2.095
+          "seconds": 0.069
         },
         {
           "name": "createOrder_EmptyItemsList_Returns400",
           "result": "passed",
-          "seconds": 0.036
+          "seconds": 0.026
         },
         {
           "name": "getOrderById_Success_Returns200",
           "result": "passed",
-          "seconds": 0.048
+          "seconds": 0.014
         },
         {
           "name": "createOrder_InvalidFriendCode_Returns400(String)[1]",
           "result": "passed",
-          "seconds": 0.032
+          "seconds": 0.027
         },
         {
           "name": "createOrder_InvalidFriendCode_Returns400(String)[2]",
           "result": "passed",
-          "seconds": 0.028
+          "seconds": 0.026
         },
         {
           "name": "createOrder_InvalidFriendCode_Returns400(String)[3]",
           "result": "passed",
-          "seconds": 0.024
+          "seconds": 0.023
         },
         {
           "name": "createOrder_InvalidFriendCode_Returns400(String)[4]",
           "result": "passed",
-          "seconds": 0.022
+          "seconds": 0.021
         },
         {
           "name": "createOrder_InvalidFriendCode_Returns400(String)[5]",
           "result": "passed",
-          "seconds": 0.024
+          "seconds": 0.022
         },
         {
           "name": "createOrder_InvalidFriendCode_Returns400(String)[6]",
           "result": "passed",
-          "seconds": 0.023
+          "seconds": 0.018
         },
         {
           "name": "createOrder_InvalidItemQuantity_Returns400",
           "result": "passed",
-          "seconds": 0.028
+          "seconds": 0.02
         },
         {
           "name": "getAllOrders_Success_Returns200",
           "result": "passed",
-          "seconds": 0.035
+          "seconds": 0.022
         },
         {
           "name": "createOrder_MissingInventoryId_Returns400",
           "result": "passed",
-          "seconds": 0.022
+          "seconds": 0.018
         },
         {
           "name": "createOrder_ContinuousDigitsFriendId_Returns201",
           "result": "passed",
-          "seconds": 0.025
+          "seconds": 0.023
         },
         {
           "name": "createOrder_InsufficientStock_Returns400",
           "result": "passed",
-          "seconds": 0.026
+          "seconds": 0.018
         },
         {
           "name": "getOrderById_NotFound_Returns404",
           "result": "passed",
-          "seconds": 0.013
+          "seconds": 0.011
         },
         {
           "name": "createOrder_Success_Returns201",
           "result": "passed",
-          "seconds": 0.045
+          "seconds": 0.025
         }
       ]
     },
@@ -721,27 +721,27 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 4.338,
+      "seconds": 0.724,
       "cases": [
         {
           "name": "findByOrderId_ReturnsAllItems",
           "result": "passed",
-          "seconds": 0.221
+          "seconds": 0.068
         },
         {
           "name": "orphanRemoval_DeletesItemWhenRemovedFromOrder",
           "result": "passed",
-          "seconds": 0.036
+          "seconds": 0.041
         },
         {
           "name": "findByUserId_ReturnsUserOrders",
           "result": "passed",
-          "seconds": 0.017
+          "seconds": 0.021
         },
         {
           "name": "orderAndItems_CascadePersistSuccessfully",
           "result": "passed",
-          "seconds": 0.017
+          "seconds": 0.015
         },
         {
           "name": "findByOrderCode_ReturnsMatchingOrder",
@@ -751,7 +751,7 @@
         {
           "name": "auditTimestamps_AutomaticallyCreated",
           "result": "passed",
-          "seconds": 0.009
+          "seconds": 0.007
         }
       ]
     },
@@ -761,27 +761,27 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.333,
+      "seconds": 0.264,
       "cases": [
         {
           "name": "createOrder_MapsCustomerNotesAndInGameName",
           "result": "passed",
-          "seconds": 0.295
+          "seconds": 0.232
         },
         {
           "name": "createOrder_UserWithoutProfile_DefaultsToRegularTier",
           "result": "passed",
-          "seconds": 0.008
+          "seconds": 0.006
         },
         {
           "name": "createOrder_WholesaleTier_Applies15PercentDiscount",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.006
         },
         {
           "name": "createOrder_MultiItem_DeductsStockAccurately",
           "result": "passed",
-          "seconds": 0.009
+          "seconds": 0.005
         },
         {
           "name": "createOrder_OrderCodeFormatting_GeneratesSequentialCodes",
@@ -791,7 +791,7 @@
         {
           "name": "createOrder_MultiItemInsufficientStockOnSecondItem_AbortsOrder",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.004
         }
       ]
     },
@@ -801,7 +801,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.096,
+      "seconds": 0.088,
       "cases": [
         {
           "name": "updateItemTradeStatus_TerminalOrder_ThrowsConflict",
@@ -811,12 +811,12 @@
         {
           "name": "updateItemTradeStatus_SkipSequence_FriendPendingToCompleted_ThrowsConflict",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "name": "createOrder_UserNotFound_ThrowsException",
           "result": "passed",
-          "seconds": 0.006
+          "seconds": 0.004
         },
         {
           "name": "getOrderById_Success",
@@ -836,7 +836,7 @@
         {
           "name": "updateItemTradeStatus_Success_TradeSent",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "name": "updateItemTradeStatus_MultiItem_RemainsShippingWhenPartiallyCompleted",
@@ -846,7 +846,7 @@
         {
           "name": "updateItemTradeStatus_Idempotent_ReturnsCurrentWithoutModification",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.003
         },
         {
           "name": "createOrder_InsufficientStock_ThrowsException",
@@ -856,12 +856,12 @@
         {
           "name": "updateItemTradeStatus_SkipSequence_UnassignedToTradeSent_ThrowsConflict",
           "result": "passed",
-          "seconds": 0.003
+          "seconds": 0.004
         },
         {
           "name": "updateItemTradeStatus_ItemNotFoundInOrder_ThrowsException",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "name": "updateItemTradeStatus_OrderNotFound_ThrowsException",
@@ -876,17 +876,17 @@
         {
           "name": "getAllOrders_ReturnsList",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.003
         },
         {
           "name": "updateItemTradeStatus_UnsupportedStatus_ThrowsException",
           "result": "passed",
-          "seconds": 0.003
+          "seconds": 0.004
         },
         {
           "name": "updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompletedViaStatePattern",
           "result": "passed",
-          "seconds": 0.011
+          "seconds": 0.01
         },
         {
           "name": "updateItemTradeStatus_ReverseSequence_CompletedToTradeSent_ThrowsConflict",
@@ -901,7 +901,7 @@
         {
           "name": "updateItemTradeStatus_UnassignedAccount_ThrowsConflict",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.003
         }
       ]
     },
@@ -911,22 +911,22 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.033,
+      "seconds": 0.029,
       "cases": [
         {
           "name": "handleInvalidOrderState_Returns409",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.001
         },
         {
           "name": "handleInsufficientStock_Returns400",
           "result": "passed",
-          "seconds": 0.0
+          "seconds": 0.001
         },
         {
           "name": "handleTypeMismatch_Returns400",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.002
         },
         {
           "name": "handleTradeStateConflict_Returns409",
@@ -951,7 +951,7 @@
         {
           "name": "handleMissingParameter_Returns400",
           "result": "passed",
-          "seconds": 0.003
+          "seconds": 0.001
         },
         {
           "name": "handleAccessDenied_Returns403",
@@ -971,12 +971,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.348,
+      "seconds": 0.377,
       "cases": [
         {
           "name": "autoMatchOrderItem_AlreadyCompleted_Returns409",
           "result": "passed",
-          "seconds": 0.135
+          "seconds": 0.128
         },
         {
           "name": "getItemRecommendation_NotFound_Returns404",
@@ -986,17 +986,17 @@
         {
           "name": "autoMatchOrder_NotFound_Returns404",
           "result": "passed",
-          "seconds": 0.015
+          "seconds": 0.022
         },
         {
           "name": "getItemRecommendation_Success_Returns200",
           "result": "passed",
-          "seconds": 0.02
+          "seconds": 0.037
         },
         {
           "name": "autoMatchOrder_Success_Returns200",
           "result": "passed",
-          "seconds": 0.036
+          "seconds": 0.051
         },
         {
           "name": "assignAccountToOrderItem_Success_Returns200",
@@ -1006,22 +1006,22 @@
         {
           "name": "assignAccountToOrderItem_MissingAccountId_Returns400",
           "result": "passed",
-          "seconds": 0.014
+          "seconds": 0.012
         },
         {
           "name": "autoMatchOrderItem_Success_Returns200",
           "result": "passed",
-          "seconds": 0.016
+          "seconds": 0.015
         },
         {
           "name": "getOrderRecommendations_Success_Returns200",
           "result": "passed",
-          "seconds": 0.019
+          "seconds": 0.014
         },
         {
           "name": "autoMatchOrderItem_InsufficientStock_Returns400",
           "result": "passed",
-          "seconds": 0.015
+          "seconds": 0.014
         },
         {
           "name": "assignAccountToOrderItem_AccountNotReady_Returns409",
@@ -1031,12 +1031,12 @@
         {
           "name": "getOrderRecommendations_NotFound_Returns404",
           "result": "passed",
-          "seconds": 0.012
+          "seconds": 0.013
         },
         {
           "name": "assignAccountToOrderItem_AccountNotFound_Returns404",
           "result": "passed",
-          "seconds": 0.013
+          "seconds": 0.012
         }
       ]
     },
@@ -1046,17 +1046,17 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.003,
+      "seconds": 0.004,
       "cases": [
         {
           "name": "testBuilderAndGetters",
           "result": "passed",
-          "seconds": 0.0
+          "seconds": 0.001
         },
         {
           "name": "testDefaultAlternativeCandidates",
           "result": "passed",
-          "seconds": 0.0
+          "seconds": 0.001
         },
         {
           "name": "testSetters",
@@ -1071,22 +1071,22 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.028,
+      "seconds": 0.02,
       "cases": [
         {
           "name": "testAutoMatchOrderItemInsufficientStock",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "name": "testAutoMatchOrderItemSuccess",
           "result": "passed",
-          "seconds": 0.009
+          "seconds": 0.004
         },
         {
           "name": "testAutoMatchOrderItemNoReadyAccounts",
           "result": "passed",
-          "seconds": 0.006
+          "seconds": 0.003
         },
         {
           "name": "testAutoMatchOrderItemGuardAgainstReassignment",
@@ -1101,12 +1101,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.01,
+      "seconds": 0.009,
       "cases": [
         {
           "name": "testAutoMatchOrderSuccess",
           "result": "passed",
-          "seconds": 0.009
+          "seconds": 0.007
         }
       ]
     },
@@ -1116,12 +1116,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.198,
+      "seconds": 0.162,
       "cases": [
         {
           "name": "testManualAssignRejectWhenCompleted",
           "result": "passed",
-          "seconds": 0.183
+          "seconds": 0.149
         },
         {
           "name": "testManualAssignAccountNotReady",
@@ -1131,7 +1131,7 @@
         {
           "name": "testManualAssignAccountSuccess",
           "result": "passed",
-          "seconds": 0.009
+          "seconds": 0.008
         }
       ]
     },
@@ -1141,27 +1141,27 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.02,
+      "seconds": 0.024,
       "cases": [
         {
           "name": "testGetRecommendationForItem",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "name": "testGetRecommendationsNoInventory",
           "result": "passed",
-          "seconds": 0.006
+          "seconds": 0.005
         },
         {
           "name": "testGetRecommendationsOnlyBusyAccount",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.005
         },
         {
           "name": "testGetRecommendationsRanksBestReadyAccount",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.006
         }
       ]
     },
@@ -1171,7 +1171,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.261,
+      "seconds": 0.221,
       "cases": []
     },
     {
@@ -1180,27 +1180,27 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.007,
+      "seconds": 0.036,
       "cases": [
         {
           "name": "testCancelFromPending",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.007
         },
         {
           "name": "testCancelFromPaidRestoresStock",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.005
         },
         {
           "name": "testCancelFromPaid",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.003
         },
         {
           "name": "testCancelRestoresStock",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.009
         }
       ]
     },
@@ -1210,22 +1210,22 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.009,
+      "seconds": 0.022,
       "cases": [
         {
           "name": "testRestoreStockSkipsInvalidItems",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.012
         },
         {
           "name": "testRestoreStockNullContextAndOrder",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.003
         },
         {
           "name": "testDefaultConstructor",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.003
         }
       ]
     },
@@ -1235,7 +1235,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.009,
+      "seconds": 0.007,
       "cases": [
         {
           "name": "testExecuteActionValidStrings",
@@ -1245,7 +1245,7 @@
         {
           "name": "testExecuteActionInvalidStrings",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.003
         }
       ]
     },
@@ -1255,7 +1255,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.006,
+      "seconds": 0.012,
       "cases": [
         {
           "name": "testFromOrderNullOrder",
@@ -1265,7 +1265,7 @@
         {
           "name": "testFromOrderStateMapping",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.002
         }
       ]
     },
@@ -1275,12 +1275,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.002,
+      "seconds": 0.008,
       "cases": [
         {
           "name": "testFullOrderLifecycle",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.003
         }
       ]
     },
@@ -1290,12 +1290,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.018,
+      "seconds": 0.025,
       "cases": [
         {
           "name": "testIllegalActionsInPending",
           "result": "passed",
-          "seconds": 0.008
+          "seconds": 0.005
         },
         {
           "name": "testIllegalActionsInPaid",
@@ -1305,7 +1305,7 @@
         {
           "name": "testIllegalActionsInShipping",
           "result": "passed",
-          "seconds": 0.003
+          "seconds": 0.005
         }
       ]
     },
@@ -1315,7 +1315,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.007,
+      "seconds": 0.015,
       "cases": [
         {
           "name": "testConstructors",
@@ -1325,12 +1325,12 @@
         {
           "name": "testSetStateSyncsOrder",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.005
         },
         {
           "name": "testSafeDelegationWhenStateIsNull",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.002
         }
       ]
     },
@@ -1340,12 +1340,12 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.007,
+      "seconds": 0.064,
       "cases": [
         {
           "name": "testCancelRejectedWhileShipping",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.05
         }
       ]
     },
@@ -1355,7 +1355,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.033,
+      "seconds": 0.023,
       "cases": [
         {
           "name": "testCancelledStateIsTerminal",
@@ -1365,7 +1365,7 @@
         {
           "name": "testCompletedStateIsTerminal",
           "result": "passed",
-          "seconds": 0.02
+          "seconds": 0.008
         }
       ]
     },
@@ -1375,7 +1375,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.123,
+      "seconds": 0.256,
       "cases": []
     },
     {
@@ -1384,32 +1384,32 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.045,
+      "seconds": 0.089,
       "cases": [
         {
           "name": "onOrderPlaced_WithMultipleItems_ShouldCheckAllCards",
           "result": "passed",
-          "seconds": 0.006
+          "seconds": 0.02
         },
         {
           "name": "onOrderPlaced_WhenStockEqualsThreshold_ShouldTriggerWarning",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.005
         },
         {
           "name": "onOrderPlaced_WhenEventIsNull_ShouldReturnSafely",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.005
         },
         {
           "name": "onOrderPlaced_WhenItemsNullOrEmpty_ShouldReturnSafely",
           "result": "passed",
-          "seconds": 0.008
+          "seconds": 0.004
         },
         {
           "name": "onOrderPlaced_WhenStockBelowThreshold_ShouldQueryStockAndWarn",
           "result": "passed",
-          "seconds": 0.006
+          "seconds": 0.007
         },
         {
           "name": "onOrderPlaced_WhenStockAboveThreshold_ShouldLogNormal",
@@ -1429,32 +1429,32 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.107,
+      "seconds": 0.068,
       "cases": [
         {
           "name": "createAccount_Success",
           "result": "passed",
-          "seconds": 0.024
+          "seconds": 0.031
         },
         {
           "name": "getAccountById_Success",
           "result": "passed",
-          "seconds": 0.029
+          "seconds": 0.011
         },
         {
           "name": "getAccountCards_Success",
           "result": "passed",
-          "seconds": 0.024
+          "seconds": 0.01
         },
         {
           "name": "updateTradeStatus_Success",
           "result": "passed",
-          "seconds": 0.012
+          "seconds": 0.005
         },
         {
           "name": "createAccount_WhenDuplicateCode_ShouldThrowException",
           "result": "passed",
-          "seconds": 0.007
+          "seconds": 0.004
         }
       ]
     },
@@ -1464,27 +1464,27 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.034,
+      "seconds": 0.02,
       "cases": [
         {
           "name": "addPulledCard_WhenAccountNotFound_ShouldThrowException",
           "result": "passed",
-          "seconds": 0.015
+          "seconds": 0.008
         },
         {
           "name": "addPulledCard_WhenExistingInventory_ShouldIncrementStock",
           "result": "passed",
-          "seconds": 0.008
+          "seconds": 0.004
         },
         {
           "name": "addPulledCard_WhenNewInventory_ShouldCreateNewRecord",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "name": "addPulledCard_WhenCardNotFound_ShouldThrowException",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.002
         }
       ]
     },
@@ -1494,8 +1494,38 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.148,
+      "seconds": 0.094,
       "cases": []
+    },
+    {
+      "suite": "com.pokevault.modules.web.PlatformEndpointsTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 6.219,
+      "cases": [
+        {
+          "name": "actuatorHealth_IsPublicAndUp",
+          "result": "passed",
+          "seconds": 0.065
+        },
+        {
+          "name": "openApiDocs_DescribeAllModules",
+          "result": "passed",
+          "seconds": 0.654
+        },
+        {
+          "name": "swaggerUi_IsPublic",
+          "result": "passed",
+          "seconds": 0.038
+        },
+        {
+          "name": "staticAssets_ArePublic",
+          "result": "passed",
+          "seconds": 0.112
+        }
+      ]
     },
     {
       "suite": "com.pokevault.modules.web.RegistrationServiceTest",
@@ -1503,22 +1533,22 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.154,
+      "seconds": 0.141,
       "cases": [
         {
           "name": "registerCustomer_WhenUsernameTaken_ShouldThrow",
           "result": "passed",
-          "seconds": 0.009
+          "seconds": 0.005
         },
         {
           "name": "registerCustomer_WhenValid_ShouldSaveCustomerWithHashedPassword",
           "result": "passed",
-          "seconds": 0.14
+          "seconds": 0.128
         },
         {
           "name": "registerCustomer_WhenEmailRegistered_ShouldThrow",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.006
         }
       ]
     },
@@ -1528,34 +1558,223 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.014,
+      "seconds": 0.021,
       "cases": [
         {
           "name": "updateMembershipTier_WhenCustomer_ShouldChangeTier",
           "result": "passed",
-          "seconds": 0.003
+          "seconds": 0.005
         },
         {
           "name": "updateSellingPrice_WhenNegative_ShouldReject",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.004
         },
         {
           "name": "updateSellingPrice_WhenValid_ShouldSaveNewPrice",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.003
         },
         {
           "name": "updateSellingPrice_WhenMissing_ShouldThrowNotFound",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.003
         },
         {
           "name": "updateMembershipTier_WhenNotCustomer_ShouldReject",
           "result": "passed",
-          "seconds": 0.002
+          "seconds": 0.003
         }
       ]
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.229,
+      "cases": [
+        {
+          "name": "customer_SeesMyOrdersAndSignOut_ButNotStaffMenu",
+          "result": "passed",
+          "seconds": 0.04
+        },
+        {
+          "name": "guest_CanBrowsePublicPages_AndSeesSignInOnly",
+          "result": "passed",
+          "seconds": 0.069
+        },
+        {
+          "name": "staff_SeesStaffMenu_AndCsrfProtectedSignOut",
+          "result": "passed",
+          "seconds": 0.023
+        },
+        {
+          "name": "guest_IsRedirectedToLogin_FromProtectedPages(String)[1]",
+          "result": "passed",
+          "seconds": 0.008
+        },
+        {
+          "name": "guest_IsRedirectedToLogin_FromProtectedPages(String)[2]",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "guest_IsRedirectedToLogin_FromProtectedPages(String)[3]",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "guest_IsRedirectedToLogin_FromProtectedPages(String)[4]",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "customer_IsForbidden_FromStaffPages(String)[1]",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "customer_IsForbidden_FromStaffPages(String)[2]",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "customer_IsForbidden_FromStaffPages(String)[3]",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "admin_SeesSwaggerLink",
+          "result": "passed",
+          "seconds": 0.044
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest$CardGallery",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.682,
+      "cases": [
+        {
+          "name": "filterByElement_TreatsTrainerAsColorless",
+          "result": "passed",
+          "seconds": 0.161
+        },
+        {
+          "name": "price_ComesFromCheapestInventoryWithStock",
+          "result": "passed",
+          "seconds": 0.063
+        },
+        {
+          "name": "imageUrl_UsesBundledImageOrCardBack",
+          "result": "passed",
+          "seconds": 0.057
+        },
+        {
+          "name": "filterPillUrls_KeepOtherFiltersAndSearch",
+          "result": "passed",
+          "seconds": 0.064
+        },
+        {
+          "name": "filtersCombine",
+          "result": "passed",
+          "seconds": 0.21
+        },
+        {
+          "name": "showsOnlyCardsInStock",
+          "result": "passed",
+          "seconds": 0.055
+        },
+        {
+          "name": "unknownFilterValue_IsIgnored",
+          "result": "passed",
+          "seconds": 0.056
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest$LoginPage",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.276,
+      "cases": [
+        {
+          "name": "loginForm_PostsUsernamePasswordWithCsrf",
+          "result": "passed",
+          "seconds": 0.046
+        },
+        {
+          "name": "formLogin_RedirectsOnSuccessAndFailure",
+          "result": "passed",
+          "seconds": 0.182
+        },
+        {
+          "name": "loginPage_WithErrorParam_ShowsErrorBox",
+          "result": "passed",
+          "seconds": 0.008
+        },
+        {
+          "name": "loginPage_WithLogoutParam_ShowsLogoutBox",
+          "result": "passed",
+          "seconds": 0.009
+        },
+        {
+          "name": "signOut_RedirectsToLoginWithLogoutMessage",
+          "result": "passed",
+          "seconds": 0.016
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest$OtherPages",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 1.376,
+      "cases": [
+        {
+          "name": "inventory_FlagsLowAndOutOfStock",
+          "result": "passed",
+          "seconds": 0.484
+        },
+        {
+          "name": "dashboard_FeaturedCards_InStockOnly_MaxSix",
+          "result": "passed",
+          "seconds": 0.124
+        },
+        {
+          "name": "myOrders_ShowsOnlySignedInUsersOrders_NewestFirst",
+          "result": "passed",
+          "seconds": 0.072
+        },
+        {
+          "name": "accounts_CountsStatusesAndCardsPerAccount",
+          "result": "passed",
+          "seconds": 0.081
+        },
+        {
+          "name": "inventory_BookingCustomers_OnlyCustomers_GuestFirst",
+          "result": "passed",
+          "seconds": 0.035
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest",
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 2.581,
+      "cases": []
     }
   ]
 }
