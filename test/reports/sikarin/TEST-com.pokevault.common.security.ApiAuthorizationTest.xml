@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.common.security.ApiAuthorizationTest" time="10.224" tests="36" errors="0" skipped="0" failures="0">
-  <testcase name="customerCanReadOwnOrder" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.248">
-    <system-out>17:48:12.634 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.pokevault.common.security.ApiAuthorizationTest]: ApiAuthorizationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-17:48:12.776 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.pokevault.PokevaultApplication for test class com.pokevault.common.security.ApiAuthorizationTest
-17:48:12.902 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.common.security.ApiAuthorizationTest" time="16.748" tests="36" errors="0" skipped="0" failures="0">
+  <testcase name="customerCanReadOwnOrder" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.386">
+    <system-out>19:05:41.507 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.pokevault.common.security.ApiAuthorizationTest]: ApiAuthorizationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+19:05:41.654 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.pokevault.PokevaultApplication for test class com.pokevault.common.security.ApiAuthorizationTest
+19:05:41.774 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -14,18 +14,18 @@
 
  :: Spring Boot ::                (v3.4.3)
 
-2026-10-09T17:48:13.210+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] c.p.c.security.ApiAuthorizationTest      : Starting ApiAuthorizationTest using Java 21.0.10 with PID 40624 (started by User in C:\Users\User\Downloads\PokéVault_Commerce)
-2026-10-09T17:48:13.211+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] c.p.c.security.ApiAuthorizationTest      : The following 1 profile is active: "security-test"
-2026-10-09T17:48:14.251+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-10-09T17:48:14.345+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 85 ms. Found 8 JPA repository interfaces.
-2026-10-09T17:48:15.691+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-10-09T17:48:15.751+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.8.Final
-2026-10-09T17:48:15.791+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-10-09T17:48:15.908+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-10-09T17:48:15.934+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-10-09T17:48:16.090+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:security-tests user=SA
-2026-10-09T17:48:16.092+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-10-09T17:48:16.139+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-10-09T19:05:42.059+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] c.p.c.security.ApiAuthorizationTest      : Starting ApiAuthorizationTest using Java 21.0.10 with PID 30040 (started by User in C:\Users\User\Downloads\PokéVault_Commerce)
+2026-10-09T19:05:42.060+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] c.p.c.security.ApiAuthorizationTest      : The following 1 profile is active: "security-test"
+2026-10-09T19:05:43.140+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-09T19:05:43.242+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 94 ms. Found 8 JPA repository interfaces.
+2026-10-09T19:05:45.829+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-10-09T19:05:45.915+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.8.Final
+2026-10-09T19:05:45.962+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-10-09T19:05:46.136+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-09T19:05:46.178+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-09T19:05:46.412+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:security-tests user=SA
+2026-10-09T19:05:46.415+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-09T19:05:46.487+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
 	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
 	Database driver: undefined/unknown
 	Database version: 2.3.232
@@ -33,18 +33,18 @@
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2026-10-09T17:48:16.975+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-10-09T17:48:17.032+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-10-09T17:48:17.683+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-10-09T17:48:18.509+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-10-09T17:48:18.546+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
-2026-10-09T17:48:18.548+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
-2026-10-09T17:48:18.886+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
-2026-10-09T17:48:19.487+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:48:19.487+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:48:19.489+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
-2026-10-09T17:48:19.552+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] c.p.c.security.ApiAuthorizationTest      : Started ApiAuthorizationTest in 6.66 seconds (process running for 7.928)
-2026-10-09T17:48:19.796+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] c.p.m.w.s.GuestCustomerInitializer       : Created shared guest customer [ID: 1]: username=guest_fb
+2026-10-09T19:05:48.098+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-09T19:05:48.192+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-09T19:05:50.319+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-09T19:05:51.902+07:00  WARN 30040 --- [tcg-pocket-inventory] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-10-09T19:05:52.038+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-10-09T19:05:52.040+07:00  WARN 30040 --- [tcg-pocket-inventory] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2026-10-09T19:05:52.771+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-09T19:05:53.845+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-10-09T19:05:53.846+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T19:05:53.847+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-10-09T19:05:53.956+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] c.p.c.security.ApiAuthorizationTest      : Started ApiAuthorizationTest in 12.189 seconds (process running for 13.377)
+2026-10-09T19:05:54.345+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] c.p.m.w.s.GuestCustomerInitializer       : Created shared guest customer [ID: 1]: username=guest_fb
 </system-out>
     <system-err>Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build what is described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3
 WARNING: A Java agent has been loaded dynamically (C:\Users\User\.m2\repository\net\bytebuddy\byte-buddy-agent\1.15.11\byte-buddy-agent-1.15.11.jar)
@@ -53,48 +53,48 @@ WARNING: If a serviceability tool is not in use, please run with -Djdk.instrumen
 WARNING: Dynamic loading of agents will be disallowed by default in a future release
 </system-err>
   </testcase>
-  <testcase name="customerCanBookForSelf" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.154" />
-  <testcase name="customerCannotReadOtherCustomersOrderOrReceiveItsData" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.084">
-    <system-out>2026-10-09T17:48:20.288+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Access denied (403): Access Denied at path /api/v1/orders/11
+  <testcase name="customerCanBookForSelf" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.309" />
+  <testcase name="customerCannotReadOtherCustomersOrderOrReceiveItsData" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.114">
+    <system-out>2026-10-09T19:05:55.163+07:00  WARN 30040 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Access denied (403): Access Denied at path /api/v1/orders/11
 </system-out>
   </testcase>
-  <testcase name="staffAndAdminCanBookForCustomersReadOrdersAndManageCards(String)[1]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.097" />
-  <testcase name="staffAndAdminCanBookForCustomersReadOrdersAndManageCards(String)[2]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.085" />
-  <testcase name="browserStillRedirectsToLoginAndFormLoginUsesBcrypt" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.203" />
-  <testcase name="customerCannotUseStoreManagementApis(String)[1]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.066" />
-  <testcase name="customerCannotUseStoreManagementApis(String)[2]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.067" />
-  <testcase name="customerCannotUseStoreManagementApis(String)[3]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.065" />
-  <testcase name="customerCannotUseStoreManagementApis(String)[4]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.068" />
-  <testcase name="customerCannotUseStoreManagementApis(String)[5]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.065" />
-  <testcase name="customerCannotUseStoreManagementApis(String)[6]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.066" />
-  <testcase name="customerCannotUseStoreManagementApis(String)[7]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.066" />
-  <testcase name="customerCannotUseStoreManagementApis(String)[8]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.066" />
-  <testcase name="customerCannotUseStoreManagementApis(String)[9]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.066" />
-  <testcase name="customerCannotUseStoreManagementApis(String)[10]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.066" />
-  <testcase name="customerCannotUseStoreManagementApis(String)[11]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.065" />
-  <testcase name="customerCannotUseStoreManagementApis(String)[12]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.064" />
-  <testcase name="customerCannotUseStoreManagementApis(String)[13]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.065" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[1]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.066" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[2]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.066" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[3]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.062" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[4]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.068" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[5]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.064" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[6]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.066" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[7]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.066" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[8]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.064" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[9]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.064" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[10]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.065" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[11]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.066" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[12]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.067" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[13]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.066" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[14]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.066" />
-  <testcase name="anonymousApiRequestsReceiveJson401(String)[15]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.064" />
-  <testcase name="customerCannotSpoofAnotherCustomerId" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.069">
-    <system-out>2026-10-09T17:48:22.629+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Access denied (403): Access Denied at path /api/v1/orders
+  <testcase name="staffAndAdminCanBookForCustomersReadOrdersAndManageCards(String)[1]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.133" />
+  <testcase name="staffAndAdminCanBookForCustomersReadOrdersAndManageCards(String)[2]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.146" />
+  <testcase name="browserStillRedirectsToLoginAndFormLoginUsesBcrypt" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.235" />
+  <testcase name="customerCannotUseStoreManagementApis(String)[1]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.086" />
+  <testcase name="customerCannotUseStoreManagementApis(String)[2]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.074" />
+  <testcase name="customerCannotUseStoreManagementApis(String)[3]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.082" />
+  <testcase name="customerCannotUseStoreManagementApis(String)[4]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.076" />
+  <testcase name="customerCannotUseStoreManagementApis(String)[5]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.076" />
+  <testcase name="customerCannotUseStoreManagementApis(String)[6]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.076" />
+  <testcase name="customerCannotUseStoreManagementApis(String)[7]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.076" />
+  <testcase name="customerCannotUseStoreManagementApis(String)[8]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.074" />
+  <testcase name="customerCannotUseStoreManagementApis(String)[9]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.075" />
+  <testcase name="customerCannotUseStoreManagementApis(String)[10]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.075" />
+  <testcase name="customerCannotUseStoreManagementApis(String)[11]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.076" />
+  <testcase name="customerCannotUseStoreManagementApis(String)[12]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.077" />
+  <testcase name="customerCannotUseStoreManagementApis(String)[13]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.074" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[1]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.074" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[2]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.074" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[3]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.074" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[4]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.075" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[5]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.072" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[6]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.076" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[7]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.074" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[8]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.074" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[9]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.075" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[10]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.073" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[11]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.075" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[12]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.083" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[13]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.075" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[14]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.084" />
+  <testcase name="anonymousApiRequestsReceiveJson401(String)[15]" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.077" />
+  <testcase name="customerCannotSpoofAnotherCustomerId" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.084">
+    <system-out>2026-10-09T19:05:57.982+07:00  WARN 30040 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Access denied (403): Access Denied at path /api/v1/orders
 </system-out>
   </testcase>
-  <testcase name="catalogAndRegistrationRemainPublic" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.084">
-    <system-out>2026-10-09T17:48:22.709+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/auth/register: {password=กรุณากรอกรหัสผ่าน, email=กรุณากรอกอีเมล, facebookName=กรุณากรอกชื่อ Facebook, username=กรุณากรอกชื่อผู้ใช้}
+  <testcase name="catalogAndRegistrationRemainPublic" classname="com.pokevault.common.security.ApiAuthorizationTest" time="0.123">
+    <system-out>2026-10-09T19:05:58.101+07:00  WARN 30040 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/auth/register: {password=กรุณากรอกรหัสผ่าน, email=กรุณากรอกอีเมล, facebookName=กรุณากรอกชื่อ Facebook, username=กรุณากรอกชื่อผู้ใช้}
 </system-out>
   </testcase>
 </testsuite>
