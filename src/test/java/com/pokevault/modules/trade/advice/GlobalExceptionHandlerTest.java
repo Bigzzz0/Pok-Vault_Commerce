@@ -76,6 +76,21 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("400: MissingServletRequestParameterException เมื่อไม่ได้ระบุ parameter ที่จำเป็น")
+    void handleMissingParameter_Returns400() {
+        org.springframework.web.bind.MissingServletRequestParameterException ex =
+                new org.springframework.web.bind.MissingServletRequestParameterException("accountId", "Long");
+
+        ResponseEntity<ErrorResponse> response = exceptionHandler.handleMissingParameter(ex, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getStatus()).isEqualTo(400);
+        assertThat(response.getBody().getError()).isEqualTo("MISSING_PARAMETER");
+        assertThat(response.getBody().getMessage()).contains("Required parameter 'accountId' is missing");
+    }
+
+    @Test
     @DisplayName("400: IllegalArgumentException เมื่อส่งสถานะที่ไม่รองรับ เช่น UNASSIGNED หรือ FRIEND_PENDING")
     void handleIllegalArgument_Returns400() {
         IllegalArgumentException ex = new IllegalArgumentException("Unsupported trade status: UNASSIGNED");

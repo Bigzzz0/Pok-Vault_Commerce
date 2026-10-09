@@ -1,10 +1,13 @@
 package com.pokevault.modules.order;
 
+import com.pokevault.common.exception.InvalidOrderStateException;
 import com.pokevault.common.exception.ResourceNotFoundException;
 import com.pokevault.common.exception.TradeStateConflictException;
+import com.pokevault.domain.enums.OrderStatus;
 import com.pokevault.domain.enums.TradeFulfillmentStatus;
 import com.pokevault.modules.order.controller.OrderApiController;
 import com.pokevault.modules.order.dto.OrderItemResponse;
+import com.pokevault.modules.order.dto.OrderResponse;
 import com.pokevault.modules.order.service.OrderService;
 import com.pokevault.modules.trade.advice.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +22,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -135,5 +139,100 @@ class OrderApiControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.error").value("STATE_CONFLICT"));
+    }
+
+    // ==========================================
+    // State Pattern Transition Endpoint Tests
+    // ==========================================
+
+    @Test
+    @DisplayName("200 OK: PATCH /api/v1/orders/{id}/status?action=pay สำเร็จ")
+    void transitionOrderStatus_Pay_Returns200() throws Exception {
+        OrderResponse response = OrderResponse.builder()
+                .id(1L)
+                .orderCode("ORD-2026-001")
+                .orderStatus(OrderStatus.PAID)
+                .build();
+
+        when(orderService.transitionOrderStatus(1L, "pay")).thenReturn(response);
+
+        mockMvc.perform(patch("/api/v1/orders/1/status")
+                        .param("action", "pay"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.orderStatus").value("PAID"));
+    }
+
+    @Test
+    @DisplayName("200 OK: PATCH /api/v1/orders/{id}/status?action=ship สำเร็จ")
+    void transitionOrderStatus_Ship_Returns200() throws Exception {
+        OrderResponse response = OrderResponse.builder()
+                .id(1L)
+                .orderCode("ORD-2026-001")
+                .orderStatus(OrderStatus.SHIPPING)
+                .build();
+
+        when(orderService.transitionOrderStatus(1L, "ship")).thenReturn(response);
+
+        mockMvc.perform(patch("/api/v1/orders/1/status")
+                        .param("action", "ship"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.orderStatus").value("SHIPPING"));
+    }
+
+    @Test
+    @DisplayName("200 OK: PATCH /api/v1/orders/{id}/status?action=cancel สำเร็จ")
+    void transitionOrderStatus_Cancel_Returns200() throws Exception {
+        OrderResponse response = OrderResponse.builder()
+                .id(1L)
+                .orderCode("ORD-2026-001")
+                .orderStatus(OrderStatus.CANCELLED)
+                .build();
+
+        when(orderService.transitionOrderStatus(1L, "cancel")).thenReturn(response);
+
+        mockMvc.perform(patch("/api/v1/orders/1/status")
+                        .param("action", "cancel"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.orderStatus").value("CANCELLED"));
+    }
+
+    @Test
+    @DisplayName("409 Conflict: PATCH /api/v1/orders/{id}/status ขัดต่อกฎสถานะ (เช่น ยกเลิกระหว่าง SHIPPING)")
+    void transitionOrderStatus_InvalidStateTransition_Returns409() throws Exception {
+        when(orderService.transitionOrderStatus(1L, "cancel"))
+                .thenThrow(new InvalidOrderStateException("Cannot cancel order while cards are being shipped in game"));
+
+        mockMvc.perform(patch("/api/v1/orders/1/status")
+                        .param("action", "cancel"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.error").value("STATE_CONFLICT"))
+                .andExpect(jsonPath("$.message").value("Cannot cancel order while cards are being shipped in game"));
+    }
+
+    @Test
+    @DisplayName("404 Not Found: PATCH /api/v1/orders/{id}/status เมื่อไม่พบออเดอร์")
+    void transitionOrderStatus_OrderNotFound_Returns404() throws Exception {
+        when(orderService.transitionOrderStatus(999L, "pay"))
+                .thenThrow(new ResourceNotFoundException("Order", "id", 999L));
+
+        mockMvc.perform(patch("/api/v1/orders/999/status")
+                        .param("action", "pay"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("NOT_FOUND"));
+    }
+
+    @Test
+    @DisplayName("400 Bad Request: PATCH /api/v1/orders/{id}/status ขาด parameter action")
+    void transitionOrderStatus_MissingActionParam_Returns400() throws Exception {
+        mockMvc.perform(patch("/api/v1/orders/1/status"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("MISSING_PARAMETER"))
+                .andExpect(jsonPath("$.message").value("Required parameter 'action' is missing"));
     }
 }

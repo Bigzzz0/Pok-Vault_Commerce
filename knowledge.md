@@ -759,3 +759,28 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
 * **แนวทางการตอบ (Core Rationale)**:
   > *"ผมจะประยุกต์ใช้หลัก **Open/Closed Principle (OCP)** และ **Dependency Inversion Principle (DIP)** โดยสกัด Interface ชื่อ `AccountMatchingStrategy` ออกมา แล้วย้ายตรรกะการเลือกไอดีไปไว้ในคลาส เช่น `MaxStockMatchingStrategy` และ `RoundRobinMatchingStrategy` จากนั้นใน `TradeMatchingServiceImpl` จะเรียกใช้งานผ่าน Interface แทนครับ ทำให้เมื่อต้องการเพิ่มกลยุทธ์ใหม่ เราสามารถสร้างคลาสใหม่ได้ทันทีโดยไม่ต้องแก้ไขโค้ดใน Service เดิมครับ"*
 
+---
+
+## 🧪 7. สรุปชุดการทดสอบ JUnit 5 Test Suites ทั้งหมดของสมาชิกคนที่ 4 (นายแทนคุณ พันธ์นิกุล)
+
+สมาชิกคนที่ 4 ได้พัฒนาชุด Unit Tests สำหรับทดสอบทุกคลาส ทุกอินเทอร์เฟซ และทุกเลเยอร์ที่รับผิดชอบ รวมทั้งสิ้น **7 Test Classes (74 Test Scenarios / 100% Passed)**:
+
+| # | Test Suite Class | แพ็กเกจ / Path | ขอบเขตการทดสอบ (Coverage & Responsibility) | จำนวนเคส |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | **`TradeMatchingApiControllerTest`** | `com.pokevault.modules.trade.controller` | ทดสอบ MockMvc ครบทั้ง 5 REST API Endpoints ของระบบจับคู่เทรดการ์ด พร้อมการแปลง HTTP Status (200, 400, 404, 409) ผ่าน `GlobalExceptionHandler` | 13 เคส |
+| 2 | **`OrderApiControllerTest`** | `com.pokevault.modules.order` | ทดสอบ MockMvc สำหรับ State Transition (`PATCH /status?action=...`) และ Trade Status Lifecycle (`PATCH /trade-status?status=...`) พร้อมตรวจทาน Role Security (403) | 13 เคส |
+| 3 | **`TradeMatchingServiceTest`** | `com.pokevault.modules.trade.service` | ทดสอบอัลกอริทึม Auto-Match Stock-Maximization, การสร้าง Recommendation 2 ระดับ (Best Match + Alternatives), และการจับคู่บัญชีแบบ Manual | 12 เคส (Nested) |
+| 4 | **`OrderStateTest`** | `com.pokevault.modules.trade.state` | ทดสอบ GoF State Machine ครบทุก Transition (`PENDING` ➔ `PAID` ➔ `SHIPPING` ➔ `COMPLETED` / `CANCELLED`), Anti-Fraud Guard ป้องกันยกเลิกระหว่างขนส่ง, กลไกคืนสต็อกอัตโนมัติ (Stock Restoration) และ Null-safety Edge Cases | 21 เคส (Nested) |
+| 5 | **`GlobalExceptionHandlerTest`** | `com.pokevault.modules.trade.advice` | ทดสอบการดักจับข้อผิดพลาดและส่งกลับมาตรฐาน JSON `ErrorResponse` ระดับระบบ ครอบคลุม 404, 409, 400, 403, 500 ครบถ้วน | 10 เคส |
+| 6 | **`TradeRecommendationResponseTest`** | `com.pokevault.modules.trade.dto` | ทดสอบ DTO, Builder Pattern, Default Values และ Inner Class `CandidateAccountResponse` | 3 เคส |
+| 7 | **`CustomExceptionTest`** | `com.pokevault.common.exception` | ทดสอบ Exception Classes ประจำตัว: `TradeStateConflictException` และ `InvalidOrderStateException` ทั้งแบบระบุ Message และแบบห่อหุ้ม Cause | 2 เคส |
+
+### 🚀 คำสั่งรันเทสเฉพาะส่วนของสมาชิกคนที่ 4
+```powershell
+$env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot"
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\mvnw.cmd test "-Dtest=OrderStateTest,TradeMatchingServiceTest,TradeMatchingApiControllerTest,OrderApiControllerTest,GlobalExceptionHandlerTest,TradeRecommendationResponseTest,CustomExceptionTest"
+```
+ผลลัพธ์: **`Tests run: 74, Failures: 0, Errors: 0, Skipped: 0` (BUILD SUCCESS)**
+
+
