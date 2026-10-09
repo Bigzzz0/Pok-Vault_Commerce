@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderBookingApiControllerTest" time="2.538" tests="16" errors="0" skipped="0" failures="0">
+  <testcase name="createOrder_MissingUserId_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="2.095">
+    <system-out>16:59:04.686 [main] INFO org.hibernate.validator.internal.util.Version -- HV000001: Hibernate Validator 8.0.2.Final
+16:59:05.207 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.207 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.210 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 2 ms
+16:59:05.455 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Validation error (400) at path /api/v1/orders: {userId=User ID is required}
+</system-out>
+    <system-err>Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build what is described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (C:\Users\ADMIN\.m2\repository\net\bytebuddy\byte-buddy-agent\1.15.11\byte-buddy-agent-1.15.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+</system-err>
+  </testcase>
+  <testcase name="createOrder_EmptyItemsList_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.036">
+    <system-out>16:59:05.545 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.545 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.545 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:59:05.567 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Validation error (400) at path /api/v1/orders: {items=Order must contain at least one item}
+</system-out>
+  </testcase>
+  <testcase name="getOrderById_Success_Returns200" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.048">
+    <system-out>16:59:05.582 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.582 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.582 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+</system-out>
+  </testcase>
+  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[1]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.032">
+    <system-out>16:59:05.632 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.632 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.633 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
+16:59:05.650 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
+</system-out>
+  </testcase>
+  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[2]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.028">
+    <system-out>16:59:05.662 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.663 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.663 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:59:05.678 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
+</system-out>
+  </testcase>
+  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[3]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.024">
+    <system-out>16:59:05.691 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.691 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.692 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
+16:59:05.704 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
+</system-out>
+  </testcase>
+  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[4]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.022">
+    <system-out>16:59:05.714 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.715 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.715 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:59:05.728 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
+</system-out>
+  </testcase>
+  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[5]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.024">
+    <system-out>16:59:05.738 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.738 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.739 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:59:05.750 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
+</system-out>
+  </testcase>
+  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[6]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.023">
+    <system-out>16:59:05.763 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.763 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.763 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:59:05.775 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
+</system-out>
+  </testcase>
+  <testcase name="createOrder_InvalidItemQuantity_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.028">
+    <system-out>16:59:05.788 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.788 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.788 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:59:05.804 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Validation error (400) at path /api/v1/orders: {items[0].quantity=Quantity must be at least 1}
+</system-out>
+  </testcase>
+  <testcase name="getAllOrders_Success_Returns200" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.035">
+    <system-out>16:59:05.816 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.816 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.816 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+</system-out>
+  </testcase>
+  <testcase name="createOrder_MissingInventoryId_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.022">
+    <system-out>16:59:05.851 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.851 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.851 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:59:05.862 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Validation error (400) at path /api/v1/orders: {items[0].inventoryId=Inventory ID is required}
+</system-out>
+  </testcase>
+  <testcase name="createOrder_ContinuousDigitsFriendId_Returns201" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.025">
+    <system-out>16:59:05.873 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.873 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.873 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+</system-out>
+  </testcase>
+  <testcase name="createOrder_InsufficientStock_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.026">
+    <system-out>16:59:05.897 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.897 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.897 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:59:05.913 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Insufficient stock error (400): Insufficient stock for card: Mewtwo ex (Available: 1, Requested: 2) at path /api/v1/orders
+</system-out>
+  </testcase>
+  <testcase name="getOrderById_NotFound_Returns404" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.013">
+    <system-out>16:59:05.924 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.924 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.924 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+16:59:05.926 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Resource/URL not found (404): Order not found with id : '999' at path /api/v1/orders/999
+</system-out>
+  </testcase>
+  <testcase name="createOrder_Success_Returns201" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.045">
+    <system-out>16:59:05.938 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+16:59:05.938 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+16:59:05.938 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+</system-out>
+  </testcase>
+</testsuite>
