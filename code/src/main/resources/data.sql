@@ -65,13 +65,13 @@ VALUES
 -- Wigglytuff ex
 ((SELECT id FROM card_expansions WHERE code = 'A1'), '198/226', 'Wigglytuff ex', 'POKEMON', 'DOUBLE_RARE', 'COLORLESS', 140, 2, 'https://assets.pokemon-zone.com/cards/a1/198.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 -- Mew ex (Mythical Island)
-((SELECT id FROM card_expansions WHERE code = 'A1a'), '026/086', 'Mew ex', 'POKEMON', 'IMMERSIVE_RARE', 'PSYCHIC', 130, 1, 'https://assets.pokemon-zone.com/cards/a1a/026.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+((SELECT id FROM card_expansions WHERE code = 'A1a'), '032/068', 'Mew ex', 'POKEMON', 'DOUBLE_RARE', 'PSYCHIC', 130, 1, '/images/cards/A1a_032_EN.webp', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 -- Celebi ex (Mythical Island)
-((SELECT id FROM card_expansions WHERE code = 'A1a'), '003/086', 'Celebi ex', 'POKEMON', 'DOUBLE_RARE', 'GRASS', 130, 1, 'https://assets.pokemon-zone.com/cards/a1a/003.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+((SELECT id FROM card_expansions WHERE code = 'A1a'), '003/068', 'Celebi ex', 'POKEMON', 'DOUBLE_RARE', 'GRASS', 130, 1, '/images/cards/A1a_003_EN.webp', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 -- Gyarados ex (Mythical Island)
-((SELECT id FROM card_expansions WHERE code = 'A1a'), '015/086', 'Gyarados ex', 'POKEMON', 'DOUBLE_RARE', 'WATER', 180, 3, 'https://assets.pokemon-zone.com/cards/a1a/015.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+((SELECT id FROM card_expansions WHERE code = 'A1a'), '018/068', 'Gyarados ex', 'POKEMON', 'DOUBLE_RARE', 'WATER', 180, 3, '/images/cards/A1a_018_EN.webp', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 -- Aerodactyl ex (Mythical Island)
-((SELECT id FROM card_expansions WHERE code = 'A1a'), '045/086', 'Aerodactyl ex', 'POKEMON', 'DOUBLE_RARE', 'FIGHTING', 140, 1, 'https://assets.pokemon-zone.com/cards/a1a/045.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+((SELECT id FROM card_expansions WHERE code = 'A1a'), '046/068', 'Aerodactyl ex', 'POKEMON', 'DOUBLE_RARE', 'FIGHTING', 140, 1, '/images/cards/A1a_046_EN.webp', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- 3. Seed Users (Default password for all seeded users: password123)
 INSERT INTO users (username, email, password, role, created_at, updated_at)
