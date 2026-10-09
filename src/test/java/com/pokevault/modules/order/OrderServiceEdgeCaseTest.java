@@ -14,6 +14,7 @@ import com.pokevault.modules.order.strategy.RegularDiscountStrategy;
 import com.pokevault.modules.order.strategy.VipDiscountStrategy;
 import com.pokevault.modules.order.strategy.WholesaleDiscountStrategy;
 import com.pokevault.repository.CardInventoryRepository;
+import com.pokevault.repository.GameAccountRepository;
 import com.pokevault.repository.OrderRepository;
 import com.pokevault.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +43,7 @@ class OrderServiceEdgeCaseTest {
     @Mock private OrderRepository orderRepository;
     @Mock private CardInventoryRepository cardInventoryRepository;
     @Mock private UserRepository userRepository;
+    @Mock private GameAccountRepository gameAccountRepository;
     @Mock private ApplicationEventPublisher eventPublisher;
 
     private DiscountService discountService;
@@ -66,6 +68,7 @@ class OrderServiceEdgeCaseTest {
                 orderRepository,
                 cardInventoryRepository,
                 userRepository,
+                gameAccountRepository,
                 discountService,
                 eventPublisher
         );

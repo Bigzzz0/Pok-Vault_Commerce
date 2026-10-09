@@ -79,4 +79,20 @@ public class OrderApiController {
         OrderItemResponse response = orderService.updateItemTradeStatus(orderId, orderItemId, status);
         return ResponseEntity.ok(ApiResponse.ok("Order item trade status updated successfully", response));
     }
+
+    @PatchMapping("/{orderId}/items/{orderItemId}/assign")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @Operation(
+            summary = "Reassign game account for order item",
+            description = "Reassigns trade account for an order item and transfers reserved card stock between inventories. "
+                    + "Restricted to ADMIN and STAFF roles."
+    )
+    public ResponseEntity<ApiResponse<OrderItemResponse>> reassignOrderItemAccount(
+            @Parameter(description = "Order ID", example = "1") @PathVariable Long orderId,
+            @Parameter(description = "Order Item ID", example = "1") @PathVariable Long orderItemId,
+            @Parameter(description = "Target Game Account ID", example = "2") @RequestParam Long accountId) {
+
+        OrderItemResponse response = orderService.reassignOrderItemAccount(orderId, orderItemId, accountId);
+        return ResponseEntity.ok(ApiResponse.ok("Order item account reassigned successfully", response));
+    }
 }
