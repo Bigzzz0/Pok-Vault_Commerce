@@ -19,7 +19,7 @@
 | Domain / Class | [Domain](diagrams/domain-model.md), [Class](diagrams/class-diagram.md) |
 | Sequence ≥3 / Activity | [Sequence 5 scenarios](diagrams/sequence-diagrams.md), [Activity](diagrams/activity-diagram.md) |
 | Component / Deployment / State | [Component & Deployment](diagrams/component-deployment-diagram.md), [State](diagrams/state-diagram.md) |
-| Tests / Test Report | clean verify บน source ea2dcd7 ผ่าน 373 เคส, 0 failures/errors/skips; [รายงานรวม](../test/reports/project/TEST-REPORT.md) และรายสมาชิกสร้างจากการรันเดียวกัน ไม่ครอบคลุม UI/PostgreSQL จริง/Cloud |
+| Tests / Test Report | clean verify หลังย้ายโครงสร้างบน source 82c449b ผ่าน 373 เคส, 0 failures/errors/skips; [รายงานรวม](../test/reports/project/TEST-REPORT.md) และรายสมาชิกสร้างจากการรันเดียวกัน ไม่ครอบคลุม UI/PostgreSQL จริง/Cloud |
 | README สมาชิกพร้อม Section/Branch | เพิ่มครบแล้วตาม branch สมาชิกที่มี; แต่ละคนต้องยืนยัน section ของตนตรงทะเบียน |
 | root code/, test/, doc/, img/ | ครบแล้ว: source/config ใน code/, tests/report ใน test/, เอกสารใน doc/, รูปใน img/; ดู README |
 | Dockerfile / Compose / CI | มีไฟล์ครบ; build/push image ไม่ใช่หลักฐาน public deployment |

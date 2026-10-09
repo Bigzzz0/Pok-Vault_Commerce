@@ -264,7 +264,7 @@ code/src/main/resources/
 
 ## การทดสอบและ CI/CD
 
-ผลล่าสุดวันที่ 9 ตุลาคม 2026 บน source commit `ea2dcd7`: **373 tests, 0 failures, 0 errors, 0 skipped — BUILD SUCCESS** จาก `mvnw.cmd clean verify` (ก่อนย้ายโครงสร้าง)
+ผลล่าสุดวันที่ 9 ตุลาคม 2026 บน source commit `82c449b` หลังจัดโครงสร้าง: **373 tests, 0 failures, 0 errors, 0 skipped — BUILD SUCCESS** จาก `code/mvnw.cmd -f code/pom.xml clean verify`
 ดู [รายงานรวม](test/reports/project/TEST-REPORT.md) สำหรับ commit, Java, database, ข้อจำกัด และ JUnit XML
 
 > รายงานที่บันทึกไว้: [คนที่ 1](test/reports/sikarin/TEST-REPORT.md), [คนที่ 2](test/reports/sapphanyu/TEST-REPORT.md), [คนที่ 3](test/reports/tanapoom/TEST-REPORT.md), [คนที่ 4](test/reports/tankun/TEST-REPORT.md) เป็นผล ณ รอบที่ระบุในแต่ละรายงาน ไม่ใช่ผลยืนยัน commit ล่าสุด
@@ -360,4 +360,4 @@ img/
 
 Run/build จาก root ด้วย `./code/mvnw -f code/pom.xml ...`; IDE ให้เปิด/import `code/pom.xml`
 Docker build จาก root: `docker build -f code/Dockerfile -t pokevault .`
-ผล 373 tests ในรายงานเป็นรอบก่อนจัดโครงสร้าง; การย้ายไฟล์ไม่ได้เปลี่ยน business logic และไม่ควรอ้างผลเดิมว่าเป็นการรันหลังย้าย
+รันทดสอบซ้ำหลังจัดโครงสร้างแล้วบน `82c449b`: 373 tests ผ่านทั้งหมด และ Maven build executable JAR สำเร็จ; ดูรายงานรวมสำหรับ environment และข้อจำกัด

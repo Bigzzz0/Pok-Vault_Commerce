@@ -1,14 +1,29 @@
 # Test Report — ศิฆรินทร์ อุปจันทร์
 
+## หลักฐานรอบทดสอบล่าสุด
+
+- Commit: `82c449b857d32dc7ad231e97a57ba3ebd976c761`
+- Branch: `sikarin_6733802925_01`
+- วันที่บันทึก: 2026-10-09T20:32:29.821969+07:00 (Asia/Bangkok)
+- คำสั่งจริง: `code/mvnw.cmd -f code/pom.xml clean verify` — exit code 0, **BUILD SUCCESS**
+- ทั้งระบบ: **373 tests, 0 failures, 0 errors, 0 skipped**
+- เวลารวม Maven: 46.613 s
+- ระบบ: Windows-11-10.0.26200-SP0
+- Java: `openjdk version "21.0.10" 2026-01-20`
+- Database: H2 local รวม H2 PostgreSQL mode; ไม่ได้เชื่อม PostgreSQL จริง
+- Source/config ตรง commit: ใช่ (มีการแก้เอกสารและรายงานที่ยังไม่ commit)
+- SHA-256 ของ source/config ใน working tree: `98ab0cc2bddbbb1825d0e0e615f0b1fe8ee069d061c9ddc990a4fb03acfca502`
+
+
 Branch: `sikarin_6733802925_01`
 
-Report generated: 2026-10-09T19:55:38.251079+07:00
+Report generated: 2026-10-09T20:32:30.101003+07:00
 
 ## ผลการรัน
 
 | ขอบเขต | Tests | Failures | Errors | Skipped |
 |---|---:|---:|---:|---:|
-| ทั้งโปรเจกต์ | 355 | 0 | 0 | 0 |
+| ทั้งโปรเจกต์ | 373 | 0 | 0 | 0 |
 | Card Catalog / User / Security / Persistence | 108 | 0 | 0 | 0 |
 
 ## รายละเอียดส่วนของศิฆรินทร์
@@ -41,17 +56,17 @@ Report generated: 2026-10-09T19:55:38.251079+07:00
 
 ```powershell
 $env:JAVA_HOME='C:\Program Files\Android\Android Studio\jbr'
-.\mvnw.cmd clean test
+.\code\mvnw.cmd -f code/pom.xml clean test
 python test/generate_sikarin_report.py
 ```
 
 รันเฉพาะส่วนของศิฆรินทร์:
 
 ```powershell
-.\mvnw.cmd '-Dtest=CardServiceTest,CardServiceEdgeCaseTest,UserServiceTest,CardApiControllerTest,CatalogPersistenceTest,CatalogSchemaSqlTest,ApiAuthorizationTest,OrderAccessPolicyTest,CustomUserDetailsServiceTest' clean test
+.\code\mvnw.cmd -f code/pom.xml '-Dtest=CardServiceTest,CardServiceEdgeCaseTest,UserServiceTest,CardApiControllerTest,CatalogPersistenceTest,CatalogSchemaSqlTest,ApiAuthorizationTest,OrderAccessPolicyTest,CustomUserDetailsServiceTest' clean test
 ```
 
-หากรันเฉพาะส่วน อย่านับผลเก่าที่ค้างใน target/surefire-reports เป็นผลการรันใหม่ ให้ใช้ clean ก่อนเมื่อสร้างรายงาน
+หากรันเฉพาะส่วน อย่านับผลเก่าที่ค้างใน code/target/surefire-reports เป็นผลการรันใหม่ ให้ใช้ clean ก่อนเมื่อสร้างรายงาน
 
 ## ขอบเขตและข้อจำกัด
 

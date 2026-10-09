@@ -1,0 +1,6 @@
+Command: code/mvnw.cmd -f code/pom.xml clean verify
+Commit: 82c449b857d32dc7ad231e97a57ba3ebd976c761
+Tests run: 373, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+Exit code: 0
+Total time: 46.613 s
