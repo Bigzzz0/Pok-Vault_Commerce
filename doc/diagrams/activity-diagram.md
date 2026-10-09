@@ -224,7 +224,7 @@ flowchart TD
 ```mermaid
 flowchart TD
     StartCancel([เริ่มต้น: ลูกค้าขอยกเลิกออเดอร์ในแชท หรือหมดเวลาโอน]) --> ClickCancel[แอดมินคลิกปุ่ม 'Cancel Order' บนหน้าเว็บ /orders]
-    ClickCancel --> SendPatch["ส่งคำขอ PATCH /api/v1/orders/{id}/transition?action=cancel"]
+    ClickCancel --> SendPatch["ส่งคำขอ PATCH /api/v1/orders/{id}/status?action=cancel"]
     SendPatch --> CheckCurrentState{ตรวจสอบสถานะปัจจุบันของออเดอร์}
 
     CheckCurrentState -->|"PENDING หรือ PAID"| ExecCancel[OrderState.cancel ดำเนินการยกเลิก]

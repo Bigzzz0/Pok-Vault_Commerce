@@ -10,6 +10,7 @@ import com.pokevault.domain.entity.GameAccount;
 import com.pokevault.domain.entity.Order;
 import com.pokevault.domain.entity.OrderItem;
 import com.pokevault.domain.enums.AccountTradeStatus;
+import com.pokevault.domain.enums.CardCondition;
 import com.pokevault.domain.enums.OrderStatus;
 import com.pokevault.domain.enums.TradeFulfillmentStatus;
 import com.pokevault.modules.trade.dto.TradeRecommendationResponse;
@@ -83,23 +84,27 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
             throw new InvalidOrderStateException(
                     "Cannot match account: Card information not found for OrderItem id: " + orderItemId);
         }
+        CardCondition requiredCondition = (item.getInventory() != null) ? item.getInventory().getCondition() : null;
 
         // ค้นหาคลังทั้งหมดที่มีการ์ดใบนี้
         List<CardInventory> inventories = cardInventoryRepository.findByCardId(card.getId());
 
-        // กรองเฉพาะไอดีที่มีสถานะ READY และมีสต็อกเพียงพอกับจำนวนที่สั่ง
-        // (หากเป็นไอดีที่ถือการจองของ OrderItem นี้อยู่แล้ว ให้ถือว่ามีสต็อกพร้อมส่งมอบได้แม้สต็อกคงเหลือพร้อมขายเป็น 0)
+        // กรองเฉพาะไอดีที่มีสถานะ READY, สภาพการ์ดตรงกับที่จอง, และมีสต็อกเพียงพอกับจำนวนที่สั่ง
+        // (หากเป็นคลังที่ถือการจองของ OrderItem นี้อยู่แล้ว ให้ถือว่ามีสต็อกพร้อมส่งมอบได้แม้สต็อกคงเหลือพร้อมขายเป็น 0)
         CardInventory bestInventory = inventories.stream()
                 .filter(inv -> inv.getGameAccount() != null)
                 .filter(inv -> inv.getGameAccount().getTradeStatus() == AccountTradeStatus.READY)
+                .filter(inv -> requiredCondition == null || inv.getCondition() == requiredCondition)
                 .filter(inv -> {
                     boolean isAlreadyHolding = item.getAssignedAccount() != null &&
-                            inv.getGameAccount().getId().equals(item.getAssignedAccount().getId());
+                            item.getInventory() != null &&
+                            inv.getId().equals(item.getInventory().getId());
                     return isAlreadyHolding || (inv.getQuantity() != null && inv.getQuantity() >= item.getQuantity());
                 })
                 .max(Comparator.comparing((CardInventory inv) -> {
                     boolean isAlreadyHolding = item.getAssignedAccount() != null &&
-                            inv.getGameAccount().getId().equals(item.getAssignedAccount().getId());
+                            item.getInventory() != null &&
+                            inv.getId().equals(item.getInventory().getId());
                     int qty = inv.getQuantity() != null ? inv.getQuantity() : 0;
                     return isAlreadyHolding ? qty + item.getQuantity() : qty;
                 }))
@@ -193,13 +198,17 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
                         "Cannot match account: Card information not found for OrderItem id: " + orderItemId);
             }
 
-            // 4. ตรวจสอบว่าบัญชีเป้าหมายมีการ์ดและสต็อกที่จัดสรรให้รายการนี้จริง
+            CardCondition requiredCondition = (oldInventory != null) ? oldInventory.getCondition() : null;
+
+            // 4. ตรวจสอบว่าบัญชีเป้าหมายมีการ์ดสภาพเดียวกันและสต็อกที่จัดสรรให้รายการนี้จริง
             List<CardInventory> inventories = cardInventoryRepository.findByCardId(card.getId());
             CardInventory targetInventory = inventories.stream()
                     .filter(inv -> inv.getGameAccount() != null && inv.getGameAccount().getId().equals(accountId))
+                    .filter(inv -> requiredCondition == null || inv.getCondition() == requiredCondition)
                     .findFirst()
                     .orElseThrow(() -> new InsufficientStockException(
-                            "Selected account " + account.getAccountCode() + " does not hold card: " + card.getName()));
+                            "Selected account " + account.getAccountCode() + " does not hold card: " + card.getName()
+                                    + (requiredCondition != null ? " with condition " + requiredCondition : "")));
 
             if (!targetInventory.hasSufficientStock(item.getQuantity())) {
                 throw new InsufficientStockException(
@@ -230,6 +239,7 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
 
     private TradeRecommendationResponse buildRecommendationForItem(Order order, OrderItem item) {
         Card card = (item.getInventory() != null) ? item.getInventory().getCard() : null;
+        CardCondition requiredCondition = (item.getInventory() != null) ? item.getInventory().getCondition() : null;
 
         if (card == null) {
             return TradeRecommendationResponse.builder()
@@ -247,19 +257,22 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
         // ค้นหาคลังทั้งหมดที่มีการ์ดใบนี้
         List<CardInventory> inventories = cardInventoryRepository.findByCardId(card.getId());
 
-        // กรองเฉพาะคลังที่ผูกกับไอดีเกม และมีสต็อกคงเหลือ > 0 (หรือเป็นไอดีที่ถือการจองของ OrderItem นี้อยู่แล้ว)
+        // กรองเฉพาะคลังที่ผูกกับไอดีเกม, สภาพการ์ดตรงกับที่จอง, และมีสต็อกคงเหลือ > 0 (หรือเป็นคลังที่ถือการจองของ OrderItem นี้อยู่แล้ว)
         List<CardInventory> availableInventories = inventories.stream()
                 .filter(inv -> inv.getGameAccount() != null)
+                .filter(inv -> requiredCondition == null || inv.getCondition() == requiredCondition)
                 .filter(inv -> {
                     boolean isAlreadyHolding = item.getAssignedAccount() != null &&
-                            inv.getGameAccount().getId().equals(item.getAssignedAccount().getId());
+                            item.getInventory() != null &&
+                            inv.getId().equals(item.getInventory().getId());
                     return isAlreadyHolding || (inv.getQuantity() != null && inv.getQuantity() > 0);
                 })
                 .sorted(Comparator
                         .comparing((CardInventory inv) -> inv.getGameAccount().getTradeStatus() == AccountTradeStatus.READY ? 0 : 1)
                         .thenComparing(inv -> {
                             boolean isAlreadyHolding = item.getAssignedAccount() != null &&
-                                    inv.getGameAccount().getId().equals(item.getAssignedAccount().getId());
+                                    item.getInventory() != null &&
+                                    inv.getId().equals(item.getInventory().getId());
                             int qty = inv.getQuantity() != null ? inv.getQuantity() : 0;
                             return isAlreadyHolding ? qty + item.getQuantity() : qty;
                         }, Comparator.reverseOrder()))
