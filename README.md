@@ -26,13 +26,13 @@
 
 ## สมาชิกในทีม
 
-| # | ชื่อ | รหัสนักศึกษา | ส่วนที่รับผิดชอบ |
-|---|---|---|---|
-| 1 | ศิฆรินทร์ อุปจันทร์ | 673380292-5 | Core Entity, Card Catalog, `schema.sql` / `data.sql`, Spring Security |
-| 2 | สัพพัญญู คำตุ้ม | 673380066-4 | Game Account Vault, `CardInventory`, Observer Pattern |
-| 3 | ธนภูมิ จันทรา | 673380272-1 | Order Engine, Strategy Pattern (ส่วนลดสมาชิก) |
-| 4 | แทนคุณ พันธ์นิกุล | 673380301-0 | State Pattern, Trade Matching, Global Exception Handler |
-| 5 | สรวิชญ์ ศาสนสุพินธุ์ | 673380294-1 | Frontend, Chat Commerce Handshake, Swagger, Docker, CI/CD, README, Deploy |
+| # | ชื่อ | รหัสนักศึกษา | Section | Branch | หน้าที่ |
+|---|---|---|---|---|---|
+| 1 | ศิฆรินทร์ อุปจันทร์ | 673380292-5 |  | `sikarin_6733802925_01`, `sikarin_6733802925_02` | Core Entity, Card Catalog, `schema.sql` / `data.sql`, Spring Security และสิทธิ์ของ API |
+| 2 | สัพพัญญู คำตุ้ม | 673380066-4 |  | `SapphanyuKhamtoom_6733800664_01` | Game Account Vault, `CardInventory`, Observer Pattern |
+| 3 | ธนภูมิ จันทรา | 673380272-1 |  | `tanapoom_6733802721_01` | Order Engine, Strategy Pattern (ส่วนลดสมาชิก) |
+| 4 | แทนคุณ พันธ์นิกุล | 673380301-0 |  | `Tankun_6733803010_01` | State Pattern, Trade Matching, Global Exception Handler |
+| 5 | สรวิชญ์ ศาสนสุพินธุ์ | 673380294-1 |  | `soravit_6733802941_02` | Frontend, Chat Commerce Handshake, Swagger, Docker, CI/CD, README, Deploy |
 
 ## ความสามารถของระบบ
 
@@ -54,25 +54,29 @@
 
 | หน้าแรก | แกลเลอรีการ์ดและตัวกรอง |
 |---|---|
-| ![หน้าแรก](doc/screenshots/home.png) | ![แกลเลอรีการ์ด](doc/screenshots/cards.png) |
+| ![หน้าแรก](img/home.png) | ![แกลเลอรีการ์ด](img/cards.png) |
 
 | รายละเอียดการ์ด (ลูกค้า) | คลังสินค้า (พนักงาน) |
 |---|---|
-| ![รายละเอียดการ์ด](doc/screenshots/card-detail.png) | ![คลังสินค้า](doc/screenshots/inventory.png) |
+| ![รายละเอียดการ์ด](img/card-detail.png) | ![คลังสินค้า](img/inventory.png) |
 
 | คำสั่งซื้อและสถานะ (พนักงาน) | บัญชีเกมและระดับสมาชิก (พนักงาน) |
 |---|---|
-| ![คำสั่งซื้อ](doc/screenshots/orders.png) | ![บัญชีเกม](doc/screenshots/accounts.png) |
+| ![คำสั่งซื้อ](img/orders.png) | ![บัญชีเกม](img/accounts.png) |
 
 ## ขั้นตอนการสั่งซื้อ
 
 1. ลูกค้าเลือกการ์ดในแกลเลอรี กด **สั่งซื้อ** แล้วกรอก Friend ID ในเกม (หรือพนักงานจองแทนที่หน้าคลังสินค้า)
 2. ระบบคิดส่วนลดตามระดับสมาชิก (Strategy) หักสต็อก และสร้างคำสั่งซื้อสถานะ `PENDING` ถ้าสต็อกเหลือ 2 ใบหรือน้อยกว่า Observer จะแจ้งเตือนใน log
 3. ลูกค้าโอนเงินและแจ้งร้าน พนักงานกด **ชำระเงินแล้ว** → `PAID`
-4. พนักงานเปิด **จัดการเทรด** เพื่อเลือกบัญชีเกมที่ถือการ์ดใบนั้น (เลือกเองหรือจับคู่อัตโนมัติ) แล้วกด **เริ่มเทรด** → `SHIPPING`
-5. ร้านเพิ่มเพื่อนและส่งการ์ดให้ลูกค้าในเกม แล้วกด **เทรดสำเร็จ** → `COMPLETED`
+4. พนักงานเปิด **จัดการเทรด** เพื่อเลือกบัญชีเกมที่ถือการ์ดใบนั้น (เลือกเองหรือจับคู่อัตโนมัติ) รายการจะเป็น `FRIEND_PENDING` แล้วกด **เริ่มเทรด** → ออเดอร์เป็น `SHIPPING`
+5. ร้านเพิ่มเพื่อนและส่งการ์ดให้ลูกค้าในเกม พนักงานกด **ส่งเทรดแล้ว** (`TRADE_SENT`) และ **เทรดในเกมสำเร็จ** (`COMPLETED`) ทีละรายการ เมื่อครบทุกรายการ ออเดอร์เป็น `COMPLETED` อัตโนมัติ
 
-ยกเลิกได้ขณะเป็น `PENDING` หรือ `PAID` ระบบจะคืนการ์ดเข้าสต็อก การเปลี่ยนสถานะที่ไม่อยู่ในลำดับนี้ถูก State Pattern ปฏิเสธ
+กฎที่ระบบบังคับ:
+- ยกเลิกได้ขณะเป็น `PENDING` หรือ `PAID` ระบบจะคืนการ์ดเข้าสต็อก ยกเลิกไม่ได้เมื่อเป็น `SHIPPING` แล้ว
+- ต้องเลือกบัญชีเกมให้รายการก่อน จึงกดส่งเทรดได้ และออเดอร์ต้องเป็น `SHIPPING`
+- ปิดออเดอร์เป็น `COMPLETED` ไม่ได้ ถ้ายังมีรายการที่เทรดไม่เสร็จ
+- การเปลี่ยนสถานะที่ไม่อยู่ในลำดับนี้ถูก State Pattern ปฏิเสธ (HTTP 409)
 
 ## เทคโนโลยีที่ใช้
 
@@ -100,11 +104,12 @@ Controller  ──►  Service (interface + impl)  ──►  Repository (Spring
                       └─ Observer  : LowStockObserver     (module vault)
 ```
 
-- **Controller** รับ request ตรวจข้อมูลด้วย Bean Validation และตอบกลับเป็น `ApiResponse`
+- **Controller** รับ request ตรวจข้อมูลด้วย Bean Validation และตอบกลับเป็น `ApiResponse` ไม่เรียก Repository ตรง
 - **Service** เก็บ business logic ทั้งหมด และเป็นจุดที่เรียกใช้ pattern ทั้งสาม
+- หน้าเว็บใช้เส้นทางเดียวกัน: `WebViewController` → `WebPageService` (interface) → `WebPageServiceImpl` → Repository และส่งข้อมูลให้ Thymeleaf เป็น View DTO (`modules/web/dto/view`)
 - **Repository / Entity** อยู่ชั้นล่างสุด ใช้ร่วมกันทุก module
 - ข้อผิดพลาดถูกแปลงเป็น response รูปแบบเดียวกันโดย `GlobalExceptionHandler`
-- Spring Security ใช้ form login + BCrypt และกำหนดสิทธิ์หน้าเว็บตามบทบาท
+- Spring Security ใช้ form login + BCrypt กำหนดสิทธิ์ทั้งหน้าเว็บและ REST API ตามบทบาท (API ตอบ 401 / 403 เป็น JSON)
 
 แผนภาพฉบับเต็มอยู่ใน [เอกสารออกแบบ](#เอกสารออกแบบ)
 
@@ -185,18 +190,24 @@ docker compose up --build
 
 รายละเอียดเต็มและการทดลองเรียกอยู่ใน Swagger UI ทุก endpoint ขึ้นต้นด้วย `/api/v1`
 
-| กลุ่ม | Endpoint | ผู้รับผิดชอบ |
-|---|---|---|
-| Card Catalog | `GET /cards`, `GET /cards/paged`, `GET /cards/{id}`, `GET /cards/search`, `POST /cards`, `PUT /cards/{id}`, `DELETE /cards/{id}` | คนที่ 1 |
-| Card Catalog | `GET /cards/expansions`, `GET /cards/expansions/{code}`, `GET /cards/expansions/{code}/cards` | คนที่ 1 |
-| Game Account Vault | `POST /accounts`, `GET /accounts`, `GET /accounts/{id}`, `POST /accounts/{id}/pulls`, `GET /accounts/{id}/cards`, `PATCH /accounts/{id}/trade-status` | คนที่ 2 |
-| Order | `POST /orders`, `GET /orders`, `GET /orders/{id}`, `PATCH /orders/{id}/status?action=`, `PATCH /orders/{orderId}/items/{orderItemId}/trade-status?status=` | คนที่ 3, 4 |
-| Trade Matching | `GET /trades/orders/{orderId}/recommendations`, `GET /trades/items/{orderItemId}/recommendation`, `POST /trades/orders/{orderId}/auto-match`, `POST /trades/items/{orderItemId}/auto-match`, `POST /trades/items/{orderItemId}/assign?accountId=` | คนที่ 4 |
-| Auth | `POST /auth/register` | คนที่ 5 |
-| Store Admin | `PATCH /admin/inventories/{inventoryId}/price?price=`, `PATCH /admin/customers/{userId}/membership-tier?tier=` | คนที่ 5 |
+| กลุ่ม | Endpoint | ใครเรียกได้ | ผู้รับผิดชอบ |
+|---|---|---|---|
+| Card Catalog | `GET /cards`, `GET /cards/paged`, `GET /cards/{id}`, `GET /cards/search`, `GET /cards/expansions`, `GET /cards/expansions/{code}`, `GET /cards/expansions/{code}/cards` | ทุกคน | คนที่ 1 |
+| Card Catalog | `POST /cards`, `PUT /cards/{id}`, `DELETE /cards/{id}` | ADMIN, STAFF | คนที่ 1 |
+| Game Account Vault | `POST /accounts`, `GET /accounts`, `GET /accounts/{id}`, `POST /accounts/{id}/pulls`, `GET /accounts/{id}/cards`, `PATCH /accounts/{id}/trade-status?status=` | ADMIN, STAFF | คนที่ 2 |
+| Order | `POST /orders` | ผู้ที่เข้าสู่ระบบ (ลูกค้าจองได้เฉพาะในชื่อตัวเอง) | คนที่ 3 |
+| Order | `GET /orders/{id}` | ADMIN, STAFF และลูกค้าเจ้าของออเดอร์ | คนที่ 3 |
+| Order | `GET /orders`, `PATCH /orders/{id}/status?action=` | ADMIN, STAFF | คนที่ 3, 4 |
+| Order | `PATCH /orders/{orderId}/items/{orderItemId}/trade-status?status=`, `PATCH /orders/{orderId}/items/{orderItemId}/assign?accountId=` | ADMIN, STAFF | คนที่ 2, 3, 4 |
+| Trade Matching | `GET /trades/orders/{orderId}/recommendations`, `GET /trades/items/{orderItemId}/recommendation`, `POST /trades/orders/{orderId}/auto-match`, `POST /trades/items/{orderItemId}/auto-match`, `POST /trades/items/{orderItemId}/assign?accountId=` | ADMIN, STAFF | คนที่ 4 |
+| Auth | `POST /auth/register` | ทุกคน | คนที่ 5 |
+| Store Admin | `PATCH /admin/inventories/{inventoryId}/price?price=`, `PATCH /admin/customers/{userId}/membership-tier?tier=` | ADMIN, STAFF | คนที่ 5 |
 
-ค่า `action` ของ `PATCH /orders/{id}/status` คือ `pay`, `ship`, `complete` หรือ `cancel`
-ค่า `status` ของ `PATCH /orders/{orderId}/items/{orderItemId}/trade-status` คือ `TRADE_SENT` หรือ `COMPLETED` (เฉพาะ ADMIN และ STAFF, ซิงค์สถานะออเดอร์เป็น COMPLETED อัตโนมัติเมื่อเทรดครบ)
+- ค่า `action` ของ `PATCH /orders/{id}/status` คือ `pay`, `ship`, `complete` หรือ `cancel`
+- ค่า `status` ของ `.../trade-status` คือ `TRADE_SENT` หรือ `COMPLETED` เมื่อเทรดครบทุกรายการ ออเดอร์เป็น `COMPLETED` อัตโนมัติ
+- `.../items/{orderItemId}/assign` เปลี่ยนบัญชีเกมที่ส่งการ์ดของรายการนั้น และย้ายสต็อกที่จองไว้ไปยังบัญชีใหม่
+- เรียก API โดยไม่ได้เข้าสู่ระบบได้ `401`, ไม่มีสิทธิ์ได้ `403`, ผิดลำดับสถานะได้ `409` ทั้งหมดตอบเป็น JSON
+- Swagger UI ใช้ session ของเบราว์เซอร์: เข้าสู่ระบบที่ `/login` ก่อน แล้วจึงกด Try it out กับ API ที่ต้องใช้สิทธิ์
 
 ทุก response ใช้รูปแบบเดียวกัน:
 
@@ -226,7 +237,7 @@ src/main/java/com/pokevault/
     ├── vault/       Game Account Vault + Observer (คนที่ 2)
     ├── order/       Order Engine + Strategy (คนที่ 3)
     ├── trade/       State Pattern, Trade Matching, Exception Handler (คนที่ 4)
-    └── web/         หน้าเว็บ, สมัครสมาชิก, งานหลังบ้านของร้าน (คนที่ 5)
+    └── web/         หน้าเว็บ (WebPageService + View DTO), สมัครสมาชิก, งานหลังบ้านของร้าน (คนที่ 5)
 
 src/main/resources/
 ├── application.yml  profile local (H2) และ prod (PostgreSQL)
@@ -237,9 +248,16 @@ src/main/resources/
 
 แต่ละ module แบ่งชั้นเป็น `controller` → `service` → `repository` และรับส่งข้อมูลผ่าน `dto`
 
-## การทดสอบและ CI/CD
+### โครงสร้างส่งมอบ
 
-> 📖 **คู่มือการทดสอบของสมาชิกคนที่ 4 (นายแทนคุณ พันธ์นิกุล)**: อ่านรายละเอียดคลาสทดสอบทั้ง 7 คลาส (74 เคส) ของ GoF State Pattern, Trade Matching Engine, และ Global Exception Handler ได้ที่ **[README-TEST.md](README-TEST.md)** (74/74 Tests Passed — 100% Build Success)
+| ที่กำหนด | ใน repo นี้ | หมายเหตุ |
+|---|---|---|
+| `code/` | `src/`, `pom.xml`, `mvnw`, `Dockerfile`, `docker-compose.yml` (อยู่ที่ root) | ยังไม่ได้ย้ายเข้า `code/` เพราะต้องแก้ Maven, Docker และ CI ตามทั้งหมด รอยืนยันรูปแบบกับอาจารย์ |
+| `test/` | [test/](test/) รายงานผลเทสต์และสคริปต์สร้างรายงาน | ซอร์สเทสต์อยู่ที่ `src/test/java` ตามแบบ Maven |
+| `doc/` | [doc/](doc/) แผนภาพ เอกสารออกแบบ และสไลด์ | |
+| `img/` | [img/](img/) ภาพหน้าจอของระบบ | |
+
+## การทดสอบและ CI/CD
 
 รันเทสต์และ build ในเครื่อง:
 
@@ -247,10 +265,19 @@ src/main/resources/
 ./mvnw clean verify
 ```
 
-หรือรันเฉพาะ Unit Tests ทั้งหมด (รวดเร็วเพียง ~6 วินาที):
-```powershell
-.\mvnw.cmd test
-```
+บน Windows ใช้ `mvnw.cmd clean verify` หรือรันเฉพาะเทสต์ด้วย `mvnw.cmd test`
+
+ผลล่าสุด (2026-10-09, `develop` ที่ commit `4f16bc3`): **355 tests ผ่านทั้งหมด** จาก 32 คลาสเทสต์ (0 failures, 0 errors, 0 skipped)
+
+รายงานผลเทสต์ของแต่ละคนอยู่ใน [test/](test/README.md):
+
+| สมาชิก | ขอบเขต | รายงาน |
+|---|---|---|
+| คนที่ 1 ศิฆรินทร์ | Card Catalog, Security, Schema | [test/reports/sikarin/TEST-REPORT.md](test/reports/sikarin/TEST-REPORT.md) |
+| คนที่ 2 สัพพัญญู | Game Account Vault, `CardInventory`, Observer | [test/reports/sapphanyu/TEST-REPORT.md](test/reports/sapphanyu/TEST-REPORT.md) |
+| คนที่ 3 ธนภูมิ | Order Engine, Strategy | [test/reports/tanapoom/TEST-REPORT.md](test/reports/tanapoom/TEST-REPORT.md) |
+| คนที่ 4 แทนคุณ | State Pattern, Trade Matching, Exception Handler | [test/reports/tankun/TEST-REPORT.md](test/reports/tankun/TEST-REPORT.md) |
+| คนที่ 5 สรวิชญ์ | หน้าเว็บ, สิทธิ์ตามบทบาท, Swagger / Health | ยังไม่มีรายงานแยก เทสต์อยู่ที่ `src/test/java/com/pokevault/modules/web` |
 
 GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ทำงานเมื่อ push หรือเปิด Pull Request เข้า `develop` และ `main`:
 
@@ -271,9 +298,9 @@ GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ท�
 | Component & Deployment Diagram | [doc/diagrams/component-deployment-diagram.md](doc/diagrams/component-deployment-diagram.md) |
 | Design Patterns | [doc/design-patterns.md](doc/design-patterns.md) |
 | Security / Core Schema | [doc/sikarin-security-schema.md](doc/sikarin-security-schema.md) |
-| Test Report (ศิฆรินทร์) | [test/reports/sikarin/TEST-REPORT.md](test/reports/sikarin/TEST-REPORT.md) |
 | SOLID Analysis | [doc/solid-analysis.md](doc/solid-analysis.md) |
-| คู่มือการทดสอบ Unit Tests ของคนที่ 4 (นายแทนคุณ พันธ์นิกุล) | [README-TEST.md](README-TEST.md) |
+| คู่มือ Order Engine (คนที่ 3) | [doc/member3-order-engine-guide.md](doc/member3-order-engine-guide.md) |
+| รายงานผลเทสต์ | [test/README.md](test/README.md) และตารางใน [การทดสอบและ CI/CD](#การทดสอบและ-cicd) |
 | โครงร่างสไลด์นำเสนอ | [doc/slide/presentation-outline.md](doc/slide/presentation-outline.md) |
 
 ## การทำงานร่วมกันด้วย Git
@@ -285,12 +312,51 @@ GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ท�
 
 ## ข้อจำกัดที่ทราบ
 
-- REST API ตรวจสิทธิ์ตามบทบาท: แคตตาล็อก/สมัครสมาชิกเป็นสาธารณะ, API จัดการร้านเฉพาะ STAFF/ADMIN, ลูกค้าสร้างและอ่านออเดอร์เฉพาะของตนเอง ดู [Security และ Schema](doc/sikarin-security-schema.md)
-- ปุ่ม Inbox FB เปิดแชท Facebook ของร้านในแท็บใหม่และคัดลอกข้อความให้ ผู้ใช้ต้องวางข้อความเอง
+- ยังไม่ได้ deploy ขึ้น Cloud จึงยังไม่มี Production URL (ดูหัวข้อ [Deployment](#deployment))
+- ลูกค้าสองคนสั่งการ์ดใบสุดท้ายพร้อมกันอาจผ่านทั้งคู่ เพราะยังไม่มี lock ที่สต็อก (`@Version` หรือ pessimistic lock)
+- ปิด CSRF สำหรับ `/api/**` และ session cookie ยังไม่ได้ตั้ง `SameSite` ทั้งที่ API ใช้ session ยืนยันตัวตน
+- จัดการบัญชีเกมได้แค่เพิ่ม ดู และเปลี่ยนสถานะ ยังแก้ไขหรือลบบัญชีไม่ได้ทั้งทาง API และหน้าเว็บ
+- ข้อความ error จาก API (401 / 403 / 409) ยังเป็นภาษาอังกฤษ และหน้าเว็บแสดงข้อความนั้นตรง ๆ
+- ปุ่ม Inbox FB เปิดแชท Facebook ส่วนตัวของสมาชิกในทีม (ยังไม่มีเพจของร้าน) และคัดลอกข้อความให้ ผู้ใช้ต้องวางข้อความเอง
 - การ์ดในฐานข้อมูลมี 28 ใบ แต่มีรูปและสต็อก 12 ใบ แกลเลอรีแสดงเฉพาะการ์ดที่มีสต็อก
-- ข้อความ error บางส่วนจาก API ยังเป็นภาษาอังกฤษ
-- ฐานข้อมูล Docker ที่สร้างจากเวอร์ชันเก่าต้องล้างด้วย `docker compose down -v` ก่อน ข้อมูลตัวอย่างชุดใหม่จึงจะเข้าครบ
+- ตารางในฐานข้อมูลถูกสร้างจาก Entity (`ddl-auto: update`) ฐานข้อมูล PostgreSQL ที่สร้างจากเวอร์ชันเก่าต้องรัน migration เองตาม [doc/sikarin-security-schema.md](doc/sikarin-security-schema.md) หรือล้างด้วย `docker compose down -v`
+- Swagger UI และ `/v3/api-docs` เปิดได้โดยไม่ต้องเข้าสู่ระบบ (H2 Console เปิดเฉพาะ profile `local`) เหมาะกับการสาธิต ไม่เหมาะกับการใช้งานจริง
 
 ## Deployment
 
-ยังไม่ได้ deploy ขึ้น Cloud หัวข้อนี้จะเพิ่มขั้นตอน deploy และ Production URL เมื่อ deploy แล้ว
+**สถานะ: ยังไม่ได้ deploy** CI สร้าง Docker image ขึ้น `ghcr.io` แล้ว แต่ยังไม่มีเว็บที่เปิดผ่าน URL สาธารณะ
+
+| รายการ | ค่า |
+|---|---|
+| Production URL |  |
+| Swagger UI |  |
+| แพลตฟอร์มที่รันแอป |  |
+| ฐานข้อมูล PostgreSQL |  |
+| วันที่ deploy / commit ที่ deploy |  |
+
+### ขั้นตอน deploy (แอปเป็น Docker container + PostgreSQL)
+
+1. สร้างฐานข้อมูล PostgreSQL บน Cloud แล้วจด host, ชื่อฐานข้อมูล, ชื่อผู้ใช้ และรหัสผ่าน
+2. สร้าง Web Service จาก repo นี้โดยใช้ `Dockerfile` ที่ root (branch `main` หลังรวม `develop`)
+3. ตั้งตัวแปรสภาพแวดล้อม:
+
+   | ตัวแปร | ค่า |
+   |---|---|
+   | `SPRING_PROFILES_ACTIVE` | `prod` |
+   | `SPRING_DATASOURCE_URL` | `jdbc:postgresql://<host>:5432/<database>?sslmode=require` |
+   | `SPRING_DATASOURCE_USERNAME` | ชื่อผู้ใช้ฐานข้อมูล |
+   | `SPRING_DATASOURCE_PASSWORD` | รหัสผ่านฐานข้อมูล (บังคับ ไม่ตั้งแอปจะไม่เริ่ม) |
+   | `JAVA_TOOL_OPTIONS` | `-XX:MaxRAMPercentage=75` (สำหรับเครื่องที่มี RAM 512 MB) |
+
+   ไม่ต้องตั้ง `PORT` เอง แอปอ่านค่าที่แพลตฟอร์มกำหนดให้
+4. ตั้ง health check path เป็น `/actuator/health`
+5. เมื่อแอปขึ้นครั้งแรก ตารางและข้อมูลตัวอย่างจาก `data.sql` จะถูกสร้างให้อัตโนมัติ
+
+### รายการตรวจหลัง deploy
+
+- [ ] เปิดหน้าเว็บและ `/swagger-ui.html` ผ่าน URL สาธารณะได้
+- [ ] เข้าสู่ระบบด้วย `admin`, `staff_ash`, `customer_red`
+- [ ] ลูกค้าสั่งซื้อการ์ดจากหน้า `/cards` และเห็นออเดอร์ใน `/my-orders`
+- [ ] พนักงานเลื่อนสถานะออเดอร์ใน `/orders` (ชำระเงิน → เริ่มเทรด)
+- [ ] พนักงานจับคู่บัญชีเกม กดส่งเทรด และปิดออเดอร์จนเป็น `COMPLETED`
+- [ ] ใส่ Production URL ในตารางด้านบนและในสไลด์

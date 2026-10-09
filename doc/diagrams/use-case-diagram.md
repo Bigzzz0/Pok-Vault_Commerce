@@ -234,7 +234,7 @@ flowchart LR
 #### Main Success Scenario
 1. แอดมินเปิดหน้าจอ `/orders` และตรวจสอบหมายเลขคำสั่งซื้อที่ลูกค้าแจ้งในแชท Facebook
 2. แอดมินคลิกปุ่ม "Trade Manager" ประจำออเดอร์นั้น
-3. หน้าต่าง Trade Management Modal เปิดขึ้น ระบบส่งคำขอไปยัง `GET /api/v1/orders/{id}/trade-recommendations`
+3. หน้าต่าง Trade Management Modal เปิดขึ้น ระบบส่งคำขอไปยัง `GET /api/v1/trades/orders/{orderId}/recommendations`
 4. `TradeMatchingServiceImpl` ดำเนินการค้นหาในฐานข้อมูล:
    * ค้นหา `CardInventory` ที่ตรงกับ `card_id` ในออเดอร์ และมี `quantity > 0`
    * ตรวจสอบสถานะของ `GameAccount` ที่เป็นเจ้าของสต็อกการ์ดใบนั้น ต้องเป็น `tradeStatus == READY`

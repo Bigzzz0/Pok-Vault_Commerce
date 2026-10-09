@@ -44,14 +44,15 @@ classDiagram
         }
 
         class WebViewController {
-            -CardService cardService
-            -OrderService orderService
-            -GameAccountService gameAccountService
-            +dashboardView(Model model) String
-            +cardsGalleryView(Model model) String
-            +inventoryMatrixView(Model model) String
-            +ordersView(Model model) String
-            +accountsVaultView(Model model) String
+            -WebPageService webPageService
+            +currentUserId(Principal principal) Long
+            +dashboard(Model model) String
+            +cards(String element, String rarity, String type, String search, Model model) String
+            +inventory(Model model) String
+            +accounts(Model model) String
+            +login() String
+            +orders(Model model) String
+            +myOrders(Principal principal, Model model) String
         }
 
         class GlobalExceptionHandler {
@@ -146,6 +147,133 @@ classDiagram
             +getAllCards(String expansion, String rarity) List~CardResponse~
             +getCardById(Long id) CardResponse
             +searchCards(String query) List~CardResponse~
+        }
+
+        class WebPageService {
+            <<interface>>
+            +findUserId(String username) Optional~Long~
+            +getDashboard() DashboardPage
+            +getCardGallery(String element, String rarity, String type, String search) CardGalleryPage
+            +getInventoryPage() InventoryPage
+            +getAccountsPage() AccountsPage
+            +getAllOrders() List~OrderView~
+            +getOrdersOfUser(String username) List~OrderView~
+        }
+
+        class WebPageServiceImpl {
+            -CardRepository cardRepository
+            -CardExpansionRepository expansionRepository
+            -CardInventoryRepository inventoryRepository
+            -GameAccountRepository gameAccountRepository
+            -OrderRepository orderRepository
+            -UserRepository userRepository
+            -WebViewMapper mapper
+            +findUserId(String username) Optional~Long~
+            +getDashboard() DashboardPage
+            +getCardGallery(String element, String rarity, String type, String search) CardGalleryPage
+            +getInventoryPage() InventoryPage
+            +getAccountsPage() AccountsPage
+            +getAllOrders() List~OrderView~
+            +getOrdersOfUser(String username) List~OrderView~
+        }
+
+        class WebViewMapper {
+            <<component>>
+            +toCardView(Card card, int totalStock, CardInventory offer) CardView
+            +toFilterOption(Enum value, boolean active, String url) FilterOption
+            +toInventoryView(CardInventory inv) InventoryView
+            +toAccountView(GameAccount account, int totalCards) GameAccountView
+            +toCustomerView(User user) CustomerView
+            +toOrderView(Order order) OrderView
+        }
+
+    %% ==========================================
+    %% 2.1 WEB VIEW DTOs (read-only View Models for Thymeleaf, package modules.web.dto.view)
+    %% ==========================================
+    class DashboardPage {
+            +long totalCards
+            +long totalExpansions
+            +long totalOrders
+            +List~CardView~ featuredCards
+        }
+
+        class CardGalleryPage {
+            +List~CardView~ cards
+            +ElementType selectedElement
+            +Rarity selectedRarity
+            +CardType selectedType
+            +String search
+            +List~FilterOption~ elementFilters
+            +List~FilterOption~ rarityFilters
+            +List~FilterOption~ typeFilters
+        }
+
+        class InventoryPage {
+            +List~InventoryView~ inventories
+            +List~CustomerView~ customers
+        }
+
+        class AccountsPage {
+            +List~GameAccountView~ accounts
+            +long readyAccounts
+            +long cooldownAccounts
+            +List~CustomerView~ customers
+        }
+
+        class CardView {
+            +Long id
+            +String name
+            +Rarity rarity
+            +ElementType elementType
+            +String imageUrl
+            +int totalStock
+            +Long orderInventoryId
+            +BigDecimal price
+        }
+
+        class FilterOption {
+            +String name
+            +String label
+            +boolean active
+            +String url
+        }
+
+        class InventoryView {
+            +Long id
+            +String cardName
+            +CardCondition condition
+            +Integer quantity
+            +boolean lowStock
+            +boolean outOfStock
+            +BigDecimal sellingPrice
+        }
+
+        class GameAccountView {
+            +Long id
+            +String accountCode
+            +AccountTradeStatus tradeStatus
+            +int totalCardsCount
+        }
+
+        class CustomerView {
+            +Long id
+            +String username
+            +String displayName
+            +MembershipTier membershipTier
+        }
+
+        class OrderView {
+            +Long id
+            +String orderCode
+            +OrderStatus orderStatus
+            +List~OrderItemView~ items
+            +BigDecimal finalAmount
+        }
+
+        class OrderItemView {
+            +String cardName
+            +Integer quantity
+            +BigDecimal unitPrice
         }
 
     %% ==========================================
@@ -408,6 +536,12 @@ classDiagram
             +findByAssignedAccountId(Long accountId) List~OrderItem~
         }
 
+        class UserRepository {
+            <<interface>>
+            +findByUsername(String username) Optional~User~
+            +findByEmail(String email) Optional~User~
+        }
+
     %% ==========================================
     %% RELATIONSHIPS & REALIZATIONS
     %% ==========================================
@@ -415,9 +549,29 @@ classDiagram
     OrderApiController --> TradeMatchingService
     GameAccountApiController --> GameAccountService
     CardApiController --> CardService
-    WebViewController --> CardService
-    WebViewController --> OrderService
-    WebViewController --> GameAccountService
+    WebViewController --> WebPageService
+
+    WebPageServiceImpl ..|> WebPageService
+    WebPageServiceImpl --> WebViewMapper
+    WebPageServiceImpl --> CardRepository
+    WebPageServiceImpl --> CardExpansionRepository
+    WebPageServiceImpl --> CardInventoryRepository
+    WebPageServiceImpl --> GameAccountRepository
+    WebPageServiceImpl --> OrderRepository
+    WebPageServiceImpl --> UserRepository
+    WebPageService ..> DashboardPage : returns
+    WebPageService ..> CardGalleryPage : returns
+    WebPageService ..> InventoryPage : returns
+    WebPageService ..> AccountsPage : returns
+    WebPageService ..> OrderView : returns
+    DashboardPage o-- CardView
+    CardGalleryPage o-- CardView
+    CardGalleryPage o-- FilterOption
+    InventoryPage o-- InventoryView
+    InventoryPage o-- CustomerView
+    AccountsPage o-- GameAccountView
+    AccountsPage o-- CustomerView
+    OrderView *-- OrderItemView
 
     OrderServiceImpl ..|> OrderService
     TradeMatchingServiceImpl ..|> TradeMatchingService

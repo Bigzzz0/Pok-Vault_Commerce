@@ -156,6 +156,7 @@ sequenceDiagram
     autonumber
     actor Admin as แอดมินร้าน (Admin)
     participant UI as หน้าเว็บจัดการออเดอร์ (/orders)
+    participant TCtrl as TradeMatchingApiController
     participant Ctrl as OrderApiController
     participant TMSvc as TradeMatchingServiceImpl
     participant GARepo as GameAccountRepository
@@ -167,9 +168,9 @@ sequenceDiagram
     Admin->>UI: 1. เปิดหน้ารายการออเดอร์ (/orders) และดูรหัส #ORD-2026-001
     Admin->>UI: 2. คลิกปุ่ม "Trade Manager"
     activate UI
-    UI->>Ctrl: 3. GET /api/v1/orders/{id}/trade-recommendations
-    activate Ctrl
-    Ctrl->>TMSvc: 4. getRecommendations(orderId)
+    UI->>TCtrl: 3. GET /api/v1/trades/orders/{orderId}/recommendations
+    activate TCtrl
+    TCtrl->>TMSvc: 4. getRecommendations(orderId)
     activate TMSvc
 
     TMSvc->>GARepo: 5. ค้นหา GameAccount ที่ถือการ์ดใบนี้ และสถานะ READY
@@ -177,22 +178,22 @@ sequenceDiagram
     GARepo-->>TMSvc: 6. คืนรายชื่อ Candidate Accounts (ApexMaster_01: สต็อก 2 ใบ, พร้อมเทรด)
     deactivate GARepo
 
-    TMSvc-->>Ctrl: 7. TradeRecommendationResponse DTO
+    TMSvc-->>TCtrl: 7. TradeRecommendationResponse DTO
     deactivate TMSvc
-    Ctrl-->>UI: 8. HTTP 200 OK (แสดงรายชื่อไอดีที่ถือการ์ด)
-    deactivate Ctrl
+    TCtrl-->>UI: 8. HTTP 200 OK (แสดงรายชื่อไอดีที่ถือการ์ด)
+    deactivate TCtrl
 
     Admin->>UI: 9. คลิกปุ่ม "⚡ Auto-Match Best Account"
-    UI->>Ctrl: 10. POST /api/v1/orders/{id}/auto-match
-    activate Ctrl
-    Ctrl->>TMSvc: 11. autoMatchBestAccount(orderId)
+    UI->>TCtrl: 10. POST /api/v1/trades/orders/{orderId}/auto-match
+    activate TCtrl
+    TCtrl->>TMSvc: 11. autoMatchOrder(orderId)
     activate TMSvc
     TMSvc->>ORepo: 12. อัปเดต OrderItem (assigned_account_id = 1, trade_status = FRIEND_PENDING)
     ORepo-->>TMSvc: 13. บันทึกสำเร็จ
-    TMSvc-->>Ctrl: 14. return Updated OrderResponse
+    TMSvc-->>TCtrl: 14. return Updated OrderResponse
     deactivate TMSvc
-    Ctrl-->>UI: 15. HTTP 200 OK (แสดงข้อมูลไอดีผู้ส่งเทรด)
-    deactivate Ctrl
+    TCtrl-->>UI: 15. HTTP 200 OK (แสดงข้อมูลไอดีผู้ส่งเทรด)
+    deactivate TCtrl
 
     Note over Admin,State: ดำเนินการชำระเงินตาม State Pattern
     Admin->>UI: 16. แอดมินตรวจสลิปในแชทแล้วคลิกปุ่ม "Pay"
