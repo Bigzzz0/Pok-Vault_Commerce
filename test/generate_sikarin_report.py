@@ -43,7 +43,7 @@ def totals(rows):
 report = {"generated_at": datetime.now().astimezone().isoformat(), "owner": "Sikarin 673380292-5",
           "command": "mvnw.cmd clean test", "whole_suite": totals(suites), "catalog_scope": totals(catalog), "suites": suites}
 (OUT / "summary.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-lines = ["# Test Report — ศิฆรินทร์ อุปจันทร์", "", "Branch: `sikarin_6733802925_02`", "",
+lines = ["# Test Report — ศิฆรินทร์ อุปจันทร์", "", "Branch: `sikarin_6733802925_01`", "",
          f"Report generated: {report['generated_at']}", "", "## ผลการรัน", "",
          "| ขอบเขต | Tests | Failures | Errors | Skipped |", "|---|---:|---:|---:|---:|"]
 for label, values in (("ทั้งโปรเจกต์", report["whole_suite"]), ("Card Catalog / User / Security / Persistence", report["catalog_scope"])):
