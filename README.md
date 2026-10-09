@@ -4,6 +4,8 @@
 
 พัฒนาด้วย Spring Boot 3.4.3 (Java 17) แบบ Layered Architecture และใช้ GoF Behavioral Patterns 3 แบบ คือ Strategy, State และ Observer
 
+**เว็บไซต์ที่ Deploy แล้ว:** [PokéVault Commerce](https://pok-vault-commerce.onrender.com)
+
 ## สารบัญ
 
 - [สมาชิกในทีม](#สมาชิกในทีม)
@@ -321,7 +323,14 @@ GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ท�
 
 ## Deployment
 
-ยังไม่ได้ deploy ขึ้น Cloud หัวข้อนี้จะเพิ่มขั้นตอน deploy และ Production URL เมื่อ deploy แล้ว
+Deploy บน Render โดยใช้ Docker และฐานข้อมูล PostgreSQL บน Neon
+
+| ช่องทาง | URL |
+|---|---|
+| เว็บไซต์ | [PokéVault Commerce](https://pok-vault-commerce.onrender.com) |
+| Swagger UI | [Swagger UI](https://pok-vault-commerce.onrender.com/swagger-ui.html) |
+| OpenAPI JSON | [OpenAPI JSON](https://pok-vault-commerce.onrender.com/v3/api-docs) |
+| Health check | [Health check](https://pok-vault-commerce.onrender.com/actuator/health) |
 
 ## Database Design
 
@@ -336,7 +345,7 @@ H2 ใช้เพื่อพัฒนาและทดสอบ ส่วน�
 ดู [รายการข้อกำหนดและหลักฐาน](doc/requirements-checklist.md) ก่อนส่งงาน
 Source/config อยู่ที่ `code/`, tests และรายงานอยู่ที่ `test/`, เอกสารอยู่ที่ `doc/`, ภาพอยู่ที่ `img/`
 จัด root folders ครบ `code/`, `test/`, `doc/`, `img/` แล้ว Maven อ่าน tests จาก `test/java` และนำ `img/web` ไปบรรจุที่ `static/images` เพื่อคง URL รูปเดิม
-Production URL ยังไม่มีหลักฐานใน repository จึงยังไม่นับว่าผ่านข้อ Deployment
+Production URL: [https://pok-vault-commerce.onrender.com](https://pok-vault-commerce.onrender.com) — ดูลิงก์เว็บไซต์และ API ในหัวข้อ [Deployment](#deployment)
 
 
 ### โครงสร้างสำหรับส่งงาน
