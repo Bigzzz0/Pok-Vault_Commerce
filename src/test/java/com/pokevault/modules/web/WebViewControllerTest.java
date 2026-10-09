@@ -2,25 +2,27 @@ package com.pokevault.modules.web;
 
 import com.pokevault.common.security.CustomUserDetailsService;
 import com.pokevault.common.security.SecurityConfig;
-import com.pokevault.domain.entity.Card;
-import com.pokevault.domain.entity.CardExpansion;
-import com.pokevault.domain.entity.CardInventory;
-import com.pokevault.domain.entity.GameAccount;
-import com.pokevault.domain.entity.Order;
-import com.pokevault.domain.entity.User;
 import com.pokevault.domain.enums.AccountTradeStatus;
+import com.pokevault.domain.enums.CardCondition;
 import com.pokevault.domain.enums.CardType;
 import com.pokevault.domain.enums.ElementType;
+import com.pokevault.domain.enums.MembershipTier;
+import com.pokevault.domain.enums.OrderStatus;
 import com.pokevault.domain.enums.Rarity;
-import com.pokevault.domain.enums.UserRole;
 import com.pokevault.modules.web.controller.WebViewController;
-import com.pokevault.modules.web.service.GuestCustomerInitializer;
-import com.pokevault.repository.CardExpansionRepository;
-import com.pokevault.repository.CardInventoryRepository;
-import com.pokevault.repository.CardRepository;
-import com.pokevault.repository.GameAccountRepository;
-import com.pokevault.repository.OrderRepository;
-import com.pokevault.repository.UserRepository;
+import com.pokevault.modules.web.dto.view.AccountsPage;
+import com.pokevault.modules.web.dto.view.CardGalleryPage;
+import com.pokevault.modules.web.dto.view.CardView;
+import com.pokevault.modules.web.dto.view.CustomerView;
+import com.pokevault.modules.web.dto.view.DashboardPage;
+import com.pokevault.modules.web.dto.view.FilterOption;
+import com.pokevault.modules.web.dto.view.GameAccountView;
+import com.pokevault.modules.web.dto.view.InventoryPage;
+import com.pokevault.modules.web.dto.view.InventoryView;
+import com.pokevault.modules.web.dto.view.OrderItemView;
+import com.pokevault.modules.web.dto.view.OrderView;
+import com.pokevault.modules.web.service.WebPageService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -29,31 +31,31 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,7 +63,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Web MVC Test สำหรับหน้าเว็บ Thymeleaf (WebViewController) + เมนู/สิทธิ์ตามบทบาทผู้ใช้
- * ใช้ repository แบบ mock ไม่แตะฐานข้อมูล จึงไม่ขึ้นกับ data.sql
+ * mock WebPageService แทน Repository: เทสต์ชั้น presentation เท่านั้น (ส่ง parameter ให้ service, ใส่ Model, render template)
+ * กฎของร้านทดสอบแยกใน WebPageServiceTest
  * ผู้รับผิดชอบ: สมาชิกคนที่ 5 (Frontend & Chat Commerce)
  */
 @WebMvcTest(WebViewController.class)
@@ -72,24 +75,47 @@ class WebViewControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private CardRepository cardRepository;
-    @MockitoBean
-    private CardExpansionRepository expansionRepository;
-    @MockitoBean
-    private CardInventoryRepository inventoryRepository;
-    @MockitoBean
-    private GameAccountRepository gameAccountRepository;
-    @MockitoBean
-    private OrderRepository orderRepository;
-    @MockitoBean
-    private UserRepository userRepository;
+    private WebPageService webPageService;
     @MockitoBean
     private CustomUserDetailsService userDetailsService;
     // @EnableJpaAuditing บน PokevaultApplication ต้องการ JPA metamodel ซึ่ง @WebMvcTest ไม่ได้โหลด
     @MockitoBean
     private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
-    private static final CardExpansion A1 = CardExpansion.builder().id(1L).code("A1").name("Genetic Apex").build();
+    private static final CardView CHARIZARD = CardView.builder()
+            .id(2L).name("Charizard ex").cardNumber("280/226").expansionCode("A1")
+            .rarity(Rarity.CROWN_RARE).cardType(CardType.POKEMON).elementType(ElementType.FIRE).hp(180)
+            .imageUrl("/images/cards/A1_280_EN.png").totalStock(2).orderInventoryId(22L).price(new BigDecimal("1500.00"))
+            .build();
+
+    private static final CustomerView RED = CustomerView.builder()
+            .id(7L).username("customer_red").email("red@pokevault.local").displayName("Red")
+            .membershipTier(MembershipTier.VIP).build();
+
+    private static final OrderView ORDER = OrderView.builder()
+            .id(9L).orderCode("ORD-2026-009").createdAt(LocalDateTime.of(2026, 10, 9, 14, 30))
+            .username("customer_red").customerFullName("Red").customerFriendId("1234-5678-9012-3456")
+            .customerInGameName("RedMaster").membershipTier(MembershipTier.VIP).orderStatus(OrderStatus.PENDING)
+            .items(List.of(OrderItemView.builder().cardName("Charizard ex").imageUrl("/images/cards/A1_280_EN.png")
+                    .expansionCode("A1").cardNumber("280/226").quantity(1).unitPrice(new BigDecimal("1500.00")).build()))
+            .discountAmount(new BigDecimal("150.00")).finalAmount(new BigDecimal("1350.00"))
+            .build();
+
+    /** หน้าที่ไม่มีข้อมูล: ให้ทุกหน้า render ได้ในเทสต์เรื่องสิทธิ์/navbar */
+    @BeforeEach
+    void emptyPages() {
+        when(webPageService.getDashboard()).thenReturn(DashboardPage.builder().featuredCards(List.of()).build());
+        when(webPageService.getCardGallery(any(), any(), any(), any())).thenReturn(CardGalleryPage.builder()
+                .cards(List.of()).elementFilters(List.of()).rarityFilters(List.of()).typeFilters(List.of())
+                .allElementsUrl("/cards").allRaritiesUrl("/cards").allTypesUrl("/cards").build());
+        when(webPageService.getInventoryPage()).thenReturn(InventoryPage.builder()
+                .inventories(List.of()).customers(List.of()).build());
+        when(webPageService.getAccountsPage()).thenReturn(AccountsPage.builder()
+                .accounts(List.of()).customers(List.of()).build());
+        when(webPageService.getAllOrders()).thenReturn(List.of());
+        when(webPageService.getOrdersOfUser(any())).thenReturn(List.of());
+        when(webPageService.findUserId(any())).thenReturn(Optional.empty());
+    }
 
     @Nested
     @DisplayName("สิทธิ์เข้าถึงหน้าและเมนู navbar")
@@ -225,253 +251,148 @@ class WebViewControllerTest {
     }
 
     @Nested
-    @DisplayName("แกลเลอรีการ์ด /cards")
-    class CardGallery {
+    @DisplayName("ข้อมูลจาก WebPageService ลง Model และ render ด้วย template จริง")
+    class PageModels {
 
-        private final Card venusaur = card(1L, "004/226", "Venusaur ex", Rarity.DOUBLE_RARE, ElementType.GRASS, CardType.POKEMON);
-        private final Card charizard = card(2L, "035/226", "Charizard", Rarity.RARE, ElementType.FIRE, CardType.POKEMON);
-        private final Card charmander = card(3L, "033/226", "Charmander", Rarity.COMMON, ElementType.FIRE, CardType.POKEMON);
-        private final Card sabrina = card(4L, "225/226", "Sabrina", Rarity.UNCOMMON, null, CardType.TRAINER_SUPPORTER);
+        @Test
+        @DisplayName("หน้าแรก: ใส่ตัวเลขสรุปและการ์ด Spotlight จาก service")
+        void dashboard_PutsServiceDataInModel() throws Exception {
+            List<CardView> featured = List.of(CHARIZARD);
+            when(webPageService.getDashboard()).thenReturn(DashboardPage.builder()
+                    .totalCards(28).totalExpansions(2).totalOrders(5).featuredCards(featured).build());
 
-        private void givenCatalog() {
-            when(cardRepository.findAll(any(Sort.class))).thenReturn(List.of(venusaur, charizard, charmander, sabrina));
-            when(inventoryRepository.findAll()).thenReturn(List.of(
-                    inventory(10L, venusaur, 3, "180.00"),
-                    inventory(11L, charizard, 5, "60.00"),
-                    inventory(12L, charmander, 0, "10.00"),
-                    inventory(13L, sabrina, 2, "40.00")));
+            mockMvc.perform(get("/"))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("dashboard"))
+                    .andExpect(model().attribute("featuredCards", sameInstance(featured)))
+                    .andExpect(model().attribute("totalCards", 28L))
+                    .andExpect(model().attribute("totalExpansions", 2L))
+                    .andExpect(model().attribute("totalOrders", 5L))
+                    .andExpect(content().string(containsString("Charizard ex")));
         }
 
         @Test
-        @DisplayName("แสดงเฉพาะการ์ดที่มีสต็อก > 0")
-        void showsOnlyCardsInStock() throws Exception {
-            givenCatalog();
+        @DisplayName("/cards: ส่ง parameter ตัวกรองให้ service ตามที่รับมา และใส่ผลลัพธ์ทุกตัวลง Model")
+        void cards_ForwardsFiltersAndPutsGalleryInModel() throws Exception {
+            List<CardView> cards = List.of(CHARIZARD);
+            List<FilterOption> rarityPills = List.of(FilterOption.builder().name("CROWN_RARE").label("Crown Rare")
+                    .active(true).url("/cards?element=FIRE&rarity=CROWN_RARE&search=char").build());
+            when(webPageService.getCardGallery("FIRE", "crown_rare", "POKEMON", "char")).thenReturn(CardGalleryPage.builder()
+                    .cards(cards).selectedElement(ElementType.FIRE).selectedRarity(Rarity.CROWN_RARE)
+                    .selectedType(CardType.POKEMON).search("char")
+                    .allElementsUrl("/cards?rarity=CROWN_RARE&type=POKEMON&search=char").elementFilters(List.of())
+                    .allRaritiesUrl("/cards?element=FIRE&type=POKEMON&search=char").rarityFilters(rarityPills)
+                    .allTypesUrl("/cards?element=FIRE&rarity=CROWN_RARE&search=char").typeFilters(List.of())
+                    .build());
 
-            MvcResult result = mockMvc.perform(get("/cards")).andExpect(status().isOk()).andReturn();
+            mockMvc.perform(get("/cards").param("element", "FIRE").param("rarity", "crown_rare")
+                            .param("type", "POKEMON").param("search", "char"))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("cards"))
+                    .andExpect(model().attribute("cards", sameInstance(cards)))
+                    .andExpect(model().attribute("totalElements", 1))
+                    .andExpect(model().attribute("selectedElement", ElementType.FIRE))
+                    .andExpect(model().attribute("selectedRarity", Rarity.CROWN_RARE))
+                    .andExpect(model().attribute("selectedType", CardType.POKEMON))
+                    .andExpect(model().attribute("search", "char"))
+                    .andExpect(model().attribute("rarityFilters", sameInstance(rarityPills)))
+                    .andExpect(model().attribute("allElementsUrl", "/cards?rarity=CROWN_RARE&type=POKEMON&search=char"))
+                    .andExpect(content().string(containsString("Charizard ex")))
+                    .andExpect(content().string(containsString("Crown Rare")));
 
-            assertThat(cardNames(result)).containsExactly("Venusaur ex", "Charizard", "Sabrina");
-            assertThat(result.getModelAndView().getModel().get("totalElements")).isEqualTo(3);
-        }
-
-        @Test
-        @DisplayName("กรองธาตุ: การ์ด Trainer ที่ไม่มีธาตุนับเป็น COLORLESS")
-        void filterByElement_TreatsTrainerAsColorless() throws Exception {
-            givenCatalog();
-
-            assertThat(cardNames(mockMvc.perform(get("/cards").param("element", "fire")).andReturn()))
-                    .containsExactly("Charizard");
-            assertThat(cardNames(mockMvc.perform(get("/cards").param("element", "COLORLESS")).andReturn()))
-                    .containsExactly("Sabrina");
-        }
-
-        @Test
-        @DisplayName("ตัวกรอง rarity, ประเภท และคำค้น (ไม่สนตัวพิมพ์/ช่องว่าง) ใช้ร่วมกันได้")
-        void filtersCombine() throws Exception {
-            givenCatalog();
-
-            assertThat(cardNames(mockMvc.perform(get("/cards").param("rarity", "DOUBLE_RARE")).andReturn()))
-                    .containsExactly("Venusaur ex");
-            assertThat(cardNames(mockMvc.perform(get("/cards").param("type", "TRAINER_SUPPORTER")).andReturn()))
-                    .containsExactly("Sabrina");
-            assertThat(cardNames(mockMvc.perform(get("/cards").param("search", "  CHAR ")).andReturn()))
-                    .containsExactly("Charizard");
-            assertThat(cardNames(mockMvc.perform(get("/cards").param("search", "char").param("element", "GRASS")).andReturn()))
-                    .isEmpty();
-        }
-
-        @Test
-        @DisplayName("ค่าตัวกรองที่ไม่มีใน enum ถูกเมิน แสดงการ์ดทั้งหมดแทน error")
-        void unknownFilterValue_IsIgnored() throws Exception {
-            givenCatalog();
-
-            MvcResult result = mockMvc.perform(get("/cards").param("rarity", "MEGA_RARE").param("element", "x"))
-                    .andExpect(status().isOk()).andReturn();
-
-            assertThat(cardNames(result)).hasSize(3);
-            assertThat(result.getModelAndView().getModel().get("selectedRarity")).isNull();
-            assertThat(result.getModelAndView().getModel().get("selectedElement")).isNull();
-        }
-
-        @Test
-        @DisplayName("ลิงก์ pill ตัวกรองแต่ละอันคงตัวกรองแถวอื่นและคำค้นไว้")
-        @SuppressWarnings("unchecked")
-        void filterPillUrls_KeepOtherFiltersAndSearch() throws Exception {
-            givenCatalog();
-
-            Map<String, Object> model = mockMvc.perform(get("/cards").param("element", "FIRE").param("search", "char"))
-                    .andReturn().getModelAndView().getModel();
-
-            List<Map<String, Object>> rarityPills = (List<Map<String, Object>>) model.get("rarityFilters");
-            Map<String, Object> doubleRare = rarityPills.stream()
-                    .filter(p -> p.get("name").equals("DOUBLE_RARE")).findFirst().orElseThrow();
-            assertThat(doubleRare.get("url")).isEqualTo("/cards?element=FIRE&rarity=DOUBLE_RARE&search=char");
-            assertThat(doubleRare.get("label")).isEqualTo("Double Rare");
-            assertThat(model.get("allElementsUrl")).isEqualTo("/cards?search=char");
-
-            List<Map<String, Object>> elementPills = (List<Map<String, Object>>) model.get("elementFilters");
-            assertThat(elementPills).filteredOn(p -> (boolean) p.get("active"))
-                    .extracting(p -> p.get("name")).containsExactly("FIRE");
-        }
-
-        @Test
-        @DisplayName("ราคาที่แสดงมาจากล็อตที่ถูกที่สุดที่ยังมีของ และนับสต็อกรวมทุกล็อต")
-        void price_ComesFromCheapestInventoryWithStock() throws Exception {
-            when(cardRepository.findAll(any(Sort.class))).thenReturn(List.of(charizard));
-            when(inventoryRepository.findAll()).thenReturn(List.of(
-                    inventory(20L, charizard, 1, "300.00"),
-                    inventory(21L, charizard, 0, "250.00"),
-                    inventory(22L, charizard, 2, "280.00")));
-
-            Map<String, Object> view = cardViews(mockMvc.perform(get("/cards")).andReturn()).get(0);
-
-            assertThat((BigDecimal) view.get("price")).isEqualByComparingTo("280.00");
-            assertThat(view.get("orderInventoryId")).isEqualTo(22L);
-            assertThat(view.get("totalStock")).isEqualTo(3);
-        }
-
-        @Test
-        @DisplayName("รูปการ์ดใช้ไฟล์ใน static/images/cards ถ้ามี ไม่มีก็ใช้หลังการ์ด")
-        void imageUrl_UsesBundledImageOrCardBack() throws Exception {
-            Card noImage = card(9L, "999/226", "Missing Image", Rarity.COMMON, ElementType.WATER, CardType.POKEMON);
-            when(cardRepository.findAll(any(Sort.class))).thenReturn(List.of(venusaur, noImage));
-            when(inventoryRepository.findAll()).thenReturn(List.of(
-                    inventory(10L, venusaur, 1, "180.00"), inventory(30L, noImage, 1, "5.00")));
-
-            List<Map<String, Object>> views = cardViews(mockMvc.perform(get("/cards")).andReturn());
-
-            assertThat(views).extracting(v -> v.get("imageUrl"))
-                    .containsExactly("/images/cards/A1_004_EN.png", "/images/cards/card-back.jpg");
-        }
-    }
-
-    @Nested
-    @DisplayName("หน้าแรก / คลัง / บัญชีเกม / คำสั่งซื้อของฉัน")
-    class OtherPages {
-
-        @Test
-        @DisplayName("หน้าแรก: Spotlight แสดงเฉพาะการ์ดที่มีสต็อก ไม่เกิน 6 ใบ")
-        void dashboard_FeaturedCards_InStockOnly_MaxSix() throws Exception {
-            List<Card> cards = new java.util.ArrayList<>();
-            List<CardInventory> stock = new java.util.ArrayList<>();
-            for (long id = 1; id <= 8; id++) {
-                Card c = card(id, String.format("%03d/226", id), "Card " + id, Rarity.COMMON, ElementType.WATER, CardType.POKEMON);
-                cards.add(c);
-                // การ์ดใบที่ 1 หมดสต็อก จึงต้องไม่ขึ้น Spotlight
-                stock.add(inventory(100 + id, c, id == 1 ? 0 : 1, "10.00"));
-            }
-            when(cardRepository.findAll(any(Sort.class))).thenReturn(cards);
-            when(inventoryRepository.findAll()).thenReturn(stock);
-            when(cardRepository.count()).thenReturn(28L);
-
-            MvcResult result = mockMvc.perform(get("/")).andExpect(view().name("dashboard")).andReturn();
-
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> featured = (List<Map<String, Object>>) result.getModelAndView().getModel().get("featuredCards");
-            assertThat(featured).extracting(v -> v.get("name"))
-                    .containsExactly("Card 2", "Card 3", "Card 4", "Card 5", "Card 6", "Card 7");
-            assertThat(result.getModelAndView().getModel().get("totalCards")).isEqualTo(28L);
+            verify(webPageService).getCardGallery("FIRE", "crown_rare", "POKEMON", "char");
         }
 
         @Test
         @WithMockUser(username = "staff_ash", roles = "STAFF")
-        @DisplayName("คลัง: ฟอร์มจองแสดงเฉพาะลูกค้า โดยบัญชี Facebook Guest อยู่อันดับแรก")
-        @SuppressWarnings("unchecked")
-        void inventory_BookingCustomers_OnlyCustomers_GuestFirst() throws Exception {
-            when(userRepository.findAll(any(Sort.class))).thenReturn(List.of(
-                    user(1L, "admin", UserRole.ADMIN),
-                    user(2L, "customer_red", UserRole.CUSTOMER),
-                    user(3L, GuestCustomerInitializer.GUEST_USERNAME, UserRole.CUSTOMER)));
+        @DisplayName("/inventory: ใส่สต็อกและรายชื่อลูกค้าจาก service")
+        void inventory_PutsServiceDataInModel() throws Exception {
+            List<InventoryView> rows = List.of(InventoryView.builder().id(22L).cardName("Charizard ex")
+                    .cardNumber("280/226").expansionCode("A1").imageUrl("/images/cards/A1_280_EN.png")
+                    .condition(CardCondition.MINT).quantity(2).lowStock(true).outOfStock(false)
+                    .buyInPrice(new BigDecimal("900.00")).sellingPrice(new BigDecimal("1500.00")).storageSlot("A-01")
+                    .build());
+            List<CustomerView> customers = List.of(RED);
+            when(webPageService.getInventoryPage()).thenReturn(InventoryPage.builder()
+                    .inventories(rows).customers(customers).build());
 
-            Map<String, Object> model = mockMvc.perform(get("/inventory")).andReturn().getModelAndView().getModel();
-
-            assertThat((List<Map<String, Object>>) model.get("customers")).extracting(c -> c.get("username"))
-                    .containsExactly(GuestCustomerInitializer.GUEST_USERNAME, "customer_red");
+            mockMvc.perform(get("/inventory"))
+                    .andExpect(status().isOk())
+                    .andExpect(model().attribute("inventories", sameInstance(rows)))
+                    .andExpect(model().attribute("totalElements", 1))
+                    .andExpect(model().attribute("customers", sameInstance(customers)))
+                    .andExpect(content().string(containsString("Charizard ex")))
+                    .andExpect(content().string(containsString("Red (VIP)")));
         }
 
         @Test
         @WithMockUser(username = "staff_ash", roles = "STAFF")
-        @DisplayName("คลัง: ติดป้ายสต็อกใกล้หมด (≤ 2) และหมดสต็อก")
-        @SuppressWarnings("unchecked")
-        void inventory_FlagsLowAndOutOfStock() throws Exception {
-            Card c = card(1L, "004/226", "Venusaur ex", Rarity.DOUBLE_RARE, ElementType.GRASS, CardType.POKEMON);
-            when(inventoryRepository.findAll(any(Sort.class))).thenReturn(List.of(
-                    inventory(1L, c, 5, "180.00"), inventory(2L, c, 2, "180.00"), inventory(3L, c, 0, "180.00")));
+        @DisplayName("/accounts: ใส่บัญชีเกม สรุปสถานะ ลูกค้า และระดับสมาชิกทั้งหมด")
+        void accounts_PutsServiceDataInModel() throws Exception {
+            List<GameAccountView> accounts = List.of(GameAccountView.builder().id(1L).accountCode("PV-ACC-01")
+                    .inGameName("VaultKeeper").friendId("1111-2222-3333-4444").tradeStatus(AccountTradeStatus.READY)
+                    .buyInCost(new BigDecimal("300.00")).notes("main").totalCardsCount(7).build());
+            List<CustomerView> customers = List.of(RED);
+            when(webPageService.getAccountsPage()).thenReturn(AccountsPage.builder()
+                    .accounts(accounts).readyAccounts(1).cooldownAccounts(0).customers(customers).build());
 
-            List<Map<String, Object>> rows = (List<Map<String, Object>>) mockMvc.perform(get("/inventory"))
-                    .andReturn().getModelAndView().getModel().get("inventories");
-
-            assertThat(rows).extracting(r -> r.get("lowStock")).containsExactly(false, true, true);
-            assertThat(rows).extracting(r -> r.get("outOfStock")).containsExactly(false, false, true);
+            mockMvc.perform(get("/accounts"))
+                    .andExpect(status().isOk())
+                    .andExpect(model().attribute("accounts", sameInstance(accounts)))
+                    .andExpect(model().attribute("totalAccounts", 1))
+                    .andExpect(model().attribute("readyAccounts", 1L))
+                    .andExpect(model().attribute("cooldownAccounts", 0L))
+                    .andExpect(model().attribute("customers", sameInstance(customers)))
+                    .andExpect(model().attribute("membershipTiers", MembershipTier.values()))
+                    .andExpect(content().string(containsString("PV-ACC-01")));
         }
 
         @Test
         @WithMockUser(username = "staff_ash", roles = "STAFF")
-        @DisplayName("บัญชีเกม: นับสถานะ READY/COOLDOWN และจำนวนการ์ดในแต่ละบัญชี; ตารางลูกค้าไม่รวม Guest")
-        @SuppressWarnings("unchecked")
-        void accounts_CountsStatusesAndCardsPerAccount() throws Exception {
-            GameAccount ready = GameAccount.builder().id(1L).accountCode("PV-ACC-01").tradeStatus(AccountTradeStatus.READY).build();
-            GameAccount cooldown = GameAccount.builder().id(2L).accountCode("PV-ACC-02").tradeStatus(AccountTradeStatus.COOLDOWN).build();
-            Card c = card(1L, "004/226", "Venusaur ex", Rarity.DOUBLE_RARE, ElementType.GRASS, CardType.POKEMON);
-            CardInventory a = inventory(1L, c, 3, "180.00");
-            a.setGameAccount(ready);
-            CardInventory b = inventory(2L, c, 4, "180.00");
-            b.setGameAccount(ready);
-            when(gameAccountRepository.findAll(any(Sort.class))).thenReturn(List.of(ready, cooldown));
-            when(inventoryRepository.findAll()).thenReturn(List.of(a, b));
-            when(userRepository.findAll(any(Sort.class))).thenReturn(List.of(
-                    user(2L, "customer_red", UserRole.CUSTOMER),
-                    user(3L, GuestCustomerInitializer.GUEST_USERNAME, UserRole.CUSTOMER)));
+        @DisplayName("/orders: ใส่ออเดอร์ทั้งหมดของร้านจาก service")
+        void orders_PutsAllOrdersInModel() throws Exception {
+            List<OrderView> orders = List.of(ORDER);
+            when(webPageService.getAllOrders()).thenReturn(orders);
 
-            Map<String, Object> model = mockMvc.perform(get("/accounts")).andExpect(status().isOk())
-                    .andReturn().getModelAndView().getModel();
-
-            assertThat(model.get("readyAccounts")).isEqualTo(1L);
-            assertThat(model.get("cooldownAccounts")).isEqualTo(1L);
-            assertThat((List<Map<String, Object>>) model.get("accounts")).extracting(v -> v.get("totalCardsCount"))
-                    .containsExactly(7, 0);
-            assertThat((List<Map<String, Object>>) model.get("customers")).extracting(v -> v.get("username"))
-                    .containsExactly("customer_red");
+            mockMvc.perform(get("/orders"))
+                    .andExpect(status().isOk())
+                    .andExpect(model().attribute("orders", sameInstance(orders)))
+                    .andExpect(content().string(containsString("ORD-2026-009")))
+                    .andExpect(content().string(containsString("2026-10-09 14:30")));
         }
 
         @Test
         @WithMockUser(username = "customer_red", roles = "CUSTOMER")
-        @DisplayName("คำสั่งซื้อของฉัน: แสดงเฉพาะออเดอร์ของผู้ใช้ที่ล็อกอิน เรียงใหม่สุดก่อน")
-        @SuppressWarnings("unchecked")
-        void myOrders_ShowsOnlySignedInUsersOrders_NewestFirst() throws Exception {
-            User red = user(7L, "customer_red", UserRole.CUSTOMER);
-            when(userRepository.findByUsername("customer_red")).thenReturn(Optional.of(red));
-            when(orderRepository.findByUserId(7L)).thenReturn(List.of(
-                    Order.builder().id(3L).orderCode("ORD-003").user(red).build(),
-                    Order.builder().id(9L).orderCode("ORD-009").user(red).build()));
+        @DisplayName("/my-orders: ขอเฉพาะออเดอร์ของผู้ใช้ที่ล็อกอิน ไม่ดึงออเดอร์ทั้งร้าน")
+        void myOrders_AsksOnlyForSignedInUsersOrders() throws Exception {
+            List<OrderView> orders = List.of(ORDER);
+            when(webPageService.getOrdersOfUser("customer_red")).thenReturn(orders);
 
-            Map<String, Object> model = mockMvc.perform(get("/my-orders")).andExpect(status().isOk())
-                    .andReturn().getModelAndView().getModel();
+            mockMvc.perform(get("/my-orders"))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("my-orders"))
+                    .andExpect(model().attribute("orders", sameInstance(orders)))
+                    .andExpect(content().string(containsString("ORD-2026-009")));
 
-            assertThat((List<Map<String, Object>>) model.get("orders")).extracting(o -> o.get("orderCode"))
-                    .containsExactly("ORD-009", "ORD-003");
-            verify(orderRepository, never()).findAll(any(Sort.class));
+            verify(webPageService).getOrdersOfUser("customer_red");
+            verify(webPageService, never()).getAllOrders();
         }
-    }
 
-    private static Card card(Long id, String number, String name, Rarity rarity, ElementType element, CardType type) {
-        return Card.builder().id(id).expansion(A1).cardNumber(number).name(name)
-                .rarity(rarity).elementType(element).cardType(type).hp(100).build();
-    }
+        @Test
+        @WithMockUser(username = "customer_red", roles = "CUSTOMER")
+        @DisplayName("currentUserId: ผู้ใช้ที่ล็อกอินได้ id จาก service (ใช้กับฟอร์มสั่งซื้อ)")
+        void currentUserId_ForSignedInUser() throws Exception {
+            when(webPageService.findUserId("customer_red")).thenReturn(Optional.of(7L));
 
-    private static CardInventory inventory(Long id, Card card, int quantity, String price) {
-        return CardInventory.builder().id(id).card(card).quantity(quantity).sellingPrice(new BigDecimal(price)).build();
-    }
+            mockMvc.perform(get("/cards")).andExpect(model().attribute("currentUserId", 7L));
+        }
 
-    private static User user(Long id, String username, UserRole role) {
-        return User.builder().id(id).username(username).email(username + "@pokevault.local").role(role).build();
-    }
+        @Test
+        @DisplayName("currentUserId: guest ได้ null และไม่เรียก service")
+        void currentUserId_ForGuest_IsNull() throws Exception {
+            mockMvc.perform(get("/cards")).andExpect(model().attribute("currentUserId", nullValue()));
 
-    @SuppressWarnings("unchecked")
-    private static List<Map<String, Object>> cardViews(MvcResult result) {
-        return (List<Map<String, Object>>) result.getModelAndView().getModel().get("cards");
-    }
-
-    private static List<Object> cardNames(MvcResult result) {
-        return cardViews(result).stream().map(v -> v.get("name")).toList();
+            verify(webPageService, never()).findUserId(any());
+        }
     }
 }
