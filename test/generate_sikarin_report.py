@@ -1,6 +1,6 @@
 """Generate an evidence report from the latest Maven Surefire XML results.
 
-Run `mvnw.cmd clean test` first, then `python test/generate_sikarin_report.py`.
+Run `code/mvnw.cmd -f code/pom.xml clean test` first, then `python test/generate_sikarin_report.py`.
 Uses only the Python standard library; never runs or modifies application code.
 """
 from pathlib import Path
@@ -9,7 +9,7 @@ import json
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "target" / "surefire-reports"
+SOURCE = ROOT / "code" / "target" / "surefire-reports"
 OUT = ROOT / "test" / "reports" / "sikarin"
 paths = sorted(SOURCE.glob("TEST-*.xml"))
 if not paths:
@@ -41,7 +41,7 @@ def totals(rows):
     return {key: sum(row[key] for row in rows) for key in ("tests", "failures", "errors", "skipped")}
 
 report = {"generated_at": datetime.now().astimezone().isoformat(), "owner": "Sikarin 673380292-5",
-          "command": "mvnw.cmd clean test", "whole_suite": totals(suites), "catalog_scope": totals(catalog), "suites": suites}
+          "command": "code/mvnw.cmd -f code/pom.xml clean test", "whole_suite": totals(suites), "catalog_scope": totals(catalog), "suites": suites}
 (OUT / "summary.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 lines = ["# Test Report — ศิฆรินทร์ อุปจันทร์", "", "Branch: `sikarin_6733802925_01`", "",
          f"Report generated: {report['generated_at']}", "", "## ผลการรัน", "",
@@ -62,10 +62,10 @@ lines += ["", "## สิ่งที่ทดสอบ", "",
           "- OrderAccessPolicyTest: ตรวจ anonymous/unknown role, identity และบัญชีที่ไม่อยู่ในฐานข้อมูล",
           "- CustomUserDetailsServiceTest: ชุดทดสอบ authentication เดิม",
           "", "## วิธีรันซ้ำ", "", "```powershell", "$env:JAVA_HOME='C:\\Program Files\\Android\\Android Studio\\jbr'",
-          ".\\mvnw.cmd clean test", "python test/generate_sikarin_report.py", "```", "",
+          ".\\code\\mvnw.cmd -f code/pom.xml clean test", "python test/generate_sikarin_report.py", "```", "",
           "รันเฉพาะส่วนของศิฆรินทร์:", "", "```powershell",
-          ".\\mvnw.cmd '-Dtest=CardServiceTest,CardServiceEdgeCaseTest,UserServiceTest,CardApiControllerTest,CatalogPersistenceTest,CatalogSchemaSqlTest,ApiAuthorizationTest,OrderAccessPolicyTest,CustomUserDetailsServiceTest' clean test", "```", "",
-          "หากรันเฉพาะส่วน อย่านับผลเก่าที่ค้างใน target/surefire-reports เป็นผลการรันใหม่ ให้ใช้ clean ก่อนเมื่อสร้างรายงาน", "",
+          ".\\code\\mvnw.cmd -f code/pom.xml '-Dtest=CardServiceTest,CardServiceEdgeCaseTest,UserServiceTest,CardApiControllerTest,CatalogPersistenceTest,CatalogSchemaSqlTest,ApiAuthorizationTest,OrderAccessPolicyTest,CustomUserDetailsServiceTest' clean test", "```", "",
+          "หากรันเฉพาะส่วน อย่านับผลเก่าที่ค้างใน code/target/surefire-reports เป็นผลการรันใหม่ ให้ใช้ clean ก่อนเมื่อสร้างรายงาน", "",
           "## ขอบเขตและข้อจำกัด", "",
           "- ทดสอบ production SecurityConfig, OrderAccessPolicy, ownership annotations และ core schema ที่แก้ในรอบนี้ด้วย",
           "- H2 ใช้ฐานข้อมูลแยกจากแอป, rollback หลังแต่ละเทสต์ฐานข้อมูล; schema test เปิด SQL seed จริง",

@@ -1,0 +1,479 @@
+{
+  "generated_at": "2026-10-09T20:32:29.821969+07:00",
+  "timezone": "Asia/Bangkok",
+  "commit": "82c449b857d32dc7ad231e97a57ba3ebd976c761",
+  "branch": "sikarin_6733802925_01",
+  "command": "code/mvnw.cmd -f code/pom.xml clean verify",
+  "exit_code": 0,
+  "build": "BUILD SUCCESS",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "java": "openjdk version \"21.0.10\" 2026-01-20\nOpenJDK Runtime Environment (build 21.0.10+-14961533-b1163.108)\nOpenJDK 64-Bit Server VM (build 21.0.10+-14961533-b1163.108, mixed mode)",
+  "database": "Local H2; includes H2 PostgreSQL mode tests, not a live PostgreSQL server",
+  "tracked_source_sha256": "98ab0cc2bddbbb1825d0e0e615f0b1fe8ee069d061c9ddc990a4fb03acfca502",
+  "source_diff_from_commit": "",
+  "maven_total_time": "46.613 s",
+  "whole_suite": {
+    "tests": 373,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "suite": "com.pokevault.common.exception.CustomExceptionTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.075
+    },
+    {
+      "suite": "com.pokevault.common.security.ApiAuthorizationTest",
+      "tests": 36,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 17.534
+    },
+    {
+      "suite": "com.pokevault.common.security.CustomUserDetailsServiceTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.238
+    },
+    {
+      "suite": "com.pokevault.common.security.OrderAccessPolicyTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.005
+    },
+    {
+      "suite": "com.pokevault.domain.entity.CardInventoryTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.007
+    },
+    {
+      "suite": "com.pokevault.modules.catalog.CardApiControllerTest",
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.272
+    },
+    {
+      "suite": "com.pokevault.modules.catalog.CardServiceEdgeCaseTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.124
+    },
+    {
+      "suite": "com.pokevault.modules.catalog.CardServiceTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.022
+    },
+    {
+      "suite": "com.pokevault.modules.catalog.CatalogPersistenceTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.632
+    },
+    {
+      "suite": "com.pokevault.modules.catalog.CatalogSchemaSqlTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 1.374
+    },
+    {
+      "suite": "com.pokevault.modules.catalog.UserServiceTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.062
+    },
+    {
+      "suite": "com.pokevault.modules.order.DiscountStrategyEdgeCaseTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.01
+    },
+    {
+      "suite": "com.pokevault.modules.order.DiscountStrategyTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.003
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderApiControllerTest",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.128
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderBookingApiControllerTest",
+      "tests": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.395
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderBookingApiSecurityTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.905
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderPersistenceTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.992
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderServiceEdgeCaseTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.33
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderServiceTest",
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.125
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderStockAndSecurityTest$CancelOrderRestorationTests",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.007
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderStockAndSecurityTest$LastCardMatchingTests",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.012
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderStockAndSecurityTest$MultiItemRollbackTests",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.004
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderStockAndSecurityTest$OwnershipSecurityTests",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.084
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderStockAndSecurityTest$ReassignAccountTests",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.016
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderStockAndSecurityTest",
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.128
+    },
+    {
+      "suite": "com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.019
+    },
+    {
+      "suite": "com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.227
+    },
+    {
+      "suite": "com.pokevault.modules.trade.dto.TradeRecommendationResponseTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.001
+    },
+    {
+      "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest$AutoMatchAlgorithmTests",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.01
+    },
+    {
+      "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest$BatchAutoMatchTests",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.005
+    },
+    {
+      "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest$CardConditionMatchingTests",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.025
+    },
+    {
+      "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest$ManualAssignmentTests",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.017
+    },
+    {
+      "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest$RecommendationQueryTests",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.009
+    },
+    {
+      "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest",
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.073
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$CancellationTests",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.002
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$CancelledOrderStateEdgeCaseTests",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.001
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$ExecuteActionStringTests",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.002
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$FactoryMethodTests",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.002
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$HappyPathTests",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.001
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$IllegalTransitionTests",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.002
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$OrderContextMutatorTests",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.002
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$ShippingGuardTests",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.003
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$TerminalStateTests",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.003
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest",
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.024
+    },
+    {
+      "suite": "com.pokevault.modules.vault.observer.LowStockObserverTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.013
+    },
+    {
+      "suite": "com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.016
+    },
+    {
+      "suite": "com.pokevault.modules.vault.service.GameAccountServiceTest$AddPulledCardTests",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.014
+    },
+    {
+      "suite": "com.pokevault.modules.vault.service.GameAccountServiceTest",
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.051
+    },
+    {
+      "suite": "com.pokevault.modules.web.PlatformEndpointsTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 2.365
+    },
+    {
+      "suite": "com.pokevault.modules.web.RegistrationServiceTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.14
+    },
+    {
+      "suite": "com.pokevault.modules.web.StoreAdminServiceTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.006
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebPageServiceTest$CardGallery",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.011
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebPageServiceTest",
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.032
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.156
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest$LoginPage",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.232
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest$PageModels",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.973
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest",
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 1.374
+    }
+  ]
+}

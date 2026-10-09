@@ -268,16 +268,19 @@ erDiagram
 
 ## 3. การวิเคราะห์ความสัมพันธ์และ Cardinality (JPA Mapping Analysis)
 
-| ตารางหลัก (Parent Entity) | ตารางลูก (Child Entity) | ความสัมพันธ์ (Cardinality) | Foreign Key Column | การตั้งค่า JPA Annotations | พฤติกรรมเมื่อลบข้อมูล (Cascade / Orphan Behavior) |
-| :--- | :--- | :---: | :--- | :--- | :--- |
-| **`users`** | **`user_profiles`** | **1 : 1** (One-to-One) | `user_profiles.user_id` | `@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)` | เมื่อลบ `User`, โปรไฟล์ของ User นั้นจะถูกลบทิ้งอัตโนมัติ |
-| **`users`** | **`orders`** | **1 : N** (One-to-Many) | `orders.user_id` | `@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)` | User 1 คนสามารถมีประวัติคำสั่งซื้อได้หลายออเดอร์ |
-| **`orders`** | **`order_items`** | **1 : N** (One-to-Many) | `order_items.order_id` | `@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)` | เมื่อลบ Order รายการสินค้าทั้งหมดในออเดอร์นั้นจะถูกลบตามทันที (Cascade Delete) |
-| **`card_expansions`** | **`cards`** | **1 : N** (One-to-Many) | `cards.expansion_id` | `@OneToMany(mappedBy = "expansion", fetch = FetchType.LAZY)` | 1 ชุดซองประกอบด้วยการ์ดหลายใบ |
-| **`cards`** | **`card_inventories`** | **1 : N** (One-to-Many) | `card_inventories.card_id` | `@ManyToOne(fetch = FetchType.LAZY)` ฝั่งลูก | การ์ด 1 ใบสามารถกระจายเก็บอยู่ในคลังหรือไอดีเกมหลายบัญชีได้ |
-| **`game_accounts`** | **`card_inventories`** | **1 : N** (One-to-Many) | `card_inventories.game_account_id` | `@OneToMany(mappedBy = "gameAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)` | ไอดีเกม 1 ไอดีถือครองการ์ดในคลังได้หลายใบ และเมื่อบันทึกการเปิดซอง (`+ Add Pull`) จะผูกเข้ากับไอดีนี้ |
-| **`card_inventories`** | **`order_items`** | **1 : N** (One-to-Many) | `order_items.inventory_id` | `@ManyToOne(fetch = FetchType.LAZY)` ฝั่งลูก | สต็อกการ์ด 1 เรคคอร์ดสามารถถูกอ้างอิงเพื่อจอง/สั่งซื้อในหลายออเดอร์ได้ |
-| **`game_accounts`** | **`order_items`** | **1 : N** (One-to-Many) | `order_items.assigned_account_id` | `@ManyToOne(fetch = FetchType.LAZY)` ฝั่งลูก | ไอดีเกม 1 บัญชีสามารถรับมอบหมายให้ทำหน้าที่ส่งเทรดการ์ดในหลายๆ ออเดอร์ได้ |
+| ความสัมพันธ์ DB | Mapping ที่มีจริง | Cascade/Fetch และเหตุผล |
+|---|---|---|
+| users → user_profiles (1:1) | User.userProfile: OneToOne(mappedBy=user, cascade=ALL, orphanRemoval=true, LAZY); UserProfile.user: OneToOne LAZY | Profile อยู่กับ user; DDL user_id UNIQUE และ ON DELETE CASCADE |
+| users → orders (1:N) | Order.user: ManyToOne LAZY; ไม่มี collection User.orders | ไม่มี JPA cascade ไป user; DDL ON DELETE RESTRICT รักษาประวัติออเดอร์ |
+| orders → order_items (1:N) | Order.items: OneToMany(mappedBy=order, cascade=ALL, orphanRemoval=true, LAZY); OrderItem.order: ManyToOne LAZY | รายการเป็นส่วนหนึ่งของ order; DDL ON DELETE CASCADE |
+| card_expansions → cards (1:N) | CardExpansion.cards: OneToMany(mappedBy=expansion, cascade=ALL, LAZY); Card.expansion: ManyToOne LAZY | JPA cascade รวม REMOVE แต่ DDL ON DELETE RESTRICT; การลบผ่าน ORM กับ SQL โดยตรงต่างกัน ต้องระวังเมื่อมี inventory อ้างอิง |
+| cards → card_inventories (1:N) | CardInventory.card: ManyToOne LAZY | ไม่มี cascade ลบ catalog; DDL ON DELETE RESTRICT |
+| game_accounts → card_inventories (1:N) | CardInventory.gameAccount: ManyToOne LAZY; ไม่มี collection ใน GameAccount | ไม่มี JPA cascade; DDL ON DELETE SET NULL แต่ deleteAccount ปฏิเสธเมื่อมี inventory อ้างอิง |
+| card_inventories → order_items (1:N) | OrderItem.inventory: ManyToOne LAZY | ไม่มี cascade ลบ stock; DDL ON DELETE RESTRICT รักษาประวัติ |
+| game_accounts → order_items (1:N) | OrderItem.assignedAccount: ManyToOne LAZY | ไม่มี JPA cascade; DDL ON DELETE SET NULL แต่ service ปฏิเสธลบบัญชีที่ถูกอ้างอิง |
+
+LAZY ลดการโหลดความสัมพันธ์ที่ไม่ได้ใช้; service สร้าง DTO ภายในขอบเขตการอ่านข้อมูล เพื่อไม่ใช้ Entity เป็น API contract
+JPA cascade เป็นพฤติกรรม ORM ส่วน ON DELETE เป็น constraint ฐานข้อมูล จึงไม่ควรใช้สองคำนี้แทนกัน
 
 ---
 

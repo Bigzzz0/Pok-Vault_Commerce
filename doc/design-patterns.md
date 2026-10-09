@@ -12,11 +12,11 @@
 | แบบจำลอง (Pattern) | ปัญหาที่แก้ไข (Problem Solved) | ไฟล์และคลาสที่ใช้งานจริงในระบบ (Files & Classes) | พฤติกรรมและบทบาทในระบบ (Implementation Role) |
 | :--- | :--- | :--- | :--- |
 | **1. Layered Architecture** | ป้องกันไม่ให้โค้ดปะปนกัน (Spaghetti Code) และห้ามข้าม Layer เพื่อความง่ายต่อการบำรุงรักษา | • `com.pokevault.modules.*.controller`<br>• `com.pokevault.modules.*.service`<br>• `com.pokevault.repository.*`<br>• `com.pokevault.domain.entity.*` | แยกความรับผิดชอบออกเป็น 4 ชั้นชัดเจน: Presentation Layer $\rightarrow$ Service Layer $\rightarrow$ Repository Layer $\rightarrow$ Domain/Entity Layer โดยแต่ละชั้นเรียกใช้งานเฉพาะชั้นที่อยู่ถัดไปด้านล่างเท่านั้น |
-| **2. Model-View-Controller (MVC)** | แยกส่วนแสดงผล UI ออกจากตรรกะประมวลผลและการจัดเตรียมข้อมูล | • [`WebViewController.java`](../src/main/java/com/pokevault/modules/web/controller/WebViewController.java)<br>• [`WebPageService.java`](../src/main/java/com/pokevault/modules/web/service/WebPageService.java)<br>• `templates/*.html` (Thymeleaf Views)<br>• `org.springframework.ui.Model` | `WebViewController` ทำหน้าที่ Controller รับ HTTP Request แล้วเรียก `WebPageService` เพื่อจัดเตรียมข้อมูลเฉพาะของแต่ละหน้าใส่ `Model` ก่อนส่งต่อไปเรนเดอร์ใน Thymeleaf HTML Templates |
-| **3. Repository Pattern** | ซ่อนความซับซ้อนของ SQL Query และแยกการเข้าถึงฐานข้อมูลออกจาก Business Logic | • [`CardRepository.java`](../src/main/java/com/pokevault/repository/CardRepository.java)<br>• [`OrderRepository.java`](../src/main/java/com/pokevault/repository/OrderRepository.java)<br>• [`GameAccountRepository.java`](../src/main/java/com/pokevault/repository/GameAccountRepository.java)<br>• [`UserRepository.java`](../src/main/java/com/pokevault/repository/UserRepository.java) | ใช้ Spring Data JPA สืบทอด `JpaRepository<T, ID>` ทำหน้าที่เป็นคลังข้อมูลจำลองในหน่วยความจำ พร้อม Custom JPQL Method โดย Service ไม่ต้องเขียนคำสั่ง JDBC ดิบ |
-| **4. Service Layer Pattern** | เป็นศูนย์รวมกฎทางธุรกิจ (Business Rules) และการควบคุม Transaction | • [`CardServiceImpl.java`](../src/main/java/com/pokevault/modules/catalog/service/CardServiceImpl.java)<br>• [`WebPageServiceImpl.java`](../src/main/java/com/pokevault/modules/web/service/WebPageServiceImpl.java)<br>• [`OrderServiceImpl.java`](../src/main/java/com/pokevault/modules/order/service/OrderServiceImpl.java)<br>• [`TradeMatchingServiceImpl.java`](../src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java)<br>• [`GameAccountServiceImpl.java`](../src/main/java/com/pokevault/modules/vault/service/GameAccountServiceImpl.java) | รวมขั้นตอนการตรวจสอบ Business Invariants (เช่น สต็อกห้ามติดลบ, การคิดส่วนลด, การจับคู่ไอดีเทรด, การรวบรวมข้อมูลหน้าเว็บ) ไว้ใน Service ทำให้ Controller ทำหน้าที่รับ-ส่งข้อมูลเท่านั้น |
+| **2. Model-View-Controller (MVC)** | แยกส่วนแสดงผล UI ออกจากตรรกะประมวลผลและการจัดเตรียมข้อมูล | • [`WebViewController.java`](../code/src/main/java/com/pokevault/modules/web/controller/WebViewController.java)<br>• [`WebPageService.java`](../code/src/main/java/com/pokevault/modules/web/service/WebPageService.java)<br>• `templates/*.html` (Thymeleaf Views)<br>• `org.springframework.ui.Model` | `WebViewController` ทำหน้าที่ Controller รับ HTTP Request แล้วเรียก `WebPageService` เพื่อจัดเตรียมข้อมูลเฉพาะของแต่ละหน้าใส่ `Model` ก่อนส่งต่อไปเรนเดอร์ใน Thymeleaf HTML Templates |
+| **3. Repository Pattern** | ซ่อนความซับซ้อนของ SQL Query และแยกการเข้าถึงฐานข้อมูลออกจาก Business Logic | • [`CardRepository.java`](../code/src/main/java/com/pokevault/repository/CardRepository.java)<br>• [`OrderRepository.java`](../code/src/main/java/com/pokevault/repository/OrderRepository.java)<br>• [`GameAccountRepository.java`](../code/src/main/java/com/pokevault/repository/GameAccountRepository.java)<br>• [`UserRepository.java`](../code/src/main/java/com/pokevault/repository/UserRepository.java) | ใช้ Spring Data JPA สืบทอด `JpaRepository<T, ID>` ทำหน้าที่เป็นคลังข้อมูลจำลองในหน่วยความจำ พร้อม Custom JPQL Method โดย Service ไม่ต้องเขียนคำสั่ง JDBC ดิบ |
+| **4. Service Layer Pattern** | เป็นศูนย์รวมกฎทางธุรกิจ (Business Rules) และการควบคุม Transaction | • [`CardServiceImpl.java`](../code/src/main/java/com/pokevault/modules/catalog/service/CardServiceImpl.java)<br>• [`WebPageServiceImpl.java`](../code/src/main/java/com/pokevault/modules/web/service/WebPageServiceImpl.java)<br>• [`OrderServiceImpl.java`](../code/src/main/java/com/pokevault/modules/order/service/OrderServiceImpl.java)<br>• [`TradeMatchingServiceImpl.java`](../code/src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java)<br>• [`GameAccountServiceImpl.java`](../code/src/main/java/com/pokevault/modules/vault/service/GameAccountServiceImpl.java) | รวมขั้นตอนการตรวจสอบ Business Invariants (เช่น สต็อกห้ามติดลบ, การคิดส่วนลด, การจับคู่ไอดีเทรด, การรวบรวมข้อมูลหน้าเว็บ) ไว้ใน Service ทำให้ Controller ทำหน้าที่รับ-ส่งข้อมูลเท่านั้น |
 | **5. DTO Pattern + Mapper** | ป้องกันข้อมูลภายใน Entity รั่วไหล และลดการถ่ายโอนข้อมูลที่ไม่จำเป็น (Over-fetching) | • `PlaceOrderRequest`, `OrderResponse`<br>• `CardRequest`, `CardResponse`<br>• `GameAccountRequest`, `GameAccountResponse`<br>• `DashboardPage`, `CardGalleryPage`, `InventoryPage`, `OrderView`<br>• `AccountCardResponse`, `ApiResponse<T>` | ใช้ Data Transfer Object (DTO) เป็นสัญญา API (Contract) และ View Models สำหรับ UI แทน Entity โดยตรง พร้อมฟังก์ชันแปลงข้อมูล เช่น `fromEntity()` หรือ `ApiResponse.ok()` |
-| **6. Dependency Injection (DI)** | ลดความผูกมัดแน่น (Loose Coupling) และช่วยให้เขียน Unit Test ด้วย Mock Object ได้ง่าย | • ทุกคลาส Controller และ Service ในระบบ<br>• [`SecurityConfig.java`](../src/main/java/com/pokevault/common/security/SecurityConfig.java)<br>• ใช้ `@RequiredArgsConstructor` (Lombok) | ใช้ **Constructor Injection** เท่านั้น (ห้ามใช้ `@Autowired` บน Private Field) โดยให้ Spring IoC Container เป็นผู้ส่ง Mock หรือ Concrete Beans เข้ามาทางคอนสตรัคเตอร์ |
+| **6. Dependency Injection (DI)** | ลดความผูกมัดแน่น (Loose Coupling) และช่วยให้เขียน Unit Test ด้วย Mock Object ได้ง่าย | • ทุกคลาส Controller และ Service ในระบบ<br>• [`SecurityConfig.java`](../code/src/main/java/com/pokevault/common/security/SecurityConfig.java)<br>• ใช้ `@RequiredArgsConstructor` (Lombok) | ใช้ **Constructor Injection** เท่านั้น (ห้ามใช้ `@Autowired` บน Private Field) โดยให้ Spring IoC Container เป็นผู้ส่ง Mock หรือ Concrete Beans เข้ามาทางคอนสตรัคเตอร์ |
 
 ---
 
@@ -32,11 +32,11 @@ graph LR
     end
 ```
 
-| แบบจำลอง (Pattern) | ปัญหาที่แก้ไข (Problem Solved) | ไฟล์และคลาสที่ใช้งานจริงในระบบ (Files & Classes) | ผู้รับผิดชอบหลัก |
+| แบบจำลอง (Pattern) | ปัญหาที่แก้ไข (Problem Solved) | ไฟล์และคลาสที่ใช้งานจริงในระบบ (Files & Classes) | ผู้รับผิดชอบหลัก / Class Diagram |
 | :--- | :--- | :--- | :---: |
-| **1. Strategy Pattern** | การคำนวณส่วนลดตามระดับสมาชิก (Tier) มีสูตรต่างกัน หากใช้ `if-else` หรือ `switch` จะทำให้โค้ดบวมและแก้ไขยากเมื่อมีโปรโมชันใหม่ | • [`DiscountStrategy.java`](../src/main/java/com/pokevault/modules/order/strategy/DiscountStrategy.java)<br>• [`RegularDiscountStrategy.java`](../src/main/java/com/pokevault/modules/order/strategy/RegularDiscountStrategy.java)<br>• [`VipDiscountStrategy.java`](../src/main/java/com/pokevault/modules/order/strategy/VipDiscountStrategy.java)<br>• [`WholesaleDiscountStrategy.java`](../src/main/java/com/pokevault/modules/order/strategy/WholesaleDiscountStrategy.java)<br>• [`DiscountService.java`](../src/main/java/com/pokevault/modules/order/service/DiscountService.java) | สมาชิกคนที่ 3<br>(ธนภูมิ จันทรา) |
-| **2. State Pattern** | คำสั่งซื้อมีวงจรชีวิตซับซ้อน (PENDING $\rightarrow$ PAID $\rightarrow$ SHIPPING $\rightarrow$ COMPLETED / CANCELLED) หากใช้ Flag หรือตรวจสอบสถานะด้วย if-else จะเสี่ยงต่อการเปลี่ยนสถานะข้ามขั้นตอน หรือยกเลิกออเดอร์ผิดจังหวะ | • [`OrderState.java`](../src/main/java/com/pokevault/modules/trade/state/OrderState.java)<br>• [`PendingOrderState.java`](../src/main/java/com/pokevault/modules/trade/state/PendingOrderState.java)<br>• [`PaidOrderState.java`](../src/main/java/com/pokevault/modules/trade/state/PaidOrderState.java)<br>• [`ShippingOrderState.java`](../src/main/java/com/pokevault/modules/trade/state/ShippingOrderState.java)<br>• [`CompletedOrderState.java`](../src/main/java/com/pokevault/modules/trade/state/CompletedOrderState.java)<br>• [`CancelledOrderState.java`](../src/main/java/com/pokevault/modules/trade/state/CancelledOrderState.java)<br>• [`OrderContext.java`](../src/main/java/com/pokevault/modules/trade/state/OrderContext.java) | สมาชิกคนที่ 4<br>(แทนคุณ พันธ์นิกุล) |
-| **3. Observer Pattern** | เมื่อลูกค้ากดสั่งซื้อการ์ดสำเร็จ ระบบคลังสินค้าต้องรู้ทันทีเพื่อตรวจสอบว่าการ์ดใบดังกล่าวสต็อกต่ำกว่าเกณฑ์ ($\le 2$) หรือไม่ โดยที่โมดูล Order ต้องไม่ผูกติดแน่น (Decoupled) กับโมดูล Inventory | • `ApplicationEventPublisher` (Spring Subject)<br>• [`OrderPlacedEvent.java`](../src/main/java/com/pokevault/modules/order/event/OrderPlacedEvent.java) (Event Data)<br>• [`LowStockObserver.java`](../src/main/java/com/pokevault/modules/vault/observer/LowStockObserver.java) (Concrete Observer) | สมาชิกคนที่ 2<br>(สัพพัญญู คำตุ้ม) |
+| **1. Strategy Pattern** | การคำนวณส่วนลดตามระดับสมาชิก (Tier) มีสูตรต่างกัน หากใช้ `if-else` หรือ `switch` จะทำให้โค้ดบวมและแก้ไขยากเมื่อมีโปรโมชันใหม่ | • [`DiscountStrategy.java`](../code/src/main/java/com/pokevault/modules/order/strategy/DiscountStrategy.java)<br>• [`RegularDiscountStrategy.java`](../code/src/main/java/com/pokevault/modules/order/strategy/RegularDiscountStrategy.java)<br>• [`VipDiscountStrategy.java`](../code/src/main/java/com/pokevault/modules/order/strategy/VipDiscountStrategy.java)<br>• [`WholesaleDiscountStrategy.java`](../code/src/main/java/com/pokevault/modules/order/strategy/WholesaleDiscountStrategy.java)<br>• [`DiscountService.java`](../code/src/main/java/com/pokevault/modules/order/service/DiscountService.java) | สมาชิกคนที่ 3<br>(ธนภูมิ จันทรา)<br>[Class Diagram](#32-แผนภาพคลาส-class-diagram) |
+| **2. State Pattern** | คำสั่งซื้อมีวงจรชีวิตซับซ้อน (PENDING $\rightarrow$ PAID $\rightarrow$ SHIPPING $\rightarrow$ COMPLETED / CANCELLED) หากใช้ Flag หรือตรวจสอบสถานะด้วย if-else จะเสี่ยงต่อการเปลี่ยนสถานะข้ามขั้นตอน หรือยกเลิกออเดอร์ผิดจังหวะ | • [`OrderState.java`](../code/src/main/java/com/pokevault/modules/trade/state/OrderState.java)<br>• [`PendingOrderState.java`](../code/src/main/java/com/pokevault/modules/trade/state/PendingOrderState.java)<br>• [`PaidOrderState.java`](../code/src/main/java/com/pokevault/modules/trade/state/PaidOrderState.java)<br>• [`ShippingOrderState.java`](../code/src/main/java/com/pokevault/modules/trade/state/ShippingOrderState.java)<br>• [`CompletedOrderState.java`](../code/src/main/java/com/pokevault/modules/trade/state/CompletedOrderState.java)<br>• [`CancelledOrderState.java`](../code/src/main/java/com/pokevault/modules/trade/state/CancelledOrderState.java)<br>• [`OrderContext.java`](../code/src/main/java/com/pokevault/modules/trade/state/OrderContext.java) | สมาชิกคนที่ 4<br>(แทนคุณ พันธ์นิกุล)<br>[Class Diagram](#43-แผนภาพคลาส-class-diagram) |
+| **3. Observer Pattern** | เมื่อลูกค้ากดสั่งซื้อการ์ดสำเร็จ ระบบคลังสินค้าต้องรู้ทันทีเพื่อตรวจสอบว่าการ์ดใบดังกล่าวสต็อกต่ำกว่าเกณฑ์ ($\le 2$) หรือไม่ โดยที่โมดูล Order ต้องไม่ผูกติดแน่น (Decoupled) กับโมดูล Inventory | • `ApplicationEventPublisher` (Spring Subject)<br>• [`OrderPlacedEvent.java`](../code/src/main/java/com/pokevault/modules/order/event/OrderPlacedEvent.java) (Event Data)<br>• [`LowStockObserver.java`](../code/src/main/java/com/pokevault/modules/vault/observer/LowStockObserver.java) (Concrete Observer) | สมาชิกคนที่ 2<br>(สัพพัญญู คำตุ้ม)<br>[Class Diagram](diagrams/class-diagram.md) |
 
 ---
 
@@ -52,19 +52,19 @@ classDiagram
     class DiscountStrategy {
         <<interface>>
         +supports(MembershipTier tier) boolean
-        +calculateDiscount(BigDecimal subtotal) BigDecimal
+        +calculate(BigDecimal subtotal) BigDecimal
     }
     class RegularDiscountStrategy {
         +supports(MembershipTier tier) boolean
-        +calculateDiscount(BigDecimal subtotal) BigDecimal
+        +calculate(BigDecimal subtotal) BigDecimal
     }
     class VipDiscountStrategy {
         +supports(MembershipTier tier) boolean
-        +calculateDiscount(BigDecimal subtotal) BigDecimal
+        +calculate(BigDecimal subtotal) BigDecimal
     }
     class WholesaleDiscountStrategy {
         +supports(MembershipTier tier) boolean
-        +calculateDiscount(BigDecimal subtotal) BigDecimal
+        +calculate(BigDecimal subtotal) BigDecimal
     }
     class DiscountService {
         -List~DiscountStrategy~ strategies
@@ -99,9 +99,9 @@ stateDiagram-v2
     PENDING --> CANCELLED : cancel() [ยกเลิก & คืนสต็อก]
     
     PAID --> SHIPPING : ship() [ส่งการ์ดเทรดในเกม]
-    PAID --> CANCELLED : cancel() [ยกเลิก & คืนเงิน/คืนสต็อก]
+    PAID --> CANCELLED : cancel() [คืนสต็อก; คืนเงินโดยร้านนอกระบบ]
     
-    SHIPPING --> COMPLETED : complete() [กดยืนยันรับการ์ด]
+    SHIPPING --> COMPLETED : complete() [ทุก item COMPLETED]
     note right of SHIPPING : ไม่อนุญาตให้ cancel() เด็ดขาด\n(ป้องกันการเสียการ์ดฟรีในเกม)
     
     COMPLETED --> [*]
@@ -139,8 +139,7 @@ classDiagram
     class OrderContext {
         -Order order
         -OrderState currentState
-        -CardInventoryRepository inventoryRepo
-        +transitionTo(OrderState newState)
+        +setState(OrderState state)
         +pay()
         +ship()
         +complete()
@@ -161,7 +160,7 @@ classDiagram
 
 **ผู้รับผิดชอบหลัก**: นายสัพพัญญู คำตุ้ม (673380066-4) — สมาชิกคนที่ 2: Game Account Vault & Inventory Manager  
 **แพ็กเกจ**: `com.pokevault.modules.vault.observer`  
-**สถานะการพัฒนา**: Implemented & Verified 100% (Unit Tests: 7/7 Passing)
+**สถานะการพัฒนา**: มี implementation และชุดทดสอบ; ดูผลและวันที่ในรายงานที่แนบ
 
 ---
 
@@ -221,7 +220,7 @@ sequenceDiagram
 
 ### 5.4 รายละเอียดการนำไปใช้งาน (Implementation Details)
 
-#### คลาส: `LowStockObserver.java`
+#### ตัวอย่างย่อจาก `LowStockObserver.java` (เลขบรรทัดจริงดู SOLID Analysis)
 ```java
 package com.pokevault.modules.vault.observer;
 
@@ -293,7 +292,7 @@ public class LowStockObserver {
 - กรณีสต็อกเพียงพอ ($> 2$)
 - กรณีคำสั่งซื้อมีสินค้าหลายรายการ (Batch Items)
 - กรณี Guard Conditions ป้องกันข้อมูลว่างเปล่า (null event, null items, incomplete order item)
-*(ผลการทดสอบ: 7/7 ผ่าน 100%, รันเทสต์โปรเจกต์ผ่านครบ 47/47 ข้อ)*
+ผลทดสอบที่บันทึกไว้ดู [รายงานคนที่ 2](../test/reports/sapphanyu/TEST-REPORT.md); รายงานแต่ละฉบับเป็น snapshot ตามวันรัน ไม่รับรองโค้ดล่าสุดโดยอัตโนมัติ
 
 ---
 
@@ -303,3 +302,10 @@ public class LowStockObserver {
 - [x] **ตารางเปรียบเทียบ**: ระบุ Pattern, ปัญหาที่แก้, ไฟล์/คลาสที่ใช้ครบถ้วนตามเกณฑ์
 - [x] **Class & Sequence Diagrams**: จัดทำด้วย Mermaid Diagrams ชัดเจนทุกหัวข้อ
 
+
+## ขอบเขตของ State และ Observer
+
+OrderContext ถือ Order และ State ไม่มี Repository ของตัวเอง; CancelledOrderState คืน quantity ให้ inventory ใน entity และ OrderServiceImpl บันทึก inventory ใน transaction
+SHIPPING ปิดออเดอร์ได้เมื่อ items ไม่ว่างและทุก item เป็น COMPLETED ระบบไม่ได้โอนเงินคืนอัตโนมัติ
+Observer เป็น Spring event listener แบบ synchronous; ไม่ใช่ระบบแจ้งเตือนผ่าน LINE/Discord ที่ติดตั้งแล้ว
+Class diagrams ของ Patterns อยู่ในเอกสารนี้ และ [แผนภาพระบบ](diagrams/class-diagram.md)

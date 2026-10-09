@@ -1,6 +1,6 @@
 r"""Generate an evidence report from the latest Maven Surefire XML results for Sapphanyu Khamtoom (673380066-4).
 
-Run `.\mvnw.cmd test '-Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest,OrderServiceTest,OrderApiControllerTest'` first,
+Run `./code/mvnw.cmd -f code/pom.xml test '-Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest,OrderServiceTest,OrderApiControllerTest'` first,
 then `python test/generate_sapphanyu_report.py`.
 Uses only the Python standard library; never runs or modifies application code.
 """
@@ -10,7 +10,7 @@ import json
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "target" / "surefire-reports"
+SOURCE = ROOT / "code" / "target" / "surefire-reports"
 OUT = ROOT / "test" / "reports" / "sapphanyu"
 paths = sorted(SOURCE.glob("TEST-*.xml"))
 if not paths:
@@ -56,7 +56,7 @@ report = {
     "generated_at": datetime.now().astimezone().isoformat(),
     "owner": "สัพพัญญู คำตุ้ม (673380066-4)",
     "branch": "SapphanyuKhamtoom_6733800664_01",
-    "command": "mvnw.cmd test -Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest,OrderServiceTest,OrderApiControllerTest",
+    "command": "code/mvnw.cmd -f code/pom.xml test -Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest,OrderServiceTest,OrderApiControllerTest",
     "whole_suite": totals(suites),
     "vault_inventory_scope": totals(vault_scope),
     "sapphanyu_related_scope": totals(sapphanyu),
@@ -148,14 +148,14 @@ lines += [
     "## วิธีรันซ้ำ",
     "",
     "```powershell",
-    ".\\mvnw.cmd test '-Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest,OrderServiceTest,OrderApiControllerTest'",
+    ".\\code\\mvnw.cmd -f code/pom.xml test '-Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest,OrderServiceTest,OrderApiControllerTest'",
     "python test/generate_sapphanyu_report.py",
     "```",
     "",
     "รันเฉพาะส่วน Core ของสัพพัญญู (Vault & Inventory):",
     "",
     "```powershell",
-    ".\\mvnw.cmd test '-Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest'",
+    ".\\code\\mvnw.cmd -f code/pom.xml test '-Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest'",
     "python test/generate_sapphanyu_report.py",
     "```",
     "",
@@ -182,4 +182,3 @@ print(json.dumps({
     "sapphanyu_related_scope": report["sapphanyu_related_scope"],
     "report": str(OUT / "TEST-REPORT.md")
 }, indent=2, ensure_ascii=False))
-

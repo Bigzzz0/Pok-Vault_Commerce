@@ -1,22 +1,37 @@
 # Test Report — แทนคุณ พันธ์นิกุล
 
+## หลักฐานรอบทดสอบล่าสุด
+
+- Commit: `82c449b857d32dc7ad231e97a57ba3ebd976c761`
+- Branch: `sikarin_6733802925_01`
+- วันที่บันทึก: 2026-10-09T20:32:29.821969+07:00 (Asia/Bangkok)
+- คำสั่งจริง: `code/mvnw.cmd -f code/pom.xml clean verify` — exit code 0, **BUILD SUCCESS**
+- ทั้งระบบ: **373 tests, 0 failures, 0 errors, 0 skipped**
+- เวลารวม Maven: 46.613 s
+- ระบบ: Windows-11-10.0.26200-SP0
+- Java: `openjdk version "21.0.10" 2026-01-20`
+- Database: H2 local รวม H2 PostgreSQL mode; ไม่ได้เชื่อม PostgreSQL จริง
+- Source/config ตรง commit: ใช่ (มีการแก้เอกสารและรายงานที่ยังไม่ commit)
+- SHA-256 ของ source/config ใน working tree: `98ab0cc2bddbbb1825d0e0e615f0b1fe8ee069d061c9ddc990a4fb03acfca502`
+
+
 Branch: `Tankun_6733803010_01`  
 บทบาท: Trade Matching, GoF State Pattern & Global Exception Handling Specialist (สมาชิกคนที่ 4, 673380301-0)  
-Report generated: 2026-10-09T18:29:52.905266+07:00
+Report generated: 2026-10-09T20:32:30.437525+07:00
 
 ## ผลการรัน
 
 | ขอบเขต | Tests | Failures | Errors | Skipped |
 |---|---:|---:|---:|---:|
-| ทั้งโปรเจกต์ | 355 | 0 | 0 | 0 |
-| ส่วนของแทนคุณ (Trade & State & Advice) | 87 | 0 | 0 | 0 |
+| ทั้งโปรเจกต์ | 373 | 0 | 0 | 0 |
+| ส่วนของแทนคุณ (Trade & State & Advice) | 94 | 0 | 0 | 0 |
 
 ## รายละเอียดส่วนของแทนคุณ (Member 4)
 
 | Test class | Tests | Failures | Errors |
 |---|---:|---:|---:|
 | OrderStateTest | 23 | 0 | 0 |
-| TradeMatchingServiceTest | 21 | 0 | 0 |
+| TradeMatchingServiceTest | 28 | 0 | 0 |
 | TradeMatchingApiControllerTest | 13 | 0 | 0 |
 | OrderApiControllerTest | 15 | 0 | 0 |
 | GlobalExceptionHandlerTest | 10 | 0 | 0 |
@@ -38,24 +53,24 @@ Report generated: 2026-10-09T18:29:52.905266+07:00
 ```powershell
 $env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot"
 $env:Path="$env:JAVA_HOME\bin;$env:Path"
-.\mvnw.cmd clean test
-python generate_tankun_report.py
+.\code\mvnw.cmd -f code/pom.xml clean test
+python test/generate_tankun_report.py
 ```
 
 รันเฉพาะส่วนของแทนคุณ:
 
 ```powershell
-.\mvnw.cmd test "-Dtest=OrderStateTest,TradeMatchingServiceTest,TradeMatchingApiControllerTest,OrderApiControllerTest,GlobalExceptionHandlerTest,TradeRecommendationResponseTest,CustomExceptionTest"
+.\code\mvnw.cmd -f code/pom.xml test "-Dtest=OrderStateTest,TradeMatchingServiceTest,TradeMatchingApiControllerTest,OrderApiControllerTest,GlobalExceptionHandlerTest,TradeRecommendationResponseTest,CustomExceptionTest"
 ```
 
 ## ขอบเขตและข้อจำกัด
 
 - ทดสอบเฉพาะไฟล์ที่เกี่ยวข้องกับสถาปัตยกรรมของสมาชิกคนที่ 4 ไม่แตะต้องโค้ด Production นอกขอบเขต
 - MockMvc ใช้ Standalone Setup ร่วมกับ `@ExtendWith(MockitoExtension.class)` เพื่อความรวดเร็วระดับมิลลิวินาที และหลีกเลี่ยงความขัดแย้งของ Sliced Context กับ `@EnableJpaAuditing`
-- ผลการทดสอบ Unit Tests ทั้ง 87 เคส ยืนยันว่า Business Invariants, State Machine, และ Trade Fulfillment Sequence ทำงานได้อย่างถูกต้องสมบูรณ์ 100%
+- ผลการทดสอบ Unit Tests ทั้ง 94 เคส ยืนยันว่า Business Invariants, State Machine, และ Trade Fulfillment Sequence ทำงานได้อย่างถูกต้องสมบูรณ์ 100%
 - ผลรายกรณีแบบละเอียดดูได้จาก `summary.json` และ JUnit XML ในโฟลเดอร์นี้
 
-## ผลรายกรณี (All 87 Test Cases)
+## ผลรายกรณี (All 94 Test Cases)
 
 ### OrderStateTest (23 เคส)
 
@@ -83,7 +98,7 @@ python generate_tankun_report.py
 - `testCancelledStateIsTerminal` — passed
 - `testCompletedStateIsTerminal` — passed
 
-### TradeMatchingServiceTest (21 เคส)
+### TradeMatchingServiceTest (28 เคส)
 
 - `testAutoMatchOrderItemInsufficientStock` — passed
 - `testAutoMatchOrderItemSuccess` — passed
@@ -93,6 +108,13 @@ python generate_tankun_report.py
 - `testAutoMatchOrderItemRejectedWhenOrderCancelled` — passed
 - `testAutoMatchOrderSuccess` — passed
 - `testAutoMatchOrderRejectedWhenOrderCancelled` — passed
+- `testConditionMatchesButQuantityInsufficient` — passed
+- `testManualAssignPicksMatchingConditionWhenAccountHasMultiple` — passed
+- `testManualAssignmentAndRecommendationsEnforceSameRules` — passed
+- `testLastCardBookedStockZeroOriginalInventoryCanStillFulfill` — passed
+- `testAutoMatchSelectsMintOverPlayedEvenWithLowerStock` — passed
+- `testSameAccountMultipleConditionsTargetsCorrectInventory` — passed
+- `testManualAssignFailureRollbackDoesNotAlterStock` — passed
 - `testManualAssignRejectWhenCompleted` — passed
 - `testManualAssignRejectedWhenTargetAccountHasInsufficientStock` — passed
 - `testManualAssignRejectedWhenOrderCancelled` — passed

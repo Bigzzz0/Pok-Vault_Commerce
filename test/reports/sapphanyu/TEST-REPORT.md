@@ -1,24 +1,39 @@
 # Test Report — สัพพัญญู คำตุ้ม
 
+## หลักฐานรอบทดสอบล่าสุด
+
+- Commit: `82c449b857d32dc7ad231e97a57ba3ebd976c761`
+- Branch: `sikarin_6733802925_01`
+- วันที่บันทึก: 2026-10-09T20:32:29.821969+07:00 (Asia/Bangkok)
+- คำสั่งจริง: `code/mvnw.cmd -f code/pom.xml clean verify` — exit code 0, **BUILD SUCCESS**
+- ทั้งระบบ: **373 tests, 0 failures, 0 errors, 0 skipped**
+- เวลารวม Maven: 46.613 s
+- ระบบ: Windows-11-10.0.26200-SP0
+- Java: `openjdk version "21.0.10" 2026-01-20`
+- Database: H2 local รวม H2 PostgreSQL mode; ไม่ได้เชื่อม PostgreSQL จริง
+- Source/config ตรง commit: ใช่ (มีการแก้เอกสารและรายงานที่ยังไม่ commit)
+- SHA-256 ของ source/config ใน working tree: `98ab0cc2bddbbb1825d0e0e615f0b1fe8ee069d061c9ddc990a4fb03acfca502`
+
+
 **ผู้รับผิดชอบ:** นายสัพพัญญู คำตุ้ม (673380066-4) — สมาชิกคนที่ 2: Game Account Vault & Inventory Manager  
 **Branch:** `SapphanyuKhamtoom_6733800664_01`  
-**Report generated:** 2026-10-09T19:19:26.907253+07:00
+**Report generated:** 2026-10-09T20:32:30.216164+07:00
 
 ## ผลการรัน
 
 | ขอบเขต | Tests | Failures | Errors | Skipped | อัตราความสำเร็จ |
 |---|---:|---:|---:|---:|:---:|
 | 1. Vault & CardInventory (Core Domain) | 28 | 0 | 0 | 0 | 100% ผ่าน |
-| 2. คลาสทดสอบที่เกี่ยวข้องทั้งหมด (Full Related Classes) | 61 | 0 | 0 | 0 | 100% ผ่าน |
-| 3. ทั้งโปรเจกต์ (Whole Suite ใน Test Run) | 199 | 1 | 0 | 0 | 100% ผ่าน |
+| 2. คลาสทดสอบที่เกี่ยวข้องทั้งหมด (Full Related Classes) | 66 | 0 | 0 | 0 | 100% ผ่าน |
+| 3. ทั้งโปรเจกต์ (Whole Suite ใน Test Run) | 373 | 0 | 0 | 0 | 100% ผ่าน |
 
 ## รายละเอียดส่วนของสัพพัญญู
 
 | Test class | หน้าที่ / ขอบเขต | Tests | Failures | Errors | Status |
 |---|---|---:|---:|---:|:---:|
 | `CardInventoryTest` | Inventory Stock & Invariant Rules | 5 | 0 | 0 | Passed |
-| `OrderApiControllerTest` | REST API MockMvc & Exception Mapping (7 tests สัพพัญญู) | 13 | 0 | 0 | Passed |
-| `OrderServiceTest` | Order & Trade Status Business Logic (13 tests สัพพัญญู) | 20 | 0 | 0 | Passed |
+| `OrderApiControllerTest` | REST API MockMvc & Exception Mapping (7 tests สัพพัญญู) | 15 | 0 | 0 | Passed |
+| `OrderServiceTest` | Order & Trade Status Business Logic (13 tests สัพพัญญู) | 23 | 0 | 0 | Passed |
 | `LowStockObserverTest` | Observer Pattern / Low Stock Alert | 7 | 0 | 0 | Passed |
 | `GameAccountServiceTest$AccountManagementTests` | Account Vault Lifecycle & CRUD | 12 | 0 | 0 | Passed |
 | `GameAccountServiceTest$AddPulledCardTests` | Pack Pull & Stock Increment | 4 | 0 | 0 | Passed |
@@ -68,14 +83,14 @@
 ## วิธีรันซ้ำ
 
 ```powershell
-.\mvnw.cmd test '-Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest,OrderServiceTest,OrderApiControllerTest'
+.\code\mvnw.cmd -f code/pom.xml test '-Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest,OrderServiceTest,OrderApiControllerTest'
 python test/generate_sapphanyu_report.py
 ```
 
 รันเฉพาะส่วน Core ของสัพพัญญู (Vault & Inventory):
 
 ```powershell
-.\mvnw.cmd test '-Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest'
+.\code\mvnw.cmd -f code/pom.xml test '-Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest'
 python test/generate_sapphanyu_report.py
 ```
 
@@ -90,82 +105,87 @@ python test/generate_sapphanyu_report.py
 
 ### CardInventoryTest
 
-- `deductStockReducesQuantityWhenStockIsAvailable` — **passed** (0.103s)
-- `pricesCannotBeNegative` — **passed** (0.006s)
-- `restoreStockIncreasesQuantity` — **passed** (0.008s)
-- `stockChangesRequirePositiveQuantities` — **passed** (0.004s)
-- `deductStockRejectsRequestsExceedingAvailableQuantity` — **passed** (0.014s)
+- `deductStockReducesQuantityWhenStockIsAvailable` — **passed** (0.001s)
+- `pricesCannotBeNegative` — **passed** (0.001s)
+- `restoreStockIncreasesQuantity` — **passed** (0.001s)
+- `stockChangesRequirePositiveQuantities` — **passed** (0.001s)
+- `deductStockRejectsRequestsExceedingAvailableQuantity` — **passed** (0.001s)
 
 ### OrderApiControllerTest
 
-- `updateItemTradeStatus_InvalidStatus_Returns400` — **passed** (4.849s)
-- `updateItemTradeStatus_AccessDenied_Returns403` — **passed** (0.057s)
-- `transitionOrderStatus_MissingActionParam_Returns400` — **passed** (0.035s)
-- `transitionOrderStatus_OrderNotFound_Returns404` — **passed** (0.031s)
-- `transitionOrderStatus_InvalidStateTransition_Returns409` — **passed** (0.028s)
-- `transitionOrderStatus_Pay_Returns200` — **passed** (0.057s)
-- `updateItemTradeStatus_Success_Returns200` — **passed** (0.039s)
-- `updateItemTradeStatus_StateConflict_Returns409` — **passed** (0.040s)
-- `transitionOrderStatus_Ship_Returns200` — **passed** (0.031s)
-- `updateItemTradeStatus_NotFound_Returns404` — **passed** (0.033s)
-- `updateItemTradeStatus_Completed_Returns200` — **passed** (0.026s)
-- `updateItemTradeStatus_UnsupportedStatus_Returns400` — **passed** (0.027s)
-- `transitionOrderStatus_Cancel_Returns200` — **passed** (0.025s)
+- `updateItemTradeStatus_InvalidStatus_Returns400` — **passed** (0.016s)
+- `updateItemTradeStatus_AccessDenied_Returns403` — **passed** (0.008s)
+- `transitionOrderStatus_MissingActionParam_Returns400` — **passed** (0.008s)
+- `transitionOrderStatus_OrderNotFound_Returns404` — **passed** (0.008s)
+- `transitionOrderStatus_InvalidStateTransition_Returns409` — **passed** (0.009s)
+- `transitionOrderStatus_Pay_Returns200` — **passed** (0.008s)
+- `updateItemTradeStatus_Success_Returns200` — **passed** (0.007s)
+- `transitionOrderStatus_Complete_Returns200` — **passed** (0.008s)
+- `updateItemTradeStatus_StateConflict_Returns409` — **passed** (0.008s)
+- `transitionOrderStatus_Ship_Returns200` — **passed** (0.006s)
+- `updateItemTradeStatus_NotFound_Returns404` — **passed** (0.006s)
+- `transitionOrderStatus_Complete_IncompleteItems_Returns409` — **passed** (0.008s)
+- `updateItemTradeStatus_Completed_Returns200` — **passed** (0.007s)
+- `updateItemTradeStatus_UnsupportedStatus_Returns400` — **passed** (0.007s)
+- `transitionOrderStatus_Cancel_Returns200` — **passed** (0.007s)
 
 ### OrderServiceTest
 
-- `updateItemTradeStatus_TerminalOrder_ThrowsConflict` — **passed** (0.423s)
-- `updateItemTradeStatus_SkipSequence_FriendPendingToCompleted_ThrowsConflict` — **passed** (0.007s)
-- `createOrder_UserNotFound_ThrowsException` — **passed** (0.024s)
-- `getOrderById_Success` — **passed** (0.011s)
-- `getOrderById_NotFound_ThrowsException` — **passed** (0.006s)
-- `createOrder_InventoryNotFound_ThrowsException` — **passed** (0.006s)
-- `updateItemTradeStatus_Success_TradeSent` — **passed** (0.007s)
-- `updateItemTradeStatus_MultiItem_RemainsShippingWhenPartiallyCompleted` — **passed** (0.006s)
-- `updateItemTradeStatus_Idempotent_ReturnsCurrentWithoutModification` — **passed** (0.005s)
-- `createOrder_InsufficientStock_ThrowsException` — **passed** (0.010s)
+- `updateItemTradeStatus_TerminalOrder_ThrowsConflict` — **passed** (0.061s)
+- `updateItemTradeStatus_SkipSequence_FriendPendingToCompleted_ThrowsConflict` — **passed** (0.004s)
+- `createOrder_UserNotFound_ThrowsException` — **passed** (0.002s)
+- `transitionOrderStatus_Complete_Success` — **passed** (0.004s)
+- `getOrderById_Success` — **passed** (0.003s)
+- `getOrderById_NotFound_ThrowsException` — **passed** (0.002s)
+- `createOrder_InventoryNotFound_ThrowsException` — **passed** (0.004s)
+- `updateItemTradeStatus_Success_TradeSent` — **passed** (0.004s)
+- `updateItemTradeStatus_MultiItem_RemainsShippingWhenPartiallyCompleted` — **passed** (0.003s)
+- `updateItemTradeStatus_Idempotent_ReturnsCurrentWithoutModification` — **passed** (0.002s)
+- `createOrder_InsufficientStock_ThrowsException` — **passed** (0.002s)
 - `updateItemTradeStatus_SkipSequence_UnassignedToTradeSent_ThrowsConflict` — **passed** (0.003s)
-- `updateItemTradeStatus_ItemNotFoundInOrder_ThrowsException` — **passed** (0.005s)
+- `updateItemTradeStatus_ItemNotFoundInOrder_ThrowsException` — **passed** (0.002s)
 - `updateItemTradeStatus_OrderNotFound_ThrowsException` — **passed** (0.003s)
-- `updateItemTradeStatus_OrderNotInShipping_ThrowsConflict` — **passed** (0.005s)
-- `getAllOrders_ReturnsList` — **passed** (0.011s)
-- `updateItemTradeStatus_UnsupportedStatus_ThrowsException` — **passed** (0.003s)
-- `updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompletedViaStatePattern` — **passed** (0.013s)
-- `updateItemTradeStatus_ReverseSequence_CompletedToTradeSent_ThrowsConflict` — **passed** (0.004s)
-- `createOrder_Success` — **passed** (0.011s)
-- `updateItemTradeStatus_UnassignedAccount_ThrowsConflict` — **passed** (0.003s)
+- `transitionOrderStatus_Complete_IncompleteItems_ThrowsConflict` — **passed** (0.003s)
+- `updateItemTradeStatus_OrderNotInShipping_ThrowsConflict` — **passed** (0.003s)
+- `getAllOrders_ReturnsList` — **passed** (0.002s)
+- `updateItemTradeStatus_UnsupportedStatus_ThrowsException` — **passed** (0.001s)
+- `transitionOrderStatus_Complete_NoItems_ThrowsConflict` — **passed** (0.002s)
+- `updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompletedViaStatePattern` — **passed** (0.003s)
+- `updateItemTradeStatus_ReverseSequence_CompletedToTradeSent_ThrowsConflict` — **passed** (0.002s)
+- `createOrder_Success` — **passed** (0.004s)
+- `updateItemTradeStatus_UnassignedAccount_ThrowsConflict` — **passed** (0.002s)
 
 ### LowStockObserverTest
 
-- `onOrderPlaced_WithMultipleItems_ShouldCheckAllCards` — **passed** (0.008s)
-- `onOrderPlaced_WhenStockEqualsThreshold_ShouldTriggerWarning` — **passed** (0.004s)
-- `onOrderPlaced_WhenEventIsNull_ShouldReturnSafely` — **passed** (0.003s)
+- `onOrderPlaced_WithMultipleItems_ShouldCheckAllCards` — **passed** (0.001s)
+- `onOrderPlaced_WhenStockEqualsThreshold_ShouldTriggerWarning` — **passed** (0.001s)
+- `onOrderPlaced_WhenEventIsNull_ShouldReturnSafely` — **passed** (0.001s)
 - `onOrderPlaced_WhenItemsNullOrEmpty_ShouldReturnSafely` — **passed** (0.001s)
-- `onOrderPlaced_WhenStockBelowThreshold_ShouldQueryStockAndWarn` — **passed** (0.004s)
-- `onOrderPlaced_WhenStockAboveThreshold_ShouldLogNormal` — **passed** (0.004s)
-- `onOrderPlaced_WhenItemHasNullInventoryOrCard_ShouldSkipGracefully` — **passed** (0.005s)
+- `onOrderPlaced_WhenStockBelowThreshold_ShouldQueryStockAndWarn` — **passed** (0.002s)
+- `onOrderPlaced_WhenStockAboveThreshold_ShouldLogNormal` — **passed** (0.002s)
+- `onOrderPlaced_WhenItemHasNullInventoryOrCard_ShouldSkipGracefully` — **passed** (0.002s)
 
 ### GameAccountServiceTest$AccountManagementTests
 
-- `deleteAccount_Success` — **passed** (0.109s)
-- `updateAccount_DuplicateCode_ThrowsException` — **passed** (0.007s)
-- `deleteAccount_AssignedToOrder_ThrowsConflict` — **passed** (0.007s)
-- `updateAccount_Success` — **passed** (0.008s)
-- `deleteAccount_NotFound_ThrowsException` — **passed** (0.003s)
-- `updateAccount_NotFound_ThrowsException` — **passed** (0.003s)
-- `deleteAccount_HasInventory_ThrowsConflict` — **passed** (0.006s)
-- `createAccount_Success` — **passed** (0.006s)
-- `getAccountById_Success` — **passed** (0.004s)
-- `getAccountCards_Success` — **passed** (0.006s)
-- `updateTradeStatus_Success` — **passed** (0.004s)
-- `createAccount_WhenDuplicateCode_ShouldThrowException` — **passed** (0.005s)
+- `deleteAccount_Success` — **passed** (0.001s)
+- `updateAccount_DuplicateCode_ThrowsException` — **passed** (0.002s)
+- `deleteAccount_AssignedToOrder_ThrowsConflict` — **passed** (0.004s)
+- `updateAccount_Success` — **passed** (0.003s)
+- `deleteAccount_NotFound_ThrowsException` — **passed** (0.002s)
+- `updateAccount_NotFound_ThrowsException` — **passed** (0.001s)
+- `deleteAccount_HasInventory_ThrowsConflict` — **passed** (0.002s)
+- `createAccount_Success` — **passed** (0.002s)
+- `getAccountById_Success` — **passed** (0.002s)
+- `getAccountCards_Success` — **passed** (0.004s)
+- `updateTradeStatus_Success` — **passed** (0.003s)
+- `createAccount_WhenDuplicateCode_ShouldThrowException` — **passed** (0.002s)
 
 ### GameAccountServiceTest$AddPulledCardTests
 
-- `addPulledCard_WhenAccountNotFound_ShouldThrowException` — **passed** (0.005s)
-- `addPulledCard_WhenExistingInventory_ShouldIncrementStock` — **passed** (0.007s)
-- `addPulledCard_WhenNewInventory_ShouldCreateNewRecord` — **passed** (0.004s)
-- `addPulledCard_WhenCardNotFound_ShouldThrowException` — **passed** (0.006s)
+- `addPulledCard_WhenAccountNotFound_ShouldThrowException` — **passed** (0.003s)
+- `addPulledCard_WhenExistingInventory_ShouldIncrementStock` — **passed** (0.004s)
+- `addPulledCard_WhenNewInventory_ShouldCreateNewRecord` — **passed** (0.002s)
+- `addPulledCard_WhenCardNotFound_ShouldThrowException` — **passed** (0.003s)
 
 ### GameAccountServiceTest
 
