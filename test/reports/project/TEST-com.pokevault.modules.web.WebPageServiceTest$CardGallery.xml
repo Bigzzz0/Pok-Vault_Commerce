@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.web.WebPageServiceTest$CardGallery" time="0.011" tests="13" errors="0" skipped="0" failures="0">
+  <testcase name="inventory_FlagsLowAndOutOfStock" classname="com.pokevault.modules.web.WebPageServiceTest" time="0.003" />
+  <testcase name="dashboard_FeaturedCards_InStockOnly_MaxSix" classname="com.pokevault.modules.web.WebPageServiceTest" time="0.006" />
+  <testcase name="price_ComesFromCheapestInventoryWithStock" classname="com.pokevault.modules.web.WebPageServiceTest" time="0.003" />
+  <testcase name="ordersOfUser_UnknownUser_ReturnsEmpty" classname="com.pokevault.modules.web.WebPageServiceTest" time="0.001" />
+  <testcase name="ordersOfUser_OnlyThatUsersOrders_NewestFirst" classname="com.pokevault.modules.web.WebPageServiceTest" time="0.001" />
+  <testcase name="imageUrl_UsesBundledImageOrCardBack" classname="com.pokevault.modules.web.WebPageServiceTest" time="0.001" />
+  <testcase name="accounts_CountsStatusesAndCardsPerAccount" classname="com.pokevault.modules.web.WebPageServiceTest" time="0.003" />
+  <testcase name="inventory_BookingCustomers_OnlyCustomers_GuestFirst" classname="com.pokevault.modules.web.WebPageServiceTest" time="0.0" />
+  <testcase name="filterByElement_TreatsTrainerAsColorless" classname="com.pokevault.modules.web.WebPageServiceTest$CardGallery" time="0.002" />
+  <testcase name="filterPillUrls_KeepOtherFiltersAndSearch" classname="com.pokevault.modules.web.WebPageServiceTest$CardGallery" time="0.002" />
+  <testcase name="filtersCombine" classname="com.pokevault.modules.web.WebPageServiceTest$CardGallery" time="0.003" />
+  <testcase name="showsOnlyCardsInStock" classname="com.pokevault.modules.web.WebPageServiceTest$CardGallery" time="0.002" />
+  <testcase name="unknownFilterValue_IsIgnored" classname="com.pokevault.modules.web.WebPageServiceTest$CardGallery" time="0.001" />
+</testsuite>

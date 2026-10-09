@@ -1,51 +1,51 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderServiceTest" time="0.175" tests="23" errors="0" skipped="0" failures="0">
-  <testcase name="updateItemTradeStatus_TerminalOrder_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.075" />
-  <testcase name="updateItemTradeStatus_SkipSequence_FriendPendingToCompleted_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderServiceTest" time="0.125" tests="23" errors="0" skipped="0" failures="0">
+  <testcase name="updateItemTradeStatus_TerminalOrder_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.061" />
+  <testcase name="updateItemTradeStatus_SkipSequence_FriendPendingToCompleted_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004" />
   <testcase name="createOrder_UserNotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.002" />
-  <testcase name="transitionOrderStatus_Complete_Success" classname="com.pokevault.modules.order.OrderServiceTest" time="0.01">
-    <system-out>2026-10-09T19:13:53.827+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Transitioning order id: 1 from current status: SHIPPING with action: complete
-2026-10-09T19:13:53.833+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CompletedOrderState    : Order reached terminal state: COMPLETED
-2026-10-09T19:13:53.834+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Order id: 1 successfully transitioned to status: COMPLETED
+  <testcase name="transitionOrderStatus_Complete_Success" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004">
+    <system-out>2026-10-09T20:32:03.498+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Transitioning order id: 1 from current status: SHIPPING with action: complete
+2026-10-09T20:32:03.500+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CompletedOrderState    : Order reached terminal state: COMPLETED
+2026-10-09T20:32:03.500+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Order id: 1 successfully transitioned to status: COMPLETED
 </system-out>
   </testcase>
   <testcase name="getOrderById_Success" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
-  <testcase name="getOrderById_NotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
+  <testcase name="getOrderById_NotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.002" />
   <testcase name="createOrder_InventoryNotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004" />
-  <testcase name="updateItemTradeStatus_Success_TradeSent" classname="com.pokevault.modules.order.OrderServiceTest" time="0.005">
-    <system-out>2026-10-09T19:13:53.850+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Updated trade status for order item [10] in order [ORD-2026-001] to TRADE_SENT
+  <testcase name="updateItemTradeStatus_Success_TradeSent" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004">
+    <system-out>2026-10-09T20:32:03.512+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Updated trade status for order item [10] in order [ORD-2026-001] to TRADE_SENT
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_MultiItem_RemainsShippingWhenPartiallyCompleted" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004">
-    <system-out>2026-10-09T19:13:53.855+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Updated trade status for order item [10] in order [ORD-2026-001] to TRADE_SENT
+  <testcase name="updateItemTradeStatus_MultiItem_RemainsShippingWhenPartiallyCompleted" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003">
+    <system-out>2026-10-09T20:32:03.515+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Updated trade status for order item [10] in order [ORD-2026-001] to TRADE_SENT
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_Idempotent_ReturnsCurrentWithoutModification" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003">
-    <system-out>2026-10-09T19:13:53.859+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : OrderItem id: 10 in order id: 1 is already in status: TRADE_SENT. Returning current state.
+  <testcase name="updateItemTradeStatus_Idempotent_ReturnsCurrentWithoutModification" classname="com.pokevault.modules.order.OrderServiceTest" time="0.002">
+    <system-out>2026-10-09T20:32:03.517+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : OrderItem id: 10 in order id: 1 is already in status: TRADE_SENT. Returning current state.
 </system-out>
   </testcase>
-  <testcase name="createOrder_InsufficientStock_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
-  <testcase name="updateItemTradeStatus_SkipSequence_UnassignedToTradeSent_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004" />
-  <testcase name="updateItemTradeStatus_ItemNotFoundInOrder_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004" />
-  <testcase name="updateItemTradeStatus_OrderNotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004" />
-  <testcase name="transitionOrderStatus_Complete_IncompleteItems_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004">
-    <system-out>2026-10-09T19:13:53.882+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Transitioning order id: 1 from current status: SHIPPING with action: complete
+  <testcase name="createOrder_InsufficientStock_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.002" />
+  <testcase name="updateItemTradeStatus_SkipSequence_UnassignedToTradeSent_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
+  <testcase name="updateItemTradeStatus_ItemNotFoundInOrder_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.002" />
+  <testcase name="updateItemTradeStatus_OrderNotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
+  <testcase name="transitionOrderStatus_Complete_IncompleteItems_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003">
+    <system-out>2026-10-09T20:32:03.532+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Transitioning order id: 1 from current status: SHIPPING with action: complete
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_OrderNotInShipping_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.006" />
-  <testcase name="getAllOrders_ReturnsList" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
-  <testcase name="updateItemTradeStatus_UnsupportedStatus_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
-  <testcase name="transitionOrderStatus_Complete_NoItems_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003">
-    <system-out>2026-10-09T19:13:53.898+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Transitioning order id: 1 from current status: SHIPPING with action: complete
+  <testcase name="updateItemTradeStatus_OrderNotInShipping_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
+  <testcase name="getAllOrders_ReturnsList" classname="com.pokevault.modules.order.OrderServiceTest" time="0.002" />
+  <testcase name="updateItemTradeStatus_UnsupportedStatus_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.001" />
+  <testcase name="transitionOrderStatus_Complete_NoItems_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.002">
+    <system-out>2026-10-09T20:32:03.541+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Transitioning order id: 1 from current status: SHIPPING with action: complete
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompletedViaStatePattern" classname="com.pokevault.modules.order.OrderServiceTest" time="0.005">
-    <system-out>2026-10-09T19:13:53.902+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Updated trade status for order item [20] in order [ORD-2026-001] to COMPLETED
-2026-10-09T19:13:53.903+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : All trade items completed for order [ORD-2026-001] (id: 1). Transitioning order to COMPLETED via State Pattern.
-2026-10-09T19:13:53.903+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CompletedOrderState    : Order reached terminal state: COMPLETED
+  <testcase name="updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompletedViaStatePattern" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003">
+    <system-out>2026-10-09T20:32:03.544+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Updated trade status for order item [20] in order [ORD-2026-001] to COMPLETED
+2026-10-09T20:32:03.544+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : All trade items completed for order [ORD-2026-001] (id: 1). Transitioning order to COMPLETED via State Pattern.
+2026-10-09T20:32:03.544+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CompletedOrderState    : Order reached terminal state: COMPLETED
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_ReverseSequence_CompletedToTradeSent_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
-  <testcase name="createOrder_Success" classname="com.pokevault.modules.order.OrderServiceTest" time="0.005" />
-  <testcase name="updateItemTradeStatus_UnassignedAccount_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
+  <testcase name="updateItemTradeStatus_ReverseSequence_CompletedToTradeSent_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.002" />
+  <testcase name="createOrder_Success" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004" />
+  <testcase name="updateItemTradeStatus_UnassignedAccount_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.002" />
 </testsuite>
