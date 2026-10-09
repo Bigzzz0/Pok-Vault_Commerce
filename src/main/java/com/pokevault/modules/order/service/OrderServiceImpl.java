@@ -11,11 +11,13 @@ import com.pokevault.domain.enums.OrderStatus;
 import com.pokevault.domain.enums.TradeFulfillmentStatus;
 import com.pokevault.modules.order.dto.OrderResponse;
 import com.pokevault.modules.order.dto.PlaceOrderRequest;
+import com.pokevault.modules.order.event.OrderPlacedEvent;
+import com.pokevault.modules.trade.state.OrderContext;
 import com.pokevault.repository.CardInventoryRepository;
 import com.pokevault.repository.OrderRepository;
 import com.pokevault.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import com.pokevault.modules.order.event.OrderPlacedEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -108,6 +111,27 @@ public class OrderServiceImpl implements OrderService {
                 .items(savedOrder.getItems())
                 .timestamp(LocalDateTime.now())
                 .build());
+
+        return OrderResponse.fromEntity(savedOrder);
+    }
+
+    @Override
+    public OrderResponse transitionOrderStatus(Long id, String action) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+
+        log.info("Transitioning order id: {} from current status: {} with action: {}",
+                id, order.getOrderStatus(), action);
+
+        // 1. นำ Entity เข้าสู่ OrderContext ของ GoF State Pattern
+        OrderContext context = OrderContext.fromOrder(order);
+
+        // 2. สั่งรัน Action (ถ้าผิดกฎ State Pattern จะ Fail-Fast โยน InvalidOrderStateException ทันที)
+        context.executeAction(action);
+
+        // 3. บันทึก Entity ที่อัปเดตสถานะใหม่ลงฐานข้อมูล
+        Order savedOrder = orderRepository.save(order);
+        log.info("Order id: {} successfully transitioned to status: {}", id, savedOrder.getOrderStatus());
 
         return OrderResponse.fromEntity(savedOrder);
     }

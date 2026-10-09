@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon TCG Pocket - Official Vault Exhibition</title>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('tcg-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Official Pokémon TCG Style Navbar -->
+    <nav class="navbar">
+        <a th:href="@{/}" class="brand">
+            <div class="brand-emblem">
+                <div th:replace="~{fragments/icons :: pokeball('icon-md')}"></div>
+            </div>
+            <span>Pokémon TCG Pocket Gallery</span>
+        </a>
+        <div class="nav-links">
+            <a th:href="@{/}" class="nav-link active">
+                <div th:replace="~{fragments/icons :: dashboard('icon-sm')}"></div>
+                <span>Exhibition</span>
+            </a>
+            <a th:href="@{/cards}" class="nav-link">
+                <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
+                <span>Card Gallery</span>
+            </a>
+            <a th:href="@{/inventory}" class="nav-link">
+                <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
+                <span>Vault Inventory</span>
+            </a>
+            <a th:href="@{/accounts}" class="nav-link">
+                <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
+                <span>Game Accounts</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-link">
+                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                <span>Orders</span>
+            </a>
+            <a href="/swagger-ui.html" target="_blank" class="nav-link swagger-btn">
+                <span>Swagger OpenAPI</span>
+                <div th:replace="~{fragments/icons :: externalLink('icon-sm')}"></div>
+            </a>
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
+                <span class="theme-icon-sun" style="display: inline-flex;"><th:block th:replace="~{fragments/icons :: sun('icon-sm')}"></th:block></span>
+                <span class="theme-icon-moon" style="display: none;"><th:block th:replace="~{fragments/icons :: moon('icon-sm')}"></th:block></span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Hero Gallery Exhibition Banner -->
+        <header class="gallery-hero">
+            <div class="hero-tag">
+                <div th:replace="~{fragments/icons :: pokeball('icon-sm')}"></div>
+                <span>Live Card Exhibition & Store Command</span>
+            </div>
+            <h1>POKÉMON TCG POCKET VAULT</h1>
+            <p>Interactive Pokémon Trading Card Game exhibition powered by Spring Boot 3.4.3 Layered Architecture, GoF Behavioral Patterns (Strategy, State, Observer), and PostgreSQL.</p>
+            <div class="hero-stats-row">
+                <div class="hero-stat-pill">
+                    <div class="hero-stat-num" th:text="${totalCards}">12</div>
+                    <div class="hero-stat-label">Master Cards</div>
+                </div>
+                <div class="hero-stat-pill">
+                    <div class="hero-stat-num" th:text="${totalExpansions}">3</div>
+                    <div class="hero-stat-label">Active Expansions</div>
+                </div>
+                <div class="hero-stat-pill">
+                    <div class="hero-stat-num" th:text="${totalOrders}">1</div>
+                    <div class="hero-stat-label">Store Orders</div>
+                </div>
+                <div class="hero-stat-pill" style="border-color: rgba(245, 158, 11, 0.35);">
+                    <div class="hero-stat-num" style="color: var(--accent-gold);" th:text="${lowStockCount}">0</div>
+                    <div class="hero-stat-label">Low Stock Alerts</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Low Stock Telemetry Radar (Observer Pattern) -->
+        <section th:if="${lowStockCount > 0}" style="margin-bottom: 3rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--accent-gold); display: flex; align-items: center; gap: 0.6rem;">
+                    <div th:replace="~{fragments/icons :: alertTriangle('icon-md')}"></div>
+                    <span>Observer Pattern Stock Telemetry (<= 3 copies remaining)</span>
+                </h2>
+                <a th:href="@{/inventory}" class="btn btn-secondary" style="font-size: 0.82rem; padding: 0.4rem 0.85rem;">Manage Inventory →</a>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Card Item</th>
+                            <th>Condition</th>
+                            <th>Stock Remaining</th>
+                            <th>Vault Location</th>
+                            <th>Retail Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${lowStockItems}">
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.85rem;">
+                                    <img th:src="${item.imageUrl}" th:alt="${item.cardName}" class="inv-card-thumb" loading="lazy">
+                                    <div>
+                                        <div style="font-weight: 800;" th:text="${item.cardName}">Charizard ex</div>
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);" th:text="${item.expansionCode + ' #' + item.cardNumber}">A1 #004</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="rarity-pill" th:text="${item.conditionLabel}">MINT</span></td>
+                            <td style="color: var(--accent-ruby); font-weight: 800; font-family: 'JetBrains Mono', monospace;" th:text="${item.quantity}">1</td>
+                            <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent-blue); font-weight: 600;" th:text="${item.storageSlot}">SHOWCASE-01</td>
+                            <td style="color: var(--accent-emerald); font-weight: 800;" th:text="'฿' + ${#numbers.formatDecimal(item.sellingPrice, 1, 2)}">฿450.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Featured Frameless Cards Showcase -->
+        <section>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+                <div>
+                    <h2 style="font-size: 1.8rem; font-weight: 900; letter-spacing: -0.5px;">Spotlight Exhibition Cards</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Official Genetic Apex collector cards with 3D parallax tilt and specular beam reflection</p>
+                </div>
+                <a th:href="@{/cards}" class="btn btn-primary">
+                    <span>Explore Full Gallery</span>
+                    <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
+                </a>
+            </div>
+
+            <div class="gallery-cards-grid">
+                <div th:if="${#lists.isEmpty(featuredCards)}" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
+                    No cards in the vault yet. Record a pull in <a th:href="@{/accounts}"><strong>Accounts</strong></a> to stock the gallery.
+                </div>
+                <div th:each="c : ${featuredCards}" class="gallery-card-unit">
+                    <!-- 3D Frameless Card with Simeydotme Shaders -->
+                    <div th:class="${'tcg-card-3d holo-card ' + (c.rarity.name() == 'CROWN_RARE' ? 'crown-rare' : (c.rarity.name() == 'IMMERSIVE_RARE' ? 'holo-immersive' : ''))}"
+                         th:data-rarity="${c.rarity.name()}"
+                         th:data-name="${c.name}"
+                         th:data-number="${c.cardNumber}"
+                         th:data-expansion="${c.expansionCode}"
+                         th:data-hp="${c.hp}"
+                         th:data-rarity-desc="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}"
+                         th:data-desc="${c.description}"
+                         th:data-stock="${c.totalStock}"
+                         th:data-element="${c.elementType.name()}"
+                         th:data-image="${c.imageUrl}"
+                         onclick="handleInspectClick(this)">
+                        
+                        <!-- Simeydotme Holographic Shimmer & Glare -->
+                        <div class="holo-card__shine"></div>
+                        <div class="holo-card__glare"></div>
+                        <div class="card-glare"></div>
+
+                        <!-- Top Bar with Zero Overlap Guarantee -->
+                        <div class="card-top-bar">
+                            <span class="card-num-badge" th:text="${c.expansionCode + ' #' + c.cardNumber}">A1 #004</span>
+                            <div class="element-badge-pill">
+                                <th:block th:replace="~{fragments/icons :: elementIcon(${c.elementType.name()}, 'icon-sm')}"></th:block>
+                                <span th:text="${c.elementType}">FIRE</span>
+                            </div>
+                        </div>
+
+                        <!-- Authentic High-Resolution Card Artwork -->
+                        <img th:src="${c.imageUrl}" th:alt="${c.name}" class="card-real-img" loading="lazy">
+
+                        <!-- Hover Quick Action Pill -->
+                        <div class="card-hover-actions" onclick="event.stopPropagation()">
+                            <button class="card-action-btn btn-act-inspect"
+                                    th:data-name="${c.name}"
+                                    th:data-number="${c.cardNumber}"
+                                    th:data-expansion="${c.expansionCode}"
+                                    th:data-hp="${c.hp}"
+                                    th:data-rarity="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}"
+                                    th:data-desc="${c.description}"
+                                    th:data-stock="${c.totalStock}"
+                                    th:data-element="${c.elementType.name()}"
+                                    th:data-image="${c.imageUrl}"
+                                    onclick="handleInspectClick(this)">
+                                <div th:replace="~{fragments/icons :: eye('icon-sm')}"></div>
+                                <span>Inspect 3D</span>
+                            </button>
+                            <a th:href="@{/inventory}" class="card-action-btn btn-act-buy">
+                                <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
+                                <span>Vault Stock</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Minimal Subtitle Beneath Card -->
+                    <div class="card-gallery-sub">
+                        <div class="card-gallery-title" th:text="${c.name}">Charizard ex</div>
+                        <div class="card-gallery-meta">
+                            <span class="stock-bullet" th:text="${c.totalStock} + ' in vault'">5 in vault</span>
+                            <span class="rarity-pill" th:text="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}">4 DIAMOND</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Museum Spotlight Stage Modal (Official Gallery Inspector) -->
+    <div id="inspectionModal" class="modal-overlay" onclick="if(event.target === this) closeInspection()">
+        <div class="modal-container modal-wide">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div th:replace="~{fragments/icons :: eye('icon-md')}"></div>
+                    <h3 class="modal-title" id="inspectCardName">Inspect Pokémon Card</h3>
+                </div>
+                <button class="modal-close-btn" onclick="closeInspection()">
+                    <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-inspect-grid">
+                    <!-- Left: Large 3D Card Artwork Display with 3D Tilt & Flip -->
+                    <div class="inspect-card-stage">
+                        <div class="inspect-flipper-box holo-card" id="inspectFlipperBox" onclick="toggleCardFlip()" title="Click to flip card">
+                            <div class="inspect-flipper-inner holo-card__rotator" id="inspectFlipperInner">
+                                <!-- Front Face -->
+                                <div class="inspect-card-face inspect-face-front holo-card__front">
+                                    <img id="inspectCardImg" src="" alt="Card Front" class="inspect-card-img holo-card__image">
+                                    <div class="holo-card__shine"></div>
+                                    <div class="holo-card__glare"></div>
+                                    <div class="card-glare" id="inspectGlareFront"></div>
+                                </div>
+                                <!-- Back Face (Official TCG Card Back) -->
+                                <div class="inspect-card-face inspect-face-back holo-card__back">
+                                    <img id="inspectCardBackImg" th:src="@{/images/cards/card-back.jpg}" src="/images/cards/card-back.jpg" alt="Official Pokémon Card Back" class="inspect-card-img holo-card__image">
+                                    <div class="card-glare" id="inspectGlareBack"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="inspect-flip-btn" onclick="toggleCardFlip()">
+                            <div th:replace="~{fragments/icons :: flip('icon-sm')}"></div>
+                            <span id="inspectFlipLabel">Flip Card (Back)</span>
+                        </button>
+                    </div>
+                    <!-- Right: Official Card Attributes & Vault Telemetry -->
+                    <div>
+                        <div id="inspectAura" style="margin-bottom: 1.25rem;">
+                            <span id="inspectCardNumber" style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: var(--accent-cyan);">A1 #004</span>
+                            <h2 id="inspectCardHp" style="color: #ef4444; margin: 0.4rem 0; font-size: 2rem; font-weight: 900;">HP 180</h2>
+                        </div>
+                        <p id="inspectCardDesc" style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.7; font-size: 1rem;"></p>
+                        
+                        <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                            <span id="inspectCardRarity" class="rarity-pill" style="font-size: 0.85rem; padding: 6px 14px;">RARITY</span>
+                            <span id="inspectCardStock" class="stock-pill" style="font-size: 0.85rem; padding: 6px 14px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; font-weight: 700;">STOCK</span>
+                        </div>
+
+                        <div style="display: flex; gap: 0.75rem;">
+                            <a th:href="@{/inventory}" class="btn btn-primary" style="flex: 1;">
+                                <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
+                                <span>Check Store Inventory</span>
+                            </a>
+                            <button class="btn btn-secondary" onclick="closeInspection()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/audio.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

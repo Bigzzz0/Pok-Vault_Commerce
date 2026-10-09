@@ -23,7 +23,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U test_user"
+          --health-cmd "pg_isready -U test_user -d pokevault_test"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 5
@@ -44,12 +44,10 @@ jobs:
         env:
           # ต้องสั่ง activate profile prod ตรงๆ ไม่งั้นจะรันด้วย profile local (H2) ตามค่า default
           SPRING_PROFILES_ACTIVE: prod
-          # ชื่อตัวแปรต้องตรงกับที่ profile prod ใน application.yml ประกาศไว้
-          DB_HOST: localhost
-          DB_PORT: "5432"
-          DB_NAME: pokevault_test
-          DB_USERNAME: test_user
-          DB_PASSWORD: test_pass
+          # ชื่อตัวแปรต้องตรงกับที่ profile prod ใน application.yml ประกาศไว้ (SPRING_DATASOURCE_*)
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/pokevault_test
+          SPRING_DATASOURCE_USERNAME: test_user
+          SPRING_DATASOURCE_PASSWORD: test_pass
 
       - name: Upload test report (ดูได้แม้ test fail)
         if: always()
