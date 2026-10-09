@@ -11,7 +11,7 @@
 
 ในโปรเจกต์ **PokéVault Commerce** หนึ่งในเกณฑ์การประเมินสำคัญของวิชา **CP353002 (Principles of Software Design and Development)** คือการนำ **Gang of Four (GoF) Design Patterns** มาประยุกต์ใช้เพื่อแก้ไขปัญหาจริงในระบบ:
 - สมาชิกคนที่ 2 ได้รับมอบหมายให้ดูแลการประยุกต์ใช้ **GoF Behavioral Pattern: Observer Pattern** ในการตรวจจับและแจ้งเตือนระดับสต็อกการ์ดสะสมในคลัง (`LowStockObserver`)
-- การจัดทำเอกสารในข้อที่ 15 นี้ มีเป้าหมายเพื่อสรุปโครงสร้างทางสถาปัตยกรรม, บทบาทของคลาส (Participants), โฟลว์การทำงาน (Sequence Diagram), การเชื่อมโยงกับหลักการ SOLID, และผลการทดสอบทั้งหมด ลงในเอกสารกลางของโปรเจกต์ [`doc/design-patterns.md`](file:///c:/Users/s0955/Github/Pok-Vault_Commerce/doc/design-patterns.md)
+- การจัดทำเอกสารในข้อที่ 15 นี้ มีเป้าหมายเพื่อสรุปโครงสร้างทางสถาปัตยกรรม, บทบาทของคลาส (Participants), โฟลว์การทำงาน (Sequence Diagram), การเชื่อมโยงกับหลักการ SOLID, และผลการทดสอบทั้งหมด ลงในเอกสารกลางของโปรเจกต์ [`doc/design-patterns.md`](../design-patterns.md)
 
 ---
 

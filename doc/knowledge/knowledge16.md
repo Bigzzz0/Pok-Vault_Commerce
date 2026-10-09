@@ -20,12 +20,12 @@
 
 ระบบจัดการสถานะแบ่งออกเป็น 2 มิติที่ทำงานสอดประสานกัน:
 
-1. **ระดับไอเทมการ์ด (`OrderItem.tradeStatus`)**: ใช้ Enum [`TradeFulfillmentStatus`](file:///c:/Users/s0955/Github/Pok-Vault_Commerce/src/main/java/com/pokevault/domain/enums/TradeFulfillmentStatus.java)
+1. **ระดับไอเทมการ์ด (`OrderItem.tradeStatus`)**: ใช้ Enum [`TradeFulfillmentStatus`](../../code/src/main/java/com/pokevault/domain/enums/TradeFulfillmentStatus.java)
    - `UNASSIGNED`: ยังไม่ได้มอบหมายไอดีเกมร้านค้า
    - `FRIEND_PENDING`: รอแอดเป็นเพื่อนในเกม Pokémon Pocket
    - `TRADE_SENT`: ส่งคำขอแลกเปลี่ยนการ์ดในเกมเรียบร้อยแล้ว
    - `COMPLETED`: แลกเปลี่ยนการ์ดในเกมเสร็จสมบูรณ์
-2. **ระดับคำสั่งซื้อภาพรวม (`Order.orderStatus`)**: ใช้ Enum [`OrderStatus`](file:///c:/Users/s0955/Github/Pok-Vault_Commerce/src/main/java/com/pokevault/domain/enums/OrderStatus.java)
+2. **ระดับคำสั่งซื้อภาพรวม (`Order.orderStatus`)**: ใช้ Enum [`OrderStatus`](../../code/src/main/java/com/pokevault/domain/enums/OrderStatus.java)
    - `PENDING` $\rightarrow$ `PAID` $\rightarrow$ `SHIPPING` $\rightarrow$ `COMPLETED`
 
 ```mermaid
@@ -101,7 +101,7 @@ sequenceDiagram
 
 ## 5. 🧪 ผลการทดสอบ (Verification & Testing)
 
-เพิ่ม 4 Unit Test Cases ลงใน [`OrderServiceTest.java`](file:///c:/Users/s0955/Github/Pok-Vault_Commerce/src/test/java/com/pokevault/modules/order/OrderServiceTest.java):
+เพิ่ม 4 Unit Test Cases ลงใน [`OrderServiceTest.java`](../../test/java/com/pokevault/modules/order/OrderServiceTest.java):
 1. `updateItemTradeStatus_Success_AndSyncShipping`: อัปเดตไอเทมเป็น `TRADE_SENT` และตรวจสอบว่าออเดอร์ถูกปรับเป็น `SHIPPING`
 2. `updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompleted`: เมื่อทุกไอเทมเป็น `COMPLETED` ออเดอร์จะเปลี่ยนเป็น `COMPLETED`
 3. `updateItemTradeStatus_OrderNotFound_ThrowsException`: ตรวจสอบ Guard Clause เมื่อไม่พบ Order

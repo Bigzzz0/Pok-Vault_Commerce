@@ -1,6 +1,6 @@
 r"""Generate an evidence report from the latest Maven Surefire XML results for Member 4 (Tankun Phannikul).
 
-Run `.\mvnw.cmd clean test` first, then `python generate_tankun_report.py`.
+Run `./code/mvnw.cmd -f code/pom.xml clean test` first, then `python test/generate_tankun_report.py`.
 Uses only the Python standard library; never modifies production application code.
 """
 from pathlib import Path
@@ -8,13 +8,13 @@ from datetime import datetime
 import json
 import xml.etree.ElementTree as ET
 
-ROOT = Path(__file__).resolve().parent
-SOURCE = ROOT / "target" / "surefire-reports"
+ROOT = Path(__file__).resolve().parents[1]
+SOURCE = ROOT / "code" / "target" / "surefire-reports"
 OUT = ROOT / "test" / "reports" / "tankun"
 
 paths = sorted(SOURCE.glob("TEST-*.xml"))
 if not paths:
-    raise SystemExit("No Surefire XML found in target/surefire-reports. Run Maven tests first.")
+    raise SystemExit("No Surefire XML found in code/target/surefire-reports. Run Maven tests first.")
 
 OUT.mkdir(parents=True, exist_ok=True)
 
@@ -78,7 +78,7 @@ report = {
     "owner": "นายแทนคุณ พันธ์นิกุล 673380301-0",
     "branch": "Tankun_6733803010_01",
     "role": "Trade Matching, GoF State Pattern & Global Exception Handling Specialist",
-    "command": "mvnw.cmd test",
+    "command": "code/mvnw.cmd -f code/pom.xml test",
     "whole_suite": whole_total,
     "tankun_scope": tankun_total,
     "suites": tankun_suites
@@ -147,14 +147,14 @@ lines += [
     "```powershell",
     "$env:JAVA_HOME=\"C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.20.101-hotspot\"",
     "$env:Path=\"$env:JAVA_HOME\\bin;$env:Path\"",
-    ".\\mvnw.cmd clean test",
-    "python generate_tankun_report.py",
+    ".\\code\\mvnw.cmd -f code/pom.xml clean test",
+    "python test/generate_tankun_report.py",
     "```",
     "",
     "รันเฉพาะส่วนของแทนคุณ:",
     "",
     "```powershell",
-    ".\\mvnw.cmd test \"-Dtest=OrderStateTest,TradeMatchingServiceTest,TradeMatchingApiControllerTest,OrderApiControllerTest,GlobalExceptionHandlerTest,TradeRecommendationResponseTest,CustomExceptionTest\"",
+    ".\\code\\mvnw.cmd -f code/pom.xml test \"-Dtest=OrderStateTest,TradeMatchingServiceTest,TradeMatchingApiControllerTest,OrderApiControllerTest,GlobalExceptionHandlerTest,TradeRecommendationResponseTest,CustomExceptionTest\"",
     "```",
     "",
     "## ขอบเขตและข้อจำกัด",

@@ -39,10 +39,10 @@
 
 `schema.sql` ใช้ CREATE TABLE IF NOT EXISTS จึงไม่แก้คอลัมน์ในฐานข้อมูลที่มีอยู่แล้ว
 
-สำหรับ PostgreSQL เดิมมี script manual ที่ `src/main/resources/db/manual/core-schema-alignment.sql`:
+สำหรับ PostgreSQL เดิมมี script manual ที่ `code/src/main/resources/db/manual/core-schema-alignment.sql`:
 
 ```bash
-psql -v ON_ERROR_STOP=1 -d YOUR_DATABASE -f src/main/resources/db/manual/core-schema-alignment.sql
+psql -v ON_ERROR_STOP=1 -d YOUR_DATABASE -f code/src/main/resources/db/manual/core-schema-alignment.sql
 ```
 
 ให้สำรองข้อมูลและตรวจ script ก่อนรัน โดย script ใช้ transaction และปฏิเสธข้อมูลเดิมที่ไม่ตรงข้อกำหนด ไม่ตัด/ลบข้อมูลให้เอง ไม่ได้รันกับฐานข้อมูลผู้ใช้ในงานรอบนี้
@@ -58,6 +58,6 @@ psql -v ON_ERROR_STOP=1 -d YOUR_DATABASE -f src/main/resources/db/manual/core-sc
 
 ผลล่าสุดและคำสั่งรันอยู่ใน [Test Report](../test/reports/sikarin/TEST-REPORT.md)
 
-## งานของสมาชิกอื่นที่ยังเหลือ
+## ขอบเขตบันทึก
 
-รอบนี้ไม่ได้เปลี่ยนกฎจองสต็อก, Trade Matching, Order State, CRUD บัญชีเกม หรือการอ่านข้อมูลของ WebViewController ตามรายการที่แยกให้สมาชิกคนที่ 2–5
+เอกสารนี้บันทึกงาน Security/Core schema ของสมาชิกคนที่ 1 ไม่ใช่รายการงานค้างของทีมล่าสุด ดู [Requirements Checklist](requirements-checklist.md) สำหรับสถานะส่งมอบ

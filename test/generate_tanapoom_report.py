@@ -1,6 +1,6 @@
 """Generate an evidence report from the latest Maven Surefire XML results for Member 3 (Tanapoom).
 
-Run `mvnw.cmd clean test` first, then `python test/generate_tanapoom_report.py`.
+Run `code/mvnw.cmd -f code/pom.xml clean test` first, then `python test/generate_tanapoom_report.py`.
 Uses only the Python standard library; never runs or modifies application code.
 """
 from pathlib import Path
@@ -9,7 +9,7 @@ import json
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "target" / "surefire-reports"
+SOURCE = ROOT / "code" / "target" / "surefire-reports"
 OUT = ROOT / "test" / "reports" / "tanapoom"
 paths = sorted(SOURCE.glob("TEST-*.xml"))
 if not paths:
@@ -41,7 +41,7 @@ def totals(rows):
 report = {
     "generated_at": datetime.now().astimezone().isoformat(),
     "owner": "Tanapoom Chantra 673380272-1 (Member 3)",
-    "command": "mvnw.cmd test",
+    "command": "code/mvnw.cmd -f code/pom.xml test",
     "whole_suite": totals(suites),
     "order_scope": totals(order_scope),
     "suites": suites
@@ -83,12 +83,12 @@ lines += [
     "```powershell",
     "$env:JAVA_HOME=\"C:\\Users\\ADMIN\\.vscode\\extensions\\redhat.java-1.56.0-win32-x64\\jre\\21.0.12.1-win32-x86_64\"",
     "$env:Path=\"$env:JAVA_HOME\\bin;$env:Path\"",
-    ".\\mvnw.cmd clean test",
+    ".\\code\\mvnw.cmd -f code/pom.xml clean test",
     "python test/generate_tanapoom_report.py",
     "```", "",
     "รันเฉพาะส่วนของคนที่ 3 (Member 3 Scope):", "",
     "```powershell",
-    ".\\mvnw.cmd '-Dtest=DiscountStrategyTest,DiscountStrategyEdgeCaseTest,OrderServiceTest,OrderServiceEdgeCaseTest,OrderBookingApiControllerTest,OrderPersistenceTest,OrderStockAndSecurityTest,OrderBookingApiSecurityTest' test",
+    ".\\code\\mvnw.cmd -f code/pom.xml '-Dtest=DiscountStrategyTest,DiscountStrategyEdgeCaseTest,OrderServiceTest,OrderServiceEdgeCaseTest,OrderBookingApiControllerTest,OrderPersistenceTest,OrderStockAndSecurityTest,OrderBookingApiSecurityTest' test",
     "```", "",
     "## 5. ขอบเขตและข้อจำกัด (Scope & Limitations)", "",
     "- ชุดทดสอบนี้ครอบคลุมความรับผิดชอบของ Member 3: Order, OrderItem, DiscountStrategy, DiscountService, OrderServiceImpl, OrderApiController, การจองและคืนสต็อกข้ามบัญชี/Inventory, การตรวจสิทธิ์เจ้าของออเดอร์ (ร่วมกับ Member 1), และ JPA Repositories",

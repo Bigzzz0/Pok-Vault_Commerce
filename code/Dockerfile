@@ -4,10 +4,12 @@ WORKDIR /app
 
 # ก๊อปปี้ pom.xml ก่อน แล้วดึง dependency ให้ cache ไว้
 # (ทำแบบนี้ ถ้าโค้ดเปลี่ยนแต่ pom.xml ไม่เปลี่ยน จะไม่ต้องโหลด dependency ใหม่ทุกครั้ง -> build เร็วขึ้นมาก)
-COPY pom.xml .
+COPY code/pom.xml .
 RUN mvn dependency:go-offline -B
 
-COPY src ./src
+COPY code/src ./src
+COPY img/web /img/web
+COPY test/java /test/java
 RUN mvn clean package -DskipTests
 
 # ---------- Stage 2: Run ----------

@@ -184,7 +184,7 @@ classDiagram
     CardExpansion "1" o-- "1..*" Card : publishes
     Card "1" <-- "0..*" CardInventory : defines template
     
-    GameAccount "1" o-- "0..*" CardInventory : holds in vault
+    GameAccount "0..1" o-- "0..*" CardInventory : holds in vault
     GameAccount "1" <-- "0..*" OrderItem : assigned trader
     
     Order "1" *-- "1..*" OrderItem : consists of
@@ -198,9 +198,9 @@ classDiagram
 ในสถาปัตยกรรมการออกแบบเชิงวัตถุ กฎธุรกิจ (Business Invariants) จะต้องได้รับการตรวจสอบและควบคุมอย่างเข้มงวดภายในโดเมนโมเดล:
 
 ### 2.1 โมเดลบัญชีเกมคลังการ์ด (Game Account Vault & Card Inventory)
-* **Invariant 1 (Account-Inventory Association)**: การ์ดแต่ละใบในสต็อกที่เปิดได้จากซอง (`CardInventory`) จะต้องถูกผูกเข้ากับ `GameAccount` เสมอ เพื่อให้ระบบทราบอย่างชัดเจนว่าการ์ดใบนี้อยู่ในกระเป๋าของไอดีใดในเกม
+* **Account-Inventory Association**: การบันทึกเปิดซองผ่าน Account API ผูก `CardInventory` กับ `GameAccount` ที่ระบุ แต่ schema อนุญาต `game_account_id` เป็น NULL จึงไม่ใช่ invariant ว่าทุก inventory ต้องมีบัญชีเสมอ; matching ใช้เฉพาะ inventory ที่มีบัญชี READY
 * **Invariant 2 (Non-negative Stock Quantity)**: จำนวนการ์ดในสต็อกจะต้องเป็นศูนย์หรือมากกว่าเสมอ (`quantity >= 0`) หากมีการสั่งซื้อและตัดสต็อก ระบบจะป้องกันไม่ให้สต็อกติดลบ (`deductStock() throws InsufficientStockException`)
-* **Invariant 3 (Cost & Price Integrity)**: ราคาซื้อเข้า (`buyInPrice`) และราคาขายหน้าร้าน (`sellingPrice`) ต้องไม่ติดลบ เพื่อให้รายงานกำไรขั้นต้นมีความถูกต้อง
+* **Invariant 3 (Cost & Price Integrity)**: ราคาซื้อเข้า (`buyInPrice`) และราคาขายหน้าร้าน (`sellingPrice`) ต้องไม่ติดลบ เพื่อรักษาข้อมูลราคา ไม่ได้มีรายงานกำไรอัตโนมัติ
 
 ### 2.2 โมเดลคำสั่งซื้อ Chat Commerce (Order & Chat Commerce Handshake)
 * **Invariant 4 (Frozen Historical Price)**: เมื่อลูกค้าทำการจองการ์ด ราคาต่อหน่วย (`unitPrice`) ในแถวรายการ `OrderItem` จะต้องถูกบันทึกคัดลอกมาจากราคาขายในสต็อก ณ วินาทีนั้น และจะไม่มีการเปลี่ยนแปลงตามราคาคลังในอนาคต
@@ -228,6 +228,6 @@ classDiagram
 | **Game Account Vault** | ไอดีเกมของร้านที่ใช้เก็บสะสมการ์ด | เอนทิตี `GameAccount` ที่มีรหัสเพื่อนในเกม (Friend ID) และสถานะความพร้อมในการเทรด |
 | **Chat Commerce Flow** | การกดจองบนเว็บแล้วเด้งไปคุยในแชท | โฟลว์การทำงานที่เว็บสร้าง Order Code จริง และเปิดปุ่ม Deep Link ส่งต่อไปยัง Facebook Messenger พร้อมข้อความสรุปออเดอร์ |
 | **In-Game Trade Matching**| การจับคู่ไอดีเกมที่ถือการ์ดให้ออเดอร์ | กระบวนการใน `TradeMatchingService` ที่จับคู่ `assigned_account_id` ให้กับ `OrderItem` |
-| **Trade Quota & Cooldown**| ข้อจำกัดการเทรดในเกมต่อวัน | การติดตามสถานะ `trade_status` ของบัญชีเกม เพื่อป้องกันการส่งคำขอเพื่อนหรือเทรดเกินขีดจำกัด |
+| **Trade Quota & Cooldown**| ข้อจำกัดการเทรดในเกมต่อวัน | พนักงานตั้ง `trade_status` เพื่อบอกความพร้อม; ไม่มีตัวนับ quota หรือ scheduler cooldown อัตโนมัติ |
 | **Frozen Price** | การคงราคาขาย ณ วันที่สั่งซื้อ | การบันทึก `unit_price` ใน `order_items` ให้เป็นอิสระจากราคาใน `card_inventories` |
 | **Holographic Shader** | เอฟเฟกต์โฮโลแกรม 3 มิติสะท้อนแสง | ระบบ CSS3 3D Transform & Shader Math บนหน้า Frontend ที่คำนวณการเอียงตามตำแหน่งเมาส์ |

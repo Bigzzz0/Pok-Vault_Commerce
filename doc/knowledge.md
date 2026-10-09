@@ -1,3 +1,5 @@
+> บันทึกประวัติการพัฒนา: เนื้อหาและจำนวน tests เป็นข้อมูลตามวันที่เดิม ไม่ใช่สถานะส่งมอบล่าสุด ดู [Checklist](requirements-checklist.md) และ [รายงานรวม](../test/reports/project/TEST-REPORT.md)
+
 # 📘 PokéVault Commerce — Knowledge & Architecture Log
 > **ผู้รับผิดชอบ**: สมาชิกคนที่ 4 — นายแทนคุณ พันธ์นิกุล (673380301-0)  
 > **บทบาท**: Trade Matching & State Pattern Specialist  

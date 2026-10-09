@@ -1,34 +1,49 @@
-# Tests
+# Tests and Reports
 
-JUnit 5 / Mockito / Spring Boot Test source files are in `src/test/java` (Maven convention).
+JUnit 5 / Mockito / Spring Boot Test sources อยู่ใน `test/java` โดยกำหนด testSourceDirectory ใน code/pom.xml
+รายงานที่ commit ใน `test/reports/` เป็น snapshot ไม่ใช่ผลทดสอบที่รันใหม่ทุกครั้งที่อ่านเอกสาร
 
-Run all tests from the project root:
+## ผลล่าสุด — 9 ตุลาคม 2026
+
+`mvnw.cmd clean verify` (ก่อนย้ายโครงสร้าง) บน source commit `ea2dcd7`: **373 tests, 0 failures, 0 errors, 0 skipped — BUILD SUCCESS**
+ดู [รายงานรวมพร้อม commit/environment](reports/project/TEST-REPORT.md) และรายงานสมาชิกที่สร้างจาก XML ของการรันเดียวกัน
+ส่วน Catalog / User / Security ของศิฆรินทร์ผ่าน **108 เคส**
+
+## รันทั้งหมดและสร้างรายงาน
+
+ใช้ JDK 17 ขึ้นไป จาก root ของโปรเจกต์:
 
 ```powershell
-.\mvnw.cmd clean test
+.\code\mvnw.cmd -f code/pom.xml clean verify
 python test/generate_sikarin_report.py
 python test/generate_sapphanyu_report.py
+python test/generate_tanapoom_report.py
+python test/generate_tankun_report.py
 ```
 
-Use JDK 17 or later. If Java is not configured, set `JAVA_HOME` to your JDK folder first.
+หากต้องการรายงานรวมและ metadata รอบเดียวกัน ให้เก็บ build log และใช้ generator รวมหลัง Maven จบ:
 
-### สมาชิกคนที่ 1: ศิฆรินทร์ อุปจันทร์ (673380292-5)
-- **ขอบเขต:** `com.pokevault.modules.catalog` (Card Catalog, User Profile, Catalog Persistence)
-- **รายงานผล:** [Sikarin Test Report](reports/sikarin/TEST-REPORT.md)
-- **สคริปต์รายงาน:** `python test/generate_sikarin_report.py`
+```powershell
+.\code\mvnw.cmd -f code/pom.xml clean verify *> "$env:TEMP\pokevault-verify.log"
+$taskVerifyExit = $LASTEXITCODE
+python test/generate_project_report.py --build-log "$env:TEMP\pokevault-verify.log" --exit-code $taskVerifyExit
+```
 
-### สมาชิกคนที่ 2: สัพพัญญู คำตุ้ม (673380066-4)
-- **ขอบเขต:** Game Account Vault, `CardInventory`, Low Stock Observer Pattern, และ Order Item Trade Status API/Lifecycle
-- **คำสั่งรันเฉพาะขอบเขต:**
-  ```powershell
-  .\mvnw.cmd test '-Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest,OrderServiceTest,OrderApiControllerTest'
-  python test/generate_sapphanyu_report.py
-  ```
-- **รายงานผล:** [Sapphanyu Test Report](reports/sapphanyu/TEST-REPORT.md)
-- **สคริปต์รายงาน:** `python test/generate_sapphanyu_report.py`
+Generator รวมตรวจยอดใน log เทียบ XML และยอมรับเฉพาะ build สำเร็จที่ไม่มี failure/error/skipped; หาก build ไม่ผ่านให้อ่าน raw log ก่อน
 
-Maven's raw output is under `target/surefire-reports`. The saved JUnit XML files under `test/reports/sikarin` and `test/reports/sapphanyu` retain test results while omitting machine properties and verbose logs.
+ตรวจ build สำเร็จก่อนสร้างรายงาน; generator อ่าน Surefire XML ไม่ได้รันทดสอบเอง ควรใช้ clean เพื่อไม่รวม XML เก่าจากคลาสที่ถูกย้าย/ลบ
+เพิ่ม commit SHA และสภาพแวดล้อมของรอบทดสอบก่อนส่ง ไม่ใช้ยอด tests ในรายงานเก่าเป็นการรับรองโค้ดใหม่
 
-Sikarin's scope is `com.pokevault.modules.catalog` and `com.pokevault.common.security`. See [Test Report](reports/sikarin/TEST-REPORT.md) for results and limitations. The generator reads existing Surefire results; it does not execute tests itself.
+| สมาชิก | ขอบเขตหลัก | รายงาน |
+|---|---|---|
+| ศิฆรินทร์ | Catalog, User/Profile, persistence/schema, Security/ownership | [Sikarin](reports/sikarin/TEST-REPORT.md) |
+| สัพพัญญู | Account/Inventory, Observer, ขอบเขต Order ที่รายงานระบุ | [Sapphanyu](reports/sapphanyu/TEST-REPORT.md) |
+| ธนภูมิ | Order, Strategy, stock/ownership และ reassign | [Tanapoom](reports/tanapoom/TEST-REPORT.md) |
+| แทนคุณ | State, Matching, controller/exception mapping | [Tankun](reports/tankun/TEST-REPORT.md) |
 
-Maven's raw output is under `target/surefire-reports`. The saved catalog/security JUnit XML under `test/reports/sikarin` retains test results while omitting machine properties and verbose logs.
+Scope บางส่วนทับซ้อนกัน จึงห้ามบวกยอดรายสมาชิกเป็นยอดทั้งระบบ ให้ใช้ยอด Surefire ของการรันทั้งหมดหนึ่งรอบ
+ชุด Web/Swagger/config tests ดู `test/java`; ไม่อนุมานว่ามีรายงานคนที่ 5 หากยังไม่ได้จัดทำ
+Raw results อยู่ `code/target/surefire-reports`; XML ที่บันทึกในรายงานบาง scope ตัด machine properties/logs ออก
+H2 PostgreSQL mode ไม่ใช่ PostgreSQL จริง และ unit tests ไม่ยืนยัน cloud deployment หรือ manual migration
+
+โครงสร้างใหม่เก็บ raw results ที่ `code/target/surefire-reports`; รายงานรอบก่อนย้ายยังคงหลักฐานคำสั่งเดิม และยังไม่ใช่ผลทดสอบหลังย้าย

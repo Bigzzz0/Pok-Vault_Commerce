@@ -8,7 +8,7 @@
 
 ## 1. สิ่งที่ได้ดำเนินการ (Deliverables)
 
-- ปรับปรุงและเสริมความสมบูรณ์ของเอกสารในหมวดที่ 3 ของไฟล์ [`doc/design-patterns.md`](file:///c:/Users/s0955/Github/Pok-Vault_Commerce/doc/design-patterns.md) อย่างละเอียด:
+- ปรับปรุงและเสริมความสมบูรณ์ของเอกสารในหมวดที่ 3 ของไฟล์ [`doc/design-patterns.md`](../../design-patterns.md) อย่างละเอียด:
   1. ระบุชื่อผู้รับผิดชอบ, แพ็กเกจ, และสถานะการพัฒนาของโมดูล Observer
   2. จัดทำตาราง Participants & Responsibilities จำแนกบทบาทของ Subject, Event, Concrete Observer, และ Data Provider
   3. วาด Sequence Diagram ด้วย Mermaid แสดงโฟลว์ตั้งแต่ลูกค้ายืนยันคำสั่งซื้อจนถึงการแจ้งเตือนสต็อกต่ำ

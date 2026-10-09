@@ -1,0 +1,9 @@
+.git
+target
+code/target
+test/reports
+doc
+.idea
+.vscode
+*.log
+__pycache__

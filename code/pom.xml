@@ -116,6 +116,22 @@
     </dependencies>
 
     <build>
+        <!-- Course submission layout: production code in code/, tests in test/. -->
+        <testSourceDirectory>${project.basedir}/../test/java</testSourceDirectory>
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/../test/resources</directory>
+            </testResource>
+        </testResources>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/../img/web</directory>
+                <targetPath>static/images</targetPath>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
