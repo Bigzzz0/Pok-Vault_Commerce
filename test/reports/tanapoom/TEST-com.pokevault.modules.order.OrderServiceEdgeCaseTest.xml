@@ -1,9 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.264" tests="6" errors="0" skipped="0" failures="0">
-  <testcase name="createOrder_MapsCustomerNotesAndInGameName" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.232" />
-  <testcase name="createOrder_UserWithoutProfile_DefaultsToRegularTier" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.006" />
-  <testcase name="createOrder_WholesaleTier_Applies15PercentDiscount" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.006" />
-  <testcase name="createOrder_MultiItem_DeductsStockAccurately" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.005" />
-  <testcase name="createOrder_OrderCodeFormatting_GeneratesSequentialCodes" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.005" />
-  <testcase name="createOrder_MultiItemInsufficientStockOnSecondItem_AbortsOrder" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.004" />
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.214" tests="8" errors="0" skipped="0" failures="0">
+  <testcase name="createOrder_UserNotFound_ThrowsExceptionAndNeverSaves" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.188" />
+  <testcase name="createOrder_MapsCustomerNotesAndInGameName" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.006" />
+  <testcase name="createOrder_InventoryNotFound_ThrowsExceptionAndNeverSaves" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.003" />
+  <testcase name="createOrder_MultiItemInsufficientStockOnSecondItem_ThrowsExceptionAndNeverSavesOrder" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.004" />
+  <testcase name="createOrder_UserWithoutProfile_DefaultsToRegularTier" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.002" />
+  <testcase name="createOrder_WholesaleTier_Applies15PercentDiscount" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.002" />
+  <testcase name="createOrder_MultiItem_DeductsStockAccurately" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.003" />
+  <testcase name="createOrder_OrderCodeFormatting_GeneratesSequentialCodes" classname="com.pokevault.modules.order.OrderServiceEdgeCaseTest" time="0.003" />
 </testsuite>

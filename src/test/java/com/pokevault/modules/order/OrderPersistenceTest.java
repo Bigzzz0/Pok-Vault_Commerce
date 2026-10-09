@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
         "spring.jpa.hibernate.ddl-auto=create-drop",
         "spring.jpa.show-sql=false"
 }, showSql = false)
-@ActiveProfiles("test")
 @DisplayName("OrderPersistenceTest: Member 3 Order & OrderItem JPA Mapping and Cascades")
 class OrderPersistenceTest {
 
@@ -36,17 +34,19 @@ class OrderPersistenceTest {
                 .build());
     }
 
-    private CardInventory persistInventory(String cardName) {
-        CardExpansion exp = em.persistAndFlush(CardExpansion.builder()
-                .code("A1")
-                .name("Genetic Apex")
+    private CardExpansion persistExpansion(String code) {
+        return em.persistAndFlush(CardExpansion.builder()
+                .code(code)
+                .name("Set " + code)
                 .series("Pocket")
                 .totalCards(226)
                 .build());
+    }
 
+    private CardInventory persistInventory(CardExpansion exp, String cardNumber, String cardName) {
         Card card = em.persistAndFlush(Card.builder()
                 .expansion(exp)
-                .cardNumber("001")
+                .cardNumber(cardNumber)
                 .name(cardName)
                 .cardType(CardType.POKEMON)
                 .rarity(Rarity.COMMON)
@@ -66,7 +66,8 @@ class OrderPersistenceTest {
     @DisplayName("JPA CascadeType.ALL: บันทึก Order จะทำการ Cascade บันทึก OrderItem ลงฐานข้อมูลอัตโนมัติ")
     void orderAndItems_CascadePersistSuccessfully() {
         User user = persistUser("customer1");
-        CardInventory inv = persistInventory("Pikachu");
+        CardExpansion exp = persistExpansion("A1");
+        CardInventory inv = persistInventory(exp, "001", "Pikachu");
 
         Order order = Order.builder()
                 .orderCode("ORD-2026-001")
@@ -106,7 +107,8 @@ class OrderPersistenceTest {
     @DisplayName("JPA orphanRemoval: ลบ OrderItem ออกจาก Order.items จะลบ record ในฐานข้อมูลจริง")
     void orphanRemoval_DeletesItemWhenRemovedFromOrder() {
         User user = persistUser("customer2");
-        CardInventory inv = persistInventory("Charmander");
+        CardExpansion exp = persistExpansion("A2");
+        CardInventory inv = persistInventory(exp, "001", "Charmander");
 
         Order order = Order.builder()
                 .orderCode("ORD-2026-002")
@@ -172,7 +174,8 @@ class OrderPersistenceTest {
     @DisplayName("OrderItemRepository: findByOrderId ค้นหารายการสินค้าตามไอดีออเดอร์")
     void findByOrderId_ReturnsAllItems() {
         User user = persistUser("customer4");
-        CardInventory inv = persistInventory("Squirtle");
+        CardExpansion exp = persistExpansion("A3");
+        CardInventory inv = persistInventory(exp, "001", "Squirtle");
 
         Order order = Order.builder().orderCode("ORD-2026-200").user(user).build();
         order.addItem(OrderItem.builder().inventory(inv).quantity(3).unitPrice(new BigDecimal("100.00")).subtotal(new BigDecimal("300.00")).build());

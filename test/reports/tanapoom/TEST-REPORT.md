@@ -2,14 +2,14 @@
 
 **Role**: Member 3 — Order Engine & Strategy Pattern Specialist  
 **Branch**: `tanapoom_6733802721_01`  
-**Report generated**: 2026-10-09T17:07:22.301578+07:00
+**Report generated**: 2026-10-09T17:25:36.345091+07:00
 
 ## 1. ผลการรันภาพรวม (Execution Overview)
 
 | ขอบเขต | Tests | Failures | Errors | Skipped |
 |---|---:|---:|---:|---:|
-| ทั้งโปรเจกต์ (Whole Project) | 263 | 0 | 0 | 0 |
-| Order Engine / Strategy Pattern / Booking Scope | 78 | 0 | 0 | 0 |
+| ทั้งโปรเจกต์ (Whole Project) | 272 | 0 | 0 | 0 |
+| Order Engine / Strategy Pattern / Booking Scope | 87 | 0 | 0 | 0 |
 
 ## 2. รายละเอียดชุดทดสอบของธนภูมิ (Member 3 Test Classes)
 
@@ -18,9 +18,10 @@
 | DiscountStrategyEdgeCaseTest | 11 | 0 | 0 | 0 |
 | DiscountStrategyTest | 6 | 0 | 0 | 0 |
 | OrderApiControllerTest | 13 | 0 | 0 | 0 |
-| OrderBookingApiControllerTest | 16 | 0 | 0 | 0 |
+| OrderBookingApiControllerTest | 22 | 0 | 0 | 0 |
+| OrderBookingApiSecurityTest | 1 | 0 | 0 | 0 |
 | OrderPersistenceTest | 6 | 0 | 0 | 0 |
-| OrderServiceEdgeCaseTest | 6 | 0 | 0 | 0 |
+| OrderServiceEdgeCaseTest | 8 | 0 | 0 | 0 |
 | OrderServiceTest | 20 | 0 | 0 | 0 |
 
 ## 3. สิ่งที่ครอบคลุมในการทดสอบ (Test Scope Details)
@@ -59,98 +60,110 @@ python test/generate_tanapoom_report.py
 ### DiscountStrategyEdgeCaseTest
 
 - `wholesaleStrategy_RoundingPrecisionHalfUp` — **passed** (0.002s)
-- `vipStrategy_RoundingPrecisionHalfUp` — **passed** (0.0s)
-- `calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[1]` — **passed** (0.0s)
-- `calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[2]` — **passed** (0.0s)
-- `calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[3]` — **passed** (0.0s)
-- `calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[4]` — **passed** (0.001s)
+- `vipStrategy_RoundingPrecisionHalfUp` — **passed** (0.001s)
+- `calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[1]` — **passed** (0.001s)
+- `calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[2]` — **passed** (0.001s)
+- `calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[3]` — **passed** (0.001s)
+- `calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[4]` — **passed** (0.0s)
 - `calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[5]` — **passed** (0.001s)
-- `calculateDiscount_NullTier_FallsBackToRegularStrategy` — **passed** (0.001s)
-- `discountService_NullConstructorList_DefaultsToEmptyListAndThrowsOnLookup` — **passed** (0.0s)
+- `calculateDiscount_NullTier_FallsBackToRegularStrategy` — **passed** (0.002s)
+- `discountService_NullConstructorList_DefaultsToEmptyListAndThrowsOnLookup` — **passed** (0.001s)
 - `discountService_EmptyStrategiesList_ThrowsIllegalStateException` — **passed** (0.001s)
 - `calculateDiscount_VeryLargeSubtotal_MaintainsPrecision` — **passed** (0.0s)
 
 ### DiscountStrategyTest
 
 - `testRegularDiscountStrategy` — **passed** (0.0s)
-- `testDiscountServiceCalculation` — **passed** (0.0s)
-- `testWholesaleDiscountStrategy` — **passed** (0.001s)
+- `testDiscountServiceCalculation` — **passed** (0.001s)
+- `testWholesaleDiscountStrategy` — **passed** (0.0s)
 - `testVipDiscountStrategy` — **passed** (0.0s)
-- `testGetApplicableStrategy` — **passed** (0.001s)
+- `testGetApplicableStrategy` — **passed** (0.0s)
 - `testDiscountServiceEdgeCases` — **passed** (0.0s)
 
 ### OrderApiControllerTest
 
-- `updateItemTradeStatus_InvalidStatus_Returns400` — **passed** (0.055s)
-- `updateItemTradeStatus_AccessDenied_Returns403` — **passed** (0.01s)
-- `transitionOrderStatus_MissingActionParam_Returns400` — **passed** (0.01s)
-- `transitionOrderStatus_OrderNotFound_Returns404` — **passed** (0.012s)
-- `transitionOrderStatus_InvalidStateTransition_Returns409` — **passed** (0.011s)
-- `transitionOrderStatus_Pay_Returns200` — **passed** (0.013s)
-- `updateItemTradeStatus_Success_Returns200` — **passed** (0.016s)
-- `updateItemTradeStatus_StateConflict_Returns409` — **passed** (0.013s)
-- `transitionOrderStatus_Ship_Returns200` — **passed** (0.01s)
-- `updateItemTradeStatus_NotFound_Returns404` — **passed** (0.012s)
-- `updateItemTradeStatus_Completed_Returns200` — **passed** (0.012s)
-- `updateItemTradeStatus_UnsupportedStatus_Returns400` — **passed** (0.012s)
-- `transitionOrderStatus_Cancel_Returns200` — **passed** (0.022s)
+- `updateItemTradeStatus_InvalidStatus_Returns400` — **passed** (0.077s)
+- `updateItemTradeStatus_AccessDenied_Returns403` — **passed** (0.025s)
+- `transitionOrderStatus_MissingActionParam_Returns400` — **passed** (0.025s)
+- `transitionOrderStatus_OrderNotFound_Returns404` — **passed** (0.02s)
+- `transitionOrderStatus_InvalidStateTransition_Returns409` — **passed** (0.015s)
+- `transitionOrderStatus_Pay_Returns200` — **passed** (0.026s)
+- `updateItemTradeStatus_Success_Returns200` — **passed** (0.02s)
+- `updateItemTradeStatus_StateConflict_Returns409` — **passed** (0.019s)
+- `transitionOrderStatus_Ship_Returns200` — **passed** (0.021s)
+- `updateItemTradeStatus_NotFound_Returns404` — **passed** (0.021s)
+- `updateItemTradeStatus_Completed_Returns200` — **passed** (0.018s)
+- `updateItemTradeStatus_UnsupportedStatus_Returns400` — **passed** (0.014s)
+- `transitionOrderStatus_Cancel_Returns200` — **passed** (0.015s)
 
 ### OrderBookingApiControllerTest
 
-- `createOrder_MissingUserId_Returns400` — **passed** (0.069s)
-- `createOrder_EmptyItemsList_Returns400` — **passed** (0.026s)
-- `getOrderById_Success_Returns200` — **passed** (0.014s)
-- `createOrder_InvalidFriendCode_Returns400(String)[1]` — **passed** (0.027s)
-- `createOrder_InvalidFriendCode_Returns400(String)[2]` — **passed** (0.026s)
+- `createOrder_MissingUserId_Returns400` — **passed** (0.07s)
+- `createOrder_EmptyItemsList_Returns400` — **passed** (0.025s)
+- `getOrderById_Success_Returns200` — **passed** (0.013s)
+- `createOrder_InvalidFriendCode_Returns400(String)[1]` — **passed** (0.034s)
+- `createOrder_InvalidFriendCode_Returns400(String)[2]` — **passed** (0.027s)
 - `createOrder_InvalidFriendCode_Returns400(String)[3]` — **passed** (0.023s)
-- `createOrder_InvalidFriendCode_Returns400(String)[4]` — **passed** (0.021s)
-- `createOrder_InvalidFriendCode_Returns400(String)[5]` — **passed** (0.022s)
-- `createOrder_InvalidFriendCode_Returns400(String)[6]` — **passed** (0.018s)
-- `createOrder_InvalidItemQuantity_Returns400` — **passed** (0.02s)
-- `getAllOrders_Success_Returns200` — **passed** (0.022s)
-- `createOrder_MissingInventoryId_Returns400` — **passed** (0.018s)
+- `createOrder_InvalidFriendCode_Returns400(String)[4]` — **passed** (0.036s)
+- `createOrder_InvalidFriendCode_Returns400(String)[5]` — **passed** (0.035s)
+- `createOrder_InvalidFriendCode_Returns400(String)[6]` — **passed** (0.029s)
+- `createOrder_InvalidItemQuantity_Returns400(int)[1]` — **passed** (0.028s)
+- `createOrder_InvalidItemQuantity_Returns400(int)[2]` — **passed** (0.027s)
+- `createOrder_InvalidItemQuantity_Returns400(int)[3]` — **passed** (0.043s)
+- `getAllOrders_Success_Returns200` — **passed** (0.028s)
+- `createOrder_MissingInventoryId_Returns400` — **passed** (0.022s)
 - `createOrder_ContinuousDigitsFriendId_Returns201` — **passed** (0.023s)
-- `createOrder_InsufficientStock_Returns400` — **passed** (0.018s)
-- `getOrderById_NotFound_Returns404` — **passed** (0.011s)
-- `createOrder_Success_Returns201` — **passed** (0.025s)
+- `createOrder_InsufficientStock_Returns400` — **passed** (0.021s)
+- `getOrderById_NotFound_Returns404` — **passed** (0.012s)
+- `createOrder_MissingOrBlankCustomerFriendId_Returns400(String)[1]` — **passed** (0.029s)
+- `createOrder_MissingOrBlankCustomerFriendId_Returns400(String)[2]` — **passed** (0.023s)
+- `createOrder_MissingOrBlankCustomerFriendId_Returns400(String)[3]` — **passed** (0.025s)
+- `createOrder_MissingOrBlankCustomerFriendId_Returns400(String)[4]` — **passed** (0.023s)
+- `createOrder_Success_Returns201` — **passed** (0.021s)
+
+### OrderBookingApiSecurityTest
+
+- `placeOrder_PublicWithoutCsrf_Returns201` — **passed** (0.128s)
 
 ### OrderPersistenceTest
 
-- `findByOrderId_ReturnsAllItems` — **passed** (0.068s)
-- `orphanRemoval_DeletesItemWhenRemovedFromOrder` — **passed** (0.041s)
-- `findByUserId_ReturnsUserOrders` — **passed** (0.021s)
-- `orderAndItems_CascadePersistSuccessfully` — **passed** (0.015s)
-- `findByOrderCode_ReturnsMatchingOrder` — **passed** (0.01s)
+- `findByOrderId_ReturnsAllItems` — **passed** (0.061s)
+- `orphanRemoval_DeletesItemWhenRemovedFromOrder` — **passed** (0.043s)
+- `findByUserId_ReturnsUserOrders` — **passed** (0.018s)
+- `orderAndItems_CascadePersistSuccessfully` — **passed** (0.016s)
+- `findByOrderCode_ReturnsMatchingOrder` — **passed** (0.011s)
 - `auditTimestamps_AutomaticallyCreated` — **passed** (0.007s)
 
 ### OrderServiceEdgeCaseTest
 
-- `createOrder_MapsCustomerNotesAndInGameName` — **passed** (0.232s)
-- `createOrder_UserWithoutProfile_DefaultsToRegularTier` — **passed** (0.006s)
-- `createOrder_WholesaleTier_Applies15PercentDiscount` — **passed** (0.006s)
-- `createOrder_MultiItem_DeductsStockAccurately` — **passed** (0.005s)
-- `createOrder_OrderCodeFormatting_GeneratesSequentialCodes` — **passed** (0.005s)
-- `createOrder_MultiItemInsufficientStockOnSecondItem_AbortsOrder` — **passed** (0.004s)
+- `createOrder_UserNotFound_ThrowsExceptionAndNeverSaves` — **passed** (0.188s)
+- `createOrder_MapsCustomerNotesAndInGameName` — **passed** (0.006s)
+- `createOrder_InventoryNotFound_ThrowsExceptionAndNeverSaves` — **passed** (0.003s)
+- `createOrder_MultiItemInsufficientStockOnSecondItem_ThrowsExceptionAndNeverSavesOrder` — **passed** (0.004s)
+- `createOrder_UserWithoutProfile_DefaultsToRegularTier` — **passed** (0.002s)
+- `createOrder_WholesaleTier_Applies15PercentDiscount` — **passed** (0.002s)
+- `createOrder_MultiItem_DeductsStockAccurately` — **passed** (0.003s)
+- `createOrder_OrderCodeFormatting_GeneratesSequentialCodes` — **passed** (0.003s)
 
 ### OrderServiceTest
 
-- `updateItemTradeStatus_TerminalOrder_ThrowsConflict` — **passed** (0.007s)
+- `updateItemTradeStatus_TerminalOrder_ThrowsConflict` — **passed** (0.057s)
 - `updateItemTradeStatus_SkipSequence_FriendPendingToCompleted_ThrowsConflict` — **passed** (0.003s)
-- `createOrder_UserNotFound_ThrowsException` — **passed** (0.004s)
-- `getOrderById_Success` — **passed** (0.004s)
-- `getOrderById_NotFound_ThrowsException` — **passed** (0.004s)
-- `createOrder_InventoryNotFound_ThrowsException` — **passed** (0.003s)
-- `updateItemTradeStatus_Success_TradeSent` — **passed** (0.003s)
-- `updateItemTradeStatus_MultiItem_RemainsShippingWhenPartiallyCompleted` — **passed** (0.004s)
+- `createOrder_UserNotFound_ThrowsException` — **passed** (0.003s)
+- `getOrderById_Success` — **passed** (0.002s)
+- `getOrderById_NotFound_ThrowsException` — **passed** (0.001s)
+- `createOrder_InventoryNotFound_ThrowsException` — **passed** (0.002s)
+- `updateItemTradeStatus_Success_TradeSent` — **passed** (0.004s)
+- `updateItemTradeStatus_MultiItem_RemainsShippingWhenPartiallyCompleted` — **passed** (0.003s)
 - `updateItemTradeStatus_Idempotent_ReturnsCurrentWithoutModification` — **passed** (0.003s)
 - `createOrder_InsufficientStock_ThrowsException` — **passed** (0.003s)
-- `updateItemTradeStatus_SkipSequence_UnassignedToTradeSent_ThrowsConflict` — **passed** (0.004s)
+- `updateItemTradeStatus_SkipSequence_UnassignedToTradeSent_ThrowsConflict` — **passed** (0.003s)
 - `updateItemTradeStatus_ItemNotFoundInOrder_ThrowsException` — **passed** (0.003s)
-- `updateItemTradeStatus_OrderNotFound_ThrowsException` — **passed** (0.003s)
-- `updateItemTradeStatus_OrderNotInShipping_ThrowsConflict` — **passed** (0.003s)
-- `getAllOrders_ReturnsList` — **passed** (0.003s)
+- `updateItemTradeStatus_OrderNotFound_ThrowsException` — **passed** (0.002s)
+- `updateItemTradeStatus_OrderNotInShipping_ThrowsConflict` — **passed** (0.002s)
+- `getAllOrders_ReturnsList` — **passed** (0.002s)
 - `updateItemTradeStatus_UnsupportedStatus_ThrowsException` — **passed** (0.004s)
-- `updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompletedViaStatePattern` — **passed** (0.01s)
+- `updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompletedViaStatePattern` — **passed** (0.009s)
 - `updateItemTradeStatus_ReverseSequence_CompletedToTradeSent_ThrowsConflict` — **passed** (0.003s)
 - `createOrder_Success` — **passed** (0.004s)
 - `updateItemTradeStatus_UnassignedAccount_ThrowsConflict` — **passed** (0.003s)

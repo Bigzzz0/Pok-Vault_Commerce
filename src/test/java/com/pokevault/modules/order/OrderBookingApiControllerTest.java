@@ -14,7 +14,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
@@ -25,6 +27,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -65,7 +68,7 @@ class OrderBookingApiControllerTest {
     }
 
     @Test
-    @DisplayName("201 CREATED: POST /api/v1/orders สำเร็จเมื่อส่งข้อมูลครบถ้วนถูกต้อง")
+    @DisplayName("201 CREATED: POST /api/v1/orders สำเร็จและแปลง JSON request เข้าสู่ PlaceOrderRequest ครบถ้วน")
     void createOrder_Success_Returns201() throws Exception {
         OrderResponse response = OrderResponse.builder()
                 .id(1L)
@@ -100,7 +103,17 @@ class OrderBookingApiControllerTest {
                 .andExpect(jsonPath("$.data.orderStatus").value("PENDING"))
                 .andExpect(jsonPath("$.data.finalAmount").value(1782.00));
 
-        verify(orderService, times(1)).createOrder(any(PlaceOrderRequest.class));
+        // ตรวจสอบว่า JSON ถูกแปลงเข้ามาใน PlaceOrderRequest อย่างถูกต้องครบถ้วน
+        ArgumentCaptor<PlaceOrderRequest> captor = ArgumentCaptor.forClass(PlaceOrderRequest.class);
+        verify(orderService, times(1)).createOrder(captor.capture());
+        PlaceOrderRequest captured = captor.getValue();
+        assertThat(captured.getUserId()).isEqualTo(1L);
+        assertThat(captured.getCustomerFriendId()).isEqualTo("1234-5678-9012-3456");
+        assertThat(captured.getCustomerInGameName()).isEqualTo("AshKetchum");
+        assertThat(captured.getNotes()).isEqualTo("Trade after 8 PM");
+        assertThat(captured.getItems()).hasSize(1);
+        assertThat(captured.getItems().get(0).getInventoryId()).isEqualTo(100L);
+        assertThat(captured.getItems().get(0).getQuantity()).isEqualTo(2);
     }
 
     @Test
@@ -159,6 +172,29 @@ class OrderBookingApiControllerTest {
         verify(orderService, never()).createOrder(any());
     }
 
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", "   ", "\t"})
+    @DisplayName("400 BAD_REQUEST: ไม่ระบุหรือส่ง customerFriendId เป็นค่าว่าง")
+    void createOrder_MissingOrBlankCustomerFriendId_Returns400(String blankId) throws Exception {
+        java.util.Map<String, Object> req = new java.util.HashMap<>();
+        req.put("userId", 1L);
+        if (blankId != null) {
+            req.put("customerFriendId", blankId);
+        }
+        req.put("items", List.of(java.util.Map.of("inventoryId", 100L, "quantity", 1)));
+        String payload = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(req);
+
+        mockMvc.perform(post("/api/v1/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("VALIDATION_FAILED"))
+                .andExpect(jsonPath("$.details.customerFriendId").exists());
+
+        verify(orderService, never()).createOrder(any());
+    }
+
     @Test
     @DisplayName("400 BAD_REQUEST: ไม่ระบุ userId (userId is null)")
     void createOrder_MissingUserId_Returns400() throws Exception {
@@ -200,16 +236,17 @@ class OrderBookingApiControllerTest {
         verify(orderService, never()).createOrder(any());
     }
 
-    @Test
-    @DisplayName("400 BAD_REQUEST: จำนวนสินค้าเป็น 0 หรือติดลบ (quantity < 1)")
-    void createOrder_InvalidItemQuantity_Returns400() throws Exception {
-        String payload = """
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1, -5})
+    @DisplayName("400 BAD_REQUEST: จำนวนสินค้าเป็น 0 หรือติดลบ (quantity <= 0)")
+    void createOrder_InvalidItemQuantity_Returns400(int invalidQty) throws Exception {
+        String payload = String.format("""
             {
               "userId": 1,
               "customerFriendId": "1234-5678-9012-3456",
-              "items": [{"inventoryId": 100, "quantity": 0}]
+              "items": [{"inventoryId": 100, "quantity": %d}]
             }
-            """;
+            """, invalidQty);
 
         mockMvc.perform(post("/api/v1/orders")
                         .contentType(MediaType.APPLICATION_JSON)

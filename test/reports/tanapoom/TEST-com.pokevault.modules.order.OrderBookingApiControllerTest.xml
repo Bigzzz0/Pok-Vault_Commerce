@@ -1,111 +1,153 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.396" tests="16" errors="0" skipped="0" failures="0">
-  <testcase name="createOrder_MissingUserId_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.069">
-    <system-out>2026-10-09T17:07:03.941+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:03.941+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:03.941+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T17:07:03.996+07:00  WARN 33652 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {userId=User ID is required}
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.637" tests="22" errors="0" skipped="0" failures="0">
+  <testcase name="createOrder_MissingUserId_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.07">
+    <system-out>2026-10-09T17:25:21.704+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:21.704+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:21.705+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-10-09T17:25:21.763+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {userId=User ID is required}
 </system-out>
   </testcase>
-  <testcase name="createOrder_EmptyItemsList_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.026">
-    <system-out>2026-10-09T17:07:04.010+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.010+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.010+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T17:07:04.025+07:00  WARN 33652 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {items=Order must contain at least one item}
+  <testcase name="createOrder_EmptyItemsList_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.025">
+    <system-out>2026-10-09T17:25:21.774+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:21.774+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:21.774+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:25:21.791+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {items=Order must contain at least one item}
 </system-out>
   </testcase>
-  <testcase name="getOrderById_Success_Returns200" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.014">
-    <system-out>2026-10-09T17:07:04.035+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.035+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.036+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+  <testcase name="getOrderById_Success_Returns200" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.013">
+    <system-out>2026-10-09T17:25:21.799+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:21.799+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:21.799+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[1]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.027">
-    <system-out>2026-10-09T17:07:04.052+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.052+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.052+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T17:07:04.069+07:00  WARN 33652 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
+  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[1]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.034">
+    <system-out>2026-10-09T17:25:21.816+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:21.816+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:21.816+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:25:21.839+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
 </system-out>
   </testcase>
-  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[2]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.026">
-    <system-out>2026-10-09T17:07:04.081+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.081+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.082+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T17:07:04.097+07:00  WARN 33652 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
+  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[2]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.027">
+    <system-out>2026-10-09T17:25:21.850+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:21.850+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:21.850+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:25:21.866+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
 </system-out>
   </testcase>
   <testcase name="createOrder_InvalidFriendCode_Returns400(String)[3]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.023">
-    <system-out>2026-10-09T17:07:04.108+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.108+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.108+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T17:07:04.120+07:00  WARN 33652 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
+    <system-out>2026-10-09T17:25:21.877+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:21.878+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:21.878+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:25:21.891+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
 </system-out>
   </testcase>
-  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[4]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.021">
-    <system-out>2026-10-09T17:07:04.129+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.129+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.129+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T17:07:04.142+07:00  WARN 33652 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
+  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[4]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.036">
+    <system-out>2026-10-09T17:25:21.904+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:21.904+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:21.906+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2026-10-09T17:25:21.926+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
 </system-out>
   </testcase>
-  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[5]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.022">
-    <system-out>2026-10-09T17:07:04.154+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.154+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.154+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T17:07:04.165+07:00  WARN 33652 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
+  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[5]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.035">
+    <system-out>2026-10-09T17:25:21.941+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:21.941+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:21.941+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:25:21.964+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
 </system-out>
   </testcase>
-  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[6]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.018">
-    <system-out>2026-10-09T17:07:04.173+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.173+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.173+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T17:07:04.184+07:00  WARN 33652 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
+  <testcase name="createOrder_InvalidFriendCode_Returns400(String)[6]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.029">
+    <system-out>2026-10-09T17:25:21.975+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:21.976+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:21.976+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:25:21.994+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
 </system-out>
   </testcase>
-  <testcase name="createOrder_InvalidItemQuantity_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.02">
-    <system-out>2026-10-09T17:07:04.191+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.191+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.191+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T17:07:04.205+07:00  WARN 33652 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {items[0].quantity=Quantity must be at least 1}
+  <testcase name="createOrder_InvalidItemQuantity_Returns400(int)[1]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.028">
+    <system-out>2026-10-09T17:25:22.008+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:22.008+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:22.008+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:25:22.025+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {items[0].quantity=Quantity must be at least 1}
 </system-out>
   </testcase>
-  <testcase name="getAllOrders_Success_Returns200" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.022">
-    <system-out>2026-10-09T17:07:04.213+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.213+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.213+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+  <testcase name="createOrder_InvalidItemQuantity_Returns400(int)[2]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.027">
+    <system-out>2026-10-09T17:25:22.035+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:22.035+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:22.036+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-10-09T17:25:22.052+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {items[0].quantity=Quantity must be at least 1}
 </system-out>
   </testcase>
-  <testcase name="createOrder_MissingInventoryId_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.018">
-    <system-out>2026-10-09T17:07:04.235+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.235+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.235+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T17:07:04.246+07:00  WARN 33652 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {items[0].inventoryId=Inventory ID is required}
+  <testcase name="createOrder_InvalidItemQuantity_Returns400(int)[3]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.043">
+    <system-out>2026-10-09T17:25:22.064+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:22.064+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:22.064+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:25:22.096+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {items[0].quantity=Quantity must be at least 1}
+</system-out>
+  </testcase>
+  <testcase name="getAllOrders_Success_Returns200" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.028">
+    <system-out>2026-10-09T17:25:22.107+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:22.107+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:22.107+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+</system-out>
+  </testcase>
+  <testcase name="createOrder_MissingInventoryId_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.022">
+    <system-out>2026-10-09T17:25:22.135+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:22.135+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:22.135+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:25:22.148+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {items[0].inventoryId=Inventory ID is required}
 </system-out>
   </testcase>
   <testcase name="createOrder_ContinuousDigitsFriendId_Returns201" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.023">
-    <system-out>2026-10-09T17:07:04.256+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.256+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.256+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+    <system-out>2026-10-09T17:25:22.157+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:22.157+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:22.157+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="createOrder_InsufficientStock_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.018">
-    <system-out>2026-10-09T17:07:04.278+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.278+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.278+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T17:07:04.287+07:00  WARN 33652 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Insufficient stock error (400): Insufficient stock for card: Mewtwo ex (Available: 1, Requested: 2) at path /api/v1/orders
+  <testcase name="createOrder_InsufficientStock_Returns400" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.021">
+    <system-out>2026-10-09T17:25:22.181+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:22.181+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:22.181+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:25:22.192+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Insufficient stock error (400): Insufficient stock for card: Mewtwo ex (Available: 1, Requested: 2) at path /api/v1/orders
 </system-out>
   </testcase>
-  <testcase name="getOrderById_NotFound_Returns404" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.011">
-    <system-out>2026-10-09T17:07:04.296+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.296+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.296+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T17:07:04.298+07:00  WARN 33652 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): Order not found with id : '999' at path /api/v1/orders/999
+  <testcase name="getOrderById_NotFound_Returns404" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.012">
+    <system-out>2026-10-09T17:25:22.202+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:22.202+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:22.202+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:25:22.205+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): Order not found with id : '999' at path /api/v1/orders/999
 </system-out>
   </testcase>
-  <testcase name="createOrder_Success_Returns201" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.025">
-    <system-out>2026-10-09T17:07:04.310+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T17:07:04.310+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T17:07:04.310+07:00  INFO 33652 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+  <testcase name="createOrder_MissingOrBlankCustomerFriendId_Returns400(String)[1]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.029">
+    <system-out>2026-10-09T17:25:22.214+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:22.214+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:22.215+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-10-09T17:25:22.235+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID is required}
+</system-out>
+  </testcase>
+  <testcase name="createOrder_MissingOrBlankCustomerFriendId_Returns400(String)[2]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.023">
+    <system-out>2026-10-09T17:25:22.245+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:22.245+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:22.245+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:25:22.258+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID is required}
+</system-out>
+  </testcase>
+  <testcase name="createOrder_MissingOrBlankCustomerFriendId_Returns400(String)[3]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.025">
+    <system-out>2026-10-09T17:25:22.267+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:22.267+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:22.268+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-10-09T17:25:22.283+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID must be 16 digits (e.g. 1234-5678-9012-3456 or 16 consecutive digits)}
+</system-out>
+  </testcase>
+  <testcase name="createOrder_MissingOrBlankCustomerFriendId_Returns400(String)[4]" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.023">
+    <system-out>2026-10-09T17:25:22.294+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:22.294+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:22.295+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:25:22.308+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/orders: {customerFriendId=Customer friend ID is required}
+</system-out>
+  </testcase>
+  <testcase name="createOrder_Success_Returns201" classname="com.pokevault.modules.order.OrderBookingApiControllerTest" time="0.021">
+    <system-out>2026-10-09T17:25:22.317+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:22.317+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:22.317+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
 </testsuite>
