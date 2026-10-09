@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T19:16:40.966912+07:00",
+  "generated_at": "2026-10-09T19:19:26.907253+07:00",
   "owner": "สัพพัญญู คำตุ้ม (673380066-4)",
   "branch": "SapphanyuKhamtoom_6733800664_01",
   "command": "mvnw.cmd test -Dtest=GameAccountServiceTest,LowStockObserverTest,CardInventoryTest,OrderServiceTest,OrderApiControllerTest",
@@ -28,32 +28,32 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.163,
+      "seconds": 0.192,
       "cases": [
         {
           "name": "deductStockReducesQuantityWhenStockIsAvailable",
           "result": "passed",
-          "seconds": 0.102
+          "seconds": 0.103
         },
         {
           "name": "pricesCannotBeNegative",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.006
         },
         {
           "name": "restoreStockIncreasesQuantity",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.008
         },
         {
           "name": "stockChangesRequirePositiveQuantities",
           "result": "passed",
-          "seconds": 0.001
+          "seconds": 0.004
         },
         {
           "name": "deductStockRejectsRequestsExceedingAvailableQuantity",
           "result": "passed",
-          "seconds": 0.007
+          "seconds": 0.014
         }
       ]
     },
@@ -63,72 +63,72 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 2.962,
+      "seconds": 5.297,
       "cases": [
         {
           "name": "updateItemTradeStatus_InvalidStatus_Returns400",
           "result": "passed",
-          "seconds": 2.604
+          "seconds": 4.849
         },
         {
           "name": "updateItemTradeStatus_AccessDenied_Returns403",
           "result": "passed",
-          "seconds": 0.047
+          "seconds": 0.057
         },
         {
           "name": "transitionOrderStatus_MissingActionParam_Returns400",
           "result": "passed",
-          "seconds": 0.025
+          "seconds": 0.035
         },
         {
           "name": "transitionOrderStatus_OrderNotFound_Returns404",
           "result": "passed",
-          "seconds": 0.026
+          "seconds": 0.031
         },
         {
           "name": "transitionOrderStatus_InvalidStateTransition_Returns409",
           "result": "passed",
-          "seconds": 0.024
+          "seconds": 0.028
         },
         {
           "name": "transitionOrderStatus_Pay_Returns200",
           "result": "passed",
-          "seconds": 0.05
+          "seconds": 0.057
         },
         {
           "name": "updateItemTradeStatus_Success_Returns200",
           "result": "passed",
-          "seconds": 0.036
+          "seconds": 0.039
         },
         {
           "name": "updateItemTradeStatus_StateConflict_Returns409",
           "result": "passed",
-          "seconds": 0.026
+          "seconds": 0.04
         },
         {
           "name": "transitionOrderStatus_Ship_Returns200",
           "result": "passed",
-          "seconds": 0.023
+          "seconds": 0.031
         },
         {
           "name": "updateItemTradeStatus_NotFound_Returns404",
           "result": "passed",
-          "seconds": 0.023
+          "seconds": 0.033
         },
         {
           "name": "updateItemTradeStatus_Completed_Returns200",
           "result": "passed",
-          "seconds": 0.024
+          "seconds": 0.026
         },
         {
           "name": "updateItemTradeStatus_UnsupportedStatus_Returns400",
           "result": "passed",
-          "seconds": 0.02
+          "seconds": 0.027
         },
         {
           "name": "transitionOrderStatus_Cancel_Returns200",
           "result": "passed",
-          "seconds": 0.02
+          "seconds": 0.025
         }
       ]
     },
@@ -138,17 +138,17 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.62,
+      "seconds": 0.59,
       "cases": [
         {
           "name": "updateItemTradeStatus_TerminalOrder_ThrowsConflict",
           "result": "passed",
-          "seconds": 0.418
+          "seconds": 0.423
         },
         {
           "name": "updateItemTradeStatus_SkipSequence_FriendPendingToCompleted_ThrowsConflict",
           "result": "passed",
-          "seconds": 0.013
+          "seconds": 0.007
         },
         {
           "name": "createOrder_UserNotFound_ThrowsException",
@@ -158,42 +158,42 @@
         {
           "name": "getOrderById_Success",
           "result": "passed",
-          "seconds": 0.014
+          "seconds": 0.011
         },
         {
           "name": "getOrderById_NotFound_ThrowsException",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.006
         },
         {
           "name": "createOrder_InventoryNotFound_ThrowsException",
           "result": "passed",
-          "seconds": 0.007
+          "seconds": 0.006
         },
         {
           "name": "updateItemTradeStatus_Success_TradeSent",
           "result": "passed",
-          "seconds": 0.011
+          "seconds": 0.007
         },
         {
           "name": "updateItemTradeStatus_MultiItem_RemainsShippingWhenPartiallyCompleted",
           "result": "passed",
-          "seconds": 0.007
+          "seconds": 0.006
         },
         {
           "name": "updateItemTradeStatus_Idempotent_ReturnsCurrentWithoutModification",
           "result": "passed",
-          "seconds": 0.006
+          "seconds": 0.005
         },
         {
           "name": "createOrder_InsufficientStock_ThrowsException",
           "result": "passed",
-          "seconds": 0.011
+          "seconds": 0.01
         },
         {
           "name": "updateItemTradeStatus_SkipSequence_UnassignedToTradeSent_ThrowsConflict",
           "result": "passed",
-          "seconds": 0.006
+          "seconds": 0.003
         },
         {
           "name": "updateItemTradeStatus_ItemNotFoundInOrder_ThrowsException",
@@ -203,42 +203,42 @@
         {
           "name": "updateItemTradeStatus_OrderNotFound_ThrowsException",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.003
         },
         {
           "name": "updateItemTradeStatus_OrderNotInShipping_ThrowsConflict",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.005
         },
         {
           "name": "getAllOrders_ReturnsList",
           "result": "passed",
-          "seconds": 0.016
+          "seconds": 0.011
         },
         {
           "name": "updateItemTradeStatus_UnsupportedStatus_ThrowsException",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.003
         },
         {
           "name": "updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompletedViaStatePattern",
           "result": "passed",
-          "seconds": 0.01
+          "seconds": 0.013
         },
         {
           "name": "updateItemTradeStatus_ReverseSequence_CompletedToTradeSent_ThrowsConflict",
           "result": "passed",
-          "seconds": 0.006
+          "seconds": 0.004
         },
         {
           "name": "createOrder_Success",
           "result": "passed",
-          "seconds": 0.015
+          "seconds": 0.011
         },
         {
           "name": "updateItemTradeStatus_UnassignedAccount_ThrowsConflict",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.003
         }
       ]
     },
@@ -248,17 +248,17 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.037,
+      "seconds": 0.034,
       "cases": [
         {
           "name": "onOrderPlaced_WithMultipleItems_ShouldCheckAllCards",
           "result": "passed",
-          "seconds": 0.007
+          "seconds": 0.008
         },
         {
           "name": "onOrderPlaced_WhenStockEqualsThreshold_ShouldTriggerWarning",
           "result": "passed",
-          "seconds": 0.003
+          "seconds": 0.004
         },
         {
           "name": "onOrderPlaced_WhenEventIsNull_ShouldReturnSafely",
@@ -268,7 +268,7 @@
         {
           "name": "onOrderPlaced_WhenItemsNullOrEmpty_ShouldReturnSafely",
           "result": "passed",
-          "seconds": 0.003
+          "seconds": 0.001
         },
         {
           "name": "onOrderPlaced_WhenStockBelowThreshold_ShouldQueryStockAndWarn",
@@ -278,12 +278,12 @@
         {
           "name": "onOrderPlaced_WhenStockAboveThreshold_ShouldLogNormal",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.004
         },
         {
           "name": "onOrderPlaced_WhenItemHasNullInventoryOrCard_ShouldSkipGracefully",
           "result": "passed",
-          "seconds": 0.006
+          "seconds": 0.005
         }
       ]
     },
@@ -298,7 +298,7 @@
         {
           "name": "deleteAccount_Success",
           "result": "passed",
-          "seconds": 0.233
+          "seconds": 0.109
         },
         {
           "name": "updateAccount_DuplicateCode_ThrowsException",
@@ -308,32 +308,32 @@
         {
           "name": "deleteAccount_AssignedToOrder_ThrowsConflict",
           "result": "passed",
-          "seconds": 0.009
+          "seconds": 0.007
         },
         {
           "name": "updateAccount_Success",
           "result": "passed",
-          "seconds": 0.011
+          "seconds": 0.008
         },
         {
           "name": "deleteAccount_NotFound_ThrowsException",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "name": "updateAccount_NotFound_ThrowsException",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.003
         },
         {
           "name": "deleteAccount_HasInventory_ThrowsConflict",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.006
         },
         {
           "name": "createAccount_Success",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.006
         },
         {
           "name": "getAccountById_Success",
@@ -343,17 +343,17 @@
         {
           "name": "getAccountCards_Success",
           "result": "passed",
-          "seconds": 0.007
+          "seconds": 0.006
         },
         {
           "name": "updateTradeStatus_Success",
           "result": "passed",
-          "seconds": 0.006
+          "seconds": 0.004
         },
         {
           "name": "createAccount_WhenDuplicateCode_ShouldThrowException",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.005
         }
       ]
     },
@@ -368,12 +368,12 @@
         {
           "name": "addPulledCard_WhenAccountNotFound_ShouldThrowException",
           "result": "passed",
-          "seconds": 0.007
+          "seconds": 0.005
         },
         {
           "name": "addPulledCard_WhenExistingInventory_ShouldIncrementStock",
           "result": "passed",
-          "seconds": 0.005
+          "seconds": 0.007
         },
         {
           "name": "addPulledCard_WhenNewInventory_ShouldCreateNewRecord",
@@ -383,7 +383,7 @@
         {
           "name": "addPulledCard_WhenCardNotFound_ShouldThrowException",
           "result": "passed",
-          "seconds": 0.004
+          "seconds": 0.006
         }
       ]
     },
@@ -393,7 +393,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 0.346,
+      "seconds": 0.212,
       "cases": []
     }
   ]

@@ -1,48 +1,48 @@
 <?xml version='1.0' encoding='utf-8'?>
 <testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.03" tests="12" errors="0" skipped="0" failures="0">
-  <testcase name="deleteAccount_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest" time="0.233">
-    <system-out>19:15:58.833 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Deleting game account vault [ID: 1]
-19:15:58.834 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Successfully deleted game account [ID: 1]: code=VAULT_ACC_01
+  <testcase name="deleteAccount_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest" time="0.109">
+    <system-out>19:19:16.323 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Deleting game account vault [ID: 1]
+19:19:16.324 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Successfully deleted game account [ID: 1]: code=VAULT_ACC_01
 </system-out>
   </testcase>
   <testcase name="updateAccount_DuplicateCode_ThrowsException" classname="com.pokevault.modules.vault.service.GameAccountServiceTest" time="0.007">
-    <system-out>19:15:58.841 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Updating game account vault [ID: 1]: inGameName=NewName, friendId=1111-2222-3333-4444
+    <system-out>19:19:16.330 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Updating game account vault [ID: 1]: inGameName=NewName, friendId=1111-2222-3333-4444
 </system-out>
   </testcase>
-  <testcase name="deleteAccount_AssignedToOrder_ThrowsConflict" classname="com.pokevault.modules.vault.service.GameAccountServiceTest" time="0.009">
-    <system-out>19:15:58.847 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Deleting game account vault [ID: 1]
+  <testcase name="deleteAccount_AssignedToOrder_ThrowsConflict" classname="com.pokevault.modules.vault.service.GameAccountServiceTest" time="0.007">
+    <system-out>19:19:16.335 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Deleting game account vault [ID: 1]
 </system-out>
   </testcase>
-  <testcase name="updateAccount_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest" time="0.011">
-    <system-out>19:15:58.857 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Updating game account vault [ID: 1]: inGameName=NewName, friendId=1111-2222-3333-4444
-19:15:58.858 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Successfully updated game account [ID: 1]: code=VAULT_ACC_01
+  <testcase name="updateAccount_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest" time="0.008">
+    <system-out>19:19:16.345 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Updating game account vault [ID: 1]: inGameName=NewName, friendId=1111-2222-3333-4444
+19:19:16.345 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Successfully updated game account [ID: 1]: code=VAULT_ACC_01
 </system-out>
   </testcase>
-  <testcase name="deleteAccount_NotFound_ThrowsException" classname="com.pokevault.modules.vault.service.GameAccountServiceTest" time="0.004">
-    <system-out>19:15:58.866 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Deleting game account vault [ID: 999]
+  <testcase name="deleteAccount_NotFound_ThrowsException" classname="com.pokevault.modules.vault.service.GameAccountServiceTest" time="0.003">
+    <system-out>19:19:16.354 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Deleting game account vault [ID: 999]
 </system-out>
   </testcase>
-  <testcase name="updateAccount_NotFound_ThrowsException" classname="com.pokevault.modules.vault.service.GameAccountServiceTest" time="0.004">
-    <system-out>19:15:58.873 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Updating game account vault [ID: 999]: inGameName=NewName, friendId=1111-2222-3333-4444
+  <testcase name="updateAccount_NotFound_ThrowsException" classname="com.pokevault.modules.vault.service.GameAccountServiceTest" time="0.003">
+    <system-out>19:19:16.358 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Updating game account vault [ID: 999]: inGameName=NewName, friendId=1111-2222-3333-4444
 </system-out>
   </testcase>
-  <testcase name="deleteAccount_HasInventory_ThrowsConflict" classname="com.pokevault.modules.vault.service.GameAccountServiceTest" time="0.005">
-    <system-out>19:15:58.878 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Deleting game account vault [ID: 1]
+  <testcase name="deleteAccount_HasInventory_ThrowsConflict" classname="com.pokevault.modules.vault.service.GameAccountServiceTest" time="0.006">
+    <system-out>19:19:16.362 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Deleting game account vault [ID: 1]
 </system-out>
   </testcase>
-  <testcase name="createAccount_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.005">
-    <system-out>19:15:58.885 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Registering new game account vault: code=NEW_ACC_02, inGameName=PikaTrainer
-19:15:58.886 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Successfully registered game account [ID: 2]: code=NEW_ACC_02
+  <testcase name="createAccount_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.006">
+    <system-out>19:19:16.372 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Registering new game account vault: code=NEW_ACC_02, inGameName=PikaTrainer
+19:19:16.373 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Successfully registered game account [ID: 2]: code=NEW_ACC_02
 </system-out>
   </testcase>
   <testcase name="getAccountById_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.004" />
-  <testcase name="getAccountCards_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.007" />
-  <testcase name="updateTradeStatus_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.006">
-    <system-out>19:15:58.906 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Updated trade status for account [VAULT_ACC_01]: newStatus=BUSY_TRADING
+  <testcase name="getAccountCards_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.006" />
+  <testcase name="updateTradeStatus_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.004">
+    <system-out>19:19:16.389 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Updated trade status for account [VAULT_ACC_01]: newStatus=BUSY_TRADING
 </system-out>
   </testcase>
-  <testcase name="createAccount_WhenDuplicateCode_ShouldThrowException" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.004">
-    <system-out>19:15:58.910 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Registering new game account vault: code=VAULT_ACC_01, inGameName=null
+  <testcase name="createAccount_WhenDuplicateCode_ShouldThrowException" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.005">
+    <system-out>19:19:16.395 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Registering new game account vault: code=VAULT_ACC_01, inGameName=null
 </system-out>
   </testcase>
 </testsuite>

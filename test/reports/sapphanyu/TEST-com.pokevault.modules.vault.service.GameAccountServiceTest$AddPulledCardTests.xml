@@ -1,21 +1,21 @@
 <?xml version='1.0' encoding='utf-8'?>
 <testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.vault.service.GameAccountServiceTest$AddPulledCardTests" time="0.025" tests="4" errors="0" skipped="0" failures="0">
-  <testcase name="addPulledCard_WhenAccountNotFound_ShouldThrowException" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AddPulledCardTests" time="0.007">
-    <system-out>19:15:58.926 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Recording pack pull for game account [ID: 99]: cardId=100, qty=1
+  <testcase name="addPulledCard_WhenAccountNotFound_ShouldThrowException" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AddPulledCardTests" time="0.005">
+    <system-out>19:19:16.403 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Recording pack pull for game account [ID: 99]: cardId=100, qty=1
 </system-out>
   </testcase>
-  <testcase name="addPulledCard_WhenExistingInventory_ShouldIncrementStock" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AddPulledCardTests" time="0.005">
-    <system-out>19:15:58.931 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Recording pack pull for game account [ID: 1]: cardId=100, qty=3
-19:15:58.933 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Updated existing card inventory [ID: 10] for account [VAULT_ACC_01]: card='Mewtwo ex' (A1-001), condition=MINT, added=3, newQty=5
+  <testcase name="addPulledCard_WhenExistingInventory_ShouldIncrementStock" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AddPulledCardTests" time="0.007">
+    <system-out>19:19:16.408 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Recording pack pull for game account [ID: 1]: cardId=100, qty=3
+19:19:16.411 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Updated existing card inventory [ID: 10] for account [VAULT_ACC_01]: card='Mewtwo ex' (A1-001), condition=MINT, added=3, newQty=5
 </system-out>
   </testcase>
   <testcase name="addPulledCard_WhenNewInventory_ShouldCreateNewRecord" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AddPulledCardTests" time="0.004">
-    <system-out>19:15:58.938 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Recording pack pull for game account [ID: 1]: cardId=100, qty=1
-19:15:58.938 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Created new card inventory for account [VAULT_ACC_01]: card='Mewtwo ex' (A1-001), condition=MINT, qty=1
+    <system-out>19:19:16.415 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Recording pack pull for game account [ID: 1]: cardId=100, qty=1
+19:19:16.416 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Created new card inventory for account [VAULT_ACC_01]: card='Mewtwo ex' (A1-001), condition=MINT, qty=1
 </system-out>
   </testcase>
-  <testcase name="addPulledCard_WhenCardNotFound_ShouldThrowException" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AddPulledCardTests" time="0.004">
-    <system-out>19:15:58.943 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Recording pack pull for game account [ID: 1]: cardId=999, qty=1
+  <testcase name="addPulledCard_WhenCardNotFound_ShouldThrowException" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AddPulledCardTests" time="0.006">
+    <system-out>19:19:16.423 [main] INFO com.pokevault.modules.vault.service.GameAccountServiceImpl -- Recording pack pull for game account [ID: 1]: cardId=999, qty=1
 </system-out>
   </testcase>
 </testsuite>

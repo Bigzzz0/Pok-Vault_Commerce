@@ -1,90 +1,90 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderApiControllerTest" time="2.962" tests="13" errors="0" skipped="0" failures="0">
-  <testcase name="updateItemTradeStatus_InvalidStatus_Returns400" classname="com.pokevault.modules.order.OrderApiControllerTest" time="2.604">
-    <system-out>19:15:56.361 [main] INFO org.hibernate.validator.internal.util.Version -- HV000001: Hibernate Validator 8.0.2.Final
-19:15:57.319 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-19:15:57.320 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-19:15:57.325 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 4 ms
-19:15:57.420 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Method argument type mismatch (400): Parameter 'status' has invalid value: 'UNKNOWN_STATUS' at path /api/v1/orders/1/items/10/trade-status
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderApiControllerTest" time="5.297" tests="13" errors="0" skipped="0" failures="0">
+  <testcase name="updateItemTradeStatus_InvalidStatus_Returns400" classname="com.pokevault.modules.order.OrderApiControllerTest" time="4.849">
+    <system-out>19:19:13.309 [main] INFO org.hibernate.validator.internal.util.Version -- HV000001: Hibernate Validator 8.0.2.Final
+19:19:14.688 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+19:19:14.689 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+19:19:14.695 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 4 ms
+19:19:14.956 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Method argument type mismatch (400): Parameter 'status' has invalid value: 'UNKNOWN_STATUS' at path /api/v1/orders/1/items/10/trade-status
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_AccessDenied_Returns403" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.047">
-    <system-out>19:15:57.570 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-19:15:57.570 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-19:15:57.571 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
-19:15:57.593 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Access denied (403): Only ADMIN and STAFF can update trade status at path /api/v1/orders/1/items/10/trade-status
+  <testcase name="updateItemTradeStatus_AccessDenied_Returns403" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.057">
+    <system-out>19:19:15.129 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+19:19:15.130 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+19:19:15.130 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+19:19:15.158 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Access denied (403): Only ADMIN and STAFF can update trade status at path /api/v1/orders/1/items/10/trade-status
 </system-out>
   </testcase>
-  <testcase name="transitionOrderStatus_MissingActionParam_Returns400" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.025">
-    <system-out>19:15:57.615 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-19:15:57.615 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-19:15:57.615 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
-19:15:57.619 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Missing request parameter (400): Required parameter 'action' is missing at path /api/v1/orders/1/status
+  <testcase name="transitionOrderStatus_MissingActionParam_Returns400" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.035">
+    <system-out>19:19:15.191 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+19:19:15.191 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+19:19:15.191 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+19:19:15.196 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Missing request parameter (400): Required parameter 'action' is missing at path /api/v1/orders/1/status
 </system-out>
   </testcase>
-  <testcase name="transitionOrderStatus_OrderNotFound_Returns404" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.026">
-    <system-out>19:15:57.641 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-19:15:57.641 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-19:15:57.643 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
-19:15:57.647 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Resource/URL not found (404): Order not found with id : '999' at path /api/v1/orders/999/status
+  <testcase name="transitionOrderStatus_OrderNotFound_Returns404" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.031">
+    <system-out>19:19:15.224 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+19:19:15.224 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+19:19:15.224 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+19:19:15.229 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Resource/URL not found (404): Order not found with id : '999' at path /api/v1/orders/999/status
 </system-out>
   </testcase>
-  <testcase name="transitionOrderStatus_InvalidStateTransition_Returns409" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.024">
-    <system-out>19:15:57.667 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-19:15:57.667 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-19:15:57.668 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
-19:15:57.670 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- State conflict error (409): Cannot cancel order while cards are being shipped in game at path /api/v1/orders/1/status
+  <testcase name="transitionOrderStatus_InvalidStateTransition_Returns409" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.028">
+    <system-out>19:19:15.256 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+19:19:15.256 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+19:19:15.257 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
+19:19:15.260 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- State conflict error (409): Cannot cancel order while cards are being shipped in game at path /api/v1/orders/1/status
 </system-out>
   </testcase>
-  <testcase name="transitionOrderStatus_Pay_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.05">
-    <system-out>19:15:57.692 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-19:15:57.692 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-19:15:57.693 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="transitionOrderStatus_Pay_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.057">
+    <system-out>19:19:15.283 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+19:19:15.283 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+19:19:15.283 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_Success_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.036">
-    <system-out>19:15:57.746 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-19:15:57.747 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-19:15:57.747 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="updateItemTradeStatus_Success_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.039">
+    <system-out>19:19:15.342 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+19:19:15.342 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+19:19:15.342 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_StateConflict_Returns409" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.026">
-    <system-out>19:15:57.781 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-19:15:57.781 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-19:15:57.781 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
-19:15:57.785 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- State conflict error (409): Order must be in SHIPPING status at path /api/v1/orders/1/items/10/trade-status
+  <testcase name="updateItemTradeStatus_StateConflict_Returns409" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.04">
+    <system-out>19:19:15.395 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+19:19:15.395 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+19:19:15.395 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+19:19:15.399 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- State conflict error (409): Order must be in SHIPPING status at path /api/v1/orders/1/items/10/trade-status
 </system-out>
   </testcase>
-  <testcase name="transitionOrderStatus_Ship_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.023">
-    <system-out>19:15:57.805 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-19:15:57.805 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-19:15:57.806 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
+  <testcase name="transitionOrderStatus_Ship_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.031">
+    <system-out>19:19:15.424 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+19:19:15.424 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+19:19:15.424 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_NotFound_Returns404" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.023">
-    <system-out>19:15:57.829 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-19:15:57.830 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-19:15:57.830 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
-19:15:57.834 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Resource/URL not found (404): Order not found with id : '999' at path /api/v1/orders/999/items/10/trade-status
+  <testcase name="updateItemTradeStatus_NotFound_Returns404" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.033">
+    <system-out>19:19:15.458 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+19:19:15.460 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+19:19:15.462 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
+19:19:15.465 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Resource/URL not found (404): Order not found with id : '999' at path /api/v1/orders/999/items/10/trade-status
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_Completed_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.024">
-    <system-out>19:15:57.852 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-19:15:57.853 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-19:15:57.853 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="updateItemTradeStatus_Completed_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.026">
+    <system-out>19:19:15.486 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+19:19:15.486 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+19:19:15.486 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_UnsupportedStatus_Returns400" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.02">
-    <system-out>19:15:57.876 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-19:15:57.876 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-19:15:57.876 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
-19:15:57.879 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Illegal argument error (400): Unsupported trade status: UNASSIGNED. Only TRADE_SENT and COMPLETED are allowed. at path /api/v1/orders/1/items/10/trade-status
+  <testcase name="updateItemTradeStatus_UnsupportedStatus_Returns400" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.027">
+    <system-out>19:19:15.515 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+19:19:15.516 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+19:19:15.516 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+19:19:15.520 [main] WARN com.pokevault.modules.trade.advice.GlobalExceptionHandler -- Illegal argument error (400): Unsupported trade status: UNASSIGNED. Only TRADE_SENT and COMPLETED are allowed. at path /api/v1/orders/1/items/10/trade-status
 </system-out>
   </testcase>
-  <testcase name="transitionOrderStatus_Cancel_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.02">
-    <system-out>19:15:57.897 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-19:15:57.897 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-19:15:57.897 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="transitionOrderStatus_Cancel_Returns200" classname="com.pokevault.modules.order.OrderApiControllerTest" time="0.025">
+    <system-out>19:19:15.543 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+19:19:15.544 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+19:19:15.544 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
 </system-out>
   </testcase>
 </testsuite>
