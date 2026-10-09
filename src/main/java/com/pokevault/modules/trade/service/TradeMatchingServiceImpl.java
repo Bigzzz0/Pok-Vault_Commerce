@@ -10,6 +10,7 @@ import com.pokevault.domain.entity.GameAccount;
 import com.pokevault.domain.entity.Order;
 import com.pokevault.domain.entity.OrderItem;
 import com.pokevault.domain.enums.AccountTradeStatus;
+import com.pokevault.domain.enums.CardCondition;
 import com.pokevault.domain.enums.OrderStatus;
 import com.pokevault.domain.enums.TradeFulfillmentStatus;
 import com.pokevault.modules.trade.dto.TradeRecommendationResponse;
@@ -84,35 +85,45 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
                     "Cannot match account: Card information not found for OrderItem id: " + orderItemId);
         }
 
+        CardCondition targetCondition = (item.getInventory() != null) ? item.getInventory().getCondition() : null;
+        CardInventory currentInv = item.getInventory();
+        Long currentInvId = (currentInv != null) ? currentInv.getId() : null;
+
         // ค้นหาคลังทั้งหมดที่มีการ์ดใบนี้
         List<CardInventory> inventories = cardInventoryRepository.findByCardId(card.getId());
 
-        // กรองเฉพาะไอดีที่มีสถานะ READY และมีสต็อกเพียงพอกับจำนวนที่สั่ง
-        // (หากเป็นไอดีที่ถือการจองของ OrderItem นี้อยู่แล้ว ให้ถือว่ามีสต็อกพร้อมส่งมอบได้แม้สต็อกคงเหลือพร้อมขายเป็น 0)
+        // กรองเฉพาะไอดีที่มีสถานะ READY, มีสภาพการ์ดตรงกับที่สั่ง, และมีสต็อกเพียงพอกับจำนวนที่สั่ง
+        // (หากเป็น Inventory ID เดิมที่ถือการจองของ OrderItem นี้อยู่แล้ว ให้นับสต็อกที่จองไว้กลับมารวมด้วย)
         CardInventory bestInventory = inventories.stream()
                 .filter(inv -> inv.getGameAccount() != null)
                 .filter(inv -> inv.getGameAccount().getTradeStatus() == AccountTradeStatus.READY)
+                .filter(inv -> targetCondition == null || inv.getCondition() == targetCondition)
                 .filter(inv -> {
-                    boolean isAlreadyHolding = item.getAssignedAccount() != null &&
-                            inv.getGameAccount().getId().equals(item.getAssignedAccount().getId());
-                    return isAlreadyHolding || (inv.getQuantity() != null && inv.getQuantity() >= item.getQuantity());
+                    boolean isHolding = isHoldingCurrentReservation(item, inv, currentInvId);
+                    int available = inv.getQuantity() != null ? inv.getQuantity() : 0;
+                    int effectiveStock = isHolding ? available + item.getQuantity() : available;
+                    return effectiveStock >= item.getQuantity();
                 })
                 .max(Comparator.comparing((CardInventory inv) -> {
-                    boolean isAlreadyHolding = item.getAssignedAccount() != null &&
-                            inv.getGameAccount().getId().equals(item.getAssignedAccount().getId());
-                    int qty = inv.getQuantity() != null ? inv.getQuantity() : 0;
-                    return isAlreadyHolding ? qty + item.getQuantity() : qty;
+                    boolean isHolding = isHoldingCurrentReservation(item, inv, currentInvId);
+                    int available = inv.getQuantity() != null ? inv.getQuantity() : 0;
+                    return isHolding ? available + item.getQuantity() : available;
                 }))
                 .orElseThrow(() -> new InsufficientStockException(
-                        "No READY game account found with sufficient stock (" + item.getQuantity() + " cards) for: " + card.getName()));
+                        "No READY game account found with sufficient stock (" + item.getQuantity() + " cards) for: "
+                                + card.getName() + (targetCondition != null ? " in condition: " + targetCondition : "")));
 
         GameAccount bestAccount = bestInventory.getGameAccount();
 
         // หากจับคู่ได้คลังใหม่ที่ไม่ใช่คลังเดิมที่จองไว้ ต้องย้ายการจองสต็อกจริง
-        if (item.getInventory() != null && !item.getInventory().getId().equals(bestInventory.getId())) {
-            CardInventory oldInv = item.getInventory();
-            oldInv.restoreStock(item.getQuantity());
-            cardInventoryRepository.save(oldInv);
+        if (currentInv != null && !currentInv.getId().equals(bestInventory.getId())) {
+            if (!bestInventory.hasSufficientStock(item.getQuantity())) {
+                throw new InsufficientStockException(
+                        "Selected account " + bestAccount.getAccountCode() + " has insufficient stock for: " + card.getName());
+            }
+
+            currentInv.restoreStock(item.getQuantity());
+            cardInventoryRepository.save(currentInv);
 
             bestInventory.deductStock(item.getQuantity());
             cardInventoryRepository.save(bestInventory);
@@ -125,8 +136,8 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
         item.setTradeStatus(TradeFulfillmentStatus.FRIEND_PENDING);
         orderItemRepository.save(item);
 
-        log.info("Successfully auto-matched account {} ({}) to OrderItem id: {} for card: {}",
-                bestAccount.getAccountCode(), bestAccount.getInGameName(), item.getId(), card.getName());
+        log.info("Successfully auto-matched account {} ({}) to OrderItem id: {} for card: {} (condition: {})",
+                bestAccount.getAccountCode(), bestAccount.getInGameName(), item.getId(), card.getName(), targetCondition);
 
         return buildRecommendationForItem(item.getOrder(), item);
     }
@@ -181,26 +192,40 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
         }
 
         CardInventory oldInventory = item.getInventory();
-        if (oldInventory != null && oldInventory.getGameAccount() != null && oldInventory.getGameAccount().getId().equals(accountId)) {
-            // บัญชีเดิมที่ถือสต็อกที่จองไว้อยู่แล้ว
+        if (oldInventory == null || oldInventory.getCard() == null) {
+            throw new InvalidOrderStateException(
+                    "Cannot match account: Card information not found for OrderItem id: " + orderItemId);
+        }
+
+        Card card = oldInventory.getCard();
+        CardCondition targetCondition = oldInventory.getCondition();
+
+        // 4. ตรวจสอบว่าบัญชีเป้าหมายถือการ์ดใบนี้หรือไม่
+        List<CardInventory> inventories = cardInventoryRepository.findByCardId(card.getId());
+        List<CardInventory> accountInventories = inventories.stream()
+                .filter(inv -> inv.getGameAccount() != null && inv.getGameAccount().getId().equals(accountId))
+                .toList();
+
+        if (accountInventories.isEmpty()) {
+            throw new InsufficientStockException(
+                    "Selected account " + account.getAccountCode() + " does not hold card: " + card.getName());
+        }
+
+        // ค้นหาคลังในบัญชีเป้าหมายที่มีสภาพการ์ดตรงกับรายการที่จอง
+        CardInventory targetInventory = accountInventories.stream()
+                .filter(inv -> targetCondition == null || inv.getCondition() == targetCondition)
+                .findFirst()
+                .orElseThrow(() -> new InsufficientStockException(
+                        "Selected account " + account.getAccountCode() + " does not hold card: " + card.getName()
+                                + (targetCondition != null ? " in condition: " + targetCondition : "")));
+
+        // กรณีที่คลังเป้าหมายคือคลังเดิมที่จองไว้อยู่แล้ว (บัญชีเดิมและคลังเดิม)
+        if (oldInventory.getId() != null && oldInventory.getId().equals(targetInventory.getId())) {
             item.setAssignedAccount(account);
             item.setTradeStatus(TradeFulfillmentStatus.FRIEND_PENDING);
             orderItemRepository.save(item);
         } else {
-            Card card = (oldInventory != null) ? oldInventory.getCard() : null;
-            if (card == null) {
-                throw new InvalidOrderStateException(
-                        "Cannot match account: Card information not found for OrderItem id: " + orderItemId);
-            }
-
-            // 4. ตรวจสอบว่าบัญชีเป้าหมายมีการ์ดและสต็อกที่จัดสรรให้รายการนี้จริง
-            List<CardInventory> inventories = cardInventoryRepository.findByCardId(card.getId());
-            CardInventory targetInventory = inventories.stream()
-                    .filter(inv -> inv.getGameAccount() != null && inv.getGameAccount().getId().equals(accountId))
-                    .findFirst()
-                    .orElseThrow(() -> new InsufficientStockException(
-                            "Selected account " + account.getAccountCode() + " does not hold card: " + card.getName()));
-
+            // คลังใหม่: ตรวจสอบจำนวนให้เพียงพอก่อนย้ายการจองสต็อก
             if (!targetInventory.hasSufficientStock(item.getQuantity())) {
                 throw new InsufficientStockException(
                         "Selected account " + account.getAccountCode() + " has insufficient stock for card: "
@@ -208,11 +233,10 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
                                 + ", Requested: " + item.getQuantity() + ")");
             }
 
-            // 5. เปลี่ยนบัญชีแล้วการจองสต็อกตรงกัน (สลับการจองสต็อก)
-            if (oldInventory != null) {
-                oldInventory.restoreStock(item.getQuantity());
-                cardInventoryRepository.save(oldInventory);
-            }
+            // 5. สลับการจองสต็อกจริง: คืนสต็อกคลังเดิม และหักสต็อกคลังใหม่
+            oldInventory.restoreStock(item.getQuantity());
+            cardInventoryRepository.save(oldInventory);
+
             targetInventory.deductStock(item.getQuantity());
             cardInventoryRepository.save(targetInventory);
 
@@ -222,8 +246,8 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
             orderItemRepository.save(item);
         }
 
-        log.info("Manually assigned account {} ({}) to OrderItem id: {} and synchronized stock",
-                account.getAccountCode(), account.getInGameName(), item.getId());
+        log.info("Manually assigned account {} ({}) to OrderItem id: {} for condition: {} and synchronized stock",
+                account.getAccountCode(), account.getInGameName(), item.getId(), targetCondition);
 
         return buildRecommendationForItem(item.getOrder(), item);
     }
@@ -244,24 +268,29 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
                     .build();
         }
 
+        CardCondition targetCondition = (item.getInventory() != null) ? item.getInventory().getCondition() : null;
+        Long currentInvId = (item.getInventory() != null) ? item.getInventory().getId() : null;
+
         // ค้นหาคลังทั้งหมดที่มีการ์ดใบนี้
         List<CardInventory> inventories = cardInventoryRepository.findByCardId(card.getId());
 
-        // กรองเฉพาะคลังที่ผูกกับไอดีเกม และมีสต็อกคงเหลือ > 0 (หรือเป็นไอดีที่ถือการจองของ OrderItem นี้อยู่แล้ว)
+        // กรองเฉพาะคลังที่ผูกกับไอดีเกม, สภาพการ์ดตรงกับที่สั่ง, และมีสต็อกพร้อมส่งมอบเพียงพอ
+        // (ใช้กฎเดียวกับการจับคู่จริง: หากเป็น Inventory ID เดิมที่จองไว้ ให้นับสต็อกที่จองกลับมารวมด้วย)
         List<CardInventory> availableInventories = inventories.stream()
                 .filter(inv -> inv.getGameAccount() != null)
+                .filter(inv -> targetCondition == null || inv.getCondition() == targetCondition)
                 .filter(inv -> {
-                    boolean isAlreadyHolding = item.getAssignedAccount() != null &&
-                            inv.getGameAccount().getId().equals(item.getAssignedAccount().getId());
-                    return isAlreadyHolding || (inv.getQuantity() != null && inv.getQuantity() > 0);
+                    boolean isHolding = isHoldingCurrentReservation(item, inv, currentInvId);
+                    int available = inv.getQuantity() != null ? inv.getQuantity() : 0;
+                    int effectiveStock = isHolding ? available + item.getQuantity() : available;
+                    return effectiveStock >= item.getQuantity();
                 })
                 .sorted(Comparator
                         .comparing((CardInventory inv) -> inv.getGameAccount().getTradeStatus() == AccountTradeStatus.READY ? 0 : 1)
                         .thenComparing(inv -> {
-                            boolean isAlreadyHolding = item.getAssignedAccount() != null &&
-                                    inv.getGameAccount().getId().equals(item.getAssignedAccount().getId());
-                            int qty = inv.getQuantity() != null ? inv.getQuantity() : 0;
-                            return isAlreadyHolding ? qty + item.getQuantity() : qty;
+                            boolean isHolding = isHoldingCurrentReservation(item, inv, currentInvId);
+                            int available = inv.getQuantity() != null ? inv.getQuantity() : 0;
+                            return isHolding ? available + item.getQuantity() : available;
                         }, Comparator.reverseOrder()))
                 .toList();
 
@@ -330,5 +359,13 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
 
         responseBuilder.alternativeCandidates(alternatives);
         return responseBuilder.build();
+    }
+
+    private boolean isHoldingCurrentReservation(OrderItem item, CardInventory inv, Long currentInvId) {
+        if (currentInvId == null || !currentInvId.equals(inv.getId())) {
+            return false;
+        }
+        int available = inv.getQuantity() != null ? inv.getQuantity() : 0;
+        return item.getAssignedAccount() != null || available == 0;
     }
 }
