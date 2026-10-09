@@ -58,3 +58,6 @@ Thumbs.db
 # Environment variables
 .env
 .env.local
+
+# Member 3 Private Defense Guide (อ่านส่วนตัว ไม่ดันขึ้น GitHub)
+doc/member3-order-engine-guide.md
