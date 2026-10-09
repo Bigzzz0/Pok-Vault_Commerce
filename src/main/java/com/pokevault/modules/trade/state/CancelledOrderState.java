@@ -1,6 +1,8 @@
 package com.pokevault.modules.trade.state;
 
+import com.pokevault.domain.entity.CardInventory;
 import com.pokevault.domain.entity.Order;
+import com.pokevault.domain.entity.OrderItem;
 import com.pokevault.domain.enums.OrderStatus;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,9 +37,17 @@ public class CancelledOrderState implements OrderState {
         Order order = context.getOrder();
         log.info("CancelledOrderState: Triggering automatic stock restoration for Order: {}", order);
 
-        // เมื่อโมดูล Order และ CardInventory ของคนที่ 2 และ 3 รวมเข้า develop สมบูรณ์
-        // จะสามารถวนลูปคืนสต็อก order.getItems() ->
-        // inventory.restoreStock(item.getQuantity()) ได้ทันที
+        // คืนจำนวนที่ถูกหักตอนจองกลับเข้า CardInventory ของแต่ละรายการ
+        // (entity อยู่ใน transaction ของ OrderService จึงถูกบันทึกอัตโนมัติ)
+        for (OrderItem item : order.getItems()) {
+            CardInventory inventory = item.getInventory();
+            if (inventory == null || item.getQuantity() == null || item.getQuantity() <= 0) {
+                continue;
+            }
+            inventory.restoreStock(item.getQuantity());
+            log.info("CancelledOrderState: Restored {} copies to inventory id: {} (now {} in vault)",
+                    item.getQuantity(), inventory.getId(), inventory.getQuantity());
+        }
     }
 
     @Override

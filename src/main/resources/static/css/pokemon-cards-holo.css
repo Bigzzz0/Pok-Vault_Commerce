@@ -204,7 +204,7 @@
     var(--texture-glitter),
     var(--texture-glitter),
     conic-gradient(
-      from calc(var(--pointer-x, 50%) * 3.6deg) at var(--pointer-x, 50%) var(--pointer-y, 50%),
+      from calc(var(--pointer-n, 50) * 3.6deg) at var(--pointer-x, 50%) var(--pointer-y, 50%),
       hsl(45, 100%, 75%),
       hsl(35, 100%, 65%),
       hsl(55, 100%, 80%),
@@ -221,7 +221,7 @@
   background-position: var(--background-x, 50%) var(--background-y, 50%), calc(100% - var(--background-x, 50%)) calc(100% - var(--background-y, 50%)), center, center;
   background-blend-mode: hard-light, soft-light, overlay;
   mix-blend-mode: color-dodge;
-  filter: brightness(1.2) contrast(1.8) saturate(1.8);
+  filter: brightness(0.5) contrast(1.6) saturate(1.6);
 }
 
 .holo-card[data-rarity="CROWN_RARE"] .holo-card__shine::before {
@@ -243,7 +243,7 @@
   background-image: 
     var(--texture-cosmos),
     repeating-linear-gradient(
-      calc(var(--pointer-x, 50%) * 1.8deg + 45deg),
+      calc(var(--pointer-n, 50) * 1.8deg + 45deg),
       var(--sunpillar-1),
       var(--sunpillar-2) 15%,
       var(--sunpillar-3) 30%,
@@ -265,7 +265,7 @@
     center;
   background-blend-mode: color-dodge, hard-light;
   mix-blend-mode: color-dodge;
-  filter: brightness(1.25) contrast(1.6) saturate(1.5);
+  filter: brightness(0.45) contrast(1.5) saturate(1.4);
 }
 
 /* 3. DIAMOND 4 / ex CARDS: Diagonal Light Beams + Scanlines + Elemental Color Shift */
@@ -295,7 +295,7 @@
       transparent 4px
     ),
     linear-gradient(
-      calc(var(--pointer-x, 50%) * 2deg + 90deg),
+      calc(var(--pointer-n, 50) * 2deg + 90deg),
       var(--sunpillar-1),
       var(--sunpillar-2),
       var(--sunpillar-4),
@@ -308,7 +308,7 @@
     var(--background-x, 50%) var(--background-y, 50%);
   background-blend-mode: overlay, hard-light;
   mix-blend-mode: color-dodge;
-  filter: brightness(1.1) contrast(1.5) saturate(1.3);
+  filter: brightness(0.4) contrast(1.4) saturate(1.3);
 }
 
 /* 4. DIAMOND 3 (Gardevoir): Starlight Rainbow Bars */
@@ -332,7 +332,7 @@
   background-position: calc(var(--background-x, 50%) * 2) center, center;
   background-blend-mode: overlay;
   mix-blend-mode: color-dodge;
-  filter: brightness(1.1) contrast(1.3) saturate(1.2);
+  filter: brightness(0.35) contrast(1.3) saturate(1.2);
 }
 
 /* 5. DIAMOND 2 (Supporter Full Art): Brushed Silver Sheen */
@@ -344,7 +344,7 @@
   background-image: 
     var(--texture-metal),
     linear-gradient(
-      calc(var(--pointer-x, 50%) * 1.5deg + 60deg),
+      calc(var(--pointer-n, 50) * 1.5deg + 60deg),
       rgba(255, 255, 255, 0) 0%,
       rgba(255, 255, 255, 0.5) 50%,
       rgba(255, 255, 255, 0) 100%
@@ -363,6 +363,7 @@
     --rotate-x: 5deg;
     --rotate-y: -4deg;
     --pointer-x: 35%;
+    --pointer-n: 35;
     --pointer-y: 35%;
     --background-x: 40%;
     --background-y: 40%;
@@ -372,6 +373,7 @@
     --rotate-x: -5deg;
     --rotate-y: 4deg;
     --pointer-x: 65%;
+    --pointer-n: 65;
     --pointer-y: 65%;
     --background-x: 60%;
     --background-y: 60%;
@@ -381,6 +383,7 @@
     --rotate-x: 5deg;
     --rotate-y: -4deg;
     --pointer-x: 35%;
+    --pointer-n: 35;
     --pointer-y: 35%;
     --background-x: 40%;
     --background-y: 40%;

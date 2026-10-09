@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="th" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémon TCG Pocket - Official Card Gallery</title>
+    <title>Pokémon TCG Pocket - แกลเลอรีการ์ด</title>
     <script>
         (function() {
             var theme = localStorage.getItem('tcg-theme') || 'dark';
@@ -25,29 +25,43 @@
         <div class="nav-links">
             <a th:href="@{/}" class="nav-link">
                 <div th:replace="~{fragments/icons :: dashboard('icon-sm')}"></div>
-                <span>Exhibition</span>
+                <span>หน้าแรก</span>
             </a>
             <a th:href="@{/cards}" class="nav-link active">
                 <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
-                <span>Card Gallery</span>
+                <span>แกลเลอรีการ์ด</span>
             </a>
-            <a th:href="@{/inventory}" class="nav-link">
+            <a th:href="@{/inventory}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                 <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
-                <span>Vault Inventory</span>
+                <span>คลังสินค้า</span>
             </a>
-            <a th:href="@{/accounts}" class="nav-link">
+            <a th:href="@{/accounts}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                 <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
-                <span>Game Accounts</span>
+                <span>บัญชีเกม</span>
             </a>
-            <a th:href="@{/orders}" class="nav-link">
+            <a th:href="@{/orders}" class="nav-link" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                 <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
-                <span>Orders</span>
+                <span>คำสั่งซื้อ</span>
             </a>
-            <a href="/swagger-ui.html" target="_blank" class="nav-link swagger-btn">
-                <span>Swagger OpenAPI</span>
+            <a th:href="@{/my-orders}" class="nav-link" sec:authorize="hasRole('CUSTOMER')">
+                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                <span>คำสั่งซื้อของฉัน</span>
+            </a>
+            <a href="/swagger-ui.html" target="_blank" class="nav-link swagger-btn" sec:authorize="hasRole('ADMIN')">
+                <span>Swagger</span>
                 <div th:replace="~{fragments/icons :: externalLink('icon-sm')}"></div>
             </a>
-            <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
+            <a th:href="@{/login}" class="nav-link" sec:authorize="isAnonymous()">
+                <div th:replace="~{fragments/icons :: users('icon-sm')}"></div>
+                <span>เข้าสู่ระบบ</span>
+            </a>
+            <div class="nav-user" sec:authorize="isAuthenticated()">
+                <span class="nav-user-name">สวัสดี, <strong sec:authentication="name">username</strong></span>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="nav-link nav-signout-btn">ออกจากระบบ</button>
+                </form>
+            </div>
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="สลับธีม" aria-label="สลับธีม">
                 <span class="theme-icon-sun" style="display: inline-flex;"><th:block th:replace="~{fragments/icons :: sun('icon-sm')}"></th:block></span>
                 <span class="theme-icon-moon" style="display: none;"><th:block th:replace="~{fragments/icons :: moon('icon-sm')}"></th:block></span>
             </button>
@@ -59,33 +73,53 @@
         <header class="gallery-hero">
             <div class="hero-tag">
                 <div th:replace="~{fragments/icons :: pokeball('icon-sm')}"></div>
-                <span>Genetic Apex & Mythical Island Gallery</span>
+                <span>แกลเลอรี Genetic Apex & Mythical Island</span>
             </div>
             <h1>POKÉMON TCG POCKET GALLERY</h1>
-            <p>Browse through the official collector gallery of high-resolution Pokémon TCG Pocket cards. Immerse yourself in authentic card artwork, holographic finishes, and live vault inventory.</p>
+            <p>ชมแกลเลอรีการ์ด Pokémon TCG Pocket ความละเอียดสูง พร้อมภาพการ์ดจริง เอฟเฟกต์โฮโลแกรม และสต็อกล่าสุดของร้าน</p>
             <div class="hero-stats-row">
                 <div class="hero-stat-pill">
                     <div class="hero-stat-num" th:text="${totalElements}">12</div>
-                    <div class="hero-stat-label">Indexed Cards</div>
+                    <div class="hero-stat-label">การ์ดในแกลเลอรี</div>
                 </div>
                 <div class="hero-stat-pill">
                     <div class="hero-stat-num">A1</div>
-                    <div class="hero-stat-label">Series Expansion</div>
+                    <div class="hero-stat-label">ชุดการ์ด</div>
                 </div>
                 <div class="hero-stat-pill">
                     <div class="hero-stat-num" style="color: var(--accent-gold);">CROWN</div>
-                    <div class="hero-stat-label">Ultra Rare Editions</div>
+                    <div class="hero-stat-label">ระดับหายากสูงสุด</div>
                 </div>
             </div>
         </header>
 
-        <!-- Official Pokémon Gallery Filter Bar -->
-        <section class="gallery-filter-bar">
-            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <!-- Gallery toolbar: search + Filter button on the right, pills inside the collapsible panel -->
+        <section class="gallery-filter-bar" th:with="activeFilters=${(selectedElement != null ? 1 : 0) + (selectedRarity != null ? 1 : 0) + (selectedType != null ? 1 : 0)}">
+            <div class="gallery-toolbar">
+                <!-- Search Field -->
+                <form th:action="@{/cards}" method="get" class="gallery-search-box">
+                    <div th:replace="~{fragments/icons :: search('icon-sm')}"></div>
+                    <input type="hidden" name="element" th:if="${selectedElement != null}" th:value="${selectedElement}">
+                    <input type="hidden" name="rarity" th:if="${selectedRarity != null}" th:value="${selectedRarity}">
+                    <input type="hidden" name="type" th:if="${selectedType != null}" th:value="${selectedType}">
+                    <input type="text" name="search" th:value="${search}" placeholder="ค้นหาโปเกมอน..." class="gallery-search-input">
+                </form>
+
+                <button type="button" id="filterToggleBtn" class="filter-pill-btn filter-toggle-btn"
+                        th:classappend="${activeFilters > 0} ? 'active'"
+                        th:aria-expanded="${activeFilters > 0}" aria-controls="filterPanel" onclick="toggleFilterPanel()">
+                    <div th:replace="~{fragments/icons :: filter('icon-sm')}"></div>
+                    <span>ตัวกรอง</span>
+                    <span class="filter-count-badge" th:if="${activeFilters > 0}" th:text="${activeFilters}">1</span>
+                </button>
+            </div>
+
+            <div id="filterPanel" class="filter-panel" th:classappend="${activeFilters > 0} ? 'open'">
                 <!-- Element filter -->
+                <div class="filter-group-label">ธาตุ</div>
                 <div class="filter-pills-row">
                     <a th:href="@{${allElementsUrl}}" th:class="${selectedElement == null ? 'filter-pill-btn active' : 'filter-pill-btn'}">
-                        <span>All Cards</span>
+                        <span>ทั้งหมด</span>
                     </a>
                     <a th:each="f : ${elementFilters}" th:href="@{${f.url}}" th:class="${f.active ? 'filter-pill-btn active' : 'filter-pill-btn'}">
                         <th:block th:replace="~{fragments/icons :: elementIcon(${f.name}, 'icon-sm')}"></th:block>
@@ -93,29 +127,32 @@
                     </a>
                 </div>
                 <!-- Rarity filter -->
+                <div class="filter-group-label">ระดับความหายาก</div>
                 <div class="filter-pills-row">
                     <a th:href="@{${allRaritiesUrl}}" th:class="${selectedRarity == null ? 'filter-pill-btn active' : 'filter-pill-btn'}">
-                        <span>All Rarities</span>
+                        <span>ทุกระดับ</span>
                     </a>
                     <a th:each="f : ${rarityFilters}" th:href="@{${f.url}}" th:class="${f.active ? 'filter-pill-btn active' : 'filter-pill-btn'}">
                         <span th:text="${f.label}">Double Rare</span>
                     </a>
                 </div>
+                <!-- Card type filter -->
+                <div class="filter-group-label">ประเภทการ์ด</div>
+                <div class="filter-pills-row">
+                    <a th:href="@{${allTypesUrl}}" th:class="${selectedType == null ? 'filter-pill-btn active' : 'filter-pill-btn'}">
+                        <span>ทุกประเภท</span>
+                    </a>
+                    <a th:each="f : ${typeFilters}" th:href="@{${f.url}}" th:class="${f.active ? 'filter-pill-btn active' : 'filter-pill-btn'}">
+                        <span th:text="${f.label}">Trainer Supporter</span>
+                    </a>
+                </div>
             </div>
-
-            <!-- Search Field -->
-            <form th:action="@{/cards}" method="get" class="gallery-search-box">
-                <div th:replace="~{fragments/icons :: search('icon-sm')}"></div>
-                <input type="hidden" name="element" th:if="${selectedElement != null}" th:value="${selectedElement}">
-                <input type="hidden" name="rarity" th:if="${selectedRarity != null}" th:value="${selectedRarity}">
-                <input type="text" name="search" th:value="${search}" placeholder="Search Pokémon..." class="gallery-search-input">
-            </form>
         </section>
 
         <!-- Frameless Floating Cards Showcase -->
         <div class="gallery-cards-grid">
             <div th:if="${#lists.isEmpty(cards)}" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
-                No cards in the vault yet. Record a pull in <a th:href="@{/accounts}"><strong>Accounts</strong></a> to stock the gallery.
+                ยังไม่มีการ์ดในคลัง<span sec:authorize="hasAnyRole('ADMIN', 'STAFF')"> บันทึกการ์ดที่เปิดได้ที่หน้า <a th:href="@{/accounts}"><strong>บัญชีเกม</strong></a> เพื่อเพิ่มการ์ดเข้าแกลเลอรี</span>
             </div>
             <div th:each="c : ${cards}" class="gallery-card-unit">
                 <!-- 3D Parallax Card Unit with Simeydotme Shaders -->
@@ -128,6 +165,9 @@
                      th:data-rarity-desc="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}"
                      th:data-desc="${c.description}"
                      th:data-stock="${c.totalStock}"
+                     th:data-card-type="${c.cardType}"
+                     th:data-inventory-id="${c.orderInventoryId}"
+                     th:data-price="${c.price}"
                      th:data-element="${c.elementType.name()}"
                      th:data-image="${c.imageUrl}"
                      onclick="handleInspectClick(this)">
@@ -159,27 +199,22 @@
                                 th:data-rarity="${c.rarityDescription != null ? c.rarityDescription : c.rarity.name()}"
                                 th:data-desc="${c.description}"
                                 th:data-stock="${c.totalStock}"
+                                th:data-card-type="${c.cardType}"
+                                th:data-inventory-id="${c.orderInventoryId}"
+                                th:data-price="${c.price}"
                                 th:data-element="${c.elementType.name()}"
                                 th:data-image="${c.imageUrl}"
                                 onclick="handleInspectClick(this)">
                             <div th:replace="~{fragments/icons :: eye('icon-sm')}"></div>
-                            <span>Inspect 3D</span>
+                            <span>ดูการ์ด 3D</span>
                         </button>
-                        <a th:href="@{/inventory}" class="card-action-btn btn-act-buy">
+                        <a th:href="@{/inventory}" class="card-action-btn btn-act-buy" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                             <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
-                            <span>Vault Stock</span>
+                            <span>ดูสต็อก</span>
                         </a>
                     </div>
                 </div>
 
-                <!-- Minimal Subtitle Beneath Card -->
-                <div class="card-gallery-sub">
-                    <div class="card-gallery-title" th:text="${c.name}">Charizard ex</div>
-                    <div class="card-gallery-meta">
-                        <span class="stock-bullet" th:text="${c.totalStock} + ' in vault'">5 in vault</span>
-                        <span class="rarity-pill" th:text="${c.rarity.name()}">RARITY</span>
-                    </div>
-                </div>
             </div>
         </div>
     </main>
@@ -190,7 +225,7 @@
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <div th:replace="~{fragments/icons :: eye('icon-md')}"></div>
-                    <h3 class="modal-title" id="inspectCardName">Inspect Pokémon Card</h3>
+                    <h3 class="modal-title">รายละเอียดการ์ด</h3>
                 </div>
                 <button class="modal-close-btn" onclick="closeInspection()">
                     <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
@@ -200,7 +235,7 @@
                 <div class="modal-inspect-grid">
                     <!-- Left: Large 3D Card Artwork Display with 3D Tilt & Flip -->
                     <div class="inspect-card-stage">
-                        <div class="inspect-flipper-box holo-card" id="inspectFlipperBox" onclick="toggleCardFlip()" title="Click to flip card">
+                        <div class="inspect-flipper-box holo-card" id="inspectFlipperBox" onclick="toggleCardFlip()" title="คลิกเพื่อพลิกการ์ด">
                             <div class="inspect-flipper-inner holo-card__rotator" id="inspectFlipperInner">
                                 <!-- Front Face -->
                                 <div class="inspect-card-face inspect-face-front holo-card__front">
@@ -216,36 +251,52 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="inspect-flip-btn" onclick="toggleCardFlip()">
-                            <div th:replace="~{fragments/icons :: flip('icon-sm')}"></div>
-                            <span id="inspectFlipLabel">Flip Card (Back)</span>
-                        </button>
+                        <div class="inspect-flip-hint">คลิกที่การ์ดเพื่อพลิก</div>
                     </div>
                     <!-- Right: Official Card Attributes & Vault Telemetry -->
-                    <div>
+                    <div class="inspect-info-col">
                         <div id="inspectAura" style="margin-bottom: 1.25rem;">
                             <span id="inspectCardNumber" style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: var(--accent-cyan);">A1 #004</span>
-                            <h2 id="inspectCardHp" style="color: #ef4444; margin: 0.4rem 0; font-size: 2rem; font-weight: 900;">HP 180</h2>
+                            <h2 id="inspectCardName" style="margin: 0.35rem 0 0.15rem; font-size: 1.7rem; font-weight: 900; letter-spacing: -0.5px;">ชื่อการ์ด</h2>
+                            <!-- HP for Pokémon cards, the card type (e.g. Trainer Supporter) for the rest -->
+                            <div id="inspectCardHp" class="inspect-card-kind">HP 180</div>
                         </div>
                         <p id="inspectCardDesc" style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.7; font-size: 1rem;"></p>
                         
-                        <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">
                             <span id="inspectCardRarity" class="rarity-pill" style="font-size: 0.85rem; padding: 6px 14px;">RARITY</span>
                             <span id="inspectCardStock" class="stock-pill" style="font-size: 0.85rem; padding: 6px 14px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; font-weight: 700;">STOCK</span>
                         </div>
+                        <div id="inspectCardPriceRow" class="inspect-price">
+                            <span class="inspect-price-label">ราคา</span>
+                            <span id="inspectCardPrice" class="inspect-price-value">฿0.00</span>
+                        </div>
 
-                        <div style="display: flex; gap: 0.75rem;">
-                            <a th:href="@{/inventory}" class="btn btn-primary" style="flex: 1;">
+                        <!-- Actions pinned to the bottom of the column, equal widths -->
+                        <div class="inspect-actions">
+                            <a th:href="@{/inventory}" class="btn btn-primary" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                                 <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
-                                <span>Check Store Inventory</span>
+                                <span>ดูคลังสินค้า</span>
                             </a>
-                            <button class="btn btn-secondary" onclick="closeInspection()">Close</button>
+                            <button type="button" class="btn btn-secondary" sec:authorize="!hasAnyRole('ADMIN', 'STAFF')" onclick="inboxStoreAboutCard()" style="border-color: #0084ff; color: #0084ff;">
+                                <span>Inbox FB</span>
+                            </button>
+                            <a th:href="@{/login}" class="btn btn-primary" sec:authorize="isAnonymous()" title="เข้าสู่ระบบเพื่อสั่งซื้อ">
+                                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                                <span>สั่งซื้อ</span>
+                            </a>
+                            <button type="button" class="btn btn-primary" sec:authorize="hasRole('CUSTOMER')" onclick="openCustomerOrderModal()">
+                                <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
+                                <span>สั่งซื้อ</span>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div th:replace="~{fragments/customer-order :: modal}" sec:authorize="hasRole('CUSTOMER')"></div>
 
     <script th:src="@{/js/audio.js}"></script>
     <script th:src="@{/js/app.js}"></script>
