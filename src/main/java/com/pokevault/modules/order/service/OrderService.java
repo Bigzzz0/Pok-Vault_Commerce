@@ -22,4 +22,10 @@ public interface OrderService {
      * รองรับ TRADE_SENT และ COMPLETED พร้อมตรวจสอบลำดับ Invariants และซิงค์สถานะ Order ผ่าน State Pattern
      */
     OrderItemResponse updateItemTradeStatus(Long orderId, Long orderItemId, TradeFulfillmentStatus status);
+
+    /**
+     * เปลี่ยนบัญชีเกมที่รับผิดชอบส่งมอบการ์ด (Reassign Account)
+     * ย้ายการจองสต็อกจริงระหว่างสองคลัง (คืนสต็อกคลังเดิม และหักสต็อกคลังใหม่)
+     */
+    OrderItemResponse reassignOrderItemAccount(Long orderId, Long orderItemId, Long newAccountId);
 }

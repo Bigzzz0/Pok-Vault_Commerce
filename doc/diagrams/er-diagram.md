@@ -40,7 +40,7 @@ erDiagram
         varchar full_name "Customer full name, length 100"
         varchar phone_number "Contact number, length 20"
         varchar shipping_address "Physical delivery/contact address, length 500"
-        varchar membership_tier "REGULAR, VIP, WHOLESALE, length 20"
+        varchar membership_tier "REGULAR, VIP, WHOLESALE, length 30"
         integer reward_points "Loyalty store points, default 0"
         timestamp created_at "Creation timestamp"
         timestamp updated_at "Last update timestamp"
@@ -50,7 +50,7 @@ erDiagram
         bigint id PK "IDENTITY, Auto Increment"
         varchar code UK "Expansion code e.g. A1, A1a, length 20"
         varchar name "Expansion name e.g. Genetic Apex, length 100"
-        varchar series "Card series e.g. Scarlet & Violet, length 100"
+        varchar series "Card series e.g. Genetic Apex, length 50, required"
         date release_date "Official set launch date"
         integer total_cards "Total cards in expansion set"
         timestamp created_at "Creation timestamp"
@@ -60,10 +60,10 @@ erDiagram
     CARDS {
         bigint id PK "IDENTITY, Auto Increment"
         bigint expansion_id FK "Foreign Key -> CARD_EXPANSIONS(id)"
-        varchar card_number "Set index e.g. 004/226, length 30"
+        varchar card_number "Set index e.g. 004/226, length 20"
         varchar name "Pokemon card name e.g. Charizard ex, length 100"
         varchar card_type "POKEMON, TRAINER_SUPPORTER, TRAINER_ITEM, length 30"
-        varchar rarity "CROWN_RARE, STAR_3, DIAMOND_4, etc., length 30"
+        varchar rarity "COMMON, UNCOMMON, RARE, DOUBLE_RARE, ART_RARE, SUPER_RARE, IMMERSIVE_RARE, CROWN_RARE; length 30"
         varchar element_type "FIRE, WATER, GRASS, LIGHTNING, PSYCHIC, length 30"
         integer hp "Hit Points of Pokemon card"
         integer retreat_cost "Energy required to retreat"
@@ -130,68 +130,67 @@ erDiagram
 
 ## 2. พจนานุกรมข้อมูลฉบับสมบูรณ์ (Comprehensive Data Dictionary)
 
-### 2.1 ตาราง `users` (ตารางหลักสำหรับบัญชีผู้ใช้งานระบบ)
-* **คำอธิบาย**: บันทึกข้อมูลบัญชีผู้ใช้งาน ทั้งลูกค้าทั่วไป (Customer), พนักงานร้าน (Staff), และผู้ดูแลระบบ (Admin)
+### 2.1 Table `users`
 
-| ชื่อคอลัมน์ (Column Name) | ชนิดข้อมูล (Data Type) | Nullable | คีย์ / ข้อจำกัด (Constraints) | ค่าเริ่มต้น (Default) | คำอธิบายและความหมายทางธุรกิจ (Description & Business Rules) |
-| :--- | :--- | :---: | :--- | :---: | :--- |
-| `id` | `BIGINT` | NO | **PK**, `IDENTITY`, Auto-Increment | - | รหัสอ้างอิงหลักประจำตัวผู้ใช้งาน |
-| `username` | `VARCHAR(50)` | NO | **UK**, Unique Index (`idx_user_username`) | - | ชื่อผู้ใช้งานสำหรับเข้าสู่ระบบ (ห้ามซ้ำ) |
-| `email` | `VARCHAR(100)` | Yes | **UK**, Unique Index (`idx_user_email`) | - | อีเมลสำหรับรับการแจ้งเตือนและการกู้คืนรหัสผ่าน (ห้ามซ้ำ) |
-| `password` | `VARCHAR(255)` | NO | `NOT NULL` | - | รหัสผ่านที่ผ่านการแฮชด้วยอัลกอริทึม BCrypt (ความปลอดภัยสูง) |
-| `role` | `VARCHAR(30)` | NO | `NOT NULL`, Enum (`UserRole`) | - | บทบาทผู้ใช้งาน: `ADMIN`, `STAFF`, `CUSTOMER` |
-| `created_at` | `TIMESTAMP` | NO | `NOT NULL`, Updatable = `false` | `NOW()` | วันที่และเวลาที่สร้างเรคคอร์ด (จาก `BaseEntity`) |
-| `updated_at` | `TIMESTAMP` | YES | - | `NOW()` | วันที่และเวลาที่มีการแก้ไขเรคคอร์ดล่าสุด (จาก `BaseEntity`) |
-
----
-
-### 2.2 ตาราง `user_profiles` (ข้อมูลส่วนบุคคลและสถานะสมาชิก)
-* **คำอธิบาย**: จัดเก็บข้อมูลโปรไฟล์เพิ่มเติมของลูกค้า แยกออกจากตาราง `users` ตามหลัก Single Responsibility Principle (SRP)
-* **ความสัมพันธ์**: เชื่อมโยงกับ `users` แบบ **One-to-One (1:1)**
-
-| ชื่อคอลัมน์ (Column Name) | ชนิดข้อมูล (Data Type) | Nullable | คีย์ / ข้อจำกัด (Constraints) | ค่าเริ่มต้น (Default) | คำอธิบายและความหมายทางธุรกิจ (Description & Business Rules) |
-| :--- | :--- | :---: | :--- | :---: | :--- |
-| `id` | `BIGINT` | NO | **PK**, `IDENTITY`, Auto-Increment | - | รหัสอ้างอิงหลักประจำโปรไฟล์ |
-| `user_id` | `BIGINT` | NO | **FK**, **UK** $\rightarrow$ `users(id)`, Unique | - | รหัสผู้ใช้งานที่ผูกกับโปรไฟล์นี้ (1 ผู้ใช้งานมีได้เพียง 1 โปรไฟล์) |
-| `name` | `VARCHAR(100)` | NO | `NOT NULL` | - | ชื่อของลูกค้า |
-| `facebook_name` | `VARCHAR(20)` | YES | - | `NULL` | ชื่อFacebookของลูกค้า |
-| `membership_tier` | `VARCHAR(20)` | NO | `NOT NULL`, Enum (`MembershipTier`) | `'REGULAR'` | ระดับสมาชิกสำหรับใช้ใน **Strategy Pattern**: `REGULAR`, `VIP`, `WHOLESALE` |
-| `created_at` | `TIMESTAMP` | NO | `NOT NULL` | `NOW()` | วันที่สร้างโปรไฟล์ |
-| `updated_at` | `TIMESTAMP` | YES | - | `NOW()` | วันที่อัปเดตโปรไฟล์ล่าสุด |
+| Column | Type | Nullable | Constraints | Default | Description |
+|---|---|---|---|---|---|
+| `id` | `BIGINT` | NO | PK; identity | - | User identifier |
+| `username` | `VARCHAR(50)` | NO | UNIQUE | - | Login username |
+| `email` | `VARCHAR(100)` | NO | UNIQUE | - | Email |
+| `password` | `VARCHAR(255)` | NO | NOT NULL | - | BCrypt hash |
+| `role` | `VARCHAR(30)` | NO | NOT NULL; UserRole | - | ADMIN / STAFF / CUSTOMER |
+| `created_at` | `TIMESTAMP` | NO | NOT NULL; updatable=false | CURRENT_TIMESTAMP | Created timestamp (JPA auditing) |
+| `updated_at` | `TIMESTAMP` | YES | JPA auditing | CURRENT_TIMESTAMP | Last updated timestamp |
 
 ---
 
-### 2.3 ตาราง `card_expansions` (ชุดซีรีส์ซองการ์ด / Expansions)
-* **คำอธิบาย**: บันทึกชุดซองการ์ดโปเกมอน (Booster Pack Series) ของเกม Pokémon TCG Pocket
+### 2.2 Table `user_profiles`
 
-| ชื่อคอลัมน์ (Column Name) | ชนิดข้อมูล (Data Type) | Nullable | คีย์ / ข้อจำกัด (Constraints) | ค่าเริ่มต้น (Default) | คำอธิบายและความหมายทางธุรกิจ (Description & Business Rules) |
-| :--- | :--- | :---: | :--- | :---: | :--- |
-| `id` | `BIGINT` | NO | **PK**, `IDENTITY`, Auto-Increment | - | รหัสอ้างอิงชุดซองการ์ด |
-| `code` | `VARCHAR(10)` | NO | **UK**, Unique Index (`idx_expansion_code`) | - | รหัสย่อของชุด เช่น `A1` (Genetic Apex), `A1a` (Mythical Island) |
-| `name` | `VARCHAR(100)` | NO | `NOT NULL` | - | ชื่อเต็มของชุดซอง เช่น "Genetic Apex" |
-| `release_date` | `DATE` | YES | - | `NULL` | วันที่เปิดตัวชุดซองอย่างเป็นทางการในเกม |
-| `created_at` | `TIMESTAMP` | NO | `NOT NULL` | `NOW()` | วันที่เพิ่มชุดซองเข้าระบบ |
-| `updated_at` | `TIMESTAMP` | YES | - | `NOW()` | วันที่แก้ไขชุดซอง |
+| Column | Type | Nullable | Constraints | Default | Description |
+|---|---|---|---|---|---|
+| `id` | `BIGINT` | NO | PK; identity | - | Profile identifier |
+| `user_id` | `BIGINT` | NO | FK users(id); UNIQUE | - | One-to-one user |
+| `full_name` | `VARCHAR(100)` | YES | Size <= 100 | NULL | Optional display name; registration Facebook name is stored here |
+| `phone_number` | `VARCHAR(20)` | YES | Size <= 20 | NULL | Phone number |
+| `shipping_address` | `VARCHAR(500)` | YES | Size <= 500 | NULL | Optional shipping/contact address |
+| `membership_tier` | `VARCHAR(30)` | NO | MembershipTier | REGULAR | REGULAR / VIP / WHOLESALE |
+| `reward_points` | `INTEGER` | NO | CHECK >= 0; Min(0) | 0 | Reward points |
+| `created_at` | `TIMESTAMP` | NO | NOT NULL; updatable=false | CURRENT_TIMESTAMP | Created timestamp (JPA auditing) |
+| `updated_at` | `TIMESTAMP` | YES | JPA auditing | CURRENT_TIMESTAMP | Last updated timestamp |
 
 ---
 
-### 2.4 ตาราง `cards` (แคตตาล็อกการ์ดโปเกมอนต้นแบบ)
-* **คำอธิบาย**: แคตตาล็อกข้อมูลการ์ดโปเกมอนทั้งหมด (Master Data) โดย 1 ใบการ์ดจะมีสต็อกเก็บอยู่ในคลังได้หลายแห่ง
-* **ความสัมพันธ์**: เชื่อมโยงกับ `card_expansions` แบบ **Many-to-One (N:1)**
+### 2.3 Table `card_expansions`
 
-| ชื่อคอลัมน์ (Column Name) | ชนิดข้อมูล (Data Type) | Nullable | คีย์ / ข้อจำกัด (Constraints) | ค่าเริ่มต้น (Default) | คำอธิบายและความหมายทางธุรกิจ (Description & Business Rules) |
-| :--- | :--- | :---: | :--- | :---: | :--- |
-| `id` | `BIGINT` | NO | **PK**, `IDENTITY`, Auto-Increment | - | รหัสอ้างอิงแม่แบบการ์ด |
-| `expansion_id` | `BIGINT` | NO | **FK** $\rightarrow$ `card_expansions(id)` | - | ชุดซองที่การ์ดนี้สังกัด |
-| `name` | `VARCHAR(100)` | NO | `NOT NULL`, Index (`idx_card_name`) | - | ชื่อการ์ด เช่น "Charizard ex", "Mewtwo ex", "Pikachu" |
-| `card_type` | `VARCHAR(30)` | NO | `NOT NULL`, Enum (`CardType`) | - | ประเภทการ์ด: `POKEMON`, `TRAINER_SUPPORTER`, `TRAINER_ITEM` |
-| `rarity` | `VARCHAR(30)` | NO | `NOT NULL`, Index (`idx_card_rarity`) | - | ระดับความหายาก: `DIAMOND_1` ถึง `4`, `STAR_1` ถึง `3`, `CROWN_RARE` |
-| `element_type` | `VARCHAR(30)` | NO | `NOT NULL`, Enum (`ElementType`) | - | ธาตุของการ์ด: `FIRE`, `WATER`, `GRASS`, `LIGHTNING`, `PSYCHIC` ฯลฯ |
-| `hp` | `INTEGER` | YES | `CHECK(hp >= 0)` | `NULL` | พลังชีวิตของการ์ด (มีเฉพาะการ์ดโปเกมอน) |
-| `retreat_cost` | `INTEGER` | YES | `CHECK(retreat_cost >= 0)` | `NULL` | จำนวนพลังงานที่ต้องจ่ายเพื่อหนี (Retreat Cost) |
-| `image_url` | `VARCHAR(500)` | YES | - | `NULL` | ที่อยู่รูปภาพการ์ดแบบความละเอียดสูงสำหรับแสดงผล 3D Shaders |
-| `created_at` | `TIMESTAMP` | NO | `NOT NULL` | `NOW()` | วันที่บันทึกการ์ดเข้าระบบ |
-| `updated_at` | `TIMESTAMP` | YES | - | `NOW()` | วันที่แก้ไขข้อมูลการ์ด |
+| Column | Type | Nullable | Constraints | Default | Description |
+|---|---|---|---|---|---|
+| `id` | `BIGINT` | NO | PK; identity | - | Expansion identifier |
+| `code` | `VARCHAR(20)` | NO | UNIQUE | - | Expansion code e.g. A1 |
+| `name` | `VARCHAR(100)` | NO | NOT NULL | - | Expansion name |
+| `series` | `VARCHAR(50)` | NO | NOT NULL | - | Card series |
+| `release_date` | `DATE` | YES | - | NULL | Release date |
+| `total_cards` | `INTEGER` | NO | SQL CHECK > 0 | - | Number of cards |
+| `created_at` | `TIMESTAMP` | NO | NOT NULL; updatable=false | CURRENT_TIMESTAMP | Created timestamp (JPA auditing) |
+| `updated_at` | `TIMESTAMP` | YES | JPA auditing | CURRENT_TIMESTAMP | Last updated timestamp |
+
+---
+
+### 2.4 Table `cards`
+
+| Column | Type | Nullable | Constraints | Default | Description |
+|---|---|---|---|---|---|
+| `id` | `BIGINT` | NO | PK; identity | - | Card identifier |
+| `expansion_id` | `BIGINT` | NO | FK card_expansions(id) | - | Expansion |
+| `card_number` | `VARCHAR(20)` | NO | UNIQUE with expansion_id; CardRequest Size <= 20 | - | Number within expansion |
+| `name` | `VARCHAR(100)` | NO | CardRequest NotBlank; Size <= 100 | - | Card name |
+| `card_type` | `VARCHAR(30)` | NO | CardType; CardRequest NotNull | - | POKEMON / TRAINER_SUPPORTER / TRAINER_ITEM |
+| `rarity` | `VARCHAR(30)` | NO | Rarity; CardRequest NotNull | - | Java enum Rarity |
+| `element_type` | `VARCHAR(30)` | YES | ElementType | NULL | Optional for Trainer/Item |
+| `hp` | `INTEGER` | YES | SQL CHECK >= 0; CardRequest Min(0) | NULL | Hit points |
+| `retreat_cost` | `INTEGER` | YES | SQL CHECK >= 0; CardRequest Min(0) | NULL | Retreat cost |
+| `image_url` | `VARCHAR(500)` | YES | CardRequest Size <= 500 | NULL | Image URL |
+| `created_at` | `TIMESTAMP` | NO | NOT NULL; updatable=false | CURRENT_TIMESTAMP | Created timestamp (JPA auditing) |
+| `updated_at` | `TIMESTAMP` | YES | JPA auditing | CURRENT_TIMESTAMP | Last updated timestamp |
 
 ---
 
@@ -303,12 +302,12 @@ erDiagram
 
 ```sql
 -- ====================================================================
--- Pokémon TCG Pocket Vault & Chat Commerce Schema Definition (DDL)
--- Course: CP353002 Principles of Software Design and Development
+-- PokéVault Commerce - Database Schema Definition (DDL)
+-- Compatible with PostgreSQL and H2 Database
 -- ====================================================================
 
 -- 1. Table: users
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
@@ -319,17 +318,15 @@ CREATE TABLE users (
     CONSTRAINT uk_user_username UNIQUE (username),
     CONSTRAINT uk_user_email UNIQUE (email)
 );
-CREATE INDEX idx_user_username ON users(username);
-CREATE INDEX idx_user_email ON users(email);
 
 -- 2. Table: user_profiles
-CREATE TABLE user_profiles (
+CREATE TABLE IF NOT EXISTS user_profiles (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
-    full_name VARCHAR(100) NOT NULL,
+    full_name VARCHAR(100),
     phone_number VARCHAR(20),
     shipping_address VARCHAR(500),
-    membership_tier VARCHAR(20) NOT NULL DEFAULT 'REGULAR',
+    membership_tier VARCHAR(30) NOT NULL DEFAULT 'REGULAR',
     reward_points INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -339,29 +336,28 @@ CREATE TABLE user_profiles (
 );
 
 -- 3. Table: card_expansions
-CREATE TABLE card_expansions (
+CREATE TABLE IF NOT EXISTS card_expansions (
     id BIGSERIAL PRIMARY KEY,
     code VARCHAR(20) NOT NULL,
     name VARCHAR(100) NOT NULL,
-    series VARCHAR(100),
+    series VARCHAR(50) NOT NULL,
     release_date DATE,
-    total_cards INTEGER,
+    total_cards INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uk_expansion_code UNIQUE (code),
     CONSTRAINT chk_expansion_total CHECK (total_cards > 0)
 );
-CREATE INDEX idx_expansion_code ON card_expansions(code);
 
 -- 4. Table: cards
-CREATE TABLE cards (
+CREATE TABLE IF NOT EXISTS cards (
     id BIGSERIAL PRIMARY KEY,
     expansion_id BIGINT NOT NULL,
-    card_number VARCHAR(30) NOT NULL,
+    card_number VARCHAR(20) NOT NULL,
     name VARCHAR(100) NOT NULL,
     card_type VARCHAR(30) NOT NULL,
     rarity VARCHAR(30) NOT NULL,
-    element_type VARCHAR(30) NOT NULL,
+    element_type VARCHAR(30),
     hp INTEGER,
     retreat_cost INTEGER,
     image_url VARCHAR(500),
@@ -372,11 +368,9 @@ CREATE TABLE cards (
     CONSTRAINT chk_card_hp CHECK (hp >= 0),
     CONSTRAINT chk_card_retreat CHECK (retreat_cost >= 0)
 );
-CREATE INDEX idx_card_name ON cards(name);
-CREATE INDEX idx_card_rarity ON cards(rarity);
 
 -- 5. Table: game_accounts
-CREATE TABLE game_accounts (
+CREATE TABLE IF NOT EXISTS game_accounts (
     id BIGSERIAL PRIMARY KEY,
     account_code VARCHAR(50) NOT NULL,
     in_game_name VARCHAR(100) NOT NULL,
@@ -389,12 +383,9 @@ CREATE TABLE game_accounts (
     CONSTRAINT uk_account_code UNIQUE (account_code),
     CONSTRAINT chk_account_buy_in CHECK (buy_in_cost >= 0.00)
 );
-CREATE INDEX idx_account_code ON game_accounts(account_code);
-CREATE INDEX idx_account_friend_id ON game_accounts(friend_id);
-CREATE INDEX idx_account_trade_status ON game_accounts(trade_status);
 
 -- 6. Table: card_inventories
-CREATE TABLE card_inventories (
+CREATE TABLE IF NOT EXISTS card_inventories (
     id BIGSERIAL PRIMARY KEY,
     card_id BIGINT NOT NULL,
     game_account_id BIGINT,
@@ -411,12 +402,9 @@ CREATE TABLE card_inventories (
     CONSTRAINT chk_inventory_buy_price CHECK (buy_in_price >= 0.00),
     CONSTRAINT chk_inventory_sell_price CHECK (selling_price >= 0.00)
 );
-CREATE INDEX idx_inventory_card_id ON card_inventories(card_id);
-CREATE INDEX idx_inventory_account_id ON card_inventories(game_account_id);
-CREATE INDEX idx_inventory_card_account ON card_inventories(card_id, game_account_id, card_condition);
 
 -- 7. Table: orders
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
     id BIGSERIAL PRIMARY KEY,
     order_code VARCHAR(50) NOT NULL,
     user_id BIGINT NOT NULL,
@@ -435,12 +423,9 @@ CREATE TABLE orders (
     CONSTRAINT chk_order_discount CHECK (discount_amount >= 0.00),
     CONSTRAINT chk_order_final CHECK (final_amount >= 0.00)
 );
-CREATE INDEX idx_order_code ON orders(order_code);
-CREATE INDEX idx_order_user_id ON orders(user_id);
-CREATE INDEX idx_order_status ON orders(order_status);
 
 -- 8. Table: order_items
-CREATE TABLE order_items (
+CREATE TABLE IF NOT EXISTS order_items (
     id BIGSERIAL PRIMARY KEY,
     order_id BIGINT NOT NULL,
     inventory_id BIGINT NOT NULL,
@@ -458,7 +443,4 @@ CREATE TABLE order_items (
     CONSTRAINT chk_item_unit_price CHECK (unit_price >= 0.00),
     CONSTRAINT chk_item_subtotal CHECK (subtotal >= 0.00)
 );
-CREATE INDEX idx_item_order_id ON order_items(order_id);
-CREATE INDEX idx_item_inventory_id ON order_items(inventory_id);
-CREATE INDEX idx_item_assigned_account_id ON order_items(assigned_account_id);
 ```

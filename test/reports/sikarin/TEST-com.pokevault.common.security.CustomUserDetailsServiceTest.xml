@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.common.security.CustomUserDetailsServiceTest" time="0.224" tests="3" errors="0" skipped="0" failures="0">
+  <testcase name="loadUserByUsername_WhenUserExists_ShouldReturnUserDetails" classname="com.pokevault.common.security.CustomUserDetailsServiceTest" time="0.105" />
+  <testcase name="passwordEncoder_MatchesRawPassword" classname="com.pokevault.common.security.CustomUserDetailsServiceTest" time="0.115" />
+  <testcase name="loadUserByUsername_WhenUserNotFound_ShouldThrowException" classname="com.pokevault.common.security.CustomUserDetailsServiceTest" time="0.002" />
+</testsuite>

@@ -29,3 +29,6 @@ Use JDK 17 or later. If Java is not configured, set `JAVA_HOME` to your JDK fold
 
 Maven's raw output is under `target/surefire-reports`. The saved JUnit XML files under `test/reports/sikarin` and `test/reports/sapphanyu` retain test results while omitting machine properties and verbose logs.
 
+Sikarin's scope is `com.pokevault.modules.catalog` and `com.pokevault.common.security`. See [Test Report](reports/sikarin/TEST-REPORT.md) for results and limitations. The generator reads existing Surefire results; it does not execute tests itself.
+
+Maven's raw output is under `target/surefire-reports`. The saved catalog/security JUnit XML under `test/reports/sikarin` retains test results while omitting machine properties and verbose logs.

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderStockAndSecurityTest$CancelOrderRestorationTests" time="0.009" tests="1" errors="0" skipped="0" failures="0">
+  <testcase name="cancelOrder_RestoresStockOnceToLatestHoldingInventory" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$CancelOrderRestorationTests" time="0.007">
+    <system-out>2026-10-09T17:55:34.431+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Transitioning order id: 101 from current status: PENDING with action: cancel
+2026-10-09T17:55:34.434+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : Order reached terminal state: CANCELLED
+2026-10-09T17:55:34.434+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: Triggering automatic stock restoration for Order: com.pokevault.domain.entity.Order@76b50310
+2026-10-09T17:55:34.435+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: Restored 1 copies to inventory id: 1002 (now 3 in vault)
+2026-10-09T17:55:34.435+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Order id: 101 successfully transitioned to status: CANCELLED
+2026-10-09T17:55:34.436+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Transitioning order id: 101 from current status: CANCELLED with action: cancel
+2026-10-09T17:55:34.436+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : Order reached terminal state: CANCELLED without context
+</system-out>
+  </testcase>
+</testsuite>

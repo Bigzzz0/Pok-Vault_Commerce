@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.service.TradeMatchingServiceTest$RecommendationQueryTests" time="0.008" tests="4" errors="0" skipped="0" failures="0">
+  <testcase name="testGetRecommendationForItem" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$RecommendationQueryTests" time="0.003" />
+  <testcase name="testGetRecommendationsNoInventory" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$RecommendationQueryTests" time="0.003">
+    <system-out>16:48:26.325 [main] INFO com.pokevault.modules.trade.service.TradeMatchingServiceImpl -- Generating trade recommendations for order id: 1001, code: ORD-2026-TEST
+</system-out>
+  </testcase>
+  <testcase name="testGetRecommendationsOnlyBusyAccount" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$RecommendationQueryTests" time="0.002">
+    <system-out>16:48:26.327 [main] INFO com.pokevault.modules.trade.service.TradeMatchingServiceImpl -- Generating trade recommendations for order id: 1001, code: ORD-2026-TEST
+</system-out>
+  </testcase>
+  <testcase name="testGetRecommendationsRanksBestReadyAccount" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$RecommendationQueryTests" time="0.0">
+    <system-out>16:48:26.328 [main] INFO com.pokevault.modules.trade.service.TradeMatchingServiceImpl -- Generating trade recommendations for order id: 1001, code: ORD-2026-TEST
+</system-out>
+  </testcase>
+</testsuite>
