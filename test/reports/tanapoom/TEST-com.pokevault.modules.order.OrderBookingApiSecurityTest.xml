@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderBookingApiSecurityTest" time="2.615" tests="1" errors="0" skipped="0" failures="0">
+  <testcase name="placeOrder_PublicWithoutCsrf_Returns201" classname="com.pokevault.modules.order.OrderBookingApiSecurityTest" time="0.128">
+    <system-out>2026-10-09T17:25:22.343+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.pokevault.modules.order.OrderBookingApiSecurityTest]: OrderBookingApiSecurityTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T17:25:22.405+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.pokevault.PokevaultApplication for test class com.pokevault.modules.order.OrderBookingApiSecurityTest
+2026-10-09T17:25:22.416+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.3)
+
+2026-10-09T17:25:22.475+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] c.p.m.order.OrderBookingApiSecurityTest  : Starting OrderBookingApiSecurityTest using Java 21.0.12.1 with PID 35100 (started by ADMIN in C:\Users\ADMIN\Documents\GitHub\Pok-Vault_Commerce)
+2026-10-09T17:25:22.476+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] c.p.m.order.OrderBookingApiSecurityTest  : The following 1 profile is active: "local"
+2026-10-09T17:25:23.700+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-10-09T17:25:23.701+07:00  WARN 35100 --- [tcg-pocket-inventory] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2026-10-09T17:25:24.796+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:25:24.796+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:25:24.797+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-10-09T17:25:24.821+07:00  INFO 35100 --- [tcg-pocket-inventory] [           main] c.p.m.order.OrderBookingApiSecurityTest  : Started OrderBookingApiSecurityTest in 2.405 seconds (process running for 12.974)
+</system-out>
+  </testcase>
+</testsuite>
