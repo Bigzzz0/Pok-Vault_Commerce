@@ -1,118 +1,127 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.catalog.CardApiControllerTest" time="1.192" tests="19" errors="0" skipped="0" failures="0">
-  <testcase name="searchUsesLiteralRouteRatherThanIdRoute" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.721">
-    <system-out>16:25:23.765 [main] INFO org.hibernate.validator.internal.util.Version -- HV000001: Hibernate Validator 8.0.2.Final
-16:25:24.175 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.175 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.177 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 2 ms
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.catalog.CardApiControllerTest" time="0.259" tests="19" errors="0" skipped="0" failures="0">
+  <testcase name="searchUsesLiteralRouteRatherThanIdRoute" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.019">
+    <system-out>2026-10-09T17:48:22.973+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:22.974+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:22.974+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="listBindsFiltersAndReturnsData" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.05">
-    <system-out>16:25:24.324 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.324 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.324 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="listBindsFiltersAndReturnsData" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.013">
+    <system-out>2026-10-09T17:48:22.985+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:22.985+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:22.985+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="paginationBindsPageSizeAndDescendingSort" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.025">
-    <system-out>16:25:24.369 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.369 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.369 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="paginationBindsPageSizeAndDescendingSort" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.016">
+    <system-out>2026-10-09T17:48:22.998+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:22.999+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:22.999+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="invalidCreateReturns400WithoutCallingService(String)[1]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.123">
-    <system-out>16:25:24.413 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.413 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.413 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="invalidCreateReturns400WithoutCallingService(String)[1]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.017">
+    <system-out>2026-10-09T17:48:23.016+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.016+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.016+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:48:23.025+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/cards: {expansionId=Expansion ID is required}
 </system-out>
   </testcase>
-  <testcase name="invalidCreateReturns400WithoutCallingService(String)[2]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.02">
-    <system-out>16:25:24.537 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.537 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.538 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
+  <testcase name="invalidCreateReturns400WithoutCallingService(String)[2]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.013">
+    <system-out>2026-10-09T17:48:23.034+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.034+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.034+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:48:23.038+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/cards: {name=Card name is required}
 </system-out>
   </testcase>
-  <testcase name="invalidCreateReturns400WithoutCallingService(String)[3]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.018">
-    <system-out>16:25:24.557 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.557 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.557 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="invalidCreateReturns400WithoutCallingService(String)[3]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.011">
+    <system-out>2026-10-09T17:48:23.047+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.047+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.047+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:48:23.050+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/cards: {cardNumber=Card number is required}
 </system-out>
   </testcase>
-  <testcase name="invalidCreateReturns400WithoutCallingService(String)[4]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.018">
-    <system-out>16:25:24.576 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.577 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.577 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="invalidCreateReturns400WithoutCallingService(String)[4]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.012">
+    <system-out>2026-10-09T17:48:23.059+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.059+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.059+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:48:23.064+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/cards: {cardType=Card type is required}
 </system-out>
   </testcase>
-  <testcase name="invalidCreateReturns400WithoutCallingService(String)[5]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.021">
-    <system-out>16:25:24.595 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.595 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.595 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="invalidCreateReturns400WithoutCallingService(String)[5]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.014">
+    <system-out>2026-10-09T17:48:23.073+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.073+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.073+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:48:23.078+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/cards: {rarity=Rarity is required}
 </system-out>
   </testcase>
-  <testcase name="invalidCreateReturns400WithoutCallingService(String)[6]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.017">
-    <system-out>16:25:24.617 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.617 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.617 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="invalidCreateReturns400WithoutCallingService(String)[6]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.014">
+    <system-out>2026-10-09T17:48:23.087+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.087+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.087+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:48:23.091+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/cards: {hp=HP must be zero or positive}
 </system-out>
   </testcase>
-  <testcase name="invalidCreateReturns400WithoutCallingService(String)[7]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.02">
-    <system-out>16:25:24.637 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.638 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.638 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="invalidCreateReturns400WithoutCallingService(String)[7]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.015">
+    <system-out>2026-10-09T17:48:23.100+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.100+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.100+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:48:23.106+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/cards: {retreatCost=Retreat cost must be zero or positive}
 </system-out>
   </testcase>
-  <testcase name="invalidCreateReturns400WithoutCallingService(String)[8]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.019">
-    <system-out>16:25:24.659 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.659 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.659 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="invalidCreateReturns400WithoutCallingService(String)[8]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.015">
+    <system-out>2026-10-09T17:48:23.116+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.116+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.116+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:48:23.120+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/cards: {name=Card name must not exceed 100 characters}
 </system-out>
   </testcase>
-  <testcase name="invalidCreateReturns400WithoutCallingService(String)[9]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.016">
-    <system-out>16:25:24.675 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.675 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.675 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="invalidCreateReturns400WithoutCallingService(String)[9]" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.014">
+    <system-out>2026-10-09T17:48:23.130+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.130+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.130+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:48:23.135+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Validation error (400) at path /api/v1/cards: {cardNumber=Card number must not exceed 20 characters}
 </system-out>
   </testcase>
-  <testcase name="deleteReturns204WithEmptyBody" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.012">
-    <system-out>16:25:24.692 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.692 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.692 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="deleteReturns204WithEmptyBody" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.008">
+    <system-out>2026-10-09T17:48:23.144+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.144+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.144+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="createReturns201AndBindsRequest" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.016">
-    <system-out>16:25:24.703 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.703 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.703 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="createReturns201AndBindsRequest" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.012">
+    <system-out>2026-10-09T17:48:23.150+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.150+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.150+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="updateReturns200" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.012">
-    <system-out>16:25:24.718 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.718 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.718 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="updateReturns200" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.021">
+    <system-out>2026-10-09T17:48:23.172+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.172+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.172+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="getCardReturns200" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.01">
-    <system-out>16:25:24.730 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.731 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.731 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="getCardReturns200" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.007">
+    <system-out>2026-10-09T17:48:23.183+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.184+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.184+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="expansionRoutesDelegateToService" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.015">
-    <system-out>16:25:24.741 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.741 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.741 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="expansionRoutesDelegateToService" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.012">
+    <system-out>2026-10-09T17:48:23.191+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.191+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.191+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="missingCardReturns404" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.016">
-    <system-out>16:25:24.756 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.756 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.757 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+  <testcase name="missingCardReturns404" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.011">
+    <system-out>2026-10-09T17:48:23.205+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.205+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.205+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T17:48:23.208+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): Card not found with id : '99' at path /api/v1/cards/99
 </system-out>
   </testcase>
-  <testcase name="defaultPaginationUsesCardNumberAscending" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.011">
-    <system-out>16:25:24.772 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
-16:25:24.772 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
-16:25:24.773 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
+  <testcase name="defaultPaginationUsesCardNumberAscending" classname="com.pokevault.modules.catalog.CardApiControllerTest" time="0.008">
+    <system-out>2026-10-09T17:48:23.214+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T17:48:23.214+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T17:48:23.214+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
 </testsuite>

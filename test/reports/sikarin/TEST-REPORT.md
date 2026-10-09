@@ -2,23 +2,27 @@
 
 Branch: `sikarin_6733802925_01`
 
-Report generated: 2026-10-09T16:26:23.930678+07:00
+Report generated: 2026-10-09T17:48:38.298116+07:00
 
 ## ผลการรัน
 
 | ขอบเขต | Tests | Failures | Errors | Skipped |
 |---|---:|---:|---:|---:|
-| ทั้งโปรเจกต์ | 122 | 0 | 0 | 0 |
-| Card Catalog / User / Persistence | 60 | 0 | 0 | 0 |
+| ทั้งโปรเจกต์ | 318 | 0 | 0 | 0 |
+| Card Catalog / User / Security / Persistence | 108 | 0 | 0 | 0 |
 
 ## รายละเอียดส่วนของศิฆรินทร์
 
 | Test class | Tests | Failures | Errors |
 |---|---:|---:|---:|
+| ApiAuthorizationTest | 36 | 0 | 0 |
+| CustomUserDetailsServiceTest | 3 | 0 | 0 |
+| OrderAccessPolicyTest | 3 | 0 | 0 |
 | CardApiControllerTest | 19 | 0 | 0 |
 | CardServiceEdgeCaseTest | 13 | 0 | 0 |
 | CardServiceTest | 13 | 0 | 0 |
 | CatalogPersistenceTest | 7 | 0 | 0 |
+| CatalogSchemaSqlTest | 6 | 0 | 0 |
 | UserServiceTest | 8 | 0 | 0 |
 
 ## สิ่งที่ทดสอบ
@@ -28,6 +32,10 @@ Report generated: 2026-10-09T16:26:23.930678+07:00
 - UserServiceTest (ใหม่): อ่านโปรไฟล์, สร้าง/อัปเดตที่อยู่, รักษาระดับสมาชิกและแต้ม และกรณีไม่พบข้อมูล
 - CardApiControllerTest (ใหม่): MockMvc ทดสอบ HTTP 200/201/204/400/404, binding, pagination/sort และ Bean Validation
 - CatalogPersistenceTest (ใหม่): Spring Boot @DataJpaTest + H2, query จริง, Specification, pagination/sort, unique constraint, cascade/orphan removal และ audit timestamps
+- CatalogSchemaSqlTest: โหลด schema.sql/data.sql จริงบน H2 PostgreSQL mode, Hibernate validate และตรวจขอบเขตข้อมูล
+- ApiAuthorizationTest: security filter chain และ method authorization จริง, 401/403, บทบาท, เจ้าของออเดอร์ และ form login ผ่าน BCrypt
+- OrderAccessPolicyTest: ตรวจ anonymous/unknown role, identity และบัญชีที่ไม่อยู่ในฐานข้อมูล
+- CustomUserDetailsServiceTest: ชุดทดสอบ authentication เดิม
 
 ## วิธีรันซ้ำ
 
@@ -40,22 +48,73 @@ python test/generate_sikarin_report.py
 รันเฉพาะส่วนของศิฆรินทร์:
 
 ```powershell
-.\mvnw.cmd '-Dtest=CardServiceTest,CardServiceEdgeCaseTest,UserServiceTest,CardApiControllerTest,CatalogPersistenceTest' test
+.\mvnw.cmd '-Dtest=CardServiceTest,CardServiceEdgeCaseTest,UserServiceTest,CardApiControllerTest,CatalogPersistenceTest,CatalogSchemaSqlTest,ApiAuthorizationTest,OrderAccessPolicyTest,CustomUserDetailsServiceTest' clean test
 ```
 
 หากรันเฉพาะส่วน อย่านับผลเก่าที่ค้างใน target/surefire-reports เป็นผลการรันใหม่ ให้ใช้ clean ก่อนเมื่อสร้างรายงาน
 
 ## ขอบเขตและข้อจำกัด
 
-- แก้เฉพาะไฟล์ทดสอบและรายงาน ไม่เปลี่ยน production Java, UI หรือ pom.xml
-- H2 ใช้ฐานข้อมูลใหม่แยกจากแอป, ปิด SQL seed และ rollback หลังแต่ละเทสต์
-- MVC ใช้ standalone MockMvc และ mock service; ไม่ทดสอบ security filters หรือเว็บผ่าน browser
-- ยังไม่ได้ทดสอบ PostgreSQL/Cloud, seed data.sql, ทุก constraint หรือทุกเส้นทางของระบบ
-- ผล unit/integration tests นี้ไม่ยืนยันว่า API เทรดรายสินค้าที่เคยพบ HTTP 500 ถูกแก้แล้ว
+- ทดสอบ production SecurityConfig, OrderAccessPolicy, ownership annotations และ core schema ที่แก้ในรอบนี้ด้วย
+- H2 ใช้ฐานข้อมูลแยกจากแอป, rollback หลังแต่ละเทสต์ฐานข้อมูล; schema test เปิด SQL seed จริง
+- Controller unit tests ใช้ standalone MockMvc; ApiAuthorizationTest ใช้ security filters และ method authorization จริง โดย mock business services
+- ยังไม่ได้ทดสอบ PostgreSQL จริง/Cloud หรือ migration manual: Docker engine ในเครื่องไม่พร้อม
+- ไม่ได้ทดสอบ browser end-to-end; ผลชุดเทสต์ไม่ยืนยันทุกเส้นทางธุรกิจหรือทุก constraint ของระบบ
 - WARN/ERROR ของ unique constraint ในเทสต์ duplicate เป็นข้อผิดพลาดที่คาดไว้และ assert แล้ว
-- ผลรายกรณีดู summary.json และ JUnit XML ของโมดูล catalog ในโฟลเดอร์เดียวกัน
+- ผลรายกรณีดู summary.json และ JUnit XML ของ catalog/security ในโฟลเดอร์เดียวกัน
 
 ## ผลรายกรณี
+
+### ApiAuthorizationTest
+
+- `customerCanReadOwnOrder` — passed
+- `customerCanBookForSelf` — passed
+- `customerCannotReadOtherCustomersOrderOrReceiveItsData` — passed
+- `staffAndAdminCanBookForCustomersReadOrdersAndManageCards(String)[1]` — passed
+- `staffAndAdminCanBookForCustomersReadOrdersAndManageCards(String)[2]` — passed
+- `browserStillRedirectsToLoginAndFormLoginUsesBcrypt` — passed
+- `customerCannotUseStoreManagementApis(String)[1]` — passed
+- `customerCannotUseStoreManagementApis(String)[2]` — passed
+- `customerCannotUseStoreManagementApis(String)[3]` — passed
+- `customerCannotUseStoreManagementApis(String)[4]` — passed
+- `customerCannotUseStoreManagementApis(String)[5]` — passed
+- `customerCannotUseStoreManagementApis(String)[6]` — passed
+- `customerCannotUseStoreManagementApis(String)[7]` — passed
+- `customerCannotUseStoreManagementApis(String)[8]` — passed
+- `customerCannotUseStoreManagementApis(String)[9]` — passed
+- `customerCannotUseStoreManagementApis(String)[10]` — passed
+- `customerCannotUseStoreManagementApis(String)[11]` — passed
+- `customerCannotUseStoreManagementApis(String)[12]` — passed
+- `customerCannotUseStoreManagementApis(String)[13]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[1]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[2]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[3]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[4]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[5]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[6]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[7]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[8]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[9]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[10]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[11]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[12]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[13]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[14]` — passed
+- `anonymousApiRequestsReceiveJson401(String)[15]` — passed
+- `customerCannotSpoofAnotherCustomerId` — passed
+- `catalogAndRegistrationRemainPublic` — passed
+
+### CustomUserDetailsServiceTest
+
+- `loadUserByUsername_WhenUserExists_ShouldReturnUserDetails` — passed
+- `passwordEncoder_MatchesRawPassword` — passed
+- `loadUserByUsername_WhenUserNotFound_ShouldThrowException` — passed
+
+### OrderAccessPolicyTest
+
+- `customerMustMatchDatabaseIdentity` — passed
+- `deletedCustomerAccountAndNullIdAreDenied` — passed
+- `anonymousAndUnknownRolesAreDeniedWithoutLookup` — passed
 
 ### CardApiControllerTest
 
@@ -120,6 +179,15 @@ python test/generate_sikarin_report.py
 - `userProfileCascadesAndCanBeQueriedAfterReload` — passed
 - `removingUserProfileDeletesOrphan` — passed
 - `realSpecificationCombinesAllFiltersAndSortsBeforePaging` — passed
+
+### CatalogSchemaSqlTest
+
+- `cardNumberAtMaximumLengthAndNullTrainerElementCanBePersisted` — passed
+- `overlongAddressIsRejectedBeforeCreatingProfile` — passed
+- `addressServiceCanCreateProfileWithoutFullNameAgainstRealSql` — passed
+- `schemaLengthsAndNullabilityMatchCoreEntityContract` — passed
+- `sqlRejectsCardNumberLongerThanTwentyEvenWithoutRequestValidation` — passed
+- `realSqlSeedContainsAtLeastTwentyCardsAndAllExpansionsHaveRequiredFields` — passed
 
 ### UserServiceTest
 
