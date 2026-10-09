@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&display=swap');
 @import url('pokemon-cards-holo.css');
 
 /* ==========================================================================
@@ -122,7 +122,7 @@
 }
 
 body {
-  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Outfit', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: var(--bg-canvas);
   background-image: var(--body-bg-gradient);
   background-repeat: no-repeat;
@@ -147,6 +147,7 @@ body {
   transition: transform 0.2s ease, stroke 0.2s ease;
 }
 
+.icon-xs { width: 0.85rem; height: 0.85rem; flex-shrink: 0; }
 .icon-sm { width: 1rem; height: 1rem; }
 .icon-md { width: 1.35rem; height: 1.35rem; }
 .icon-lg { width: 1.85rem; height: 1.85rem; }
@@ -157,7 +158,8 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.9rem 3rem;
+  padding: 0.9rem 2rem;
+  gap: 1rem;
   background: var(--bg-surface-glass);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -171,6 +173,7 @@ body {
 
 .brand {
   display: flex;
+  white-space: nowrap;
   align-items: center;
   gap: 0.85rem;
   text-decoration: none;
@@ -204,19 +207,22 @@ body {
 
 .nav-links {
   display: flex;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.25rem;
   align-items: center;
 }
 
 .nav-link {
   display: inline-flex;
+  white-space: nowrap;
   align-items: center;
   gap: 0.5rem;
   color: var(--text-secondary);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
-  padding: 0.55rem 1rem;
+  padding: 0.55rem 0.65rem;
   border-radius: 10px;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -242,6 +248,41 @@ body {
 .nav-link.swagger-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(59, 130, 246, 0.45);
+}
+
+/* --- Signed-in user greeting + Sign Out --- */
+.nav-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-user-name {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.nav-user-name strong {
+  color: var(--text-pure);
+}
+
+.nav-user form {
+  display: inline-flex;
+  margin: 0;
+}
+
+.nav-signout-btn {
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  background: none;
+  color: var(--accent-ruby);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.nav-signout-btn:hover {
+  color: var(--accent-ruby);
+  background: rgba(244, 63, 94, 0.12);
 }
 
 /* --- Theme Toggle Switcher Button --- */
@@ -371,12 +412,59 @@ body {
 
 /* --- Official Pokémon Gallery Filter Bar --- */
 .gallery-filter-bar {
+  margin-bottom: 2.5rem;
+}
+
+/* Search + Filter button, right-aligned above the gallery */
+.gallery-toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: flex-end;
+  gap: 0.75rem;
   flex-wrap: wrap;
-  margin-bottom: 2.5rem;
+}
+
+.filter-toggle-btn {
+  font-family: inherit;
+}
+
+.filter-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--accent-blue);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+/* Element / rarity pills, shown when the Filter button is toggled */
+.filter-panel {
+  display: none;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 18px;
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+}
+
+.filter-panel.open {
+  display: flex;
+}
+
+.filter-group-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
 }
 
 .filter-pills-row {
@@ -721,7 +809,8 @@ body {
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-subtle);
   border-radius: 18px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   box-shadow: var(--shadow-card);
   transition: background 0.3s ease, border-color 0.3s ease;
 }
@@ -809,6 +898,50 @@ tr:hover td {
 }
 
 /* --- State Machine Pipeline --- */
+/* Orders console has 7 dense columns: tighter cells keep it inside the frame */
+.orders-table th,
+.orders-table td {
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+}
+
+.orders-table th:first-child,
+.orders-table td:first-child {
+  padding-left: 1.4rem;
+}
+
+/* Lifecycle buttons: one per line, same width, Cancel last */
+.order-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 8.75rem;
+}
+
+.order-actions .btn {
+  width: 100%;
+  min-height: 1.9rem;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.orders-table .state-node {
+  padding: 4px 7px;
+}
+
+.modal-footer.transition-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.transition-footer .btn {
+  justify-content: center;
+}
+
+.orders-table .state-pipeline {
+  gap: 0.3rem;
+}
+
 .state-pipeline {
   display: flex;
   align-items: center;
@@ -842,6 +975,17 @@ tr:hover td {
   color: #a5b4fc;
   border: 1px solid rgba(99, 102, 241, 0.3);
   text-transform: uppercase;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 [data-theme="light"] .rarity-pill {
@@ -1014,29 +1158,88 @@ tr:hover td {
 }
 
 /* 3D Flip Action Pill */
-.inspect-flip-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.55rem 1.25rem;
-  border-radius: 30px;
-  background: var(--bg-surface-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.inspect-flip-hint {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
-.inspect-flip-btn:hover {
-  color: var(--accent-blue);
-  border-color: var(--accent-blue);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+/* Info column fills the card's height so the actions sit on its bottom edge */
+.inspect-info-col {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.inspect-card-kind {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #ef4444;
+}
+
+.inspect-card-kind.is-trainer {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--accent-gold);
+}
+
+.inspect-price {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.inspect-price-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.inspect-price-value {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: #10b981;
+}
+
+.price-edit-btn {
+  background: none;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.15s ease;
+}
+
+.price-edit-btn:hover {
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+}
+
+.tier-select {
+  padding: 0.45rem 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Equal-width columns, however many actions the role gets */
+.inspect-actions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.inspect-actions > * {
+  justify-content: center;
 }
 
 /* Strategy Order Modal Calculator */
@@ -1165,4 +1368,62 @@ tr:hover td {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1.5rem;
   }
+}
+
+/* Inventory rows with stock at or below the low-stock threshold */
+.low-stock-note {
+  color: var(--accent-ruby);
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-top: 0.15rem;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  filter: grayscale(0.6);
+}
+
+/* Full-width form controls inside modals */
+.form-control {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+select.form-control {
+  cursor: pointer;
+}
+
+/* Account vault inspector: cards grid with captions that stay inside each tile */
+.account-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1rem 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+.account-cards-grid .gallery-card-unit {
+  min-width: 0;
+}
+
+.account-cards-grid .card-gallery-sub {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  box-sizing: border-box;
+}
+
+.account-cards-grid .card-gallery-title {
+  max-width: 100%;
+}
+
+.account-cards-grid .card-gallery-meta {
+  flex-wrap: wrap;
 }

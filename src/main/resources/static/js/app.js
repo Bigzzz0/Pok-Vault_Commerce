@@ -23,8 +23,8 @@ function setTheme(theme, playAudio = true) {
 
     const toggleBtns = document.querySelectorAll('.theme-toggle-btn');
     toggleBtns.forEach(btn => {
-        btn.setAttribute('title', theme === 'dark' ? 'Switch to Clean Studio Light' : 'Switch to Pitch-Black Obsidian Vault');
-        btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to Clean Studio Light' : 'Switch to Pitch-Black Obsidian Vault');
+        btn.setAttribute('title', theme === 'dark' ? 'เปลี่ยนเป็นธีมสว่าง' : 'เปลี่ยนเป็นธีมมืด');
+        btn.setAttribute('aria-label', theme === 'dark' ? 'เปลี่ยนเป็นธีมสว่าง' : 'เปลี่ยนเป็นธีมมืด');
         const sunIcon = btn.querySelector('.theme-icon-sun');
         const moonIcon = btn.querySelector('.theme-icon-moon');
         if (sunIcon && moonIcon) {
@@ -47,7 +47,7 @@ function toggleTheme() {
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
     const nextTheme = current === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme, true);
-    showToast(`Switched to ${nextTheme === 'dark' ? 'Pitch-Black Obsidian Vault' : 'Clean Studio Gallery'}`, 'info');
+    showToast(`เปลี่ยนเป็น${nextTheme === 'dark' ? 'ธีมมืด' : 'ธีมสว่าง'}แล้ว`, 'info');
 }
 
 // --- 1. 3D Holographic Parallax Tilt & Specular Light Engine ---
@@ -97,6 +97,8 @@ function init3DTilt() {
 
                 // Simeydotme shader coordinates
                 card.style.setProperty('--pointer-x', `${percentX.toFixed(1)}%`);
+                // Unitless copy: CSS calc() cannot turn a percentage into a gradient angle
+                card.style.setProperty('--pointer-n', percentX.toFixed(1));
                 card.style.setProperty('--pointer-y', `${percentY.toFixed(1)}%`);
                 card.style.setProperty('--pointer-from-center', fromCenter.toFixed(2));
                 card.style.setProperty('--rotate-x', `${rotateY}deg`);
@@ -176,6 +178,7 @@ function initInspectionFlipper() {
 
         // Update Simeydotme Shimmer & Diffraction variables on modal card
         flipperBox.style.setProperty('--pointer-x', `${percentX}%`);
+        flipperBox.style.setProperty('--pointer-n', `${percentX}`);
         flipperBox.style.setProperty('--pointer-y', `${percentY}%`);
         flipperBox.style.setProperty('--background-x', `${(35 + percentX * 0.3).toFixed(1)}%`);
         flipperBox.style.setProperty('--background-y', `${(35 + percentY * 0.3).toFixed(1)}%`);
@@ -222,7 +225,6 @@ function initInspectionFlipper() {
 function toggleCardFlip() {
     isCardFlipped = !isCardFlipped;
     const flipperBox = document.getElementById('inspectFlipperBox');
-    const label = document.getElementById('inspectFlipLabel');
 
     // The entry spin leaves an inline rotateY(0deg) behind, which outranks the .is-flipped rule
     const flipperInner = document.getElementById('inspectFlipperInner');
@@ -241,16 +243,16 @@ function toggleCardFlip() {
         flipperBox.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
     }
 
-    if (label) {
-        label.textContent = isCardFlipped ? 'Flip Card (Front)' : 'Flip Card (Back)';
-    }
 
     if (window.soundFx) {
         window.soundFx.playInspect();
     }
 }
 
+let currentInspectCard = null;
+
 function openInspection(card) {
+    currentInspectCard = card;
     activeCardData = card;
     if (window.soundFx) window.soundFx.playInspect();
 
@@ -263,10 +265,6 @@ function openInspection(card) {
         if (card.rarity) {
             flipperBox.setAttribute('data-rarity', card.rarity);
         }
-    }
-    const label = document.getElementById('inspectFlipLabel');
-    if (label) {
-        label.textContent = 'Flip Card (Back)';
     }
 
     // 3D Entry Flip Animation (Smooth 360-degree spin on arrival)
@@ -287,10 +285,19 @@ function openInspection(card) {
 
     document.getElementById('inspectCardNumber').textContent = `${card.expansionCode || 'A1'} #${card.cardNumber}`;
     document.getElementById('inspectCardName').textContent = card.name;
-    document.getElementById('inspectCardHp').textContent = card.hp > 0 ? `HP ${card.hp}` : '';
-    document.getElementById('inspectCardDesc').textContent = card.description || 'Rare Pokémon TCG Pocket collectible card.';
+    // Pokémon cards show HP; Trainer cards have none, so show their type instead (TRAINER_SUPPORTER -> Trainer Supporter)
+    const kindElem = document.getElementById('inspectCardHp');
+    const isPokemon = card.hp > 0;
+    kindElem.textContent = isPokemon ? `HP ${card.hp}` : (CARD_TYPE_LABELS[card.cardType] || formatEnumLabel(card.cardType));
+    kindElem.classList.toggle('is-trainer', !isPokemon);
+    document.getElementById('inspectCardDesc').textContent = card.description || 'การ์ดสะสม Pokémon TCG Pocket';
     document.getElementById('inspectCardRarity').textContent = card.rarityDescription || card.rarity;
-    document.getElementById('inspectCardStock').textContent = `In Stock: ${card.totalStock || 0} copies`;
+    document.getElementById('inspectCardStock').textContent = card.totalStock == null ? 'มีสินค้า' : `มีสินค้า: ${card.totalStock} ใบ`;
+    const priceRow = document.getElementById('inspectCardPriceRow');
+    if (priceRow) {
+        priceRow.style.display = card.price > 0 ? '' : 'none';
+        document.getElementById('inspectCardPrice').textContent = formatBaht(card.price);
+    }
 
     // Dynamic Element Theme for Modal Glow
     const aura = document.getElementById('inspectAura');
@@ -302,6 +309,17 @@ function openInspection(card) {
     modal.classList.add('active');
 }
 
+function formatBaht(amount) {
+    return '฿' + (Number(amount) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+const CARD_TYPE_LABELS = { POKEMON: 'โปเกมอน', TRAINER_SUPPORTER: 'เทรนเนอร์ ซัพพอร์ต', TRAINER_ITEM: 'เทรนเนอร์ ไอเท็ม' };
+
+function formatEnumLabel(value) {
+    return (value || '').split('_').filter(Boolean)
+        .map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ');
+}
+
 function handleInspectClick(elem) {
     const card = {
         name: elem.getAttribute('data-name'),
@@ -311,9 +329,12 @@ function handleInspectClick(elem) {
         rarity: elem.getAttribute('data-rarity') || elem.getAttribute('data-rarity-desc'),
         rarityDescription: elem.getAttribute('data-rarity-desc') || elem.getAttribute('data-rarity'),
         description: elem.getAttribute('data-desc'),
-        totalStock: parseInt(elem.getAttribute('data-stock')) || 0,
+        totalStock: elem.hasAttribute('data-stock') ? (parseInt(elem.getAttribute('data-stock')) || 0) : null,
         elementType: elem.getAttribute('data-element'),
-        imageUrl: elem.getAttribute('data-image')
+        imageUrl: elem.getAttribute('data-image'),
+        cardType: elem.getAttribute('data-card-type'),
+        inventoryId: parseInt(elem.getAttribute('data-inventory-id')) || null,
+        price: parseFloat(elem.getAttribute('data-price')) || 0
     };
     openInspection(card);
 }
@@ -356,7 +377,7 @@ const FRIEND_ID_PATTERN = /^\d{4}-\d{4}-\d{4}-\d{4}$|^\d{16}$/;
 
 function openOrderModal(inventoryId, cardName, cardNumber, condition, unitPrice, availableStock) {
     if (availableStock <= 0) {
-        showToast('This item is currently out of stock!', 'danger');
+        showToast('การ์ดใบนี้หมดสต็อกแล้ว', 'danger');
         return;
     }
 
@@ -372,7 +393,7 @@ function openOrderModal(inventoryId, cardName, cardNumber, condition, unitPrice,
 
     document.getElementById('orderCardTitle').textContent = `${cardName} (${condition})`;
     document.getElementById('orderCardNumber').textContent = cardNumber;
-    document.getElementById('orderAvailableStock').textContent = `Available: ${availableStock} in store`;
+    document.getElementById('orderAvailableStock').textContent = `มีในร้าน: ${availableStock} ใบ`;
     document.getElementById('orderQtyInput').value = 1;
     document.getElementById('orderQtyInput').max = availableStock;
 
@@ -387,6 +408,77 @@ function closeOrderModal() {
     const modal = document.getElementById('orderModal');
     modal.classList.remove('active');
     if (window.soundFx) window.soundFx.playClick();
+}
+
+// --- Back office: edit the retail price of one inventory item ---
+let currentPriceTarget = null;
+
+function openPriceModal(btn) {
+    currentPriceTarget = { id: btn.getAttribute('data-id') };
+    document.getElementById('priceCardTitle').textContent = btn.getAttribute('data-name') || 'แก้ไขราคาขาย';
+    document.getElementById('priceCardNumber').textContent = btn.getAttribute('data-number') || '';
+    const input = document.getElementById('priceInput');
+    input.value = (parseFloat(btn.getAttribute('data-price')) || 0).toFixed(2);
+    document.getElementById('priceCostHint').textContent = `ต้นทุน: ${formatBaht(btn.getAttribute('data-cost'))}`;
+    document.getElementById('priceModal').classList.add('active');
+    input.focus();
+    input.select();
+}
+
+function closePriceModal() {
+    document.getElementById('priceModal').classList.remove('active');
+}
+
+async function submitPriceUpdate(event) {
+    event.preventDefault();
+    if (!currentPriceTarget) return;
+    const price = parseFloat(document.getElementById('priceInput').value);
+    if (isNaN(price) || price < 0) {
+        showToast('กรุณากรอกราคาตั้งแต่ 0 ขึ้นไป', 'danger');
+        return;
+    }
+
+    const submitBtn = document.getElementById('priceSubmitBtn');
+    submitBtn.disabled = true;
+    try {
+        const response = await fetch(`/api/v1/admin/inventories/${currentPriceTarget.id}/price?price=${encodeURIComponent(price.toFixed(2))}`, { method: 'PATCH' });
+        const result = await response.json();
+        if (response.ok && result.success) {
+            showToast(`อัปเดตราคาขายเป็น ${formatBaht(result.data.sellingPrice)} แล้ว`, 'success');
+            closePriceModal();
+            setTimeout(() => window.location.reload(), 700);
+        } else {
+            showToast(apiErrorMessage(result, 'อัปเดตราคาไม่สำเร็จ'), 'danger');
+        }
+    } catch (err) {
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + err.message, 'danger');
+    } finally {
+        submitBtn.disabled = false;
+    }
+}
+
+// --- Back office: set a customer's membership tier (drives the Strategy discount) ---
+async function updateCustomerTier(select) {
+    const userId = select.getAttribute('data-user-id');
+    const previous = select.getAttribute('data-current');
+    const tier = select.value;
+    select.disabled = true;
+    try {
+        const response = await fetch(`/api/v1/admin/customers/${userId}/membership-tier?tier=${encodeURIComponent(tier)}`, { method: 'PATCH' });
+        const result = await response.json();
+        if (response.ok && result.success) {
+            select.setAttribute('data-current', tier);
+            showToast(`${select.getAttribute('data-name')} เป็นสมาชิกระดับ ${tier} แล้ว`, 'success');
+        } else {
+            select.value = previous;
+            showToast(apiErrorMessage(result, 'อัปเดตระดับสมาชิกไม่สำเร็จ'), 'danger');
+        }
+    } catch (err) {
+        select.value = previous;
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + err.message, 'danger');
+    } finally {
+        select.disabled = false;
+    }
 }
 
 function adjustOrderQty(delta) {
@@ -416,7 +508,7 @@ function updateOrderCalculation() {
     const finalAmount = Math.max(0, subtotal - discountAmount);
 
     document.getElementById('orderCalcSubtotal').textContent = `฿${subtotal.toFixed(2)}`;
-    document.getElementById('orderCalcDiscountRate').textContent = `${tier} (-${(discountRate * 100).toFixed(0)}%)`;
+    document.getElementById('orderCalcDiscountRate').textContent = `ส่วนลด ${tier} (-${(discountRate * 100).toFixed(0)}%)`;
     document.getElementById('orderCalcDiscountAmt').textContent = `-฿${discountAmount.toFixed(2)}`;
     document.getElementById('orderCalcFinal').textContent = `฿${finalAmount.toFixed(2)}`;
 }
@@ -434,7 +526,7 @@ async function submitOrder() {
     const customerInGameName = ignInput ? ignInput.value.trim() : '';
 
     if (!FRIEND_ID_PATTERN.test(customerFriendId)) {
-        showToast('Please enter the customer Friend ID as 16 digits (e.g. 1234-5678-9012-3456).', 'danger');
+        showToast('กรุณากรอก Friend ID ของลูกค้าให้ครบ 16 หลัก (เช่น 1234-5678-9012-3456)', 'danger');
         if (friendIdInput) friendIdInput.focus();
         return;
     }
@@ -456,7 +548,7 @@ async function submitOrder() {
     const submitLabel = submitBtn.querySelector('span') || submitBtn;
     const submitLabelText = submitLabel.textContent;
     submitBtn.disabled = true;
-    submitLabel.textContent = "Processing...";
+    submitLabel.textContent = "กำลังบันทึก...";
 
     try {
         const response = await fetch('/api/v1/orders', {
@@ -469,16 +561,16 @@ async function submitOrder() {
 
         if (response.ok && result.success) {
             if (window.soundFx) window.soundFx.playOrderChime();
-            showToast(`Order ${result.data.orderCode} created! Strategy Discount: -฿${result.data.discountAmount}`, 'success');
+            showToast(`สร้างคำสั่งซื้อ ${result.data.orderCode} แล้ว! ส่วนลด: -฿${result.data.discountAmount}`, 'success');
             closeOrderModal();
             
             // Trigger Chat Commerce Handshake Modal
             showChatCommerceModal(result.data, currentOrderTarget, customerFriendId, customerInGameName);
         } else {
-            showToast(result.message || 'Order failed. Please check stock.', 'danger');
+            showToast(result.message || 'สั่งซื้อไม่สำเร็จ กรุณาตรวจสอบสต็อก', 'danger');
         }
     } catch (err) {
-        showToast('Network error while placing order: ' + err.message, 'danger');
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + err.message, 'danger');
     } finally {
         submitBtn.disabled = false;
         submitLabel.textContent = submitLabelText;
@@ -486,6 +578,18 @@ async function submitOrder() {
 }
 
 // --- Chat Commerce Handshake Helpers ---
+// Primary: the store's Facebook Page (username or Page ID) -> m.me deep link with the summary prefilled.
+// Leave empty until the Page exists; the handshake then falls back to the personal chat link below.
+const MESSENGER_PAGE = '';
+const MESSENGER_FALLBACK_LINK = 'https://www.facebook.com/messages/t/sapphanyu.khamtum';
+
+function buildMessengerUrl(summaryMsg) {
+    if (MESSENGER_PAGE) {
+        return `https://m.me/${MESSENGER_PAGE}?text=${encodeURIComponent(summaryMsg)}`;
+    }
+    // The personal chat link ignores ?text=, the clipboard copy covers it
+    return MESSENGER_FALLBACK_LINK;
+}
 let lastChatSummaryText = '';
 
 function showChatCommerceModal(orderData, targetCard, friendId, ign) {
@@ -499,7 +603,6 @@ function showChatCommerceModal(orderData, targetCard, friendId, ign) {
     const cardElem = document.getElementById('chatOrderCardName');
     const friendElem = document.getElementById('chatOrderFriendId');
     const finalElem = document.getElementById('chatOrderFinalAmt');
-    const messengerBtn = document.getElementById('chatMessengerBtn');
 
     const cardTitle = targetCard ? `${targetCard.cardName} (${targetCard.condition}) x${targetCard.quantity}` : 'Pokémon TCG Card';
     const finalAmountStr = `฿${orderData.finalAmount.toFixed(2)}`;
@@ -509,19 +612,37 @@ function showChatCommerceModal(orderData, targetCard, friendId, ign) {
     if (friendElem) friendElem.textContent = friendId;
     if (finalElem) finalElem.textContent = finalAmountStr;
 
-    // Compose prefilled message for Facebook Messenger
+    // Compose the order summary staff send to the customer
     const summaryMsg = `สวัสดีครับ สั่งจองการ์ดผ่านเว็บเรียบร้อยแล้วครับ!\n• รหัสคำสั่งซื้อ: #${orderData.orderCode}\n• รายการการ์ด: ${cardTitle}\n• ยอดชำระ: ${finalAmountStr} (ส่วนลด Strategy: -฿${orderData.discountAmount.toFixed(2)})\n• รหัสเพื่อนในเกม (Friend ID): ${friendId}\n• ชื่อเทรนเนอร์ (IGN): ${ign || '-'}\nขอส่งหลักฐานการโอนเงินและนัดส่งการ์ดเทรดในเกมครับ`;
     lastChatSummaryText = summaryMsg;
 
-    if (messengerBtn) {
-        // Facebook m.me link with prefilled text parameter
-        messengerBtn.href = `https://m.me/poketcgpocketstore?text=${encodeURIComponent(summaryMsg)}`;
-    }
-
     modal.classList.add('active');
 
-    // Handshake: put the order summary on the clipboard right away so the customer can paste it in chat
+    // Handshake: copy the order summary and stay on this page (staff paste it into the chat themselves)
+    const hint = document.getElementById('chatHandshakeHint');
+    if (hint) hint.textContent = 'คัดลอกข้อความสรุปออเดอร์แล้ว — วางส่งให้ลูกค้าในแชทได้เลย';
     copyToClipboard(summaryMsg, 'คัดลอกข้อความสรุปออเดอร์แล้ว! วางส่งในแชทได้ทันที');
+}
+
+// Opens the Messenger link in a new tab (used by the customer "Inbox FB" button).
+// Returns false when the browser blocks the popup so the caller can fall back.
+function openMessengerDeepLink(url) {
+    const hint = document.getElementById('chatHandshakeHint');
+    let opened = null;
+    try {
+        // No 'noopener' feature here: it makes window.open return null even on success
+        opened = window.open(url, '_blank');
+        if (opened) opened.opener = null;
+    } catch (e) {
+        opened = null;
+    }
+    const launched = !!opened;
+    if (hint) {
+        hint.textContent = launched
+            ? 'เปิด Messenger ให้แล้ว — วางข้อความ (Ctrl+V) แล้วกดส่งได้เลย'
+            : 'คัดลอกข้อความแล้ว — กดปุ่มด้านล่างเพื่อเปิด Messenger แล้ววาง (Ctrl+V)';
+    }
+    return launched;
 }
 
 function closeChatCommerceModal() {
@@ -541,46 +662,212 @@ function copyChatOrderSummary(btn) {
     }
 }
 
-// --- 4. Quick Stock Stepper (Inventory Page) ---
-async function quickAdjustStock(inventoryId, delta) {
-    const qtyElem = document.getElementById(`stockQty_${inventoryId}`);
-    if (!qtyElem) return;
+// --- Card gallery: collapsible filter panel behind the Filter button ---
+const FILTER_PANEL_KEY = 'tcg-filter-panel-open';
 
-    let currentQty = parseInt(qtyElem.textContent) || 0;
-    let newQty = currentQty + delta;
-    if (newQty < 0) return;
-
-    qtyElem.textContent = newQty;
-
-    try {
-        const response = await fetch(`/api/v1/inventories/${inventoryId}/stock?quantity=${newQty}`, {
-            method: 'PATCH'
-        });
-        const result = await response.json();
-
-        if (response.ok) {
-            showToast(`Stock updated for item #${inventoryId}: ${newQty} in vault`, 'success');
-            if (newQty <= 3) {
-                qtyElem.classList.add('low-stock-alert');
-            } else {
-                qtyElem.classList.remove('low-stock-alert');
-            }
-        } else {
-            qtyElem.textContent = currentQty;
-            showToast(result.message || 'Failed to update stock', 'danger');
-        }
-    } catch (e) {
-        qtyElem.textContent = currentQty;
-        showToast('Error communicating with server', 'danger');
-    }
+function setFilterPanelOpen(open) {
+    const panel = document.getElementById('filterPanel');
+    const btn = document.getElementById('filterToggleBtn');
+    if (!panel || !btn) return;
+    panel.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open);
 }
 
-// --- 5. Order State Machine Transition Action ---
-async function executeOrderTransition(orderId, action) {
-    if (!confirm(`Are you sure you want to transition Order #${orderId} with action: '${action}'?`)) {
+function toggleFilterPanel() {
+    const panel = document.getElementById('filterPanel');
+    if (!panel) return;
+    const open = !panel.classList.contains('open');
+    setFilterPanelOpen(open);
+    // Pills reload the page, so remember the choice for the rest of the visit
+    try { sessionStorage.setItem(FILTER_PANEL_KEY, open ? '1' : '0'); } catch (e) { /* storage unavailable */ }
+    if (window.soundFx) window.soundFx.playClick();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    let saved = null;
+    try { saved = sessionStorage.getItem(FILTER_PANEL_KEY); } catch (e) { /* storage unavailable */ }
+    if (saved !== null) setFilterPanelOpen(saved === '1');
+});
+
+// --- Customer self-service: Inbox FB + Create Order from the Inspect modal ---
+function inspectCardLabel() {
+    const card = currentInspectCard;
+    return card ? `${card.name} (${card.expansionCode || 'A1'} #${card.cardNumber})` : 'Pokémon TCG Card';
+}
+
+// Copies an enquiry about the inspected card, then opens the store's Messenger chat
+function inboxStoreAboutCard() {
+    const message = `สวัสดีครับ สนใจการ์ด ${inspectCardLabel()} ครับ ยังมีของอยู่ไหมครับ`;
+    const url = buildMessengerUrl(message);
+    copyToClipboard(message, 'คัดลอกข้อความแล้ว! วางส่งในแชทได้ทันที').then(() => {
+        if (!openMessengerDeepLink(url)) window.location.href = url;
+    });
+}
+
+function openCustomerOrderModal() {
+    const modal = document.getElementById('customerOrderModal');
+    const card = currentInspectCard;
+    if (!modal || !card) return;
+    if (!card.inventoryId) {
+        showToast('การ์ดใบนี้ยังสั่งซื้อออนไลน์ไม่ได้ กรุณา Inbox หาร้าน', 'danger');
         return;
     }
 
+    document.getElementById('customerOrderCardName').textContent = card.name;
+    document.getElementById('customerOrderCardNumber').textContent = `${card.expansionCode || 'A1'} #${card.cardNumber}`;
+    document.getElementById('customerOrderPrice').textContent = `฿${card.price.toFixed(2)}`;
+    document.getElementById('customerOrderForm').style.display = '';
+    document.getElementById('customerOrderDone').style.display = 'none';
+
+    closeInspection();
+    modal.classList.add('active');
+    document.getElementById('customerOrderFriendId').focus();
+}
+
+function closeCustomerOrderModal() {
+    const modal = document.getElementById('customerOrderModal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    // After a successful order the stock changed, so refresh the gallery
+    if (document.getElementById('customerOrderDone').style.display !== 'none') {
+        setTimeout(() => window.location.reload(), 300);
+    }
+}
+
+async function submitCustomerOrder(event) {
+    event.preventDefault();
+    const card = currentInspectCard;
+    const userId = parseInt(document.getElementById('customerOrderUserId').value);
+    const friendInput = document.getElementById('customerOrderFriendId');
+    const friendId = friendInput.value.trim();
+    const ign = document.getElementById('customerOrderIgn').value.trim();
+
+    if (!card || !card.inventoryId || !userId) return;
+    if (!FRIEND_ID_PATTERN.test(friendId)) {
+        showToast('กรุณากรอก Friend ID ให้ครบ 16 หลัก (เช่น 1234-5678-9012-3456)', 'danger');
+        friendInput.focus();
+        return;
+    }
+
+    const submitBtn = document.getElementById('customerOrderSubmit');
+    submitBtn.disabled = true;
+
+    try {
+        const response = await fetch('/api/v1/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userId: userId,
+                customerFriendId: friendId,
+                customerInGameName: ign,
+                items: [{ inventoryId: card.inventoryId, quantity: 1 }],
+                notes: 'Online Vault Order'
+            })
+        });
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            if (window.soundFx) window.soundFx.playOrderChime();
+            showCustomerOrderDone(result.data, friendId, ign);
+        } else {
+            showToast(apiErrorMessage(result, 'สั่งซื้อไม่สำเร็จ การ์ดอาจหมดสต็อกแล้ว'), 'danger');
+        }
+    } catch (err) {
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + err.message, 'danger');
+    } finally {
+        submitBtn.disabled = false;
+    }
+}
+
+function showCustomerOrderDone(order, friendId, ign) {
+    const finalAmount = `฿${order.finalAmount.toFixed(2)}`;
+    const summary = `สวัสดีครับ สั่งจองการ์ดผ่านเว็บเรียบร้อยแล้วครับ!\n• รหัสคำสั่งซื้อ: #${order.orderCode}\n• รายการการ์ด: ${inspectCardLabel()} x1\n• ยอดชำระ: ${finalAmount} (ส่วนลด Strategy: -฿${order.discountAmount.toFixed(2)})\n• รหัสเพื่อนในเกม (Friend ID): ${friendId}\n• ชื่อเทรนเนอร์ (IGN): ${ign || '-'}\nขอส่งหลักฐานการโอนเงินและนัดส่งการ์ดเทรดในเกมครับ`;
+    lastChatSummaryText = summary;
+    const url = buildMessengerUrl(summary);
+
+    document.getElementById('customerOrderDoneCode').textContent = `#${order.orderCode}`;
+    document.getElementById('customerOrderDoneAmount').textContent = finalAmount;
+    document.getElementById('customerOrderMessengerBtn').href = url;
+    document.getElementById('customerOrderForm').style.display = 'none';
+    document.getElementById('customerOrderDone').style.display = '';
+
+    // No automatic jump to Messenger here: the customer stays on the confirmation and can inbox the store if they want
+    document.getElementById('customerOrderDoneHint').textContent =
+        'ติดตามสถานะออเดอร์ได้ที่หน้า "คำสั่งซื้อของฉัน" — หากต้องการคุยกับร้าน กด Inbox FB (ข้อความสรุปจะถูกคัดลอกให้)';
+    showToast(`สร้างคำสั่งซื้อ ${order.orderCode} แล้ว!`, 'success');
+}
+
+// --- 5. Order State Machine Transition Action ---
+const ORDER_TRANSITIONS = {
+    pay: {
+        title: 'ยืนยันการชำระเงิน', from: ['PENDING', 'active-pending'], to: ['PAID', 'active-paid'],
+        message: 'บันทึกว่าคำสั่งซื้อนี้ชำระเงินแล้ว? ควรทำหลังตรวจสอบยอดโอนของลูกค้าแล้ว',
+        confirm: 'ชำระเงินแล้ว', background: ''
+    },
+    ship: {
+        title: 'เริ่มเทรดในเกม', from: ['PAID', 'active-paid'], to: ['SHIPPING', 'active-shipping'],
+        message: 'เริ่มส่งการ์ดให้ลูกค้าผ่านการเทรดในเกม?',
+        confirm: 'เริ่มเทรด', background: 'linear-gradient(135deg, #7c3aed, #8b5cf6)'
+    },
+    complete: {
+        title: 'ยืนยันเทรดสำเร็จ', from: ['SHIPPING', 'active-shipping'], to: ['COMPLETED', 'active-completed'],
+        message: 'ยืนยันว่าลูกค้าได้รับการ์ดครบแล้ว? คำสั่งซื้อที่เสร็จสิ้นแล้วจะแก้ไขไม่ได้',
+        confirm: 'เทรดสำเร็จ', background: 'linear-gradient(135deg, #059669, #10b981)'
+    },
+    cancel: {
+        title: 'ยกเลิกคำสั่งซื้อ', from: null, to: ['CANCELLED', 'active-cancelled'],
+        message: 'ยกเลิกคำสั่งซื้อนี้? การ์ดที่จองไว้จะกลับเข้าสต็อก และไม่สามารถย้อนกลับได้',
+        confirm: 'ยกเลิกคำสั่งซื้อ', background: 'linear-gradient(135deg, #dc2626, #ef4444)', dismiss: 'ไม่ยกเลิก'
+    }
+};
+let pendingOrderTransition = null;
+
+// Asks for confirmation in a modal, then runs the transition
+function executeOrderTransition(orderId, action, orderCode) {
+    const modal = document.getElementById('transitionModal');
+    const config = ORDER_TRANSITIONS[action];
+    if (!modal || !config) {
+        if (confirm(`ยืนยันเปลี่ยนสถานะคำสั่งซื้อ #${orderId} (${action})?`)) {
+            runOrderTransition(orderId, action);
+        }
+        return;
+    }
+
+    pendingOrderTransition = { orderId, action };
+    document.getElementById('transitionTitle').textContent = config.title;
+    document.getElementById('transitionOrderCode').textContent = orderCode || `คำสั่งซื้อ #${orderId}`;
+    // The "from" badge mirrors the order's current state in its table row
+    const actionBtn = document.querySelector(`.order-actions button[data-order-id="${orderId}"]`);
+    const currentNode = actionBtn ? actionBtn.closest('tr').querySelector('.state-node[class*="active-"]') : null;
+    const fromNode = document.getElementById('transitionFrom');
+    fromNode.textContent = currentNode ? currentNode.textContent.trim() : (config.from ? config.from[0] : 'CURRENT');
+    fromNode.className = currentNode ? currentNode.className : 'state-node ' + (config.from ? config.from[1] : '');
+    const toNode = document.getElementById('transitionTo');
+    toNode.textContent = config.to[0];
+    toNode.className = 'state-node ' + config.to[1];
+    document.getElementById('transitionMessage').textContent = config.message;
+    document.getElementById('transitionDismissBtn').textContent = config.dismiss || 'ย้อนกลับ';
+    const confirmBtn = document.getElementById('transitionConfirmBtn');
+    confirmBtn.textContent = config.confirm;
+    confirmBtn.style.background = config.background;
+    confirmBtn.disabled = false;
+    modal.classList.add('active');
+}
+
+function closeTransitionModal() {
+    document.getElementById('transitionModal').classList.remove('active');
+    pendingOrderTransition = null;
+}
+
+async function confirmOrderTransition() {
+    if (!pendingOrderTransition) return;
+    const { orderId, action } = pendingOrderTransition;
+    document.getElementById('transitionConfirmBtn').disabled = true;
+    await runOrderTransition(orderId, action);
+    closeTransitionModal();
+}
+
+async function runOrderTransition(orderId, action) {
     try {
         const response = await fetch(`/api/v1/orders/${orderId}/status?action=${action}`, {
             method: 'PATCH'
@@ -589,13 +876,13 @@ async function executeOrderTransition(orderId, action) {
 
         if (response.ok && result.success) {
             if (window.soundFx) window.soundFx.playOrderChime();
-            showToast(`Order status successfully transitioned to: ${result.data.orderStatus}`, 'success');
+            showToast(`เปลี่ยนสถานะคำสั่งซื้อเป็น ${result.data.orderStatus} แล้ว`, 'success');
             setTimeout(() => window.location.reload(), 1000);
         } else {
-            showToast(result.message || 'State transition rejected by State Pattern rules!', 'danger');
+            showToast(result.message || 'เปลี่ยนสถานะไม่ได้ (ไม่ผ่านกฎของ State Pattern)', 'danger');
         }
     } catch (e) {
-        showToast('Network error during state transition: ' + e.message, 'danger');
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + e.message, 'danger');
     }
 }
 
@@ -630,18 +917,19 @@ function showToast(message, type = 'info') {
 
 // --- 7. Clipboard Copy Helper ---
 // --- 7. Clipboard Copy Utilities ---
-function copyToClipboard(text, label = 'Copied to clipboard!') {
-    if (!text) return;
+// Returns a promise that settles once the copy attempt is over (never rejects)
+function copyToClipboard(text, label = 'คัดลอกแล้ว!') {
+    if (!text) return Promise.resolve();
     if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(() => {
+        return navigator.clipboard.writeText(text).then(() => {
             showToast(label, 'success');
             if (window.soundFx) window.soundFx.playClick();
         }).catch(() => {
             legacyCopy(text, label);
         });
-    } else {
-        legacyCopy(text, label);
     }
+    legacyCopy(text, label);
+    return Promise.resolve();
 }
 
 function legacyCopy(text, label) {
@@ -656,13 +944,36 @@ function legacyCopy(text, label) {
         showToast(label, 'success');
         if (window.soundFx) window.soundFx.playClick();
     } catch (err) {
-        showToast('Failed to copy', 'danger');
+        showToast('คัดลอกไม่สำเร็จ', 'danger');
     }
     document.body.removeChild(textarea);
 }
 
+// Friend ID inputs: digits only, capped at 16, with a dash after every 4th digit
+function formatFriendId(value) {
+    return (value || '').replace(/\D/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1-');
+}
+
+document.addEventListener('input', (event) => {
+    const input = event.target;
+    if (!input.classList || !input.classList.contains('friend-id-input')) return;
+
+    // keep the caret after the same digit it followed before reformatting
+    const digitsBeforeCaret = input.value.slice(0, input.selectionStart).replace(/\D/g, '').length;
+    const formatted = formatFriendId(input.value);
+    input.value = formatted;
+
+    let caret = 0;
+    for (let seen = 0; seen < digitsBeforeCaret && caret < formatted.length; caret++) {
+        if (/\d/.test(formatted[caret])) seen++;
+    }
+    input.setSelectionRange(caret, caret);
+});
+
 function copyFriendCode(code, btn) {
-    copyToClipboard(code, `Friend Code ${code} copied!`);
+    // The game's friend search takes the 16 digits without dashes
+    const digits = (code || '').replace(/\D/g, '');
+    copyToClipboard(digits, `Friend Code ${digits} copied!`);
     if (btn) {
         const origColor = btn.style.color;
         btn.style.color = '#10b981';
@@ -679,10 +990,12 @@ function copyCustomerModalFriendCode(btn) {
 
 // --- 8. In-Game Trade Matching & Fulfillment Manager Modal ---
 let currentTradeOrderId = null;
+let currentTradeOrderCode = null;
 let currentTradeCustomerFriendId = null;
 
 async function openTradeModal(orderId, orderCode, customerFriendId) {
     currentTradeOrderId = orderId;
+    currentTradeOrderCode = orderCode || orderId;
     currentTradeCustomerFriendId = customerFriendId || '1111-2222-3333-4444';
 
     const modal = document.getElementById('tradeFulfillmentModal');
@@ -694,25 +1007,25 @@ async function openTradeModal(orderId, orderCode, customerFriendId) {
 
     if (!modal || !tbody) return;
 
-    if (title) title.textContent = `In-Game Trade Manager - Order #${orderCode || orderId}`;
-    if (sub) sub.textContent = `Customer Friend ID: ${currentTradeCustomerFriendId}`;
+    if (title) title.textContent = `จัดการเทรดในเกม - คำสั่งซื้อ #${orderCode || orderId}`;
+    if (sub) sub.textContent = `Friend ID ของลูกค้า: ${currentTradeCustomerFriendId}`;
     if (fcElem) fcElem.textContent = currentTradeCustomerFriendId;
     if (banner) banner.style.display = 'none';
 
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">Calculating trade allocations from Game Accounts Vault...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">กำลังคำนวณบัญชีที่ใช้เทรด...</td></tr>`;
     modal.classList.add('active');
 
     try {
-        const response = await fetch(`/api/v1/orders/${orderId}/trade-recommendations`);
+        const response = await fetch(`/api/v1/trades/orders/${orderId}/recommendations`);
         const result = await response.json();
 
         if (response.ok && result.success) {
-            renderTradeModalContent(result.data);
+            renderTradeModalContent(result.data || []);
         } else {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 2rem;">Error: ${result.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 2rem;">เกิดข้อผิดพลาด: ${apiErrorMessage(result, 'โหลดคำแนะนำการเทรดไม่สำเร็จ')}</td></tr>`;
         }
     } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 2rem;">Network Error: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 2rem;">เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ${e.message}</td></tr>`;
     }
 }
 
@@ -722,38 +1035,59 @@ function closeTradeModal() {
     currentTradeOrderId = null;
 }
 
-function renderTradeModalContent(data) {
+// Accounts holding the card: the backend's recommended account first, then its alternatives
+function tradeCandidates(item) {
+    const candidates = [];
+    if (item.recommendedAccountId) {
+        candidates.push({
+            accountId: item.recommendedAccountId,
+            accountCode: item.recommendedAccountCode,
+            inGameName: item.recommendedInGameName,
+            friendId: item.recommendedFriendId,
+            tradeStatus: item.accountStatus,
+            availableStock: item.availableStock
+        });
+    }
+    return candidates.concat(item.alternativeCandidates || []);
+}
+
+// A READY account holding enough stock of every card in the order, if one exists
+function findSingleTradeAccount(items) {
+    if (!items.length) return null;
+    return tradeCandidates(items[0]).find(acc => items.every(item =>
+        tradeCandidates(item).some(c => c.accountId === acc.accountId
+            && c.tradeStatus === 'READY'
+            && c.availableStock >= item.requestedQuantity))) || null;
+}
+
+function renderTradeModalContent(items) {
     const banner = document.getElementById('tradeRecommendationBanner');
     const tbody = document.getElementById('tradeItemsTableBody');
 
     // Display recommendation insight
     if (banner) {
-        if (data.singleAccountMatchPossible && data.bestSingleAccount) {
-            banner.style.display = 'flex';
-            banner.style.justifyContent = 'space-between';
-            banner.style.alignItems = 'center';
+        const singleAccount = findSingleTradeAccount(items);
+        const unmatched = items.find(item => !item.matchFound);
+
+        if (singleAccount && items.some(item => item.currentAssignedAccountId !== singleAccount.accountId)) {
+            banner.style.display = 'block';
             banner.style.background = 'rgba(16, 185, 129, 0.12)';
             banner.style.border = '1px solid rgba(16, 185, 129, 0.35)';
             banner.innerHTML = `
-                <div>
-                    <div style="color: #10b981; font-weight: 800; font-size: 0.95rem; margin-bottom: 0.2rem;">
-                        ✨ Perfect Single-Account Trade Found!
-                    </div>
-                    <div style="font-size: 0.85rem; color: var(--text-secondary);">
-                        Account <strong>${data.bestSingleAccount.accountCode} (${data.bestSingleAccount.inGameName})</strong> owns ALL cards needed. Fulfill entire order with 1 friend trade!
-                    </div>
+                <div style="color: #10b981; font-weight: 800; font-size: 0.95rem; margin-bottom: 0.2rem;">
+                    ✨ เทรดจบได้ในบัญชีเดียว!
                 </div>
-                <button type="button" class="btn btn-primary" onclick="triggerAutoMatch()" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;">
-                    Auto-Assign Single Account
-                </button>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                    บัญชี <strong>${singleAccount.accountCode} (${singleAccount.inGameName})</strong> มีการ์ดครบทุกใบ เลือกบัญชีนี้ให้ทุกการ์ดเพื่อปิดออเดอร์ด้วยการเพิ่มเพื่อนครั้งเดียว
+                </div>
             `;
-        } else if (data.recommendationMessage) {
+        } else if (unmatched) {
             banner.style.display = 'block';
             banner.style.background = 'rgba(59, 130, 246, 0.1)';
             banner.style.border = '1px solid rgba(59, 130, 246, 0.3)';
             banner.innerHTML = `
                 <div style="color: var(--accent-cyan); font-weight: 700; font-size: 0.88rem;">
-                    💡 Trade Recommendation: ${data.recommendationMessage}
+                    💡 ${unmatched.cardName || 'รายการ #' + unmatched.orderItemId}: ${unmatched.recommendationReason}
                 </div>
             `;
         } else {
@@ -761,35 +1095,41 @@ function renderTradeModalContent(data) {
         }
     }
 
-    if (!data.itemOptions || data.itemOptions.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No items found in this order.</td></tr>`;
+    if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">ไม่พบรายการในคำสั่งซื้อนี้</td></tr>`;
         return;
     }
 
     let rowsHtml = '';
-    data.itemOptions.forEach(item => {
+    items.forEach(item => {
         const isAssigned = !!item.currentAssignedAccountId;
-        const status = item.tradeStatus || 'UNASSIGNED';
+        const status = item.fulfillmentStatus || 'UNASSIGNED';
+        const candidates = tradeCandidates(item);
+        const assignedAccount = candidates.find(c => c.accountId === item.currentAssignedAccountId);
+        const assignedFriendCode = assignedAccount ? assignedAccount.friendId : null;
+        // Backend rejects reassignment once the trade has been sent
+        const locked = status === 'TRADE_SENT' || status === 'COMPLETED';
 
-        let statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 700;">UNASSIGNED</span>`;
+        let statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 700;">ยังไม่เลือกบัญชี</span>`;
         if (status === 'FRIEND_PENDING') {
-            statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-weight: 700;">🤝 FRIEND PENDING</span>`;
+            statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-weight: 700;">🤝 รอเพิ่มเพื่อน</span>`;
         } else if (status === 'TRADE_SENT') {
-            statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #3b82f6; font-weight: 700;">📤 TRADE SENT</span>`;
+            statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #3b82f6; font-weight: 700;">📤 ส่งเทรดแล้ว</span>`;
         } else if (status === 'COMPLETED') {
-            statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 700;">✓ COMPLETED</span>`;
+            statusBadge = `<span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 700;">✓ สำเร็จ</span>`;
         }
 
         // Account options dropdown
-        let selectHtml = `<select onchange="handleAccountSelectChange(${item.orderItemId}, this.value)" class="gallery-search-input" style="font-size: 0.8rem; padding: 0.3rem 0.5rem; border-radius: 6px; background: var(--bg-surface-elevated); color: var(--text-primary); max-width: 220px;">`;
-        selectHtml += `<option value="" ${!isAssigned ? 'selected' : ''}>-- Select Game Account --</option>`;
+        let selectHtml = `<select onchange="handleAccountSelectChange(${item.orderItemId}, this.value)" ${locked ? 'disabled' : ''} class="gallery-search-input" style="font-size: 0.8rem; padding: 0.3rem 0.5rem; border-radius: 6px; background: var(--bg-surface-elevated); color: var(--text-primary); max-width: 220px;">`;
+        selectHtml += `<option value="" ${!isAssigned ? 'selected' : ''}>-- เลือกบัญชีเกม --</option>`;
 
-        if (item.candidates) {
-            item.candidates.forEach(cand => {
-                const sel = (item.currentAssignedAccountId === cand.accountId) ? 'selected' : '';
-                selectHtml += `<option value="${cand.accountId}" ${sel}>${cand.accountCode} - ${cand.inGameName} (${cand.availableStock} in stock)</option>`;
-            });
-        }
+        candidates.forEach(cand => {
+            const sel = (item.currentAssignedAccountId === cand.accountId) ? 'selected' : '';
+            // Only READY accounts can be assigned
+            const ready = cand.tradeStatus === 'READY';
+            const stockLabel = `มี ${cand.availableStock} ใบ${ready ? '' : ', ' + cand.tradeStatus}`;
+            selectHtml += `<option value="${cand.accountId}" ${sel} ${ready ? '' : 'disabled'}>${cand.accountCode} - ${cand.inGameName} (${stockLabel})</option>`;
+        });
         selectHtml += `</select>`;
 
         // Action buttons based on status
@@ -798,17 +1138,17 @@ function renderTradeModalContent(data) {
             if (status === 'UNASSIGNED' || status === 'FRIEND_PENDING') {
                 actionButtons += `
                     <button class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="advanceItemTradeStatus(${item.orderItemId}, 'TRADE_SENT')">
-                        Mark Trade Sent
+                        ส่งเทรดแล้ว
                     </button>
                 `;
             } else if (status === 'TRADE_SENT') {
                 actionButtons += `
                     <button class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="advanceItemTradeStatus(${item.orderItemId}, 'COMPLETED')">
-                        Complete In-Game Trade
+                        เทรดในเกมสำเร็จ
                     </button>
                 `;
             } else if (status === 'COMPLETED') {
-                actionButtons += `<span style="color: #10b981; font-size: 0.8rem; font-weight: 700;">Traded In-Game</span>`;
+                actionButtons += `<span style="color: #10b981; font-size: 0.8rem; font-weight: 700;">เทรดในเกมแล้ว</span>`;
             }
         }
 
@@ -816,20 +1156,19 @@ function renderTradeModalContent(data) {
             <tr>
                 <td>
                     <div style="display: flex; align-items: center; gap: 0.6rem;">
-                        <img src="${item.imageUrl}" alt="${item.cardName}" style="width: 36px; height: 50px; object-fit: cover; border-radius: 4px;">
                         <div>
                             <div style="font-weight: 700; font-size: 0.88rem;">${item.cardName}</div>
                             <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">${item.cardNumber}</div>
                         </div>
                     </div>
                 </td>
-                <td style="font-weight: 700;">${item.quantityNeeded}x</td>
+                <td style="font-weight: 700;">${item.requestedQuantity}x</td>
                 <td>${selectHtml}</td>
                 <td>
-                    ${item.currentAssignedAccountFriendCode ? `
+                    ${assignedFriendCode ? `
                         <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: var(--bg-surface-elevated); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-color);">
-                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent-gold);">${item.currentAssignedAccountFriendCode}</span>
-                            <button type="button" class="icon-btn" onclick="copyFriendCode('${item.currentAssignedAccountFriendCode}', this)" title="Copy Friend Code" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: inline-flex; align-items: center; padding: 0;">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent-gold);">${assignedFriendCode}</span>
+                            <button type="button" class="icon-btn" onclick="copyFriendCode('${assignedFriendCode}', this)" title="คัดลอก Friend Code" style="background: none; border: none; cursor: pointer; color: var(--text-muted); display: inline-flex; align-items: center; padding: 0;">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                             </button>
                         </div>
@@ -847,45 +1186,40 @@ function renderTradeModalContent(data) {
 async function triggerAutoMatch() {
     if (!currentTradeOrderId) return;
     try {
-        const response = await fetch(`/api/v1/orders/${currentTradeOrderId}/auto-match`, {
+        const response = await fetch(`/api/v1/trades/orders/${currentTradeOrderId}/auto-match`, {
             method: 'POST'
         });
         const result = await response.json();
 
         if (response.ok && result.success) {
-            showToast('Order cards auto-matched with optimal Game Accounts!', 'success');
+            showToast('จับคู่บัญชีเกมให้การ์ดในออเดอร์แล้ว!', 'success');
             if (window.soundFx) window.soundFx.playOrderChime();
-            openTradeModal(currentTradeOrderId, currentTradeOrderId, currentTradeCustomerFriendId);
+            openTradeModal(currentTradeOrderId, currentTradeOrderCode, currentTradeCustomerFriendId);
         } else {
-            showToast(result.message || 'Auto-matching failed. Some cards may be out of stock in accounts.', 'danger');
+            showToast(apiErrorMessage(result, 'จับคู่อัตโนมัติไม่สำเร็จ การ์ดบางใบอาจไม่มีในบัญชีเกม'), 'danger');
         }
     } catch (e) {
-        showToast('Network error: ' + e.message, 'danger');
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + e.message, 'danger');
     }
 }
 
 async function handleAccountSelectChange(orderItemId, accountId) {
     if (!accountId) return;
     try {
-        const response = await fetch('/api/v1/orders/assign-trade-account', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                orderItemId: parseInt(orderItemId),
-                gameAccountId: parseInt(accountId)
-            })
+        const response = await fetch(`/api/v1/trades/items/${orderItemId}/assign?accountId=${encodeURIComponent(accountId)}`, {
+            method: 'POST'
         });
         const result = await response.json();
 
         if (response.ok && result.success) {
-            showToast('Assigned Game Account for this card trade!', 'success');
+            showToast('เลือกบัญชีเกมสำหรับเทรดการ์ดใบนี้แล้ว!', 'success');
             if (window.soundFx) window.soundFx.playClick();
-            openTradeModal(currentTradeOrderId, currentTradeOrderId, currentTradeCustomerFriendId);
+            openTradeModal(currentTradeOrderId, currentTradeOrderCode, currentTradeCustomerFriendId);
         } else {
-            showToast(result.message || 'Failed to assign account', 'danger');
+            showToast(apiErrorMessage(result, 'เลือกบัญชีไม่สำเร็จ'), 'danger');
         }
     } catch (e) {
-        showToast('Error: ' + e.message, 'danger');
+        showToast('เกิดข้อผิดพลาด: ' + e.message, 'danger');
     }
 }
 
@@ -898,14 +1232,14 @@ async function advanceItemTradeStatus(orderItemId, newStatus) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            showToast(`Trade status updated to: ${newStatus}`, 'success');
+            showToast(`อัปเดตสถานะเทรดเป็น ${newStatus} แล้ว`, 'success');
             if (window.soundFx) window.soundFx.playClick();
-            openTradeModal(currentTradeOrderId, currentTradeOrderId, currentTradeCustomerFriendId);
+            openTradeModal(currentTradeOrderId, currentTradeOrderCode, currentTradeCustomerFriendId);
         } else {
-            showToast(result.message || 'Failed to update status', 'danger');
+            showToast(result.message || 'อัปเดตสถานะไม่สำเร็จ', 'danger');
         }
     } catch (e) {
-        showToast('Error: ' + e.message, 'danger');
+        showToast('เกิดข้อผิดพลาด: ' + e.message, 'danger');
     }
 }
 
@@ -932,7 +1266,7 @@ async function handleCreateAccount(event) {
     const notes = document.getElementById('accNotes').value.trim();
 
     if (!FRIEND_ID_PATTERN.test(friendId)) {
-        showToast('Please enter the Friend Code as 16 digits (e.g. 1234-5678-9012-3456).', 'danger');
+        showToast('กรุณากรอก Friend Code ให้ครบ 16 หลัก (เช่น 1234-5678-9012-3456)', 'danger');
         return;
     }
 
@@ -953,15 +1287,15 @@ async function handleCreateAccount(event) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            showToast(`Account ${result.data.accountCode} registered in vault!`, 'success');
+            showToast(`เพิ่มบัญชี ${result.data.accountCode} แล้ว!`, 'success');
             if (window.soundFx) window.soundFx.playOrderChime();
             closeCreateAccountModal();
             setTimeout(() => window.location.reload(), 1000);
         } else {
-            showToast(apiErrorMessage(result, 'Failed to register account'), 'danger');
+            showToast(apiErrorMessage(result, 'เพิ่มบัญชีไม่สำเร็จ'), 'danger');
         }
     } catch (e) {
-        showToast('Network error: ' + e.message, 'danger');
+        showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + e.message, 'danger');
     }
 }
 
@@ -983,7 +1317,7 @@ async function ensureCardsListLoaded() {
         const result = await response.json();
         if (response.ok && result.success) {
             cachedCardsList = result.data;
-            let options = '<option value="" disabled selected>Select Card</option>';
+            let options = '<option value="" disabled selected>เลือกการ์ด</option>';
             result.data.forEach(c => {
                 options += `<option value="${c.id}">${c.expansionCode} #${c.cardNumber} - ${c.name} (${c.rarity})</option>`;
             });
@@ -1024,11 +1358,11 @@ async function handleAddCardSubmit(event) {
     const sellingPrice = parseFloat(document.getElementById('pullSellingPrice').value);
 
     if (!accountId || !cardId) {
-        showToast('Please select both an account and a card', 'danger');
+        showToast('กรุณาเลือกทั้งบัญชีและการ์ด', 'danger');
         return;
     }
     if (isNaN(sellingPrice) || sellingPrice < 0) {
-        showToast('Please enter a selling price', 'danger');
+        showToast('กรุณากรอกราคาขาย', 'danger');
         return;
     }
 
@@ -1048,15 +1382,15 @@ async function handleAddCardSubmit(event) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            showToast(`Pulled card recorded in account stock!`, 'success');
+            showToast(`บันทึกการ์ดเข้าบัญชีแล้ว!`, 'success');
             if (window.soundFx) window.soundFx.playOrderChime();
             closeAddCardModal();
             setTimeout(() => window.location.reload(), 1000);
         } else {
-            showToast(apiErrorMessage(result, 'Failed to record pulled card'), 'danger');
+            showToast(apiErrorMessage(result, 'บันทึกการ์ดไม่สำเร็จ'), 'danger');
         }
     } catch (e) {
-        showToast('Error: ' + e.message, 'danger');
+        showToast('เกิดข้อผิดพลาด: ' + e.message, 'danger');
     }
 }
 
@@ -1070,9 +1404,9 @@ async function inspectAccountCards(accountId, accountCode, inGameName) {
 
     if (!modal || !grid) return;
 
-    if (title) title.textContent = `Account ${accountCode} (${inGameName}) Inventory`;
-    if (sub) sub.textContent = `Pulled cards stored in this game account, ready for trading`;
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">Opening account card vault...</div>';
+    if (title) title.textContent = `การ์ดในบัญชี ${accountCode} (${inGameName})`;
+    if (sub) sub.textContent = `การ์ดที่เปิดได้ในบัญชีเกมนี้ พร้อมสำหรับเทรด`;
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">กำลังโหลดการ์ดในบัญชี...</div>';
     modal.classList.add('active');
     if (window.soundFx) window.soundFx.playInspect();
 
@@ -1082,14 +1416,14 @@ async function inspectAccountCards(accountId, accountCode, inGameName) {
 
         if (response.ok && result.success) {
             const cards = result.data;
-            if (summary) summary.textContent = `Total Unique Cards: ${cards.length}`;
+            if (summary) summary.textContent = `ทั้งหมด ${cards.length} ชนิด`;
 
             if (cards.length === 0) {
                 grid.innerHTML = `
                     <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
-                        <p style="font-size: 1.1rem; margin-bottom: 1rem;">No cards pulled in this account yet.</p>
+                        <p style="font-size: 1.1rem; margin-bottom: 1rem;">บัญชีนี้ยังไม่มีการ์ด</p>
                         <button class="btn btn-primary" onclick="closeAccountCardsModal(); openAddCardForAccount(${accountId});">
-                            Open Pack / Pull First Card
+                            บันทึกการ์ดใบแรก
                         </button>
                     </div>
                 `;
@@ -1131,7 +1465,7 @@ async function inspectAccountCards(accountId, accountCode, inGameName) {
                         <div class="card-gallery-sub">
                             <div class="card-gallery-title">${c.cardName}</div>
                             <div class="card-gallery-meta">
-                                <span class="stock-bullet" style="color: #10b981; font-weight: 700;">${c.quantity}x in account</span>
+                                <span class="stock-bullet" style="color: #10b981; font-weight: 700;">มี ${c.quantity} ใบในบัญชี</span>
                                 <span class="rarity-pill">${c.rarity}</span>
                             </div>
                         </div>
@@ -1142,10 +1476,10 @@ async function inspectAccountCards(accountId, accountCode, inGameName) {
             grid.innerHTML = cardsHtml;
             init3DTilt();
         } else {
-            grid.innerHTML = `<div style="grid-column: 1/-1; color: #ef4444; padding: 2rem;">Error: ${result.message}</div>`;
+            grid.innerHTML = `<div style="grid-column: 1/-1; color: #ef4444; padding: 2rem;">เกิดข้อผิดพลาด: ${result.message}</div>`;
         }
     } catch (e) {
-        grid.innerHTML = `<div style="grid-column: 1/-1; color: #ef4444; padding: 2rem;">Network Error: ${e.message}</div>`;
+        grid.innerHTML = `<div style="grid-column: 1/-1; color: #ef4444; padding: 2rem;">เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ${e.message}</div>`;
     }
 }
 
