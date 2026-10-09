@@ -239,7 +239,7 @@ src/main/resources/
 
 ## การทดสอบและ CI/CD
 
-> 📖 **คู่มือการทดสอบฉบับสมบูรณ์**: อ่านรายละเอียดคลาสทดสอบทั้งหมด 16 คลาส, คำสั่งรันเทสแยกโมดูล และเจาะลึก 74 เคสของ GoF State Pattern & Trade Matching ได้ที่ **[README-TEST.md](README-TEST.md)** (145/145 Tests Passed — 100% Build Success)
+> 📖 **คู่มือการทดสอบของสมาชิกคนที่ 4 (นายแทนคุณ พันธ์นิกุล)**: อ่านรายละเอียดคลาสทดสอบทั้ง 7 คลาส (74 เคส) ของ GoF State Pattern, Trade Matching Engine, และ Global Exception Handler ได้ที่ **[README-TEST.md](README-TEST.md)** (74/74 Tests Passed — 100% Build Success)
 
 รันเทสต์และ build ในเครื่อง:
 
@@ -271,7 +271,7 @@ GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ท�
 | Component & Deployment Diagram | [doc/diagrams/component-deployment-diagram.md](doc/diagrams/component-deployment-diagram.md) |
 | Design Patterns | [doc/design-patterns.md](doc/design-patterns.md) |
 | SOLID Analysis | [doc/solid-analysis.md](doc/solid-analysis.md) |
-| คู่มือและสารบัญการทดสอบ (Unit Tests) | [README-TEST.md](README-TEST.md) |
+| คู่มือการทดสอบ Unit Tests ของคนที่ 4 (นายแทนคุณ พันธ์นิกุล) | [README-TEST.md](README-TEST.md) |
 | โครงร่างสไลด์นำเสนอ | [doc/slide/presentation-outline.md](doc/slide/presentation-outline.md) |
 
 ## การทำงานร่วมกันด้วย Git
