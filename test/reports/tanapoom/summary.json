@@ -1,0 +1,1835 @@
+{
+  "generated_at": "2026-10-09T17:25:36.345091+07:00",
+  "owner": "Tanapoom Chantra 673380272-1 (Member 3)",
+  "command": "mvnw.cmd test",
+  "whole_suite": {
+    "tests": 272,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "order_scope": {
+    "tests": 87,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "suite": "com.pokevault.common.exception.CustomExceptionTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.08,
+      "cases": [
+        {
+          "name": "testTradeStateConflictException",
+          "result": "passed",
+          "seconds": 0.059
+        },
+        {
+          "name": "testInvalidOrderStateException",
+          "result": "passed",
+          "seconds": 0.001
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.common.security.CustomUserDetailsServiceTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 1.34,
+      "cases": [
+        {
+          "name": "loadUserByUsername_WhenUserExists_ShouldReturnUserDetails",
+          "result": "passed",
+          "seconds": 1.184
+        },
+        {
+          "name": "passwordEncoder_MatchesRawPassword",
+          "result": "passed",
+          "seconds": 0.144
+        },
+        {
+          "name": "loadUserByUsername_WhenUserNotFound_ShouldThrowException",
+          "result": "passed",
+          "seconds": 0.006
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.domain.entity.CardInventoryTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.034,
+      "cases": [
+        {
+          "name": "deductStockReducesQuantityWhenStockIsAvailable",
+          "result": "passed",
+          "seconds": 0.018
+        },
+        {
+          "name": "pricesCannotBeNegative",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "restoreStockIncreasesQuantity",
+          "result": "passed",
+          "seconds": 0.0
+        },
+        {
+          "name": "stockChangesRequirePositiveQuantities",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "deductStockRejectsRequestsExceedingAvailableQuantity",
+          "result": "passed",
+          "seconds": 0.005
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.catalog.CardApiControllerTest",
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 1.983,
+      "cases": [
+        {
+          "name": "searchUsesLiteralRouteRatherThanIdRoute",
+          "result": "passed",
+          "seconds": 1.094
+        },
+        {
+          "name": "listBindsFiltersAndReturnsData",
+          "result": "passed",
+          "seconds": 0.074
+        },
+        {
+          "name": "paginationBindsPageSizeAndDescendingSort",
+          "result": "passed",
+          "seconds": 0.05
+        },
+        {
+          "name": "invalidCreateReturns400WithoutCallingService(String)[1]",
+          "result": "passed",
+          "seconds": 0.237
+        },
+        {
+          "name": "invalidCreateReturns400WithoutCallingService(String)[2]",
+          "result": "passed",
+          "seconds": 0.037
+        },
+        {
+          "name": "invalidCreateReturns400WithoutCallingService(String)[3]",
+          "result": "passed",
+          "seconds": 0.028
+        },
+        {
+          "name": "invalidCreateReturns400WithoutCallingService(String)[4]",
+          "result": "passed",
+          "seconds": 0.034
+        },
+        {
+          "name": "invalidCreateReturns400WithoutCallingService(String)[5]",
+          "result": "passed",
+          "seconds": 0.033
+        },
+        {
+          "name": "invalidCreateReturns400WithoutCallingService(String)[6]",
+          "result": "passed",
+          "seconds": 0.032
+        },
+        {
+          "name": "invalidCreateReturns400WithoutCallingService(String)[7]",
+          "result": "passed",
+          "seconds": 0.034
+        },
+        {
+          "name": "invalidCreateReturns400WithoutCallingService(String)[8]",
+          "result": "passed",
+          "seconds": 0.034
+        },
+        {
+          "name": "invalidCreateReturns400WithoutCallingService(String)[9]",
+          "result": "passed",
+          "seconds": 0.023
+        },
+        {
+          "name": "deleteReturns204WithEmptyBody",
+          "result": "passed",
+          "seconds": 0.021
+        },
+        {
+          "name": "createReturns201AndBindsRequest",
+          "result": "passed",
+          "seconds": 0.027
+        },
+        {
+          "name": "updateReturns200",
+          "result": "passed",
+          "seconds": 0.026
+        },
+        {
+          "name": "getCardReturns200",
+          "result": "passed",
+          "seconds": 0.015
+        },
+        {
+          "name": "expansionRoutesDelegateToService",
+          "result": "passed",
+          "seconds": 0.031
+        },
+        {
+          "name": "missingCardReturns404",
+          "result": "passed",
+          "seconds": 0.05
+        },
+        {
+          "name": "defaultPaginationUsesCardNumberAscending",
+          "result": "passed",
+          "seconds": 0.051
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.catalog.CardServiceEdgeCaseTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.215,
+      "cases": [
+        {
+          "name": "createPersistsActualRequestFields",
+          "result": "passed",
+          "seconds": 0.161
+        },
+        {
+          "name": "blankSearchReturnsAllCards(String)[1]",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "blankSearchReturnsAllCards(String)[2]",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "blankSearchReturnsAllCards(String)[3]",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "blankSearchReturnsAllCards(String)[4]",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "searchTrimsQueryBeforeRepositoryCall",
+          "result": "passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "allExpansionsMapToResponses",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "updateMissingCardDoesNotWrite",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "updateMissingExpansionDoesNotMutateExistingCard",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "expansionCardsMapToResponse",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "emptyPagePreservesRequestedPageAndSort",
+          "result": "passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "combinedFiltersAreCaseInsensitiveAndTrimmed",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "filtersWithNoMatchReturnEmptyList",
+          "result": "passed",
+          "seconds": 0.001
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.catalog.CardServiceTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.034,
+      "cases": [
+        {
+          "name": "deleteCard_CardExists_DeletesSuccessfully",
+          "result": "passed",
+          "seconds": 0.005
+        },
+        {
+          "name": "getExpansionByCode_ValidCode_ReturnsExpansion",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "createCard_ValidRequest_ReturnsCardResponse",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "getCardsPaged_WithPagination_ReturnsPageResponse",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "getCardById_CardNotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "getAllCards_WithFilter_ReturnsFilteredCards",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "getCardById_CardExists_ReturnsCard",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "getExpansionByCode_NotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "createCard_ExpansionNotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "getAllCards_NoFilter_ReturnsAllCards",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "searchCards_ValidQuery_ReturnsMatchingCards",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "deleteCard_CardNotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "updateCard_CardExists_ReturnsUpdatedCardResponse",
+          "result": "passed",
+          "seconds": 0.002
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.catalog.CatalogPersistenceTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 5.037,
+      "cases": [
+        {
+          "name": "auditCreationTimestampIsRetainedOnUpdate",
+          "result": "passed",
+          "seconds": 0.149
+        },
+        {
+          "name": "duplicateCardNumberWithinSameExpansionIsRejected",
+          "result": "passed",
+          "seconds": 0.02
+        },
+        {
+          "name": "sameCardNumberInDifferentExpansionsIsAllowed",
+          "result": "passed",
+          "seconds": 0.051
+        },
+        {
+          "name": "realSearchAndExpansionQueriesFindMatchingCards",
+          "result": "passed",
+          "seconds": 0.06
+        },
+        {
+          "name": "userProfileCascadesAndCanBeQueriedAfterReload",
+          "result": "passed",
+          "seconds": 0.033
+        },
+        {
+          "name": "removingUserProfileDeletesOrphan",
+          "result": "passed",
+          "seconds": 0.014
+        },
+        {
+          "name": "realSpecificationCombinesAllFiltersAndSortsBeforePaging",
+          "result": "passed",
+          "seconds": 0.042
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.catalog.UserServiceTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.072,
+      "cases": [
+        {
+          "name": "missingRewardProfileThrowsNotFound",
+          "result": "passed",
+          "seconds": 0.056
+        },
+        {
+          "name": "profileMapsMembershipAndContactFields",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "absentProfileReturnsZeroPointsAndNullAddress",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "missingUserCannotBeRead",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "missingUserCannotUpdateAddress",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "addressUpdatePreservesExistingMembershipAndPoints",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "rewardPointsComeFromProfileRepository",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "addressUpdateCreatesAndLinksMissingProfile",
+          "result": "passed",
+          "seconds": 0.001
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.order.DiscountStrategyEdgeCaseTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.016,
+      "cases": [
+        {
+          "name": "wholesaleStrategy_RoundingPrecisionHalfUp",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "vipStrategy_RoundingPrecisionHalfUp",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[1]",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[2]",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[3]",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[4]",
+          "result": "passed",
+          "seconds": 0.0
+        },
+        {
+          "name": "calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[5]",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "calculateDiscount_NullTier_FallsBackToRegularStrategy",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "discountService_NullConstructorList_DefaultsToEmptyListAndThrowsOnLookup",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "discountService_EmptyStrategiesList_ThrowsIllegalStateException",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "calculateDiscount_VeryLargeSubtotal_MaintainsPrecision",
+          "result": "passed",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.order.DiscountStrategyTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.003,
+      "cases": [
+        {
+          "name": "testRegularDiscountStrategy",
+          "result": "passed",
+          "seconds": 0.0
+        },
+        {
+          "name": "testDiscountServiceCalculation",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "testWholesaleDiscountStrategy",
+          "result": "passed",
+          "seconds": 0.0
+        },
+        {
+          "name": "testVipDiscountStrategy",
+          "result": "passed",
+          "seconds": 0.0
+        },
+        {
+          "name": "testGetApplicableStrategy",
+          "result": "passed",
+          "seconds": 0.0
+        },
+        {
+          "name": "testDiscountServiceEdgeCases",
+          "result": "passed",
+          "seconds": 0.0
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderApiControllerTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.324,
+      "cases": [
+        {
+          "name": "updateItemTradeStatus_InvalidStatus_Returns400",
+          "result": "passed",
+          "seconds": 0.077
+        },
+        {
+          "name": "updateItemTradeStatus_AccessDenied_Returns403",
+          "result": "passed",
+          "seconds": 0.025
+        },
+        {
+          "name": "transitionOrderStatus_MissingActionParam_Returns400",
+          "result": "passed",
+          "seconds": 0.025
+        },
+        {
+          "name": "transitionOrderStatus_OrderNotFound_Returns404",
+          "result": "passed",
+          "seconds": 0.02
+        },
+        {
+          "name": "transitionOrderStatus_InvalidStateTransition_Returns409",
+          "result": "passed",
+          "seconds": 0.015
+        },
+        {
+          "name": "transitionOrderStatus_Pay_Returns200",
+          "result": "passed",
+          "seconds": 0.026
+        },
+        {
+          "name": "updateItemTradeStatus_Success_Returns200",
+          "result": "passed",
+          "seconds": 0.02
+        },
+        {
+          "name": "updateItemTradeStatus_StateConflict_Returns409",
+          "result": "passed",
+          "seconds": 0.019
+        },
+        {
+          "name": "transitionOrderStatus_Ship_Returns200",
+          "result": "passed",
+          "seconds": 0.021
+        },
+        {
+          "name": "updateItemTradeStatus_NotFound_Returns404",
+          "result": "passed",
+          "seconds": 0.021
+        },
+        {
+          "name": "updateItemTradeStatus_Completed_Returns200",
+          "result": "passed",
+          "seconds": 0.018
+        },
+        {
+          "name": "updateItemTradeStatus_UnsupportedStatus_Returns400",
+          "result": "passed",
+          "seconds": 0.014
+        },
+        {
+          "name": "transitionOrderStatus_Cancel_Returns200",
+          "result": "passed",
+          "seconds": 0.015
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderBookingApiControllerTest",
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.637,
+      "cases": [
+        {
+          "name": "createOrder_MissingUserId_Returns400",
+          "result": "passed",
+          "seconds": 0.07
+        },
+        {
+          "name": "createOrder_EmptyItemsList_Returns400",
+          "result": "passed",
+          "seconds": 0.025
+        },
+        {
+          "name": "getOrderById_Success_Returns200",
+          "result": "passed",
+          "seconds": 0.013
+        },
+        {
+          "name": "createOrder_InvalidFriendCode_Returns400(String)[1]",
+          "result": "passed",
+          "seconds": 0.034
+        },
+        {
+          "name": "createOrder_InvalidFriendCode_Returns400(String)[2]",
+          "result": "passed",
+          "seconds": 0.027
+        },
+        {
+          "name": "createOrder_InvalidFriendCode_Returns400(String)[3]",
+          "result": "passed",
+          "seconds": 0.023
+        },
+        {
+          "name": "createOrder_InvalidFriendCode_Returns400(String)[4]",
+          "result": "passed",
+          "seconds": 0.036
+        },
+        {
+          "name": "createOrder_InvalidFriendCode_Returns400(String)[5]",
+          "result": "passed",
+          "seconds": 0.035
+        },
+        {
+          "name": "createOrder_InvalidFriendCode_Returns400(String)[6]",
+          "result": "passed",
+          "seconds": 0.029
+        },
+        {
+          "name": "createOrder_InvalidItemQuantity_Returns400(int)[1]",
+          "result": "passed",
+          "seconds": 0.028
+        },
+        {
+          "name": "createOrder_InvalidItemQuantity_Returns400(int)[2]",
+          "result": "passed",
+          "seconds": 0.027
+        },
+        {
+          "name": "createOrder_InvalidItemQuantity_Returns400(int)[3]",
+          "result": "passed",
+          "seconds": 0.043
+        },
+        {
+          "name": "getAllOrders_Success_Returns200",
+          "result": "passed",
+          "seconds": 0.028
+        },
+        {
+          "name": "createOrder_MissingInventoryId_Returns400",
+          "result": "passed",
+          "seconds": 0.022
+        },
+        {
+          "name": "createOrder_ContinuousDigitsFriendId_Returns201",
+          "result": "passed",
+          "seconds": 0.023
+        },
+        {
+          "name": "createOrder_InsufficientStock_Returns400",
+          "result": "passed",
+          "seconds": 0.021
+        },
+        {
+          "name": "getOrderById_NotFound_Returns404",
+          "result": "passed",
+          "seconds": 0.012
+        },
+        {
+          "name": "createOrder_MissingOrBlankCustomerFriendId_Returns400(String)[1]",
+          "result": "passed",
+          "seconds": 0.029
+        },
+        {
+          "name": "createOrder_MissingOrBlankCustomerFriendId_Returns400(String)[2]",
+          "result": "passed",
+          "seconds": 0.023
+        },
+        {
+          "name": "createOrder_MissingOrBlankCustomerFriendId_Returns400(String)[3]",
+          "result": "passed",
+          "seconds": 0.025
+        },
+        {
+          "name": "createOrder_MissingOrBlankCustomerFriendId_Returns400(String)[4]",
+          "result": "passed",
+          "seconds": 0.023
+        },
+        {
+          "name": "createOrder_Success_Returns201",
+          "result": "passed",
+          "seconds": 0.021
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderBookingApiSecurityTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 2.615,
+      "cases": [
+        {
+          "name": "placeOrder_PublicWithoutCsrf_Returns201",
+          "result": "passed",
+          "seconds": 0.128
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderPersistenceTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.98,
+      "cases": [
+        {
+          "name": "findByOrderId_ReturnsAllItems",
+          "result": "passed",
+          "seconds": 0.061
+        },
+        {
+          "name": "orphanRemoval_DeletesItemWhenRemovedFromOrder",
+          "result": "passed",
+          "seconds": 0.043
+        },
+        {
+          "name": "findByUserId_ReturnsUserOrders",
+          "result": "passed",
+          "seconds": 0.018
+        },
+        {
+          "name": "orderAndItems_CascadePersistSuccessfully",
+          "result": "passed",
+          "seconds": 0.016
+        },
+        {
+          "name": "findByOrderCode_ReturnsMatchingOrder",
+          "result": "passed",
+          "seconds": 0.011
+        },
+        {
+          "name": "auditTimestamps_AutomaticallyCreated",
+          "result": "passed",
+          "seconds": 0.007
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderServiceEdgeCaseTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.214,
+      "cases": [
+        {
+          "name": "createOrder_UserNotFound_ThrowsExceptionAndNeverSaves",
+          "result": "passed",
+          "seconds": 0.188
+        },
+        {
+          "name": "createOrder_MapsCustomerNotesAndInGameName",
+          "result": "passed",
+          "seconds": 0.006
+        },
+        {
+          "name": "createOrder_InventoryNotFound_ThrowsExceptionAndNeverSaves",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "createOrder_MultiItemInsufficientStockOnSecondItem_ThrowsExceptionAndNeverSavesOrder",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "createOrder_UserWithoutProfile_DefaultsToRegularTier",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "createOrder_WholesaleTier_Applies15PercentDiscount",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "createOrder_MultiItem_DeductsStockAccurately",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "createOrder_OrderCodeFormatting_GeneratesSequentialCodes",
+          "result": "passed",
+          "seconds": 0.003
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderServiceTest",
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.127,
+      "cases": [
+        {
+          "name": "updateItemTradeStatus_TerminalOrder_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.057
+        },
+        {
+          "name": "updateItemTradeStatus_SkipSequence_FriendPendingToCompleted_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "createOrder_UserNotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "getOrderById_Success",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "getOrderById_NotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "createOrder_InventoryNotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "updateItemTradeStatus_Success_TradeSent",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "updateItemTradeStatus_MultiItem_RemainsShippingWhenPartiallyCompleted",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "updateItemTradeStatus_Idempotent_ReturnsCurrentWithoutModification",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "createOrder_InsufficientStock_ThrowsException",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "updateItemTradeStatus_SkipSequence_UnassignedToTradeSent_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "updateItemTradeStatus_ItemNotFoundInOrder_ThrowsException",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "updateItemTradeStatus_OrderNotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "updateItemTradeStatus_OrderNotInShipping_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "getAllOrders_ReturnsList",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "updateItemTradeStatus_UnsupportedStatus_ThrowsException",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompletedViaStatePattern",
+          "result": "passed",
+          "seconds": 0.009
+        },
+        {
+          "name": "updateItemTradeStatus_ReverseSequence_CompletedToTradeSent_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "createOrder_Success",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "updateItemTradeStatus_UnassignedAccount_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.003
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.03,
+      "cases": [
+        {
+          "name": "handleInvalidOrderState_Returns409",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "handleInsufficientStock_Returns400",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "handleTypeMismatch_Returns400",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "handleTradeStateConflict_Returns409",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "handleIllegalArgument_Returns400",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "handleResourceNotFound_Returns404",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "handleGeneralException_Returns500",
+          "result": "passed",
+          "seconds": 0.011
+        },
+        {
+          "name": "handleMissingParameter_Returns400",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "handleAccessDenied_Returns403",
+          "result": "passed",
+          "seconds": 0.0
+        },
+        {
+          "name": "handleNoResourceFound_Returns404",
+          "result": "passed",
+          "seconds": 0.001
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.264,
+      "cases": [
+        {
+          "name": "autoMatchOrderItem_AlreadyCompleted_Returns409",
+          "result": "passed",
+          "seconds": 0.092
+        },
+        {
+          "name": "getItemRecommendation_NotFound_Returns404",
+          "result": "passed",
+          "seconds": 0.012
+        },
+        {
+          "name": "autoMatchOrder_NotFound_Returns404",
+          "result": "passed",
+          "seconds": 0.012
+        },
+        {
+          "name": "getItemRecommendation_Success_Returns200",
+          "result": "passed",
+          "seconds": 0.016
+        },
+        {
+          "name": "autoMatchOrder_Success_Returns200",
+          "result": "passed",
+          "seconds": 0.03
+        },
+        {
+          "name": "assignAccountToOrderItem_Success_Returns200",
+          "result": "passed",
+          "seconds": 0.016
+        },
+        {
+          "name": "assignAccountToOrderItem_MissingAccountId_Returns400",
+          "result": "passed",
+          "seconds": 0.011
+        },
+        {
+          "name": "autoMatchOrderItem_Success_Returns200",
+          "result": "passed",
+          "seconds": 0.014
+        },
+        {
+          "name": "getOrderRecommendations_Success_Returns200",
+          "result": "passed",
+          "seconds": 0.012
+        },
+        {
+          "name": "autoMatchOrderItem_InsufficientStock_Returns400",
+          "result": "passed",
+          "seconds": 0.012
+        },
+        {
+          "name": "assignAccountToOrderItem_AccountNotReady_Returns409",
+          "result": "passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "getOrderRecommendations_NotFound_Returns404",
+          "result": "passed",
+          "seconds": 0.011
+        },
+        {
+          "name": "assignAccountToOrderItem_AccountNotFound_Returns404",
+          "result": "passed",
+          "seconds": 0.011
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.dto.TradeRecommendationResponseTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.003,
+      "cases": [
+        {
+          "name": "testBuilderAndGetters",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "testDefaultAlternativeCandidates",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "testSetters",
+          "result": "passed",
+          "seconds": 0.001
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest$AutoMatchAlgorithmTests",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.013,
+      "cases": [
+        {
+          "name": "testAutoMatchOrderItemInsufficientStock",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "testAutoMatchOrderItemSuccess",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "testAutoMatchOrderItemNoReadyAccounts",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "testAutoMatchOrderItemGuardAgainstReassignment",
+          "result": "passed",
+          "seconds": 0.003
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest$BatchAutoMatchTests",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.007,
+      "cases": [
+        {
+          "name": "testAutoMatchOrderSuccess",
+          "result": "passed",
+          "seconds": 0.007
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest$ManualAssignmentTests",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.187,
+      "cases": [
+        {
+          "name": "testManualAssignRejectWhenCompleted",
+          "result": "passed",
+          "seconds": 0.176
+        },
+        {
+          "name": "testManualAssignAccountNotReady",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "testManualAssignAccountSuccess",
+          "result": "passed",
+          "seconds": 0.006
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest$RecommendationQueryTests",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.013,
+      "cases": [
+        {
+          "name": "testGetRecommendationForItem",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "testGetRecommendationsNoInventory",
+          "result": "passed",
+          "seconds": 0.005
+        },
+        {
+          "name": "testGetRecommendationsOnlyBusyAccount",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "testGetRecommendationsRanksBestReadyAccount",
+          "result": "passed",
+          "seconds": 0.002
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.service.TradeMatchingServiceTest",
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.225,
+      "cases": []
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$CancellationTests",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.006,
+      "cases": [
+        {
+          "name": "testCancelFromPending",
+          "result": "passed",
+          "seconds": 0.0
+        },
+        {
+          "name": "testCancelFromPaidRestoresStock",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "testCancelFromPaid",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "testCancelRestoresStock",
+          "result": "passed",
+          "seconds": 0.001
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$CancelledOrderStateEdgeCaseTests",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.008,
+      "cases": [
+        {
+          "name": "testRestoreStockSkipsInvalidItems",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "testRestoreStockNullContextAndOrder",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "testDefaultConstructor",
+          "result": "passed",
+          "seconds": 0.001
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$ExecuteActionStringTests",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.005,
+      "cases": [
+        {
+          "name": "testExecuteActionValidStrings",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "testExecuteActionInvalidStrings",
+          "result": "passed",
+          "seconds": 0.003
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$FactoryMethodTests",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.006,
+      "cases": [
+        {
+          "name": "testFromOrderNullOrder",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "testFromOrderStateMapping",
+          "result": "passed",
+          "seconds": 0.001
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$HappyPathTests",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.002,
+      "cases": [
+        {
+          "name": "testFullOrderLifecycle",
+          "result": "passed",
+          "seconds": 0.001
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$IllegalTransitionTests",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.007,
+      "cases": [
+        {
+          "name": "testIllegalActionsInPending",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "testIllegalActionsInPaid",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "testIllegalActionsInShipping",
+          "result": "passed",
+          "seconds": 0.002
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$OrderContextMutatorTests",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.005,
+      "cases": [
+        {
+          "name": "testConstructors",
+          "result": "passed",
+          "seconds": 0.0
+        },
+        {
+          "name": "testSetStateSyncsOrder",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "testSafeDelegationWhenStateIsNull",
+          "result": "passed",
+          "seconds": 0.001
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$ShippingGuardTests",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.002,
+      "cases": [
+        {
+          "name": "testCancelRejectedWhileShipping",
+          "result": "passed",
+          "seconds": 0.001
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest$TerminalStateTests",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.008,
+      "cases": [
+        {
+          "name": "testCancelledStateIsTerminal",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "testCompletedStateIsTerminal",
+          "result": "passed",
+          "seconds": 0.003
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.trade.state.OrderStateTest",
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.06,
+      "cases": []
+    },
+    {
+      "suite": "com.pokevault.modules.vault.observer.LowStockObserverTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.035,
+      "cases": [
+        {
+          "name": "onOrderPlaced_WithMultipleItems_ShouldCheckAllCards",
+          "result": "passed",
+          "seconds": 0.006
+        },
+        {
+          "name": "onOrderPlaced_WhenStockEqualsThreshold_ShouldTriggerWarning",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "onOrderPlaced_WhenEventIsNull_ShouldReturnSafely",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "onOrderPlaced_WhenItemsNullOrEmpty_ShouldReturnSafely",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "onOrderPlaced_WhenStockBelowThreshold_ShouldQueryStockAndWarn",
+          "result": "passed",
+          "seconds": 0.009
+        },
+        {
+          "name": "onOrderPlaced_WhenStockAboveThreshold_ShouldLogNormal",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "onOrderPlaced_WhenItemHasNullInventoryOrCard_ShouldSkipGracefully",
+          "result": "passed",
+          "seconds": 0.006
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.062,
+      "cases": [
+        {
+          "name": "createAccount_Success",
+          "result": "passed",
+          "seconds": 0.021
+        },
+        {
+          "name": "getAccountById_Success",
+          "result": "passed",
+          "seconds": 0.007
+        },
+        {
+          "name": "getAccountCards_Success",
+          "result": "passed",
+          "seconds": 0.012
+        },
+        {
+          "name": "updateTradeStatus_Success",
+          "result": "passed",
+          "seconds": 0.005
+        },
+        {
+          "name": "createAccount_WhenDuplicateCode_ShouldThrowException",
+          "result": "passed",
+          "seconds": 0.012
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.vault.service.GameAccountServiceTest$AddPulledCardTests",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.032,
+      "cases": [
+        {
+          "name": "addPulledCard_WhenAccountNotFound_ShouldThrowException",
+          "result": "passed",
+          "seconds": 0.008
+        },
+        {
+          "name": "addPulledCard_WhenExistingInventory_ShouldIncrementStock",
+          "result": "passed",
+          "seconds": 0.006
+        },
+        {
+          "name": "addPulledCard_WhenNewInventory_ShouldCreateNewRecord",
+          "result": "passed",
+          "seconds": 0.007
+        },
+        {
+          "name": "addPulledCard_WhenCardNotFound_ShouldThrowException",
+          "result": "passed",
+          "seconds": 0.005
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.vault.service.GameAccountServiceTest",
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.1,
+      "cases": []
+    },
+    {
+      "suite": "com.pokevault.modules.web.PlatformEndpointsTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 6.219,
+      "cases": [
+        {
+          "name": "actuatorHealth_IsPublicAndUp",
+          "result": "passed",
+          "seconds": 0.065
+        },
+        {
+          "name": "openApiDocs_DescribeAllModules",
+          "result": "passed",
+          "seconds": 0.654
+        },
+        {
+          "name": "swaggerUi_IsPublic",
+          "result": "passed",
+          "seconds": 0.038
+        },
+        {
+          "name": "staticAssets_ArePublic",
+          "result": "passed",
+          "seconds": 0.112
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.web.RegistrationServiceTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.192,
+      "cases": [
+        {
+          "name": "registerCustomer_WhenUsernameTaken_ShouldThrow",
+          "result": "passed",
+          "seconds": 0.005
+        },
+        {
+          "name": "registerCustomer_WhenValid_ShouldSaveCustomerWithHashedPassword",
+          "result": "passed",
+          "seconds": 0.182
+        },
+        {
+          "name": "registerCustomer_WhenEmailRegistered_ShouldThrow",
+          "result": "passed",
+          "seconds": 0.003
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.web.StoreAdminServiceTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.018,
+      "cases": [
+        {
+          "name": "updateMembershipTier_WhenCustomer_ShouldChangeTier",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "updateSellingPrice_WhenNegative_ShouldReject",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "updateSellingPrice_WhenValid_ShouldSaveNewPrice",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "updateSellingPrice_WhenMissing_ShouldThrowNotFound",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "updateMembershipTier_WhenNotCustomer_ShouldReject",
+          "result": "passed",
+          "seconds": 0.002
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest$AccessAndNavbar",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.229,
+      "cases": [
+        {
+          "name": "customer_SeesMyOrdersAndSignOut_ButNotStaffMenu",
+          "result": "passed",
+          "seconds": 0.04
+        },
+        {
+          "name": "guest_CanBrowsePublicPages_AndSeesSignInOnly",
+          "result": "passed",
+          "seconds": 0.069
+        },
+        {
+          "name": "staff_SeesStaffMenu_AndCsrfProtectedSignOut",
+          "result": "passed",
+          "seconds": 0.023
+        },
+        {
+          "name": "guest_IsRedirectedToLogin_FromProtectedPages(String)[1]",
+          "result": "passed",
+          "seconds": 0.008
+        },
+        {
+          "name": "guest_IsRedirectedToLogin_FromProtectedPages(String)[2]",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "guest_IsRedirectedToLogin_FromProtectedPages(String)[3]",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "guest_IsRedirectedToLogin_FromProtectedPages(String)[4]",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "customer_IsForbidden_FromStaffPages(String)[1]",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "customer_IsForbidden_FromStaffPages(String)[2]",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "customer_IsForbidden_FromStaffPages(String)[3]",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "admin_SeesSwaggerLink",
+          "result": "passed",
+          "seconds": 0.044
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest$CardGallery",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.682,
+      "cases": [
+        {
+          "name": "filterByElement_TreatsTrainerAsColorless",
+          "result": "passed",
+          "seconds": 0.161
+        },
+        {
+          "name": "price_ComesFromCheapestInventoryWithStock",
+          "result": "passed",
+          "seconds": 0.063
+        },
+        {
+          "name": "imageUrl_UsesBundledImageOrCardBack",
+          "result": "passed",
+          "seconds": 0.057
+        },
+        {
+          "name": "filterPillUrls_KeepOtherFiltersAndSearch",
+          "result": "passed",
+          "seconds": 0.064
+        },
+        {
+          "name": "filtersCombine",
+          "result": "passed",
+          "seconds": 0.21
+        },
+        {
+          "name": "showsOnlyCardsInStock",
+          "result": "passed",
+          "seconds": 0.055
+        },
+        {
+          "name": "unknownFilterValue_IsIgnored",
+          "result": "passed",
+          "seconds": 0.056
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest$LoginPage",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.276,
+      "cases": [
+        {
+          "name": "loginForm_PostsUsernamePasswordWithCsrf",
+          "result": "passed",
+          "seconds": 0.046
+        },
+        {
+          "name": "formLogin_RedirectsOnSuccessAndFailure",
+          "result": "passed",
+          "seconds": 0.182
+        },
+        {
+          "name": "loginPage_WithErrorParam_ShowsErrorBox",
+          "result": "passed",
+          "seconds": 0.008
+        },
+        {
+          "name": "loginPage_WithLogoutParam_ShowsLogoutBox",
+          "result": "passed",
+          "seconds": 0.009
+        },
+        {
+          "name": "signOut_RedirectsToLoginWithLogoutMessage",
+          "result": "passed",
+          "seconds": 0.016
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest$OtherPages",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 1.376,
+      "cases": [
+        {
+          "name": "inventory_FlagsLowAndOutOfStock",
+          "result": "passed",
+          "seconds": 0.484
+        },
+        {
+          "name": "dashboard_FeaturedCards_InStockOnly_MaxSix",
+          "result": "passed",
+          "seconds": 0.124
+        },
+        {
+          "name": "myOrders_ShowsOnlySignedInUsersOrders_NewestFirst",
+          "result": "passed",
+          "seconds": 0.072
+        },
+        {
+          "name": "accounts_CountsStatusesAndCardsPerAccount",
+          "result": "passed",
+          "seconds": 0.081
+        },
+        {
+          "name": "inventory_BookingCustomers_OnlyCustomers_GuestFirst",
+          "result": "passed",
+          "seconds": 0.035
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.web.WebViewControllerTest",
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 2.581,
+      "cases": []
+    }
+  ]
+}
