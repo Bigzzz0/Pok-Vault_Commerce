@@ -11,6 +11,7 @@
         })();
     </script>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/ux-improvements.css}">
 </head>
 <body>
 
@@ -22,12 +23,13 @@
             </div>
             <span>Pokémon TCG Pocket Gallery</span>
         </a>
-        <div class="nav-links">
+        <button type="button" class="nav-menu-toggle" aria-expanded="false" aria-controls="siteNavigation">เมนู</button>
+        <div class="nav-links" id="siteNavigation">
             <a th:href="@{/}" class="nav-link">
                 <div th:replace="~{fragments/icons :: dashboard('icon-sm')}"></div>
                 <span>หน้าแรก</span>
             </a>
-            <a th:href="@{/cards}" class="nav-link active">
+            <a th:href="@{/cards}" data-gallery-return class="nav-link active">
                 <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
                 <span>แกลเลอรีการ์ด</span>
             </a>
@@ -75,22 +77,9 @@
                 <div th:replace="~{fragments/icons :: pokeball('icon-sm')}"></div>
                 <span>แกลเลอรี Genetic Apex & Mythical Island</span>
             </div>
-            <h1>POKÉMON TCG POCKET GALLERY</h1>
-            <p>ชมแกลเลอรีการ์ด Pokémon TCG Pocket ความละเอียดสูง พร้อมภาพการ์ดจริง เอฟเฟกต์โฮโลแกรม และสต็อกล่าสุดของร้าน</p>
-            <div class="hero-stats-row">
-                <div class="hero-stat-pill">
-                    <div class="hero-stat-num" th:text="${totalElements}">12</div>
-                    <div class="hero-stat-label">การ์ดในแกลเลอรี</div>
-                </div>
-                <div class="hero-stat-pill">
-                    <div class="hero-stat-num">A1</div>
-                    <div class="hero-stat-label">ชุดการ์ด</div>
-                </div>
-                <div class="hero-stat-pill">
-                    <div class="hero-stat-num" style="color: var(--accent-gold);">CROWN</div>
-                    <div class="hero-stat-label">ระดับหายากสูงสุด</div>
-                </div>
-            </div>
+            <h1>แกลเลอรีการ์ด</h1>
+            <p>เลือกดูการ์ด Pokémon TCG Pocket พร้อมราคาและสต็อกของร้าน</p>
+            <p class="gallery-result-count"><strong th:text="${totalElements}">12</strong> รายการที่พบ</p>
         </header>
 
         <!-- Gallery toolbar: search + Filter button on the right, pills inside the collapsible panel -->
@@ -102,7 +91,8 @@
                     <input type="hidden" name="element" th:if="${selectedElement != null}" th:value="${selectedElement}">
                     <input type="hidden" name="rarity" th:if="${selectedRarity != null}" th:value="${selectedRarity}">
                     <input type="hidden" name="type" th:if="${selectedType != null}" th:value="${selectedType}">
-                    <input type="text" name="search" th:value="${search}" placeholder="ค้นหาโปเกมอน..." class="gallery-search-input">
+                    <input type="text" name="search" th:value="${search}" aria-label="ค้นหาชื่อการ์ด" placeholder="ค้นหาชื่อการ์ด เช่น Pikachu..." class="gallery-search-input">
+                    <button type="submit" class="gallery-search-submit">ค้นหา</button>
                 </form>
 
                 <button type="button" id="filterToggleBtn" class="filter-pill-btn filter-toggle-btn"
@@ -114,6 +104,13 @@
                 </button>
             </div>
 
+            <div class="active-filter-summary" th:if="${activeFilters > 0 or (search != null and !#strings.isEmpty(search))}">
+                <span th:if="${search != null and !#strings.isEmpty(search)}" th:text="'ค้นหา: ' + ${search}"></span>
+                <span th:if="${selectedElement != null}" th:text="'ธาตุ: ' + ${selectedElement}"></span>
+                <span th:if="${selectedRarity != null}" th:text="'ความหายาก: ' + ${selectedRarity}"></span>
+                <span th:if="${selectedType != null}" th:text="'ประเภท: ' + ${selectedType}"></span>
+                <a th:href="@{/cards}">ล้างทั้งหมด</a>
+            </div>
             <div id="filterPanel" class="filter-panel" th:classappend="${activeFilters > 0} ? 'open'">
                 <!-- Element filter -->
                 <div class="filter-group-label">ธาตุ</div>
@@ -149,10 +146,14 @@
             </div>
         </section>
 
+        <details class="gallery-purchase-help">
+            <summary>วิธีซื้อและสิ่งที่ต้องเตรียม</summary>
+            <p>เลือกการ์ดและกรอก Friend ID 16 หลักเพื่อจอง จากนั้นติดต่อร้านพร้อมรหัสออเดอร์เพื่อชำระเงินและนัดรับการ์ดผ่านการเทรดในเกม ตรวจสอบว่าบัญชีเกมพร้อมเทรดก่อนจอง</p>
+        </details>
         <!-- Frameless Floating Cards Showcase -->
         <div class="gallery-cards-grid">
             <div th:if="${#lists.isEmpty(cards)}" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
-                ยังไม่มีการ์ดในคลัง<span sec:authorize="hasAnyRole('ADMIN', 'STAFF')"> บันทึกการ์ดที่เปิดได้ที่หน้า <a th:href="@{/accounts}"><strong>บัญชีเกม</strong></a> เพื่อเพิ่มการ์ดเข้าแกลเลอรี</span>
+                ไม่พบการ์ดในรายการนี้ ลองเปลี่ยนคำค้นหาหรือล้างตัวกรอง <a th:href="@{/cards}">ดูการ์ดทั้งหมด</a><span sec:authorize="hasAnyRole('ADMIN', 'STAFF')"> บันทึกการ์ดที่เปิดได้ที่หน้า <a th:href="@{/accounts}"><strong>บัญชีเกม</strong></a> เพื่อเพิ่มการ์ดเข้าแกลเลอรี</span>
             </div>
             <div th:each="c : ${cards}" class="gallery-card-unit">
                 <!-- 3D Parallax Card Unit with Simeydotme Shaders -->
@@ -170,6 +171,7 @@
                      th:data-price="${c.price}"
                      th:data-element="${c.elementType.name()}"
                      th:data-image="${c.imageUrl}"
+                     role="button" tabindex="0" th:aria-label="'ดูรายละเอียด ' + ${c.name}"
                      onclick="handleInspectClick(this)">
                     
                     <!-- Simeydotme Holographic Multi-Layer Shimmer & Glare -->
@@ -177,20 +179,31 @@
                     <div class="holo-card__glare"></div>
                     <div class="card-glare"></div>
 
-                    <!-- Top Bar Badges with Zero-Overlap Guarantee -->
-                    <div class="card-top-bar">
+                    
+                    
+
+                    <!-- Authentic High-Resolution Card Artwork -->
+                    <img th:src="${c.imageUrl}" th:alt="${c.name}" class="card-real-img" loading="lazy">
+
+                    
+                    
+                </div>
+                <div class="gallery-card-caption">
+                    <h2 class="gallery-card-name" th:text="${c.name}">Venusaur ex</h2>
+                    <div class="gallery-card-offer">
+                        <strong th:if="${c.price != null and c.price > 0}" th:text="'฿' + ${#numbers.formatDecimal(c.price, 1, 'COMMA', 2, 'POINT')}">฿180.00</strong>
+                        <span th:if="${c.price == null or c.price <= 0}">สอบถามราคา</span>
+                        <span class="gallery-card-stock" th:text="${c.totalStock > 0 ? 'มีสินค้า ' + c.totalStock + ' ใบ' : 'หมดสต็อก'}">มีสินค้า 3 ใบ</span>
+                    </div>
+                </div>
+                <div class="card-top-bar">
                         <span class="card-num-badge" th:text="${c.expansionCode + ' #' + c.cardNumber}">A1 #001</span>
                         <div class="element-badge-pill">
                             <th:block th:replace="~{fragments/icons :: elementIcon(${c.elementType.name()}, 'icon-sm')}"></th:block>
                             <span th:text="${c.elementType}">FIRE</span>
                         </div>
                     </div>
-
-                    <!-- Authentic High-Resolution Card Artwork -->
-                    <img th:src="${c.imageUrl}" th:alt="${c.name}" class="card-real-img" loading="lazy">
-
-                    <!-- Hover Quick Actions Shelf -->
-                    <div class="card-hover-actions" onclick="event.stopPropagation()">
+                <div class="card-hover-actions" onclick="event.stopPropagation()">
                         <button class="card-action-btn btn-act-inspect"
                                 th:data-name="${c.name}"
                                 th:data-number="${c.cardNumber}"
@@ -206,28 +219,27 @@
                                 th:data-image="${c.imageUrl}"
                                 onclick="handleInspectClick(this)">
                             <div th:replace="~{fragments/icons :: eye('icon-sm')}"></div>
-                            <span>ดูการ์ด 3D</span>
+                            <span>ดูรายละเอียด</span>
                         </button>
                         <a th:href="@{/inventory}" class="card-action-btn btn-act-buy" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                             <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
                             <span>ดูสต็อก</span>
                         </a>
                     </div>
-                </div>
 
             </div>
         </div>
     </main>
 
     <!-- Museum Spotlight Stage Modal (Official Gallery Inspector) -->
-    <div id="inspectionModal" class="modal-overlay" onclick="if(event.target === this) closeInspection()">
+    <div id="inspectionModal" class="modal-overlay" onclick="if(event.target === this) closeInspection()" role="dialog" aria-modal="true" aria-hidden="true" inert>
         <div class="modal-container modal-wide">
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <div th:replace="~{fragments/icons :: eye('icon-md')}"></div>
                     <h3 class="modal-title">รายละเอียดการ์ด</h3>
                 </div>
-                <button class="modal-close-btn" onclick="closeInspection()">
+                <button class="modal-close-btn" aria-label="ปิดหน้าต่าง" onclick="closeInspection()">
                     <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
                 </button>
             </div>
@@ -261,7 +273,7 @@
                             <!-- HP for Pokémon cards, the card type (e.g. Trainer Supporter) for the rest -->
                             <div id="inspectCardHp" class="inspect-card-kind">HP 180</div>
                         </div>
-                        <p id="inspectCardDesc" style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.7; font-size: 1rem;"></p>
+                        <details class="inspect-description"><summary>ข้อมูลการ์ดเพิ่มเติม</summary><p id="inspectCardDesc" style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.7; font-size: 1rem;"></p></details>
                         
                         <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">
                             <span id="inspectCardRarity" class="rarity-pill" style="font-size: 0.85rem; padding: 6px 14px;">RARITY</span>
@@ -279,9 +291,9 @@
                                 <span>ดูคลังสินค้า</span>
                             </a>
                             <button type="button" class="btn btn-secondary" sec:authorize="!hasAnyRole('ADMIN', 'STAFF')" onclick="inboxStoreAboutCard()" style="border-color: #0084ff; color: #0084ff;">
-                                <span>Inbox FB</span>
+                                <span>ติดต่อร้าน</span>
                             </button>
-                            <a th:href="@{/login}" class="btn btn-primary" sec:authorize="isAnonymous()" title="เข้าสู่ระบบเพื่อสั่งซื้อ">
+                            <a th:href="@{/login}" class="btn btn-primary" data-remember-card="true" sec:authorize="isAnonymous()" title="เข้าสู่ระบบเพื่อสั่งซื้อ">
                                 <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
                                 <span>สั่งซื้อ</span>
                             </a>
@@ -300,5 +312,6 @@
 
     <script th:src="@{/js/audio.js}"></script>
     <script th:src="@{/js/app.js}"></script>
+    <script th:src="@{/js/ux-improvements.js}"></script>
 </body>
 </html>
