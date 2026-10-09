@@ -3,10 +3,13 @@ package com.pokevault.modules.order.service;
 import com.pokevault.common.exception.InsufficientStockException;
 import com.pokevault.common.exception.ResourceNotFoundException;
 import com.pokevault.common.exception.TradeStateConflictException;
+import com.pokevault.domain.entity.Card;
 import com.pokevault.domain.entity.CardInventory;
+import com.pokevault.domain.entity.GameAccount;
 import com.pokevault.domain.entity.Order;
 import com.pokevault.domain.entity.OrderItem;
 import com.pokevault.domain.entity.User;
+import com.pokevault.domain.enums.AccountTradeStatus;
 import com.pokevault.domain.enums.MembershipTier;
 import com.pokevault.domain.enums.OrderStatus;
 import com.pokevault.domain.enums.TradeFulfillmentStatus;
@@ -16,11 +19,15 @@ import com.pokevault.modules.order.dto.PlaceOrderRequest;
 import com.pokevault.modules.order.event.OrderPlacedEvent;
 import com.pokevault.modules.trade.state.OrderContext;
 import com.pokevault.repository.CardInventoryRepository;
+import com.pokevault.repository.GameAccountRepository;
 import com.pokevault.repository.OrderRepository;
 import com.pokevault.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,11 +46,28 @@ public class OrderServiceImpl implements OrderService {
         private final OrderRepository orderRepository;
         private final CardInventoryRepository cardInventoryRepository;
         private final UserRepository userRepository;
+        private final GameAccountRepository gameAccountRepository;
         private final DiscountService discountService;
         private final ApplicationEventPublisher eventPublisher;
 
         @Override
         public OrderResponse createOrder(PlaceOrderRequest request) {
+                // 1. ตรวจสอบสิทธิ์เจ้าของคำสั่งซื้อร่วมกับ Security Context
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+                        boolean isStaffOrAdmin = auth.getAuthorities().stream()
+                                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_STAFF"));
+                        if (!isStaffOrAdmin) {
+                                // ลูกค้าทั่วไปสร้างออเดอร์ให้ตัวเองเท่านั้น ไม่เชื่อถือ userId จาก request ข้ามบัญชี
+                                User currentUser = userRepository.findByUsername(auth.getName())
+                                                .orElseThrow(() -> new AccessDeniedException("Authenticated user not found: " + auth.getName()));
+                                if (request.getUserId() != null && !request.getUserId().equals(currentUser.getId())) {
+                                        throw new AccessDeniedException("Customers can only place orders for themselves");
+                                }
+                                request.setUserId(currentUser.getId());
+                        }
+                }
+
                 User user = userRepository.findById(request.getUserId())
                                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getUserId()));
 
@@ -128,6 +152,17 @@ public class OrderServiceImpl implements OrderService {
                 Order order = orderRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
 
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+                        boolean isStaffOrAdmin = auth.getAuthorities().stream()
+                                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_STAFF"));
+                        if (!isStaffOrAdmin) {
+                                if (order.getUser() != null && !order.getUser().getUsername().equals(auth.getName())) {
+                                        throw new AccessDeniedException("Access denied: You do not have permission to modify this order");
+                                }
+                        }
+                }
+
                 log.info("Transitioning order id: {} from current status: {} with action: {}",
                                 id, order.getOrderStatus(), action);
 
@@ -138,7 +173,16 @@ public class OrderServiceImpl implements OrderService {
                 // InvalidOrderStateException ทันที)
                 context.executeAction(action);
 
-                // 3. บันทึก Entity ที่อัปเดตสถานะใหม่ลงฐานข้อมูล
+                // 3. หากเป็นการยกเลิก บันทึกคืนสต็อกแต่ละ Inventory ให้เรียบร้อย
+                if ("cancel".equalsIgnoreCase(action)) {
+                        for (OrderItem item : order.getItems()) {
+                                if (item.getInventory() != null) {
+                                        cardInventoryRepository.save(item.getInventory());
+                                }
+                        }
+                }
+
+                // 4. บันทึก Entity ที่อัปเดตสถานะใหม่ลงฐานข้อมูล
                 Order savedOrder = orderRepository.save(order);
                 log.info("Order id: {} successfully transitioned to status: {}", id, savedOrder.getOrderStatus());
 
@@ -150,12 +194,38 @@ public class OrderServiceImpl implements OrderService {
         public OrderResponse getOrderById(Long id) {
                 Order order = orderRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+                        boolean isStaffOrAdmin = auth.getAuthorities().stream()
+                                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_STAFF"));
+                        if (!isStaffOrAdmin) {
+                                if (order.getUser() != null && !order.getUser().getUsername().equals(auth.getName())) {
+                                        throw new AccessDeniedException("Access denied: You do not have permission to view this order");
+                                }
+                        }
+                }
+
                 return OrderResponse.fromEntity(order);
         }
 
         @Override
         @Transactional(readOnly = true)
         public List<OrderResponse> getAllOrders() {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+                        boolean isStaffOrAdmin = auth.getAuthorities().stream()
+                                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_STAFF"));
+                        if (!isStaffOrAdmin) {
+                                User currentUser = userRepository.findByUsername(auth.getName()).orElse(null);
+                                if (currentUser != null) {
+                                        return orderRepository.findByUserId(currentUser.getId()).stream()
+                                                        .map(OrderResponse::fromEntity)
+                                                        .toList();
+                                }
+                        }
+                }
+
                 return orderRepository.findAll().stream()
                                 .map(OrderResponse::fromEntity)
                                 .toList();
@@ -236,6 +306,77 @@ public class OrderServiceImpl implements OrderService {
                 }
 
                 orderRepository.save(order);
+                return OrderItemResponse.fromEntity(targetItem);
+        }
+
+        @Override
+        public OrderItemResponse reassignOrderItemAccount(Long orderId, Long orderItemId, Long newAccountId) {
+                Order order = orderRepository.findById(orderId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+                if (order.getOrderStatus() == OrderStatus.CANCELLED || order.getOrderStatus() == OrderStatus.COMPLETED) {
+                        throw new TradeStateConflictException(
+                                        "Cannot reassign account for an order in terminal state: " + order.getOrderStatus());
+                }
+
+                OrderItem targetItem = order.getItems().stream()
+                                .filter(item -> item.getId() != null && item.getId().equals(orderItemId))
+                                .findFirst()
+                                .orElseThrow(() -> new ResourceNotFoundException("OrderItem", "id", orderItemId));
+
+                if (targetItem.getTradeStatus() == TradeFulfillmentStatus.TRADE_SENT ||
+                    targetItem.getTradeStatus() == TradeFulfillmentStatus.COMPLETED) {
+                        throw new TradeStateConflictException(
+                                        "Cannot reassign account for OrderItem in status: " + targetItem.getTradeStatus());
+                }
+
+                GameAccount newAccount = gameAccountRepository.findById(newAccountId)
+                                .orElseThrow(() -> new ResourceNotFoundException("GameAccount", "id", newAccountId));
+
+                if (newAccount.getTradeStatus() != AccountTradeStatus.READY) {
+                        throw new TradeStateConflictException(
+                                        "Cannot assign account " + newAccount.getAccountCode() + " because its status is: " + newAccount.getTradeStatus());
+                }
+
+                CardInventory oldInv = targetItem.getInventory();
+                if (oldInv != null && oldInv.getGameAccount() != null && oldInv.getGameAccount().getId().equals(newAccountId)) {
+                        targetItem.setAssignedAccount(newAccount);
+                        targetItem.setTradeStatus(TradeFulfillmentStatus.FRIEND_PENDING);
+                } else {
+                        Card card = (oldInv != null) ? oldInv.getCard() : null;
+                        if (card == null) {
+                                throw new IllegalStateException("Card information not found for OrderItem id: " + orderItemId);
+                        }
+                        List<CardInventory> targetInventories = cardInventoryRepository.findByCardId(card.getId());
+                        CardInventory newInv = targetInventories.stream()
+                                        .filter(inv -> inv.getGameAccount() != null && inv.getGameAccount().getId().equals(newAccountId))
+                                        .findFirst()
+                                        .orElseThrow(() -> new InsufficientStockException(
+                                                        "Account " + newAccount.getAccountCode() + " does not hold card " + card.getName()));
+
+                        if (!newInv.hasSufficientStock(targetItem.getQuantity())) {
+                                throw new InsufficientStockException(
+                                                "Account " + newAccount.getAccountCode() + " has insufficient stock for: " + card.getName()
+                                                                + " (Available: " + newInv.getQuantity() + ", Requested: " + targetItem.getQuantity() + ")");
+                        }
+
+                        // ย้ายการจองสต็อกจริง: คืนคลังเก่า หักคลังใหม่
+                        if (oldInv != null) {
+                                oldInv.restoreStock(targetItem.getQuantity());
+                                cardInventoryRepository.save(oldInv);
+                        }
+                        newInv.deductStock(targetItem.getQuantity());
+                        cardInventoryRepository.save(newInv);
+
+                        targetItem.setInventory(newInv);
+                        targetItem.setAssignedAccount(newAccount);
+                        targetItem.setTradeStatus(TradeFulfillmentStatus.FRIEND_PENDING);
+                }
+
+                orderRepository.save(order);
+                log.info("Reassigned OrderItem [{}] to GameAccount [{}] ({}) and transferred stock cleanly",
+                                orderItemId, newAccount.getAccountCode(), newAccount.getInGameName());
+
                 return OrderItemResponse.fromEntity(targetItem);
         }
 

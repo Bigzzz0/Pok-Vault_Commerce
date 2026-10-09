@@ -22,6 +22,7 @@ import com.pokevault.modules.order.event.OrderPlacedEvent;
 import com.pokevault.modules.order.service.DiscountService;
 import com.pokevault.modules.order.service.OrderServiceImpl;
 import com.pokevault.repository.CardInventoryRepository;
+import com.pokevault.repository.GameAccountRepository;
 import com.pokevault.repository.OrderRepository;
 import com.pokevault.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,6 +57,9 @@ class OrderServiceTest {
 
         @Mock
         private UserRepository userRepository;
+
+        @Mock
+        private GameAccountRepository gameAccountRepository;
 
         @Mock
         private DiscountService discountService;
