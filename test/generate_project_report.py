@@ -107,7 +107,8 @@ lines += ['', '## ขอบเขตและข้อจำกัด', '',
           '- [สรุป JSON](summary.json), [Build Summary](BUILD-SUMMARY.txt)', '',
           '## รายงานรายสมาชิก', '',
           '- [ศิฆรินทร์](../sikarin/TEST-REPORT.md)', '- [สัพพัญญู](../sapphanyu/TEST-REPORT.md)',
-          '- [ธนภูมิ](../tanapoom/TEST-REPORT.md)', '- [แทนคุณ](../tankun/TEST-REPORT.md)']
+          '- [ธนภูมิ](../tanapoom/TEST-REPORT.md)', '- [แทนคุณ](../tankun/TEST-REPORT.md)',
+          '- [สรวิชญ์](../soravit/TEST-REPORT.md) (สร้างแยกด้วย generate_soravit_report.py)']
 (OUT / 'TEST-REPORT.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
 
 for script, member in [('test/generate_sikarin_report.py', 'sikarin'),

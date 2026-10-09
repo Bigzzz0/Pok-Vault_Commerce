@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.web.WebViewControllerTest$PageModels" time="2.017" tests="8" errors="0" skipped="0" failures="0">
+  <testcase name="cards_ForwardsFiltersAndPutsGalleryInModel" classname="com.pokevault.modules.web.WebViewControllerTest$PageModels" time="0.693">
+    <system-out>2026-10-09T22:11:09.493+07:00  INFO 36368 --- [tcg-pocket-inventory] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.pokevault.modules.web.WebViewControllerTest]: WebViewControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T22:11:09.506+07:00  INFO 36368 --- [tcg-pocket-inventory] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.pokevault.PokevaultApplication for test class com.pokevault.modules.web.WebViewControllerTest
+2026-10-09T22:11:09.513+07:00  INFO 36368 --- [tcg-pocket-inventory] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.pokevault.modules.web.WebViewControllerTest$PageModels]: PageModels does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T22:11:09.527+07:00  INFO 36368 --- [tcg-pocket-inventory] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.pokevault.PokevaultApplication for test class com.pokevault.modules.web.WebViewControllerTest$PageModels
+2026-10-09T22:11:09.533+07:00  INFO 36368 --- [tcg-pocket-inventory] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.3)
+
+2026-10-09T22:11:09.566+07:00  INFO 36368 --- [tcg-pocket-inventory] [           main] c.p.modules.web.WebViewControllerTest    : Starting WebViewControllerTest using Java 17.0.12 with PID 36368 (started by art in C:\GitHub\Clone\Pok-Vault_Commerce\code)
+2026-10-09T22:11:09.567+07:00  INFO 36368 --- [tcg-pocket-inventory] [           main] c.p.modules.web.WebViewControllerTest    : The following 1 profile is active: "local"
+2026-10-09T22:11:09.961+07:00  INFO 36368 --- [tcg-pocket-inventory] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-10-09T22:11:09.961+07:00  WARN 36368 --- [tcg-pocket-inventory] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2026-10-09T22:11:10.084+07:00  INFO 36368 --- [tcg-pocket-inventory] [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-10-09T22:11:10.086+07:00  INFO 36368 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T22:11:10.086+07:00  INFO 36368 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T22:11:10.093+07:00  INFO 36368 --- [tcg-pocket-inventory] [           main] c.p.modules.web.WebViewControllerTest    : Started WebViewControllerTest in 0.56 seconds (process running for 29.424)
+</system-out>
+  </testcase>
+  <testcase name="dashboard_PutsServiceDataInModel" classname="com.pokevault.modules.web.WebViewControllerTest$PageModels" time="0.089" />
+  <testcase name="myOrders_AsksOnlyForSignedInUsersOrders" classname="com.pokevault.modules.web.WebViewControllerTest$PageModels" time="0.091" />
+  <testcase name="currentUserId_ForGuest_IsNull" classname="com.pokevault.modules.web.WebViewControllerTest$PageModels" time="0.075" />
+  <testcase name="orders_PutsAllOrdersInModel" classname="com.pokevault.modules.web.WebViewControllerTest$PageModels" time="0.126" />
+  <testcase name="accounts_PutsServiceDataInModel" classname="com.pokevault.modules.web.WebViewControllerTest$PageModels" time="0.128" />
+  <testcase name="inventory_PutsServiceDataInModel" classname="com.pokevault.modules.web.WebViewControllerTest$PageModels" time="0.125" />
+  <testcase name="currentUserId_ForSignedInUser" classname="com.pokevault.modules.web.WebViewControllerTest$PageModels" time="0.097" />
+</testsuite>
