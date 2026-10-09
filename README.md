@@ -239,10 +239,17 @@ src/main/resources/
 
 ## การทดสอบและ CI/CD
 
+> 📖 **คู่มือการทดสอบฉบับสมบูรณ์**: อ่านรายละเอียดคลาสทดสอบทั้งหมด 16 คลาส, คำสั่งรันเทสแยกโมดูล และเจาะลึก 74 เคสของ GoF State Pattern & Trade Matching ได้ที่ **[README-TEST.md](README-TEST.md)** (145/145 Tests Passed — 100% Build Success)
+
 รันเทสต์และ build ในเครื่อง:
 
 ```bash
 ./mvnw clean verify
+```
+
+หรือรันเฉพาะ Unit Tests ทั้งหมด (รวดเร็วเพียง ~6 วินาที):
+```powershell
+.\mvnw.cmd test
 ```
 
 GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ทำงานเมื่อ push หรือเปิด Pull Request เข้า `develop` และ `main`:
@@ -264,6 +271,7 @@ GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ท�
 | Component & Deployment Diagram | [doc/diagrams/component-deployment-diagram.md](doc/diagrams/component-deployment-diagram.md) |
 | Design Patterns | [doc/design-patterns.md](doc/design-patterns.md) |
 | SOLID Analysis | [doc/solid-analysis.md](doc/solid-analysis.md) |
+| คู่มือและสารบัญการทดสอบ (Unit Tests) | [README-TEST.md](README-TEST.md) |
 | โครงร่างสไลด์นำเสนอ | [doc/slide/presentation-outline.md](doc/slide/presentation-outline.md) |
 
 ## การทำงานร่วมกันด้วย Git
