@@ -71,10 +71,16 @@
 1. ลูกค้าเลือกการ์ดในแกลเลอรี กด **สั่งซื้อ** แล้วกรอก Friend ID ในเกม (หรือพนักงานจองแทนที่หน้าคลังสินค้า)
 2. ระบบคิดส่วนลดตามระดับสมาชิก (Strategy) หักสต็อก และสร้างคำสั่งซื้อสถานะ `PENDING` ถ้าสต็อกเหลือ 2 ใบหรือน้อยกว่า Observer จะแจ้งเตือนใน log
 3. ลูกค้าโอนเงินและแจ้งร้าน พนักงานกด **ชำระเงินแล้ว** → `PAID`
-4. พนักงานเปิด **จัดการเทรด** เพื่อเลือกบัญชีเกมที่ถือการ์ดใบนั้น (เลือกเองหรือจับคู่อัตโนมัติ) แล้วกด **เริ่มเทรด** → `SHIPPING`
-5. ร้านเพิ่มเพื่อนและส่งการ์ดให้ลูกค้าในเกม แล้วกด **เทรดสำเร็จ** → `COMPLETED`
+4. พนักงานเปิด **จัดการเทรด** เพื่อเลือกบัญชีเกมที่ถือการ์ดใบนั้น (เลือกเองหรือจับคู่อัตโนมัติ) รายการจะเป็น `FRIEND_PENDING` แล้วกด **เริ่มเทรด** → ออเดอร์เป็น `SHIPPING`
+5. ร้านเพิ่มเพื่อนและส่งการ์ดให้ลูกค้าในเกม พนักงานกด **ส่งเทรดแล้ว** (`TRADE_SENT`) และ **เทรดในเกมสำเร็จ** (`COMPLETED`) ทีละรายการ เมื่อครบทุกรายการ ออเดอร์เป็น `COMPLETED` อัตโนมัติ
 
-ยกเลิกได้ขณะเป็น `PENDING` หรือ `PAID` ระบบจะคืนการ์ดเข้าสต็อก การเปลี่ยนสถานะที่ไม่อยู่ในลำดับนี้ถูก State Pattern ปฏิเสธ
+กฎที่ระบบบังคับ:
+- ยกเลิกได้ขณะเป็น `PENDING` หรือ `PAID` ระบบจะคืนการ์ดเข้าสต็อก ยกเลิกไม่ได้เมื่อเป็น `SHIPPING` แล้ว
+- ต้องเลือกบัญชีเกมให้รายการก่อน จึงกดส่งเทรดได้ และออเดอร์ต้องเป็น `SHIPPING`
+- ปิดออเดอร์เป็น `COMPLETED` ไม่ได้ ถ้ายังมีรายการที่เทรดไม่เสร็จ
+- การเปลี่ยนสถานะที่ไม่อยู่ในลำดับนี้ถูก State Pattern ปฏิเสธ (HTTP 409) หน้าเว็บจะแจ้งเหตุผลเป็นภาษาไทยและโหลดสถานะล่าสุดให้
+
+หน้า `/my-orders` ของลูกค้าเช็กสถานะล่าสุดเองทุก 8 วินาที ไม่ต้องโหลดหน้าใหม่
 
 ## เทคโนโลยีที่ใช้
 
@@ -192,7 +198,7 @@ docker compose -f code/docker-compose.yml up --build
 | Card Catalog | `GET /cards`, `GET /cards/paged`, `GET /cards/{id}`, `GET /cards/search`, `POST /cards`, `PUT /cards/{id}`, `DELETE /cards/{id}` | คนที่ 1 |
 | Card Catalog | `GET /cards/expansions`, `GET /cards/expansions/{code}`, `GET /cards/expansions/{code}/cards` | คนที่ 1 |
 | Game Account Vault | `POST /accounts`, `GET /accounts`, `GET /accounts/{id}`, `POST /accounts/{id}/pulls`, `GET /accounts/{id}/cards`, `PATCH /accounts/{id}/trade-status`, `PUT /accounts/{id}`, `DELETE /accounts/{id}` | คนที่ 2 |
-| Order | `POST /orders`, `GET /orders`, `GET /orders/{id}`, `PATCH /orders/{id}/status?action=`, `PATCH /orders/{orderId}/items/{orderItemId}/trade-status?status=` | คนที่ 3, 4 |
+| Order | `POST /orders`, `GET /orders`, `GET /orders/{id}`, `PATCH /orders/{id}/status?action=`, `PATCH /orders/{orderId}/items/{orderItemId}/trade-status?status=`, `PATCH /orders/{orderId}/items/{orderItemId}/assign?accountId=` | คนที่ 2, 3, 4 |
 | Trade Matching | `GET /trades/orders/{orderId}/recommendations`, `GET /trades/items/{orderItemId}/recommendation`, `POST /trades/orders/{orderId}/auto-match`, `POST /trades/items/{orderItemId}/auto-match`, `POST /trades/items/{orderItemId}/assign?accountId=` | คนที่ 4 |
 | Auth | `POST /auth/register` | คนที่ 5 |
 | Store Admin | `PATCH /admin/inventories/{inventoryId}/price?price=`, `PATCH /admin/customers/{userId}/membership-tier?tier=` | คนที่ 5 |
@@ -269,7 +275,7 @@ code/src/main/resources/
 ผลล่าสุดวันที่ 9 ตุลาคม 2026 บน source commit `82c449b` หลังจัดโครงสร้าง: **373 tests, 0 failures, 0 errors, 0 skipped — BUILD SUCCESS** จาก `code/mvnw.cmd -f code/pom.xml clean verify`
 ดู [รายงานรวม](test/reports/project/TEST-REPORT.md) สำหรับ commit, Java, database, ข้อจำกัด และ JUnit XML
 
-> รายงานที่บันทึกไว้: [คนที่ 1](test/reports/sikarin/TEST-REPORT.md), [คนที่ 2](test/reports/sapphanyu/TEST-REPORT.md), [คนที่ 3](test/reports/tanapoom/TEST-REPORT.md), [คนที่ 4](test/reports/tankun/TEST-REPORT.md) เป็นผล ณ รอบที่ระบุในแต่ละรายงาน ไม่ใช่ผลยืนยัน commit ล่าสุด
+> รายงานที่บันทึกไว้: [คนที่ 1](test/reports/sikarin/TEST-REPORT.md), [คนที่ 2](test/reports/sapphanyu/TEST-REPORT.md), [คนที่ 3](test/reports/tanapoom/TEST-REPORT.md), [คนที่ 4](test/reports/tankun/TEST-REPORT.md), [คนที่ 5](test/reports/soravit/TEST-REPORT.md) เป็นผล ณ รอบที่ระบุในแต่ละรายงาน ไม่ใช่ผลยืนยัน commit ล่าสุด
 
 รันเทสต์และ build ในเครื่อง:
 
@@ -304,6 +310,7 @@ GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ท�
 | Test Report (ศิฆรินทร์) | [test/reports/sikarin/TEST-REPORT.md](test/reports/sikarin/TEST-REPORT.md) |
 | SOLID Analysis | [doc/solid-analysis.md](doc/solid-analysis.md) |
 | คู่มือการทดสอบ Unit Tests ของคนที่ 4 (นายแทนคุณ พันธ์นิกุล) | [Tankun Test Report](test/reports/tankun/TEST-REPORT.md) |
+| Test Report ของคนที่ 5 (สรวิชญ์): หน้าเว็บ, สมัครสมาชิก, Swagger / Health | [test/reports/soravit/TEST-REPORT.md](test/reports/soravit/TEST-REPORT.md) |
 | โครงร่างสไลด์นำเสนอ | [doc/slide/presentation-outline.md](doc/slide/presentation-outline.md) |
 
 ## การทำงานร่วมกันด้วย Git
@@ -315,11 +322,15 @@ GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ท�
 
 ## ข้อจำกัดที่ทราบ
 
-- REST API ตรวจสิทธิ์ตามบทบาท: แคตตาล็อก/สมัครสมาชิกเป็นสาธารณะ, API จัดการร้านเฉพาะ STAFF/ADMIN, ลูกค้าสร้างและอ่านออเดอร์เฉพาะของตนเอง ดู [Security และ Schema](doc/sikarin-security-schema.md)
-- ปุ่ม Inbox FB เปิดแชท Facebook ของร้านในแท็บใหม่และคัดลอกข้อความให้ ผู้ใช้ต้องวางข้อความเอง
-- การ์ดในฐานข้อมูลมี 28 ใบ แต่มีรูปและสต็อก 12 ใบ แกลเลอรีแสดงเฉพาะการ์ดที่มีสต็อก
-- ข้อความ error บางส่วนจาก API ยังเป็นภาษาอังกฤษ
-- ฐานข้อมูล Docker ที่สร้างจากเวอร์ชันเก่าต้องล้างด้วย `docker compose -f code/docker-compose.yml down -v` ก่อน ข้อมูลตัวอย่างชุดใหม่จึงจะเข้าครบ
+- ลูกค้าสองคนสั่งการ์ดใบสุดท้ายพร้อมกันอาจผ่านทั้งคู่ เพราะยังไม่มี lock ที่สต็อก (`@Version` หรือ pessimistic lock)
+- ปิด CSRF สำหรับ `/api/**` และ session cookie ยังไม่ได้ตั้ง `SameSite` ทั้งที่ API ใช้ session ยืนยันตัวตน
+- แก้ไขและลบบัญชีเกมทำได้ผ่าน API (`PUT` / `DELETE /accounts/{id}`) แต่หน้าเว็บ `/accounts` ยังไม่มีปุ่มแก้ไขหรือลบ
+- หน้า `/orders` ของพนักงานไม่อัปเดตเองเมื่อพนักงานอีกคนเปลี่ยนสถานะ ต้องโหลดหน้าใหม่ (หน้า `/my-orders` ของลูกค้าอัปเดตเอง)
+- ข้อความ error จาก API (401 / 403 และ 409 บางกรณี) ยังเป็นภาษาอังกฤษ
+- ปุ่ม Inbox FB เปิดแชท Facebook ส่วนตัวของสมาชิกในทีม (ยังไม่มีเพจของร้าน) และคัดลอกข้อความให้ ผู้ใช้ต้องวางข้อความเอง
+- การ์ดในฐานข้อมูลมี 28 ใบ แต่มีสต็อก 12 ใบ แกลเลอรีแสดงเฉพาะการ์ดที่มีสต็อก หน้าเว็บหารูปการ์ดจากไฟล์ `.png` เท่านั้น รูป A1a ที่เป็น `.webp` จึงยังเห็นได้ทาง API (`imageUrl`) เท่านั้น
+- Swagger UI และ `/v3/api-docs` เปิดได้โดยไม่ต้องเข้าสู่ระบบ เหมาะกับการสาธิต ไม่เหมาะกับการใช้งานจริง
+- ฐานข้อมูล Docker ที่สร้างจากเวอร์ชันเก่าต้องล้างด้วย `docker compose -f code/docker-compose.yml down -v` ก่อน ข้อมูลตัวอย่างชุดใหม่จึงจะเข้าครบ ฐานข้อมูล PostgreSQL ที่ต้องเก็บข้อมูลไว้ให้รัน migration เองตาม [doc/sikarin-security-schema.md](doc/sikarin-security-schema.md)
 
 ## Deployment
 
@@ -331,6 +342,37 @@ Deploy บน Render โดยใช้ Docker และฐานข้อมู
 | Swagger UI | [Swagger UI](https://pok-vault-commerce.onrender.com/swagger-ui.html) |
 | OpenAPI JSON | [OpenAPI JSON](https://pok-vault-commerce.onrender.com/v3/api-docs) |
 | Health check | [Health check](https://pok-vault-commerce.onrender.com/actuator/health) |
+
+เข้าสู่ระบบด้วย [บัญชีสำหรับทดสอบ](#บัญชีสำหรับทดสอบ) ชุดเดียวกับที่ใช้ในเครื่อง
+
+### การตั้งค่าบน Render
+
+| รายการ | ค่า |
+|---|---|
+| Branch | `main` |
+| Root directory | เว้นว่าง (root ของ repo ไม่ใช่ `code/`) |
+| Dockerfile path | `code/Dockerfile` |
+| Docker build context | `.` เพราะ Dockerfile ต้อง copy `img/web` และ `test/java` ที่อยู่นอก `code/` |
+| Health check path | `/actuator/health` |
+
+| ตัวแปรสภาพแวดล้อม | ค่า |
+|---|---|
+| `SPRING_PROFILES_ACTIVE` | `prod` |
+| `SPRING_DATASOURCE_URL` | `jdbc:postgresql://<host ของ Neon>/<database>?sslmode=require` |
+| `SPRING_DATASOURCE_USERNAME` | ชื่อผู้ใช้ฐานข้อมูล |
+| `SPRING_DATASOURCE_PASSWORD` | รหัสผ่านฐานข้อมูล (บังคับ ไม่ตั้งแอปจะไม่เริ่ม) |
+
+ไม่ต้องตั้ง `PORT` เอง แอปอ่านค่าที่ Render กำหนดให้ เมื่อแอปขึ้นครั้งแรกบนฐานข้อมูลว่าง ตารางและข้อมูลตัวอย่างจาก `data.sql` จะถูกสร้างให้อัตโนมัติ
+
+### ผลตรวจบนระบบที่ deploy (2026-10-09)
+
+- [x] หน้าแรก, `/cards` (แสดงการ์ด 12 ใบ), `/login` เปิดได้ และรูปการ์ดกับไฟล์ CSS โหลดได้
+- [x] `/swagger-ui.html` และ `/v3/api-docs` เปิดได้ โดย server URL ใน OpenAPI เป็น `https://pok-vault-commerce.onrender.com`
+- [x] `/actuator/health` ตอบ `UP` และ `GET /api/v1/cards` คืนการ์ด 28 ใบ
+- [x] เปิด `/inventory` โดยไม่เข้าสู่ระบบ ถูกส่งไปหน้า `/login`
+- [ ] เข้าสู่ระบบด้วย `admin`, `staff_ash`, `customer_red`
+- [ ] ลูกค้าสั่งซื้อการ์ดจากหน้า `/cards` และเห็นออเดอร์ใน `/my-orders`
+- [ ] พนักงานเลื่อนสถานะออเดอร์ จับคู่บัญชีเกม ส่งเทรด และปิดออเดอร์จนเป็น `COMPLETED`
 
 ## Database Design
 
