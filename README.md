@@ -108,130 +108,46 @@ Controller  ──►  Service (interface + impl)  ──►  Repository (Spring
 
 แผนภาพฉบับเต็มอยู่ใน [เอกสารออกแบบ](#เอกสารออกแบบ)
 
-## วิธีรันโปรเจกต์ (How to Run)
+## วิธีรันโปรเจกต์
 
-### 📌 สิ่งที่ต้องเตรียมก่อนเริ่มต้น (Prerequisites)
-1. **Java Development Kit (JDK 17 ขึ้นไป)** — แนะนำ Eclipse Temurin หรือ Oracle OpenJDK 17
-   - ตรวจสอบเวอร์ชันในเครื่อง:
-     ```bash
-     java -version
-     ```
-2. **Git** สำหรับ Clone โค้ด
-3. **Docker Desktop** (ทางเลือกเสริม สำหรับต้องการรันแบบ Container ร่วมกับ PostgreSQL)
+### แบบที่ 1: รันในเครื่องด้วย H2 (ไม่ต้องติดตั้งฐานข้อมูล)
 
----
+ต้องมี JDK 17
 
-### แบบที่ 1: รันในเครื่องด้วย In-Memory Database (H2) — สะดวกและเร็วที่สุด ⚡
+```bash
+git clone https://github.com/Bigzzz0/Pok-Vault_Commerce.git
+cd Pok-Vault_Commerce
+./mvnw spring-boot:run
+```
 
-วิธีนี้ไม่ต้องติดตั้งหรือเปิด Database ภายนอก ระบบจะใช้ **H2 In-Memory Database** และโหลดข้อมูลจำลองเริ่มต้นจากการ์ดและบัญชีร้านค้าใน `data.sql` ให้โดยอัตโนมัติ
+บน Windows ใช้ `mvnw.cmd spring-boot:run`
 
-1. **Clone repository และเข้าสู่โฟลเดอร์โปรเจกต์**:
-   ```bash
-   git clone https://github.com/Bigzzz0/Pok-Vault_Commerce.git
-   cd Pok-Vault_Commerce
-   git checkout develop
-   ```
+เปิด <http://localhost:8080> ระบบใช้ profile `local` เป็นค่าเริ่มต้น ข้อมูลตัวอย่างจาก `data.sql` ถูกโหลดใหม่ทุกครั้งที่เปิดแอป และหายเมื่อปิดแอป
 
-2. **สั่งรันแอปพลิเคชันผ่าน Maven Wrapper**:
-   * **Windows (PowerShell)**:
-     ```powershell
-     .\mvnw spring-boot:run
-     ```
-     *(หรือใช้ `.\mvnw.cmd spring-boot:run`)*
-   * **Windows (Command Prompt / CMD)**:
-     ```cmd
-     mvnw.cmd spring-boot:run
-     ```
-   * **macOS / Linux**:
-     ```bash
-     ./mvnw spring-boot:run
-     ```
-     *(หากพบปัญหา Permission Denied ให้รัน `chmod +x mvnw` ก่อนหนึ่งครั้ง)*
+### แบบที่ 2: รันด้วย Docker Compose (PostgreSQL)
 
-3. **รันผ่าน IDE (IntelliJ IDEA / VS Code / Eclipse)**:
-   * เปิดโฟลเดอร์โปรเจกต์ใน IDE
-   * รอให้ Maven โหลด dependencies ให้เสร็จสมบูรณ์
-   * เปิดไฟล์ `src/main/java/com/pokevault/PokeVaultApplication.java`
-   * กดปุ่ม **Run** หรือ **Debug** (Shift + F10 ใน IntelliJ)
+ต้องมี Docker Desktop
 
-4. **เข้าใช้งานระบบ**:
-   * เปิดเว็บบราวเซอร์ไปที่: <http://localhost:8080>
-   * ระบบพร้อมใช้งานทันที ข้อมูลตัวอย่างจะถูกตั้งค่าให้อัตโนมัติ
+```bash
+docker compose up --build
+```
 
----
+เปิด <http://localhost:8080> ข้อมูลเก็บใน volume `pgdata` จึงอยู่ต่อแม้ปิด container
 
-### แบบที่ 2: รันด้วย Docker Compose (PostgreSQL 16) 🐳
+- กำหนดรหัสผ่านฐานข้อมูลเองได้ด้วยตัวแปร `DB_PASSWORD` (ถ้าไม่กำหนดจะใช้ค่าสำหรับพัฒนาในเครื่อง)
+- ล้างข้อมูลแล้วเริ่มใหม่: `docker compose down -v`
 
-สำหรับจำลองสภาพแวดล้อมเสมือนจริงแบบ Production ร่วมกับฐานข้อมูล PostgreSQL:
+### ลิงก์ที่ใช้บ่อย
 
-1. **เปิด Docker Desktop** ให้พร้อมทำงาน
-2. **สั่ง Build และ Start Container**:
-   ```bash
-   docker compose up --build
-   ```
-3. **เข้าใช้งานระบบ**:
-   * เปิดเว็บบราวเซอร์ไปที่: <http://localhost:8080>
-   * ข้อมูลจะถูกบันทึกลงใน Docker Volume `pgdata` อย่างถาวร
-4. **คำสั่งจัดการเพิ่มเติม**:
-   * หยุดการทำงาน: กด `Ctrl + C` หรือรัน `docker compose down`
-   * ล้างข้อมูลในฐานข้อมูลและเริ่มใหม่ทั้งหมด:
-     ```bash
-     docker compose down -v
-     ```
+| ลิงก์ | ใช้ทำอะไร |
+|---|---|
+| <http://localhost:8080> | หน้าเว็บ |
+| <http://localhost:8080/swagger-ui.html> | Swagger UI |
+| <http://localhost:8080/v3/api-docs> | OpenAPI JSON |
+| <http://localhost:8080/actuator/health> | Health check |
+| <http://localhost:8080/h2-console> | H2 Console (เฉพาะ profile `local`, JDBC URL `jdbc:h2:mem:tcgdb`, user `sa`, ไม่มีรหัสผ่าน) |
 
----
-
-### 🧪 คำสั่งรัน Unit Tests และตรวจสอบโค้ด
-
-ตรวจสอบความถูกต้องของระบบและกฎ Business Logic ทั้งหมด:
-
-* **รัน Unit Test ทุกชุดในโปรเจกต์**:
-  ```powershell
-  # Windows PowerShell
-  .\mvnw test
-
-  # macOS / Linux
-  ./mvnw test
-  ```
-* **รันเฉพาะเทสต์ของ GoF State Pattern & Trade Matching Algorithm (งานสมาชิกคนที่ 4)**:
-  ```powershell
-  # Windows PowerShell (ต้องมีเครื่องหมายคำพูดรอบพารามิเตอร์)
-  .\mvnw test "-Dtest=OrderStateTest,TradeMatchingServiceTest"
-
-  # macOS / Linux / CMD
-  ./mvnw test -Dtest=OrderStateTest,TradeMatchingServiceTest
-  ```
-
----
-
-### 🔗 ลิงก์สำคัญเมื่อแอปพลิเคชันกำลังทำงาน
-
-| บริการ / หน้า | URL | คำอธิบาย |
-|---|---|---|
-| **PokéVault Web App** | <http://localhost:8080> | หน้าเว็บหน้าร้าน, แกลเลอรีการ์ด, และระบบจัดการหลังบ้าน |
-| **Swagger UI (OpenAPI)** | <http://localhost:8080/swagger-ui.html> | หน้าต่าง Interactive ทดสอบและเรียกดู REST API ทั้งหมด |
-| **OpenAPI Specification** | <http://localhost:8080/v3/api-docs> | เอกสาร API สเปก JSON |
-| **Health Check (Actuator)**| <http://localhost:8080/actuator/health> | ตรวจสอบสถานะการทำงานของระบบ (Status: UP) |
-| **H2 Database Console** | <http://localhost:8080/h2-console> | เข้าดูตารางและข้อมูล SQL (เฉพาะ profile `local`)<br>• **JDBC URL**: `jdbc:h2:mem:tcgdb`<br>• **User Name**: `sa`<br>• **Password**: *(เว้นว่างไว้)* |
-
----
-
-### 🛠️ การแก้ไขปัญหาที่พบบ่อย (Troubleshooting)
-
-1. **Port 8080 ถูกใช้งานอยู่แล้ว (Port already in use)**:
-   * สามารถเปลี่ยนพอร์ตขณะรันได้โดยระบุ Flag:
-     ```powershell
-     .\mvnw spring-boot:run -Dspring-boot.run.arguments="--server.port=8081"
-     ```
-   * จากนั้นเข้าใช้งานผ่าน <http://localhost:8081> แทน
-2. **Maven Wrapper ไม่สามารถรันได้ใน macOS/Linux**:
-   * ให้เพิ่มสิทธิ์การรันไฟล์: `chmod +x mvnw`
-3. **ต้องการ Clean Build ใหม่ทั้งหมด**:
-   * รันคำสั่ง: `.\mvnw clean compile`
-
----
-
-### ⚙️ ตัวแปรสภาพแวดล้อมของ profile `prod`
+### ตัวแปรสภาพแวดล้อมของ profile `prod`
 
 | ตัวแปร | ความหมาย |
 |---|---|
@@ -240,7 +156,6 @@ Controller  ──►  Service (interface + impl)  ──►  Repository (Spring
 | `SPRING_DATASOURCE_USERNAME` | ชื่อผู้ใช้ฐานข้อมูล |
 | `SPRING_DATASOURCE_PASSWORD` | รหัสผ่านฐานข้อมูล (บังคับ ไม่มีค่าเริ่มต้น) |
 | `PORT` | พอร์ตของแอป (ค่าเริ่มต้น 8080) |
-
 
 ## บัญชีสำหรับทดสอบ
 
