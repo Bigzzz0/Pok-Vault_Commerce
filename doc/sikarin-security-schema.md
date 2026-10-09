@@ -50,6 +50,7 @@ psql -v ON_ERROR_STOP=1 -d YOUR_DATABASE -f src/main/resources/db/manual/core-sc
 ## การทดสอบ
 
 - `ApiAuthorizationTest`: Spring Boot + MockMvc ใช้ security filters และ method authorization จริง, mock business services, รวม form login ผ่าน BCrypt
+- `OrderBookingApiSecurityTest` ของคนที่ 3: ปรับหลังรวม develop ให้ Guest ได้ 401 และ STAFF จองแทนได้ตามสิทธิ์ใหม่
 - `OrderAccessPolicyTest`: identity และ anonymous/unknown role guards ด้วย Mockito
 - `CatalogSchemaSqlTest`: โหลด schema.sql/data.sql จริงบน H2 PostgreSQL mode แล้วให้ Hibernate validate; ตรวจ metadata, seed, null profile name, address boundaries และ card number boundaries
 - `CatalogPersistenceTest`: mapping และ repository บน schema ที่ Hibernate สร้าง
