@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class OrderApiController {
     private final OrderService orderService;
 
     @PostMapping
+    @PreAuthorize("@orderAccessPolicy.canAccessCustomer(authentication, #request.userId)")
     @Operation(summary = "Place card booking order", description = "Book cards with stock deduction and automatic membership discount calculation")
     public ResponseEntity<ApiResponse<OrderResponse>> createOrder(@Valid @RequestBody PlaceOrderRequest request) {
         OrderResponse response = orderService.createOrder(request);
@@ -47,6 +49,7 @@ public class OrderApiController {
     }
 
     @GetMapping("/{id}")
+    @PostAuthorize("@orderAccessPolicy.canAccessCustomer(authentication, returnObject.body.data.userId)")
     @Operation(summary = "Get order by ID", description = "Retrieve single order details by primary key ID")
     public ResponseEntity<ApiResponse<OrderResponse>> getOrderById(@PathVariable Long id) {
         OrderResponse response = orderService.getOrderById(id);
