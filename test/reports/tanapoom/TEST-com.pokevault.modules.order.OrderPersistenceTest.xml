@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderPersistenceTest" time="0.998" tests="7" errors="0" skipped="0" failures="0">
-  <testcase name="findByOrderId_ReturnsAllItems" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.077">
-    <system-out>2026-10-09T17:55:32.953+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.pokevault.modules.order.OrderPersistenceTest]: OrderPersistenceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2026-10-09T17:55:32.963+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.pokevault.PokevaultApplication for test class com.pokevault.modules.order.OrderPersistenceTest
-2026-10-09T17:55:32.970+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderPersistenceTest" time="1.464" tests="7" errors="0" skipped="0" failures="0">
+  <testcase name="findByOrderId_ReturnsAllItems" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.078">
+    <system-out>2026-10-09T19:13:51.828+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.pokevault.modules.order.OrderPersistenceTest]: OrderPersistenceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T19:13:51.849+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.pokevault.PokevaultApplication for test class com.pokevault.modules.order.OrderPersistenceTest
+2026-10-09T19:13:51.858+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -14,33 +14,33 @@
 
  :: Spring Boot ::                (v3.4.3)
 
-2026-10-09T17:55:33.022+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] c.p.modules.order.OrderPersistenceTest   : Starting OrderPersistenceTest using Java 21.0.12.1 with PID 29200 (started by ADMIN in C:\Users\ADMIN\Documents\GitHub\Pok-Vault_Commerce)
-2026-10-09T17:55:33.023+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] c.p.modules.order.OrderPersistenceTest   : The following 1 profile is active: "local"
-2026-10-09T17:55:33.208+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-10-09T17:55:33.269+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 59 ms. Found 8 JPA repository interfaces.
-2026-10-09T17:55:33.286+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
-2026-10-09T17:55:33.318+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:b6f10808-7f11-4f57-871a-ed7ff259fd20;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
-2026-10-09T17:55:33.358+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-10-09T17:55:33.363+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-10-09T17:55:33.375+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-10-09T17:55:33.380+07:00  WARN 29200 --- [tcg-pocket-inventory] [           main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2026-10-09T17:55:33.381+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
-	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@3dde0f4b']
+2026-10-09T19:13:51.905+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.modules.order.OrderPersistenceTest   : Starting OrderPersistenceTest using Java 21.0.12.1 with PID 28460 (started by ADMIN in C:\Users\ADMIN\Documents\GitHub\Pok-Vault_Commerce)
+2026-10-09T19:13:51.905+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.modules.order.OrderPersistenceTest   : The following 1 profile is active: "local"
+2026-10-09T19:13:52.144+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-09T19:13:52.226+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 81 ms. Found 8 JPA repository interfaces.
+2026-10-09T19:13:52.245+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2026-10-09T19:13:52.265+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:8b64db16-6a11-4705-8bfd-de4211c6739f;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2026-10-09T19:13:52.316+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-10-09T19:13:52.324+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-10-09T19:13:52.348+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-09T19:13:52.354+07:00  WARN 28460 --- [tcg-pocket-inventory] [           main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-10-09T19:13:52.355+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@4e1c2a55']
 	Database driver: undefined/unknown
 	Database version: 2.3.232
 	Autocommit mode: undefined/unknown
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2026-10-09T17:55:33.578+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-10-09T17:55:33.595+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-10-09T17:55:33.769+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] c.p.modules.order.OrderPersistenceTest   : Started OrderPersistenceTest in 0.8 seconds (process running for 13.42)
+2026-10-09T19:13:52.685+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-09T19:13:52.721+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-09T19:13:53.035+07:00  INFO 28460 --- [tcg-pocket-inventory] [           main] c.p.modules.order.OrderPersistenceTest   : Started OrderPersistenceTest in 1.178 seconds (process running for 23.309)
 </system-out>
   </testcase>
-  <testcase name="multiItemInventoryRollback_PreservesOriginalStock" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.013" />
-  <testcase name="orphanRemoval_DeletesItemWhenRemovedFromOrder" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.046" />
-  <testcase name="findByUserId_ReturnsUserOrders" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.012" />
-  <testcase name="orderAndItems_CascadePersistSuccessfully" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.01" />
-  <testcase name="findByOrderCode_ReturnsMatchingOrder" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.008" />
-  <testcase name="auditTimestamps_AutomaticallyCreated" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.006" />
+  <testcase name="multiItemInventoryRollback_PreservesOriginalStock" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.015" />
+  <testcase name="orphanRemoval_DeletesItemWhenRemovedFromOrder" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.077" />
+  <testcase name="findByUserId_ReturnsUserOrders" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.02" />
+  <testcase name="orderAndItems_CascadePersistSuccessfully" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.023" />
+  <testcase name="findByOrderCode_ReturnsMatchingOrder" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.015" />
+  <testcase name="auditTimestamps_AutomaticallyCreated" classname="com.pokevault.modules.order.OrderPersistenceTest" time="0.012" />
 </testsuite>

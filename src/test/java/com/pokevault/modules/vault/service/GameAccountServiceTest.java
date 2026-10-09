@@ -51,6 +51,9 @@ class GameAccountServiceTest {
     @Mock
     private CardRepository cardRepository;
 
+    @Mock
+    private com.pokevault.repository.OrderItemRepository orderItemRepository;
+
     @InjectMocks
     private GameAccountServiceImpl gameAccountService;
 
@@ -264,4 +267,108 @@ class GameAccountServiceTest {
             assertThat(sampleAccount.getTradeStatus()).isEqualTo(AccountTradeStatus.BUSY_TRADING);
         }
     }
+
+    @Test
+    @DisplayName("updateAccount: สำเร็จเมื่อข้อมูลถูกต้อง")
+    void updateAccount_Success() {
+        GameAccountRequest updateReq = GameAccountRequest.builder()
+                .accountCode("VAULT_ACC_01")
+                .inGameName("NewName")
+                .friendId("1111-2222-3333-4444")
+                .build();
+
+        when(gameAccountRepository.findById(1L)).thenReturn(Optional.of(sampleAccount));
+        when(gameAccountRepository.save(any(GameAccount.class))).thenReturn(sampleAccount);
+        when(cardInventoryRepository.findByGameAccountId(1L)).thenReturn(List.of());
+
+        GameAccountResponse response = gameAccountService.updateAccount(1L, updateReq);
+
+        assertThat(response).isNotNull();
+        assertThat(sampleAccount.getInGameName()).isEqualTo("NewName");
+        assertThat(sampleAccount.getFriendId()).isEqualTo("1111-2222-3333-4444");
+        verify(gameAccountRepository, times(1)).save(sampleAccount);
+    }
+
+    @Test
+    @DisplayName("updateAccount: โยน ResourceNotFoundException เมื่อไม่พบบัญชี")
+    void updateAccount_NotFound_ThrowsException() {
+        GameAccountRequest updateReq = GameAccountRequest.builder()
+                .accountCode("VAULT_ACC_01")
+                .inGameName("NewName")
+                .friendId("1111-2222-3333-4444")
+                .build();
+
+        when(gameAccountRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> gameAccountService.updateAccount(999L, updateReq))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("updateAccount: โยน IllegalArgumentException เมื่อเปลี่ยนรหัสแล้วซ้ำกับบัญชีอื่น")
+    void updateAccount_DuplicateCode_ThrowsException() {
+        GameAccountRequest updateReq = GameAccountRequest.builder()
+                .accountCode("DUPLICATE_CODE")
+                .inGameName("NewName")
+                .friendId("1111-2222-3333-4444")
+                .build();
+
+        when(gameAccountRepository.findById(1L)).thenReturn(Optional.of(sampleAccount));
+        when(gameAccountRepository.existsByAccountCode("DUPLICATE_CODE")).thenReturn(true);
+
+        assertThatThrownBy(() -> gameAccountService.updateAccount(1L, updateReq))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("already exists");
+    }
+
+    @Test
+    @DisplayName("deleteAccount: ลบสำเร็จเมื่อบัญชีว่างและไม่มีรายการอ้างอิง")
+    void deleteAccount_Success() {
+        when(gameAccountRepository.findById(1L)).thenReturn(Optional.of(sampleAccount));
+        when(cardInventoryRepository.findByGameAccountId(1L)).thenReturn(List.of());
+        when(orderItemRepository.findByAssignedAccountId(1L)).thenReturn(List.of());
+
+        gameAccountService.deleteAccount(1L);
+
+        verify(gameAccountRepository, times(1)).delete(sampleAccount);
+    }
+
+    @Test
+    @DisplayName("deleteAccount: โยน ResourceNotFoundException เมื่อไม่พบบัญชี")
+    void deleteAccount_NotFound_ThrowsException() {
+        when(gameAccountRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> gameAccountService.deleteAccount(999L))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("deleteAccount: ปฏิเสธและโยน IllegalStateException (409) เมื่อยังมีสินค้าในคลัง")
+    void deleteAccount_HasInventory_ThrowsConflict() {
+        when(gameAccountRepository.findById(1L)).thenReturn(Optional.of(sampleAccount));
+        when(cardInventoryRepository.findByGameAccountId(1L)).thenReturn(List.of(sampleInventory));
+
+        assertThatThrownBy(() -> gameAccountService.deleteAccount(1L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("card inventory");
+
+        verify(gameAccountRepository, never()).delete(any());
+    }
+
+    @Test
+    @DisplayName("deleteAccount: ปฏิเสธและโยน IllegalStateException (409) เมื่อถูกผูกกับออเดอร์")
+    void deleteAccount_AssignedToOrder_ThrowsConflict() {
+        com.pokevault.domain.entity.OrderItem mockItem = new com.pokevault.domain.entity.OrderItem();
+
+        when(gameAccountRepository.findById(1L)).thenReturn(Optional.of(sampleAccount));
+        when(cardInventoryRepository.findByGameAccountId(1L)).thenReturn(List.of());
+        when(orderItemRepository.findByAssignedAccountId(1L)).thenReturn(List.of(mockItem));
+
+        assertThatThrownBy(() -> gameAccountService.deleteAccount(1L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("order item");
+
+        verify(gameAccountRepository, never()).delete(any());
+    }
+
 }

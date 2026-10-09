@@ -76,4 +76,23 @@ public interface GameAccountService {
      * คำนวณมูลค่าราคาขายรวมของคลังการ์ดทั้งหมดในร้าน (Total Selling Vault Value)
      */
     BigDecimal calculateTotalVaultSellingValue();
+
+    /**
+     * อัปเดตข้อมูลไอดีเกมของร้านค้า (Full Update)
+     *
+     * @param id      รหัสไอดีเกม
+     * @param request ข้อมูลใหม่ที่ต้องการอัปเดต
+     * @return ข้อมูลไอดีเกมที่อัปเดตแล้ว
+     */
+    GameAccountResponse updateAccount(Long id, GameAccountRequest request);
+
+    /**
+     * ลบไอดีเกมของร้านค้าออกจากระบบ
+     * เงื่อนไข: บัญชีต้องว่างเปล่า (ไม่มี CardInventory) และไม่ถูกผูกกับออเดอร์ใดๆ
+     * (ไม่มี OrderItem)
+     *
+     * @param id รหัสไอดีเกม
+     */
+    void deleteAccount(Long id);
+
 }

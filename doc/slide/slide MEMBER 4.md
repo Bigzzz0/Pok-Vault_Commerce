@@ -5,7 +5,7 @@
 **บทบาทหน้าที่**: Trade Matching Engine, GoF State Pattern & Global Exception Handling Specialist  
 **Git Branch**: `Tankun_6733803010_01`  
 **ผลงานการทดสอบ**: ✅ **7 Test Classes / 87 Test Cases (100% BUILD SUCCESS — 0 Failures, 0 Errors)**  
-**ไฟล์อ้างอิงหลัก**: [`README-TEST.md`](file:///e:/Coding/Pok-Vault_Commerce/README-TEST.md), [`doc/solid-analysis.md`](file:///e:/Coding/Pok-Vault_Commerce/doc/solid-analysis.md), [`doc/design-patterns.md`](file:///e:/Coding/Pok-Vault_Commerce/doc/design-patterns.md)
+**ไฟล์อ้างอิงหลัก**: [`README-TEST.md`](README-TEST.md), [`doc/solid-analysis.md`](doc/solid-analysis.md), [`doc/design-patterns.md`](doc/design-patterns.md)
 
 ---
 
@@ -71,8 +71,8 @@
    - การเปลี่ยนสถานะคำสั่งซื้อในระบบอีคอมเมิร์ซแบบทั่วไป มักใช้การเซ็ตค่า Enum หรือเขียน if-else ดักใน Service
    - ส่งผลให้เกิดโค้ดซ้ำซ้อน (Spaghetti Code) ขาดความปลอดภัย และเสี่ยงต่อการเปลี่ยนสถานะข้ามขั้นตอน
 2. **การนำ GoF State Pattern มาประยุกต์ใช้จริง**:
-   - **Interface**: [`OrderState`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/OrderState.java) กำหนดสัญญา (Contract) สำหรับพฤติกรรม `pay()`, `ship()`, `complete()`, `cancel()` พร้อม Default Guard ปฏิเสธคำสั่งที่ผิดขั้นตอน
-   - **Context**: [`OrderContext`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/OrderContext.java) ห่อหุ้ม `Order` Entity และถือ State ปัจจุบัน พร้อม Factory Method `OrderContext.fromOrder(order)`
+   - **Interface**: [`OrderState`](src/main/java/com/pokevault/modules/trade/state/OrderState.java) กำหนดสัญญา (Contract) สำหรับพฤติกรรม `pay()`, `ship()`, `complete()`, `cancel()` พร้อม Default Guard ปฏิเสธคำสั่งที่ผิดขั้นตอน
+   - **Context**: [`OrderContext`](src/main/java/com/pokevault/modules/trade/state/OrderContext.java) ห่อหุ้ม `Order` Entity และถือ State ปัจจุบัน พร้อม Factory Method `OrderContext.fromOrder(order)`
    - **5 Concrete States**: `PendingOrderState`, `PaidOrderState`, `ShippingOrderState`, `CompletedOrderState`, `CancelledOrderState`
 3. **ไฮไลท์ทางความปลอดภัย (Business Invariant & Anti-Fraud Guard)**:
    - **Anti-Fraud Guard ใน `ShippingOrderState`**: เมื่อสถานะเป็น `SHIPPING` (พนักงานส่งการ์ดในเกมแล้ว) เมธอด `cancel()` จะโยน `InvalidOrderStateException` ทันที เพื่อป้องกันไม่ให้ลูกค้ายกเลิกเพื่อเอาเงินคืนในขณะที่ได้รับข้อเสนอการ์ดในเกมไปแล้ว
@@ -129,16 +129,16 @@ stateDiagram-v2
 1. **บริบทและปัญหาของเกม Pokémon TCG Pocket**:
    - เกมบังคับให้การเทรดต้องเพิ่มเพื่อนด้วย Friend ID 16 หลัก และจำกัดโควต้าการเทรดต่อวันในแต่ละไอดี
    - ทางร้านมีบัญชีเกมหลายไอดีกระจายคลังการ์ด จึงต้องมีระบบตัดสินใจว่าควรหยิบการ์ดจากไอดีใดส่งให้ลูกค้า
-2. **อัลกอริทึม Greedy Stock-Maximization ใน [`TradeMatchingServiceImpl`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java)**:
+2. **อัลกอริทึม Greedy Stock-Maximization ใน [`TradeMatchingServiceImpl`](src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java)**:
    - ค้นหา `CardInventory` ที่ถือการ์ดใบที่สั่งซื้อ
    - กรองเฉพาะบัญชีที่มีสถานะ `AccountTradeStatus.READY` (ไม่ติด Cooldown และไม่ติดงาน Busy)
    - เรียงลำดับคัดเลือกไอดีที่มี **สต็อกการ์ดใบนั้นสูงสุด (Max Quantity First)**
    - *เหตุผล*: เพื่อรวมศูนย์การตัดการ์ดออกจากไอดีที่มีสต็อกหนาแน่น ลดภาระของพนักงานในการสลับไอดีล็อกอิน
 3. **Two-Tier Recommendation Model**:
-   - ส่งออกผลลัพธ์ผ่าน [`TradeRecommendationResponse`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/dto/TradeRecommendationResponse.java):
+   - ส่งออกผลลัพธ์ผ่าน [`TradeRecommendationResponse`](src/main/java/com/pokevault/modules/trade/dto/TradeRecommendationResponse.java):
      - **Tier 1 (Best Match Candidate)**: ไอดีที่เหมาะสมที่สุดตามอัลกอริทึม
      - **Tier 2 (Alternative Candidates)**: รายชื่อไอดีสำรองสำหรับแสดงผลให้พนักงานเลือกเองได้
-4. **Trade Fulfillment Status Lifecycle & Auto-Sync ใน [`OrderServiceImpl:165-240`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/order/service/OrderServiceImpl.java#L165-L240)**:
+4. **Trade Fulfillment Status Lifecycle & Auto-Sync ใน [`OrderServiceImpl:165-240`](src/main/java/com/pokevault/modules/order/service/OrderServiceImpl.java#L165-L240)**:
    - ลำดับสถานะรายไอเทม: `UNASSIGNED` $\rightarrow$ `FRIEND_PENDING` $\rightarrow$ `TRADE_SENT` $\rightarrow$ `COMPLETED`
    - **Strict Target Status & Idempotency**: ปฏิเสธสถานะเป้าหมาย `UNASSIGNED` และ `FRIEND_PENDING` (400 Bad Request) บังคับลำดับอย่างเข้มงวด `FRIEND_PENDING` $\rightarrow$ `TRADE_SENT` $\rightarrow$ `COMPLETED` และหากกดสถานะเดิมซ้ำจะไม่เกิดผลข้างเคียง (Idempotent)
    - **Defensive Guards ใน Auto-Match & Manual Assignment**: ปฏิเสธหากออเดอร์ถูก `CANCELLED` หรือ `COMPLETED` (409 Conflict), ปฏิเสธการสลับไอดีหากการเทรดเริ่มส่งมอบแล้ว (`TRADE_SENT` / `COMPLETED`), ตรวจสอบสถานะบัญชีต้องเป็น `READY`, ตรวจสอบว่าบัญชีมีการ์ดและสต็อกเพียงพอ และรองรับการสลับบัญชีโดยซิงค์การจองสต็อก (คืนสต็อกคลังเดิม หักสต็อกคลังใหม่) รวมถึงการจองการ์ดใบสุดท้ายในคลัง (หักสต็อกเหลือ 0 สำเร็จ)
@@ -149,23 +149,27 @@ stateDiagram-v2
 sequenceDiagram
     autonumber
     actor Staff as พนักงานร้าน (Staff)
-    participant API as TradeMatchingApiController
-    participant Service as TradeMatchingServiceImpl
+    participant TradeAPI as TradeMatchingApiController
+    participant TradeSvc as TradeMatchingServiceImpl
+    participant OrderAPI as OrderApiController
     participant OrderSvc as OrderServiceImpl
     participant State as OrderContext (State Pattern)
 
-    Staff->>API: POST /api/v1/trades/orders/{id}/auto-match
-    API->>Service: autoMatchOrder(orderId)
-    Service->>Service: Filter READY & Max(Stock Quantity)
-    Service-->>API: 200 OK (Best Match + Alternatives)
+    Staff->>TradeAPI: POST /api/v1/trades/orders/{orderId}/auto-match
+    TradeAPI->>TradeSvc: autoMatchOrder(orderId)
+    TradeSvc->>TradeSvc: Filter READY & Condition ตรง (MINT) & สต็อกพร้อมส่งสูงสุด
+    TradeSvc-->>TradeAPI: 200 OK (Best Match + Alternatives)
+    TradeAPI-->>Staff: 200 OK (Assigned Account & Stock Synced)
     
-    Staff->>OrderSvc: PATCH /trade-status (status=COMPLETED)
+    Staff->>OrderAPI: PATCH /api/v1/orders/{orderId}/items/{itemId}/trade-status?status=COMPLETED
+    OrderAPI->>OrderSvc: updateItemTradeStatus(orderId, itemId, COMPLETED)
     OrderSvc->>OrderSvc: ตรวจสอบ Sequence & allItemsCompleted?
     opt รายการสินค้าในออเดอร์ครบทุกใบแล้ว
         OrderSvc->>State: complete()
         State->>State: Transition to CompletedOrderState
     end
-    OrderSvc-->>Staff: 200 OK (Item & Order Status Synced)
+    OrderSvc-->>OrderAPI: OrderItemResponse (Synced)
+    OrderAPI-->>Staff: 200 OK (Item & Order Status Synced)
 ```
 
 #### 🎙️ บทพูดนำเสนอ (Speaking Script - 1 นาที 15 วินาที):
@@ -179,15 +183,15 @@ sequenceDiagram
 
 ---
 
-### สไลด์ที่ 3: Centralized Global Exception Handler, SOLID Architecture & ผลทดสอบ 87 เคส
+### สไลด์ที่ 3: Centralized Global Exception Handler, SOLID Architecture & ผลทดสอบ 94 เคส
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ SLIDE 3 (หน้าที่สามของแทนคุณ)                                                                    │
-│ Global Exception Handler, มาตรฐาน REST API, SOLID Architecture & Test Suite (87/87 Passes)       │
+│ Global Exception Handler, มาตรฐาน REST API, SOLID Architecture & Test Suite (94/94 Passes)       │
 ├───────────────────────────────────┬──────────────────────────────────────────────────────────────┤
 │ [Global Exception Handler]        │ [Testing Architecture & Results]                             │
-│ • AOP @RestControllerAdvice       │ • 7 Test Suites / 87 Test Cases                              │
+│ • AOP @RestControllerAdvice       │ • 7 Test Suites / 94 Test Cases                              │
 │ • JSON ErrorResponse สากล         │ • ผลลัพธ์: 100% PASS (0 Failures, 0 Errors)                  │
 │ • 404 NOT_FOUND                   │ • Execution Time: ~2.5 วินาที                                │
 │ • 409 CONFLICT (State Mismatch)   │ • Mockito Standalone Testing ไม่โหลด Context ช้า             │
@@ -196,7 +200,7 @@ sequenceDiagram
 ```
 
 #### 📌 รายละเอียดเนื้อหาบนหน้าสไลด์:
-1. **Centralized Global Exception Handler ใน [`GlobalExceptionHandler`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/advice/GlobalExceptionHandler.java)**:
+1. **Centralized Global Exception Handler ใน [`GlobalExceptionHandler`](src/main/java/com/pokevault/modules/trade/advice/GlobalExceptionHandler.java)**:
    - ใช้สถาปัตยกรรม Spring AOP `@RestControllerAdvice` เพื่อรวมศูนย์การดักจับข้อผิดพลาดทั้งระบบไว้ที่จุดเดียว Controller ไม่ต้องเขียน try-catch ซ้ำซ้อน
    - แปลงข้อยกเว้นทางธุรกิจเป็นมาตรฐาน HTTP Status Code และ JSON `ErrorResponse` อย่างถูกต้องตาม RFC 7231:
      - `404 NOT_FOUND`: เมี่อหา Order หรือ Resource ไม่พบ
@@ -210,21 +214,21 @@ sequenceDiagram
    - **LSP**: คลาส State ทุกตัวสามารถทดแทนกันได้ใน `OrderContext` ตามสัญญาของ `OrderState`
    - **ISP**: แยก Interface เฉพาะทาง `TradeMatchingService` ไม่พึ่งพาเมธอดที่ไม่เกี่ยวข้อง
    - **DIP**: ใช้ **Constructor Injection ผ่าน Lombok `@RequiredArgsConstructor` 100%** ไม่ใช้ Field Injection
-3. **ผลการทดสอบ Unit Testing 87 เคส (หลักฐานความเสถียรของระบบ)**:
-   - สถิติ: **7 Test Classes / 87 Test Scenarios — 100% BUILD SUCCESS**
+3. **ผลการทดสอบ Unit Testing 94 เคส (หลักฐานความเสถียรของระบบ)**:
+   - สถิติ: **7 Test Classes / 94 Test Scenarios — 100% BUILD SUCCESS**
    - ความเร็วในการรัน: **~2.5 วินาที** (ใช้ Mockito Standalone Setup หลีกเลี่ยง Overhead ของ Spring TestContext)
 
 #### 📊 ตารางสรุป Test Suite ของคนที่ 4 (แสดงบนสไลด์):
 | # | Test Suite Class | ขอบเขตการทดสอบ | จำนวนเคส | ผลลัพธ์ |
 | :-: | :--- | :--- | :-: | :-: |
 | 1 | **`OrderStateTest`** | State Machine Transitions, Anti-Fraud Guard, Completion Guard, Stock Restoration | 23 เคส | ✅ PASS |
-| 2 | **`TradeMatchingServiceTest`** | Greedy Auto-Match, Terminal State Guards, Hold Card & Stock Check, Last Card Booking | 21 เคส | ✅ PASS |
+| 2 | **`TradeMatchingServiceTest`** | Greedy Auto-Match, Condition Filtering (MINT vs PLAYED), Multi-Condition Accounts, Hold Card Stock Check, Last Card Booking, Rollback Isolation | 28 เคส | ✅ PASS |
 | 3 | **`TradeMatchingApiControllerTest`** | 5 Trade REST Endpoints, HTTP Status Mapping | 13 เคส | ✅ PASS |
 | 4 | **`OrderApiControllerTest`** | State Transition API & Trade Status Lifecycle API, RBAC, 409 Conflict | 15 เคส | ✅ PASS |
 | 5 | **`GlobalExceptionHandlerTest`** | Centralized Exception Advice (400, 403, 404, 409, 500) | 10 เคส | ✅ PASS |
 | 6 | **`TradeRecommendationResponseTest`** | Trade DTO Models, Builder Pattern, Empty List Guard | 3 เคส | ✅ PASS |
 | 7 | **`CustomExceptionTest`** | Custom Domain Exceptions & Cause Wrappers | 2 เคส | ✅ PASS |
-| — | **รวมชุดทดสอบของสมาชิกคนที่ 4** | **ครอบคลุม Business Invariants และ Exception Mapping ครบ 100%** | **87 เคส** | **✅ PASS** |
+| — | **รวมชุดทดสอบของสมาชิกคนที่ 4** | **ครอบคลุม Business Invariants, Condition Matching และ Exception Mapping ครบ 100%** | **94 เคส** | **✅ PASS** |
 
 #### 🎙️ บทพูดนำเสนอ (Speaking Script - 1 นาที 15 วินาที):
 > *"สำหรับสไลด์สุดท้ายในส่วนของกระผม คือ **การควบคุมคุณภาพสถาปัตยกรรมและการทดสอบ** ครับ  
@@ -233,7 +237,7 @@ sequenceDiagram
 > 
 > ในด้านการปฏิบัติตาม **SOLID Principles** โค้ดของกระผมสะท้อนหลักการอย่างครบถ้วน โดยเฉพาะ **LSP** ใน State Pattern และ **DIP** ที่ทุกคลาสใช้ Constructor Injection เท่านั้น ไม่มีการใช้ Field Injection ครับ  
 > 
-> และเพื่อพิสูจน์ความถูกต้องของซอฟต์แวร์ กระผมได้เขียน Unit Test ด้วย JUnit 5 และ Mockito ครอบคลุมถึง **7 Test Classes รวม 87 Test Cases** รันผ่าน **100% BUILD SUCCESS 0 Failures 0 Errors** โดยใช้เวลาเพียง 2.5 วินาที พร้อมออกรายงานการทดสอบอย่างเป็นทางการใน `README-TEST.md` ครับ ขอบพระคุณครับ"*
+> และเพื่อพิสูจน์ความถูกต้องของซอฟต์แวร์ กระผมได้เขียน Unit Test ด้วย JUnit 5 และ Mockito ครอบคลุมถึง **7 Test Classes รวม 94 Test Cases** ครอบคลุมทั้ง State Pattern, การจับคู่สภาพการ์ด MINT/PLAYED, การล็อกสต็อก และ Rollback รันผ่าน **100% BUILD SUCCESS 0 Failures 0 Errors** โดยใช้เวลาเพียง 2.5 วินาที พร้อมออกรายงานการทดสอบอย่างเป็นทางการใน `README-TEST.md` ครับ ขอบพระคุณครับ"*
 
 ---
 
@@ -251,28 +255,28 @@ sequenceDiagram
 
 | หมวดหมู่ | ไฟล์ซอร์สโค้ดในโปรเจกต์ | ช่วงบรรทัด | ความรับผิดชอบหลัก |
 | :--- | :--- | :---: | :--- |
-| **GoF State Pattern** | [`OrderState.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/OrderState.java) | L1–L40 | Interface สัญญาพฤติกรรม State พร้อม Default Guard |
-| | [`OrderContext.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/OrderContext.java) | L1–L109 | Context ห่อหุ้ม Order, Factory Method `fromOrder()`, `executeAction()` |
-| | [`PendingOrderState.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/PendingOrderState.java) | L1–L25 | อนุญาต `pay()` ➔ Paid, `cancel()` ➔ Cancelled |
-| | [`PaidOrderState.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/PaidOrderState.java) | L1–L25 | อนุญาต `ship()` ➔ Shipping, `cancel()` ➔ Cancelled |
-| | [`ShippingOrderState.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/ShippingOrderState.java) | L1–L26 | อนุญาต `complete()` ➔ Completed, **ห้าม `cancel()` เด็ดขาด** |
-| | [`CompletedOrderState.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/CompletedOrderState.java) | L1–L21 | Terminal State ห้ามเปลี่ยนสถานะใดๆ ซ้ำ |
-| | [`CancelledOrderState.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/CancelledOrderState.java) | L1–L58 | Terminal State พร้อมคำสั่ง **`restoreStock()` คืนสต็อกเข้าคลัง** |
-| **Trade Matching Engine** | [`TradeMatchingService.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/service/TradeMatchingService.java) | L1–L30 | Interface บริการจับคู่ไอดีเทรด |
-| | [`TradeMatchingServiceImpl.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java) | L28–L242 | อัลกอริทึม Greedy Stock-Maximization Auto-Match, Two-Tier Recommendation |
-| | [`TradeMatchingApiController.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/controller/TradeMatchingApiController.java) | L15–L74 | 5 REST Endpoints จัดการ Trade Matching |
-| | [`TradeRecommendationResponse.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/dto/TradeRecommendationResponse.java) | L1–L50 | DTO ส่งข้อมูล Best Match และ Alternative Candidates |
-| **Order Integration** | [`OrderApiController.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/order/controller/OrderApiController.java) | L38–L82 | Endpoint `PATCH /status` และ `PATCH /trade-status` |
-| | [`OrderServiceImpl.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/order/service/OrderServiceImpl.java) | L127–L146<br>L165–L240 | การผูก `OrderContext` เข้ากับ Entity และระบบ Auto-Sync Order Completed |
-| **Exception Handling** | [`GlobalExceptionHandler.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/advice/GlobalExceptionHandler.java) | L24–L118 | AOP `@RestControllerAdvice` แปลง Error สู่ JSON (400, 403, 404, 409, 500) |
-| | [`InvalidOrderStateException.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/common/exception/InvalidOrderStateException.java) | L1–L15 | Custom Exception สำหรับการเปลี่ยนสถานะที่ผิดกฎ State Machine |
-| | [`TradeStateConflictException.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/common/exception/TradeStateConflictException.java) | L1–L15 | Custom Exception สำหรับข้อขัดแย้งของ Trade Sequence |
+| **GoF State Pattern** | [`OrderState.java`](src/main/java/com/pokevault/modules/trade/state/OrderState.java) | L1–L40 | Interface สัญญาพฤติกรรม State พร้อม Default Guard |
+| | [`OrderContext.java`](src/main/java/com/pokevault/modules/trade/state/OrderContext.java) | L1–L109 | Context ห่อหุ้ม Order, Factory Method `fromOrder()`, `executeAction()` |
+| | [`PendingOrderState.java`](src/main/java/com/pokevault/modules/trade/state/PendingOrderState.java) | L1–L25 | อนุญาต `pay()` ➔ Paid, `cancel()` ➔ Cancelled |
+| | [`PaidOrderState.java`](src/main/java/com/pokevault/modules/trade/state/PaidOrderState.java) | L1–L25 | อนุญาต `ship()` ➔ Shipping, `cancel()` ➔ Cancelled |
+| | [`ShippingOrderState.java`](src/main/java/com/pokevault/modules/trade/state/ShippingOrderState.java) | L1–L26 | อนุญาต `complete()` ➔ Completed, **ห้าม `cancel()` เด็ดขาด** |
+| | [`CompletedOrderState.java`](src/main/java/com/pokevault/modules/trade/state/CompletedOrderState.java) | L1–L21 | Terminal State ห้ามเปลี่ยนสถานะใดๆ ซ้ำ |
+| | [`CancelledOrderState.java`](src/main/java/com/pokevault/modules/trade/state/CancelledOrderState.java) | L1–L58 | Terminal State พร้อมคำสั่ง **`restoreStock()` คืนสต็อกเข้าคลัง** |
+| **Trade Matching Engine** | [`TradeMatchingService.java`](src/main/java/com/pokevault/modules/trade/service/TradeMatchingService.java) | L1–L30 | Interface บริการจับคู่ไอดีเทรด |
+| | [`TradeMatchingServiceImpl.java`](src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java) | L28–L242 | อัลกอริทึม Greedy Stock-Maximization Auto-Match, Two-Tier Recommendation |
+| | [`TradeMatchingApiController.java`](src/main/java/com/pokevault/modules/trade/controller/TradeMatchingApiController.java) | L15–L74 | 5 REST Endpoints จัดการ Trade Matching |
+| | [`TradeRecommendationResponse.java`](src/main/java/com/pokevault/modules/trade/dto/TradeRecommendationResponse.java) | L1–L50 | DTO ส่งข้อมูล Best Match และ Alternative Candidates |
+| **Order Integration** | [`OrderApiController.java`](src/main/java/com/pokevault/modules/order/controller/OrderApiController.java) | L38–L82 | Endpoint `PATCH /status` และ `PATCH /trade-status` |
+| | [`OrderServiceImpl.java`](src/main/java/com/pokevault/modules/order/service/OrderServiceImpl.java) | L127–L146<br>L165–L240 | การผูก `OrderContext` เข้ากับ Entity และระบบ Auto-Sync Order Completed |
+| **Exception Handling** | [`GlobalExceptionHandler.java`](src/main/java/com/pokevault/modules/trade/advice/GlobalExceptionHandler.java) | L24–L118 | AOP `@RestControllerAdvice` แปลง Error สู่ JSON (400, 403, 404, 409, 500) |
+| | [`InvalidOrderStateException.java`](src/main/java/com/pokevault/common/exception/InvalidOrderStateException.java) | L1–L15 | Custom Exception สำหรับการเปลี่ยนสถานะที่ผิดกฎ State Machine |
+| | [`TradeStateConflictException.java`](src/main/java/com/pokevault/common/exception/TradeStateConflictException.java) | L1–L15 | Custom Exception สำหรับข้อขัดแย้งของ Trade Sequence |
 
 ---
 
 ### 3.2 เจาะลึกโค้ด GoF State Pattern (`OrderState`, `OrderContext`)
 
-#### 1. Interface Default Guard ([`OrderState.java:6-40`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/OrderState.java#L6-L40))
+#### 1. Interface Default Guard ([`OrderState.java:6-40`](src/main/java/com/pokevault/modules/trade/state/OrderState.java#L6-L40))
 ```java
 public interface OrderState {
     default void pay(OrderContext context) {
@@ -292,7 +296,7 @@ public interface OrderState {
 ```
 * **จุดที่ต้องอธิบาย**: การใช้ `default` method ช่วยให้ Concrete State คลาสลูกไม่ต้องเขียนโค้ดโยน Exception ซ้ำซ้อน คลาสลูกเขียน override เฉพาะ Action ที่ตนเองอนุญาตเท่านั้น
 
-#### 2. Anti-Fraud Guard ([`ShippingOrderState.java:14-19`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/ShippingOrderState.java#L14-L19))
+#### 2. Anti-Fraud Guard ([`ShippingOrderState.java:14-19`](src/main/java/com/pokevault/modules/trade/state/ShippingOrderState.java#L14-L19))
 ```java
 @Override
 public void cancel(OrderContext context) {
@@ -301,7 +305,7 @@ public void cancel(OrderContext context) {
 ```
 * **จุดที่ต้องอธิบาย**: ป้องกันไม่ให้ลูกค้ากดยกเลิกเอาเงินคืนในจังหวะที่ร้านส่งข้อเสนอการ์ดในเกมไปแล้ว
 
-#### 3. Automatic Stock Restoration ([`CancelledOrderState.java:31-51`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/CancelledOrderState.java#L31-L51))
+#### 3. Automatic Stock Restoration ([`CancelledOrderState.java:31-51`](src/main/java/com/pokevault/modules/trade/state/CancelledOrderState.java#L31-L51))
 ```java
 public void restoreStock(OrderContext context) {
     if (context == null || context.getOrder() == null) return;
@@ -316,7 +320,7 @@ public void restoreStock(OrderContext context) {
 ```
 * **จุดที่ต้องอธิบาย**: เมื่อสถานะเปลี่ยนเป็น `Cancelled` ตัว Constructor จะสั่ง `restoreStock()` คืนการ์ดเข้า `CardInventory` ให้อัตโนมัติ โดยไม่ต้องให้ Service มาคอยจำว่าต้องสั่งคืนสต็อก
 
-#### 4. Factory Method ใน [`OrderContext.java:28-43`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/OrderContext.java#L28-L43)
+#### 4. Factory Method ใน [`OrderContext.java:28-43`](src/main/java/com/pokevault/modules/trade/state/OrderContext.java#L28-L43)
 ```java
 public static OrderContext fromOrder(Order order) {
     OrderStatus status = order.getOrderStatus() != null ? order.getOrderStatus() : OrderStatus.PENDING;
@@ -336,7 +340,7 @@ public static OrderContext fromOrder(Order order) {
 
 ### 3.3 เจาะลึกโค้ด Trade Matching Engine & Auto-Sync (`TradeMatchingServiceImpl`)
 
-#### 1. อัลกอริทึม Greedy Stock-Maximization ([`TradeMatchingServiceImpl.java:78-95`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java#L78-L95))
+#### 1. อัลกอริทึม Greedy Stock-Maximization ([`TradeMatchingServiceImpl.java:78-95`](src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java#L78-L95))
 ```java
 List<CardInventory> inventories = cardInventoryRepository.findByCardId(card.getId());
 
@@ -348,7 +352,7 @@ List<CardInventory> readyInventories = inventories.stream()
 ```
 * **จุดที่ต้องอธิบาย**: กรองเฉพาะบัญชีที่ `READY` (ไม่ติด Cooldown) และสต็อกพอ แล้วจัดเรียงเอาบัญชีที่มีสต็อกสูงสุด เพื่อรวมศูนย์การตัดสต็อกไว้ที่ไอดีหลัก
 
-#### 2. ระบบ Auto-Sync Order Completed ([`OrderServiceImpl.java:227-236`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/order/service/OrderServiceImpl.java#L227-L236))
+#### 2. ระบบ Auto-Sync Order Completed ([`OrderServiceImpl.java:227-236`](src/main/java/com/pokevault/modules/order/service/OrderServiceImpl.java#L227-L236))
 ```java
 boolean allItemsCompleted = order.getItems().stream()
         .allMatch(item -> item.getTradeStatus() == TradeFulfillmentStatus.COMPLETED);
@@ -364,7 +368,7 @@ if (allItemsCompleted && !order.getItems().isEmpty()) {
 
 ### 3.4 เจาะลึกโค้ด Global Exception Handler (`GlobalExceptionHandler`)
 
-#### ตำแหน่งในโปรเจกต์: [`GlobalExceptionHandler.java:24-118`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/advice/GlobalExceptionHandler.java#L24-L118)
+#### ตำแหน่งในโปรเจกต์: [`GlobalExceptionHandler.java:24-118`](src/main/java/com/pokevault/modules/trade/advice/GlobalExceptionHandler.java#L24-L118)
 
 ```java
 @Slf4j
@@ -406,11 +410,11 @@ public class GlobalExceptionHandler {
 
 | หลักการ | ตำแหน่งไฟล์และบรรทัดในโปรเจกต์ | เหตุผลและการประยุกต์ใช้จริงในโค้ด |
 | :---: | :--- | :--- |
-| **S (SRP)** | • [`TradeMatchingServiceImpl.java:28-242`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java#L28-L242)<br>• [`GlobalExceptionHandler.java:24-118`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/advice/GlobalExceptionHandler.java#L24-L118) | แต่ละคลาสมีหน้าที่เดียวชัดเจน: Service ทำหน้าที่คำนวณการจับคู่เท่านั้น ไม่จัดการ HTTP, และ Advice ทำหน้าที่แปลง Exception สู่ JSON เท่านั้น ไม่ยุ่งเกี่ยวกับ Business Logic |
-| **O (OCP)** | • [`OrderState.java:6-40`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/OrderState.java#L6-L40)<br>• Concrete States | **เปิดรับการขยาย แต่ปิดการแก้ไข**: หากต้องการเพิ่มสถานะใหม่ เช่น `REFUNDED` หรือ `DISPUTED` สามารถสร้างคลาสใหม่ที่ implement `OrderState` ได้ทันที โดยไม่ต้องรื้อโค้ด if-else เดิมใน Service |
-| **L (LSP)** | • [`OrderState.java`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/OrderState.java)<br>• `PendingOrderState`, `ShippingOrderState` ฯลฯ | ทุก Concrete State สามารถเข้าแทนที่ในตัวแปรประเภท `OrderState` ของ `OrderContext` ได้อย่างถูกต้องตามสัญญาของ Interface โดยไม่ทำลาย Invariant ของระบบ |
-| **I (ISP)** | • [`TradeMatchingService.java:10-25`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/service/TradeMatchingService.java#L10-L25) | แยก Interface เฉพาะทางสำหรับการจับคู่ไอดีเทรดเท่านั้น Client ไม่ถูกบังคับให้ต้องรู้จักเมธอดเกี่ยวกับแคตตาล็อกการ์ดหรือส่วนลดสมาชิก |
-| **D (DIP)** | • [`TradeMatchingApiController.java:21`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/controller/TradeMatchingApiController.java#L21)<br>• [`TradeMatchingServiceImpl.java:34-37`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java#L34-L37) | ใช้ **Constructor Injection ผ่าน Lombok `@RequiredArgsConstructor` 100%** Controller พึ่งพา Service Interface และ Service พึ่งพา Repository Interface ไร้ Field Injection |
+| **S (SRP)** | • [`TradeMatchingServiceImpl.java:28-242`](src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java#L28-L242)<br>• [`GlobalExceptionHandler.java:24-118`](src/main/java/com/pokevault/modules/trade/advice/GlobalExceptionHandler.java#L24-L118) | แต่ละคลาสมีหน้าที่เดียวชัดเจน: Service ทำหน้าที่คำนวณการจับคู่เท่านั้น ไม่จัดการ HTTP, และ Advice ทำหน้าที่แปลง Exception สู่ JSON เท่านั้น ไม่ยุ่งเกี่ยวกับ Business Logic |
+| **O (OCP)** | • [`OrderState.java:6-40`](src/main/java/com/pokevault/modules/trade/state/OrderState.java#L6-L40)<br>• Concrete States | **เปิดรับการขยาย แต่ปิดการแก้ไข**: หากต้องการเพิ่มสถานะใหม่ เช่น `REFUNDED` หรือ `DISPUTED` สามารถสร้างคลาสใหม่ที่ implement `OrderState` ได้ทันที โดยไม่ต้องรื้อโค้ด if-else เดิมใน Service |
+| **L (LSP)** | • [`OrderState.java`](src/main/java/com/pokevault/modules/trade/state/OrderState.java)<br>• `PendingOrderState`, `ShippingOrderState` ฯลฯ | ทุก Concrete State สามารถเข้าแทนที่ในตัวแปรประเภท `OrderState` ของ `OrderContext` ได้อย่างถูกต้องตามสัญญาของ Interface โดยไม่ทำลาย Invariant ของระบบ |
+| **I (ISP)** | • [`TradeMatchingService.java:10-25`](src/main/java/com/pokevault/modules/trade/service/TradeMatchingService.java#L10-L25) | แยก Interface เฉพาะทางสำหรับการจับคู่ไอดีเทรดเท่านั้น Client ไม่ถูกบังคับให้ต้องรู้จักเมธอดเกี่ยวกับแคตตาล็อกการ์ดหรือส่วนลดสมาชิก |
+| **D (DIP)** | • [`TradeMatchingApiController.java:21`](src/main/java/com/pokevault/modules/trade/controller/TradeMatchingApiController.java#L21)<br>• [`TradeMatchingServiceImpl.java:34-37`](src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java#L34-L37) | ใช้ **Constructor Injection ผ่าน Lombok `@RequiredArgsConstructor` 100%** Controller พึ่งพา Service Interface และ Service พึ่งพา Repository Interface ไร้ Field Injection |
 
 ---
 
@@ -435,7 +439,7 @@ public class GlobalExceptionHandler {
 
 #### ❓ คำถามที่ 3: *"กลไกการคืนสต็อกการ์ด (Stock Restoration) เมื่อยกเลิกออเดอร์ ทำงานอย่างไร และอยู่ใน Transaction หรือไม่?"*
 > **🎯 แนวทางการตอบให้ได้ 20 คะแนนเต็ม**:  
-> *"ทำงานแบบอัตโนมัติในคอนสตรัคเตอร์ของ [`CancelledOrderState:31-51`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/CancelledOrderState.java#L31-L51) ครับ เมื่อมีการเรียก `context.cancel()` ตัว State ปัจจุบันจะสั่ง `context.setState(new CancelledOrderState(context))` ซึ่งคอนสตรัคเตอร์จะวนลูปดึง `OrderItem` ทุกรายการ แล้วเรียก `inventory.restoreStock(item.getQuantity())` คืนจำนวนการ์ดกลับเข้าคลัง  
+> *"ทำงานแบบอัตโนมัติในคอนสตรัคเตอร์ของ [`CancelledOrderState:31-51`](src/main/java/com/pokevault/modules/trade/state/CancelledOrderState.java#L31-L51) ครับ เมื่อมีการเรียก `context.cancel()` ตัว State ปัจจุบันจะสั่ง `context.setState(new CancelledOrderState(context))` ซึ่งคอนสตรัคเตอร์จะวนลูปดึง `OrderItem` ทุกรายการ แล้วเรียก `inventory.restoreStock(item.getQuantity())` คืนจำนวนการ์ดกลับเข้าคลัง  
 > และที่สำคัญคือ การทำงานนี้ถูกเรียกจาก `OrderServiceImpl.transitionOrderStatus()` ซึ่งมี annotation `@Transactional` ครอบอยู่ ทำให้การคืนสต็อกและการอัปเดตสถานะออเดอร์เกิดขึ้นใน **Database Transaction เดียวกันแบบ Atomic** หากขั้นตอนใดล้มเหลว จะเกิดการ Rollback ทั้งหมด ไม่มีปัญหาสต็อกสูญหายครับ"*
 
 ---
@@ -495,19 +499,19 @@ public class GlobalExceptionHandler {
 #### ❓ คำถามที่ 9: *"ในโค้ดของคุณ มีการประยุกต์ใช้หลักการ Liskov Substitution Principle (LSP) และ Dependency Inversion (DIP) อย่างไรบ้าง? ชี้ไฟล์และบรรทัดให้ดูหน่อย?"*
 > **🎯 แนวทางการตอบให้ได้ 20 คะแนนเต็ม**:  
 > *"ชี้ได้ชัดเจน 2 จุดครับอาจารย์:  
-> 1. **LSP ใน State Pattern** ([`OrderState.java:6-40`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/state/OrderState.java#L6-L40)): ทุก Concrete State เช่น `PendingOrderState`, `ShippingOrderState` สามารถถูกส่งเข้าไปทำงานใน `OrderContext` ผ่านอินเทอร์เฟซ `OrderState` ได้อย่างเสมอภาค โดยไม่มีคลาสใดฝ่าฝืน Invariant ของระบบ  
-> 2. **DIP ใน Controller และ Service** ([`TradeMatchingApiController.java:21`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/controller/TradeMatchingApiController.java#L21) และ [`TradeMatchingServiceImpl.java:34-37`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java#L34-L37)): คลาส Controller พึ่งพา Service Interface และ Service พึ่งพา Repository Interface โดยใช้ **Constructor Injection ผ่าน Lombok `@RequiredArgsConstructor` 100%** ไม่มี `@Autowired` บน private field แม้แต่จุดเดียว ทำให้เราสามารถส่ง Mock Object ใน Unit Test ได้ทันทีครับ"*
+> 1. **LSP ใน State Pattern** ([`OrderState.java:6-40`](src/main/java/com/pokevault/modules/trade/state/OrderState.java#L6-L40)): ทุก Concrete State เช่น `PendingOrderState`, `ShippingOrderState` สามารถถูกส่งเข้าไปทำงานใน `OrderContext` ผ่านอินเทอร์เฟซ `OrderState` ได้อย่างเสมอภาค โดยไม่มีคลาสใดฝ่าฝืน Invariant ของระบบ  
+> 2. **DIP ใน Controller และ Service** ([`TradeMatchingApiController.java:21`](src/main/java/com/pokevault/modules/trade/controller/TradeMatchingApiController.java#L21) และ [`TradeMatchingServiceImpl.java:34-37`](src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java#L34-L37)): คลาส Controller พึ่งพา Service Interface และ Service พึ่งพา Repository Interface โดยใช้ **Constructor Injection ผ่าน Lombok `@RequiredArgsConstructor` 100%** ไม่มี `@Autowired` บน private field แม้แต่จุดเดียว ทำให้เราสามารถส่ง Mock Object ใน Unit Test ได้ทันทีครับ"*
 
 ---
 
-#### ❓ คำถามที่ 10: *"ทำไมชุดทดสอบ 87 เคสของคุณถึงรันได้เร็วมากเพียง 2.5 วินาที คุณมีแนวทางการออกแบบเทสอย่างไร?"*
+#### ❓ คำถามที่ 10: *"ทำไมชุดทดสอบ 94 เคสของคุณถึงรันได้เร็วมากเพียง 2-4 วินาที คุณมีแนวทางการออกแบบเทสอย่างไร?"*
 > **🎯 แนวทางการตอบให้ได้ 20 คะแนนเต็ม**:  
 > *"เราใช้เทคนิค **Decoupled Standalone Unit Testing** ครับอาจารย์  
 > แทนที่เราจะใช้ `@SpringBootTest` หรือ `@WebMvcTest` ซึ่งต้องรอ Spring Boot สแกน Component และเชื่อมต่อ Hibernate DB จำลอง ซึ่งกินเวลาเริ่มต้น 5-10 วินาที  
-> ชุดทดสอบ 87 เคสของกระผม:  
-> 1. ในฝั่ง Service และ State (`OrderStateTest`, `TradeMatchingServiceTest`) เราเขียนเป็น Pure Java Unit Test ร่วมกับ Mockito `@Mock` และ `@InjectMocks`  
+> ชุดทดสอบ 94 เคสของกระผม:  
+> 1. ในฝั่ง Service และ State (`OrderStateTest`, `TradeMatchingServiceTest`) เราเขียนเป็น Pure Java Unit Test ร่วมกับ Mockito `@Mock` และ `@InjectMocks` (รวม 7 เคสใหม่สำหรับ Strict Condition Matching & Rollback Isolation)  
 > 2. ในฝั่ง Controller (`TradeMatchingApiControllerTest`, `OrderApiControllerTest`) เราใช้ `MockMvcBuilders.standaloneSetup(controller)` และผูก `GlobalExceptionHandler` เข้าไปตรงๆ  
-> ทำให้เราทดสอบ Business Logic, Serialization และ Exception Handling ได้ครบ 100% บนหน่วยความจำ JVM ตรงๆ ในระดับมิลลิวินาที จึงรันผ่าน 87 เคสได้ในเวลาเพียง 2.5 วินาทีครับ"*
+> ทำให้เราทดสอบ Business Logic, Serialization และ Exception Handling ได้ครบ 100% บนหน่วยความจำ JVM ตรงๆ ในระดับมิลลิวินาที จึงรันผ่าน 94 เคสได้ในเวลาเพียง 2–4 วินาทีครับ"*
 
 ---
 
@@ -516,10 +520,10 @@ public class GlobalExceptionHandler {
 หากในวันนำเสนอ อาจารย์ต้องการให้เปิด PowerShell รันชุดทดสอบของสมาชิกคนที่ 4 ให้ดูสดๆ:
 
 ```powershell
-# คำสั่งรันเฉพาะ 7 คลาสของสมาชิกคนที่ 4 (87 เคส)
+# คำสั่งรันเฉพาะ 7 คลาสของสมาชิกคนที่ 4 (94 เคส)
 .\mvnw.cmd test "-Dtest=OrderStateTest,TradeMatchingServiceTest,TradeMatchingApiControllerTest,OrderApiControllerTest,GlobalExceptionHandlerTest,TradeRecommendationResponseTest,CustomExceptionTest"
 ```
 
 > **ผลลัพธ์ที่จะปรากฏบนหน้าจอ**:  
-> `Tests run: 87, Failures: 0, Errors: 0, Skipped: 0`  
-> `BUILD SUCCESS` (ใช้เวลารันประมาณ 2–3 วินาที)
+> `Tests run: 94, Failures: 0, Errors: 0, Skipped: 0`  
+> `BUILD SUCCESS` (ใช้เวลารันประมาณ 2–4 วินาที)

@@ -197,7 +197,7 @@ sequenceDiagram
 
     Note over Admin,State: ดำเนินการชำระเงินตาม State Pattern
     Admin->>UI: 16. แอดมินตรวจสลิปในแชทแล้วคลิกปุ่ม "Pay"
-    UI->>Ctrl: 17. PATCH /api/v1/orders/{id}/transition?action=pay
+    UI->>Ctrl: 17. PATCH /api/v1/orders/{id}/status?action=pay
     activate Ctrl
     Ctrl->>State: 18. orderState.pay(context)
     State-->>Ctrl: 19. สถานะเปลี่ยนเป็น PAID
@@ -209,13 +209,13 @@ sequenceDiagram
     Admin->>App: 22. ส่งคำขอเพื่อนไปยัง Friend ID ของลูกค้า
     Customer->>App: 23. ลูกค้ากดยอมรับคำขอเป็นเพื่อนในเกม
     Admin->>UI: 24. แอดมินคลิกปุ่ม "Start Trade" (action=ship)
-    UI->>Ctrl: 25. PATCH /api/v1/orders/{id}/transition?action=ship
+    UI->>Ctrl: 25. PATCH /api/v1/orders/{id}/status?action=ship
     Ctrl->>State: 26. orderState.ship(context) -> สถานะเปลี่ยนเป็น SHIPPING
 
     Admin->>App: 27. แอดมินส่งการ์ดเทรดในเกมให้ลูกค้า
     Customer->>App: 28. ลูกค้ารับการ์ดในเกมสำเร็จสมบูรณ์
     Admin->>UI: 29. แอดมินคลิกปุ่ม "Complete Trade" (action=complete)
-    UI->>Ctrl: 30. PATCH /api/v1/orders/{id}/transition?action=complete
+    UI->>Ctrl: 30. PATCH /api/v1/orders/{id}/status?action=complete
     Ctrl->>State: 31. orderState.complete(context) -> สถานะเปลี่ยนเป็น COMPLETED
     UI-->>Admin: 32. ปิดคำสั่งซื้อสมบูรณ์ 100%
     deactivate UI
@@ -242,9 +242,9 @@ sequenceDiagram
 
     Admin->>UI: 1. คลิกปุ่ม "Cancel Order" ที่ออเดอร์ #ORD-2026-001
     activate UI
-    UI->>Ctrl: 2. PATCH /api/v1/orders/{id}/transition?action=cancel
+    UI->>Ctrl: 2. PATCH /api/v1/orders/{id}/status?action=cancel
     activate Ctrl
-    Ctrl->>OSvc: 3. transitionOrder(orderId, "cancel")
+    Ctrl->>OSvc: 3. transitionOrderStatus(orderId, "cancel")
     activate OSvc
 
     OSvc->>ORepo: 4. findById(orderId)
@@ -284,3 +284,60 @@ sequenceDiagram
     deactivate Ctrl
     deactivate UI
 ```
+
+---
+
+## Scenario 5: การเปลี่ยนไอดีส่งมอบพร้อมรักษาสภาพการ์ดและการถ่ายโอนสต็อก
+### (Order Item Account Reassignment & Card Condition Guard Workflow)
+
+แสดงขั้นตอนเมื่อเจ้าหน้าที่เปลี่ยนไอดีเกมผู้ส่งมอบสำหรับรายการสั่งซื้อ โดยระบบจะบังคับตรวจสอบสภาพการ์ด (เช่น MINT ต้องคงเป็น MINT), โอนย้ายการจองสต็อกระหว่างคลังเดิมและคลังใหม่อย่างแม่นยำ, คงราคาซื้อขายเดิม และ Rollback ทันทีหากล้มเหลว
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Staff as เจ้าหน้าที่ / แอดมิน (Staff/Admin)
+    participant UI as หน้าเว็บจัดการออเดอร์ (/orders)
+    participant Ctrl as OrderApiController
+    participant OSvc as OrderServiceImpl
+    participant GARepo as GameAccountRepository
+    participant InvRepo as CardInventoryRepository
+    participant ORepo as OrderRepository
+
+    Staff->>UI: 1. เลือกเปลี่ยนบัญชีส่งการ์ดเป็น VAULT-ACC-B สำหรับ OrderItem #501 (สภาพ MINT)
+    activate UI
+    UI->>Ctrl: 2. PATCH /api/v1/orders/{orderId}/items/{itemId}/assign?accountId=2
+    activate Ctrl
+    Ctrl->>OSvc: 3. reassignOrderItemAccount(orderId, itemId, accountId)
+    activate OSvc
+
+    OSvc->>GARepo: 4. findById(targetAccountId)
+    GARepo-->>OSvc: 5. Target GameAccount (สถานะ READY)
+
+    OSvc->>InvRepo: 6. findByCardId(cardId)
+    InvRepo-->>OSvc: 7. รายการ Inventories ในระบบ
+
+    Note over OSvc: กรอง Inventory ในไอดีใหม่ที่มี สภาพตรงกัน (MINT == MINT)
+    alt ไอดีเป้าหมายไม่มีการ์ดสภาพเดียวกัน หรือสต็อกไม่พอ
+        OSvc-->>Ctrl: throw InsufficientStockException("Target account does not hold matching condition")
+        Ctrl-->>UI: HTTP 400 Bad Request
+        UI-->>Staff: แจ้งเตือน: "ไอดีนี้ไม่มีการ์ดสภาพ MINT หรือสต็อกไม่พอ"
+    else ไอดีเป้าหมายมีการ์ดสภาพตรงกันและสต็อกพร้อม
+        Note over OSvc,InvRepo: สลับการจองสต็อกข้ามคลัง (Atomic Transfer)
+        OSvc->>InvRepo: 8. oldInventory.restoreStock(quantity)
+        OSvc->>InvRepo: 9. targetInventory.deductStock(quantity)
+        OSvc->>InvRepo: 10. save(oldInventory) & save(targetInventory)
+
+        Note over OSvc: ผูก targetInventory และ targetAccount เข้ากับ OrderItem
+        Note over OSvc: รักษาราคาเดิม (unitPrice & subtotal ไม่เปลี่ยนแปลง)
+        OSvc->>ORepo: 11. orderItem.setInventory(targetInventory) & setAssignedAccount(targetAccount)
+        OSvc->>ORepo: 12. save(order)
+
+        OSvc-->>Ctrl: 13. return OrderItemResponse DTO
+        deactivate OSvc
+        Ctrl-->>UI: 14. HTTP 200 OK
+        deactivate Ctrl
+        UI-->>Staff: 15. อัปเดตไอดีผู้ส่งมอบและคลังใหม่สำเร็จ
+    end
+    deactivate UI
+```
+

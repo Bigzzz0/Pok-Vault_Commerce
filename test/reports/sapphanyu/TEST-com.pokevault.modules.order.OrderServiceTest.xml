@@ -1,37 +1,37 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderServiceTest" time="0.434" tests="20" errors="0" skipped="0" failures="0">
-  <testcase name="updateItemTradeStatus_TerminalOrder_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.302" />
-  <testcase name="updateItemTradeStatus_SkipSequence_FriendPendingToCompleted_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.005" />
-  <testcase name="createOrder_UserNotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.005" />
-  <testcase name="getOrderById_Success" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004" />
-  <testcase name="getOrderById_NotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
-  <testcase name="createOrder_InventoryNotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004" />
-  <testcase name="updateItemTradeStatus_Success_TradeSent" classname="com.pokevault.modules.order.OrderServiceTest" time="0.005">
-    <system-out>2026-10-09T17:51:39.960+07:00  INFO 10636 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Updated trade status for order item [10] in order [ORD-2026-001] to TRADE_SENT
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderServiceTest" time="0.59" tests="20" errors="0" skipped="0" failures="0">
+  <testcase name="updateItemTradeStatus_TerminalOrder_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.423" />
+  <testcase name="updateItemTradeStatus_SkipSequence_FriendPendingToCompleted_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.007" />
+  <testcase name="createOrder_UserNotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.024" />
+  <testcase name="getOrderById_Success" classname="com.pokevault.modules.order.OrderServiceTest" time="0.011" />
+  <testcase name="getOrderById_NotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.006" />
+  <testcase name="createOrder_InventoryNotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.006" />
+  <testcase name="updateItemTradeStatus_Success_TradeSent" classname="com.pokevault.modules.order.OrderServiceTest" time="0.007">
+    <system-out>19:19:16.069 [main] INFO com.pokevault.modules.order.service.OrderServiceImpl -- Updated trade status for order item [10] in order [ORD-2026-001] to TRADE_SENT
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_MultiItem_RemainsShippingWhenPartiallyCompleted" classname="com.pokevault.modules.order.OrderServiceTest" time="0.009">
-    <system-out>2026-10-09T17:51:39.971+07:00  INFO 10636 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Updated trade status for order item [10] in order [ORD-2026-001] to TRADE_SENT
+  <testcase name="updateItemTradeStatus_MultiItem_RemainsShippingWhenPartiallyCompleted" classname="com.pokevault.modules.order.OrderServiceTest" time="0.006">
+    <system-out>19:19:16.077 [main] INFO com.pokevault.modules.order.service.OrderServiceImpl -- Updated trade status for order item [10] in order [ORD-2026-001] to TRADE_SENT
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_Idempotent_ReturnsCurrentWithoutModification" classname="com.pokevault.modules.order.OrderServiceTest" time="0.006">
-    <system-out>2026-10-09T17:51:39.978+07:00  INFO 10636 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : OrderItem id: 10 in order id: 1 is already in status: TRADE_SENT. Returning current state.
+  <testcase name="updateItemTradeStatus_Idempotent_ReturnsCurrentWithoutModification" classname="com.pokevault.modules.order.OrderServiceTest" time="0.005">
+    <system-out>19:19:16.083 [main] INFO com.pokevault.modules.order.service.OrderServiceImpl -- OrderItem id: 10 in order id: 1 is already in status: TRADE_SENT. Returning current state.
 </system-out>
   </testcase>
-  <testcase name="createOrder_InsufficientStock_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.012" />
-  <testcase name="updateItemTradeStatus_SkipSequence_UnassignedToTradeSent_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.006" />
-  <testcase name="updateItemTradeStatus_ItemNotFoundInOrder_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004" />
-  <testcase name="updateItemTradeStatus_OrderNotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.014" />
-  <testcase name="updateItemTradeStatus_OrderNotInShipping_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
-  <testcase name="getAllOrders_ReturnsList" classname="com.pokevault.modules.order.OrderServiceTest" time="0.005" />
+  <testcase name="createOrder_InsufficientStock_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.01" />
+  <testcase name="updateItemTradeStatus_SkipSequence_UnassignedToTradeSent_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
+  <testcase name="updateItemTradeStatus_ItemNotFoundInOrder_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.005" />
+  <testcase name="updateItemTradeStatus_OrderNotFound_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
+  <testcase name="updateItemTradeStatus_OrderNotInShipping_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.005" />
+  <testcase name="getAllOrders_ReturnsList" classname="com.pokevault.modules.order.OrderServiceTest" time="0.011" />
   <testcase name="updateItemTradeStatus_UnsupportedStatus_ThrowsException" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
-  <testcase name="updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompletedViaStatePattern" classname="com.pokevault.modules.order.OrderServiceTest" time="0.009">
-    <system-out>2026-10-09T17:51:40.034+07:00  INFO 10636 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Updated trade status for order item [20] in order [ORD-2026-001] to COMPLETED
-2026-10-09T17:51:40.035+07:00  INFO 10636 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : All trade items completed for order [ORD-2026-001] (id: 1). Transitioning order to COMPLETED via State Pattern.
-2026-10-09T17:51:40.039+07:00  INFO 10636 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CompletedOrderState    : Order reached terminal state: COMPLETED
+  <testcase name="updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompletedViaStatePattern" classname="com.pokevault.modules.order.OrderServiceTest" time="0.013">
+    <system-out>19:19:16.135 [main] INFO com.pokevault.modules.order.service.OrderServiceImpl -- Updated trade status for order item [20] in order [ORD-2026-001] to COMPLETED
+19:19:16.136 [main] INFO com.pokevault.modules.order.service.OrderServiceImpl -- All trade items completed for order [ORD-2026-001] (id: 1). Transitioning order to COMPLETED via State Pattern.
+19:19:16.142 [main] INFO com.pokevault.modules.trade.state.CompletedOrderState -- Order reached terminal state: COMPLETED
 </system-out>
   </testcase>
-  <testcase name="updateItemTradeStatus_ReverseSequence_CompletedToTradeSent_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.006" />
-  <testcase name="createOrder_Success" classname="com.pokevault.modules.order.OrderServiceTest" time="0.01" />
+  <testcase name="updateItemTradeStatus_ReverseSequence_CompletedToTradeSent_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.004" />
+  <testcase name="createOrder_Success" classname="com.pokevault.modules.order.OrderServiceTest" time="0.011" />
   <testcase name="updateItemTradeStatus_UnassignedAccount_ThrowsConflict" classname="com.pokevault.modules.order.OrderServiceTest" time="0.003" />
 </testsuite>

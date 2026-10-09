@@ -10,6 +10,7 @@ import com.pokevault.domain.entity.GameAccount;
 import com.pokevault.domain.entity.Order;
 import com.pokevault.domain.entity.OrderItem;
 import com.pokevault.domain.enums.AccountTradeStatus;
+import com.pokevault.domain.enums.CardCondition;
 import com.pokevault.domain.enums.OrderStatus;
 import com.pokevault.domain.enums.TradeFulfillmentStatus;
 import com.pokevault.modules.trade.dto.TradeRecommendationResponse;
@@ -493,6 +494,233 @@ class TradeMatchingServiceTest {
             verify(cardInventoryRepository, times(1)).save(readyInventory1);
             verify(cardInventoryRepository, times(1)).save(readyInventory2);
             verify(orderItemRepository, times(1)).save(sampleItem);
+        }
+    }
+
+    @Nested
+    @DisplayName("5. Card Condition & Stock Isolation Tests (Strict Condition Matching)")
+    class CardConditionMatchingTests {
+
+        private GameAccount accountA;
+        private GameAccount accountB;
+        private CardInventory invA_Mint;
+        private CardInventory invA_Played;
+        private CardInventory invB_Played;
+        private OrderItem mintItem;
+
+        @BeforeEach
+        void initConditionData() {
+            accountA = GameAccount.builder()
+                    .id(100L)
+                    .accountCode("ACC-MINT-01")
+                    .inGameName("MintDealer")
+                    .friendId("1111-1111-1111")
+                    .tradeStatus(AccountTradeStatus.READY)
+                    .build();
+
+            accountB = GameAccount.builder()
+                    .id(200L)
+                    .accountCode("ACC-PLAYED-02")
+                    .inGameName("PlayedDealer")
+                    .friendId("2222-2222-2222")
+                    .tradeStatus(AccountTradeStatus.READY)
+                    .build();
+
+            invA_Mint = CardInventory.builder()
+                    .id(301L)
+                    .card(charizardCard)
+                    .gameAccount(accountA)
+                    .condition(CardCondition.MINT)
+                    .quantity(2)
+                    .build();
+
+            invA_Played = CardInventory.builder()
+                    .id(302L)
+                    .card(charizardCard)
+                    .gameAccount(accountA)
+                    .condition(CardCondition.PLAYED)
+                    .quantity(5)
+                    .build();
+
+            invB_Played = CardInventory.builder()
+                    .id(401L)
+                    .card(charizardCard)
+                    .gameAccount(accountB)
+                    .condition(CardCondition.PLAYED)
+                    .quantity(10)
+                    .build();
+
+            mintItem = OrderItem.builder()
+                    .id(601L)
+                    .inventory(invA_Mint)
+                    .quantity(1)
+                    .tradeStatus(TradeFulfillmentStatus.UNASSIGNED)
+                    .unitPrice(new BigDecimal("1000.00"))
+                    .subtotal(new BigDecimal("1000.00"))
+                    .order(sampleOrder)
+                    .build();
+        }
+
+        @Test
+        @DisplayName("Auto-match: Selects MINT account over PLAYED account even if PLAYED has much higher stock")
+        void testAutoMatchSelectsMintOverPlayedEvenWithLowerStock() {
+            // Customer booked 1 MINT from Account A (has 2). Account B has 10 PLAYED.
+            when(orderItemRepository.findById(601L)).thenReturn(Optional.of(mintItem));
+            when(cardInventoryRepository.findByCardId(1L)).thenReturn(List.of(invB_Played, invA_Mint));
+            when(orderItemRepository.save(any(OrderItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            TradeRecommendationResponse response = tradeMatchingService.autoMatchOrderItem(601L);
+
+            assertThat(response.getMatchFound()).isTrue();
+            assertThat(response.getRecommendedAccountId()).isEqualTo(100L); // accountA
+            assertThat(mintItem.getAssignedAccount()).isEqualTo(accountA);
+            assertThat(mintItem.getInventory().getCondition()).isEqualTo(CardCondition.MINT);
+        }
+
+        @Test
+        @DisplayName("Account with multiple conditions: Auto-match and stock counting must target exact condition inventory")
+        void testSameAccountMultipleConditionsTargetsCorrectInventory() {
+            // Account A has both MINT (inv 301, qty 0 unreserved) and PLAYED (inv 302, qty 5).
+            // Item booked the last MINT (qty 0 unreserved).
+            invA_Mint.setQuantity(0);
+            when(orderItemRepository.findById(601L)).thenReturn(Optional.of(mintItem));
+            when(cardInventoryRepository.findByCardId(1L)).thenReturn(List.of(invA_Played, invA_Mint));
+            when(orderItemRepository.save(any(OrderItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            TradeRecommendationResponse response = tradeMatchingService.autoMatchOrderItem(601L);
+
+            assertThat(response.getMatchFound()).isTrue();
+            assertThat(response.getRecommendedAccountId()).isEqualTo(100L);
+            assertThat(mintItem.getInventory().getId()).isEqualTo(301L); // must be invA_Mint, NOT invA_Played (302L)
+            assertThat(mintItem.getInventory().getCondition()).isEqualTo(CardCondition.MINT);
+        }
+
+        @Test
+        @DisplayName("Auto-match: Throws InsufficientStockException when condition matches but quantity is inadequate")
+        void testConditionMatchesButQuantityInsufficient() {
+            // Item was initially reserved from another source (id 999L) with MINT condition
+            CardInventory tempInv = CardInventory.builder()
+                    .id(999L)
+                    .card(charizardCard)
+                    .condition(CardCondition.MINT)
+                    .quantity(0)
+                    .build();
+            mintItem.setInventory(tempInv);
+            mintItem.setQuantity(3);
+            invA_Mint.setQuantity(2); // Only 2 MINT available in Account A, but needs 3
+
+            when(orderItemRepository.findById(601L)).thenReturn(Optional.of(mintItem));
+            // Account B has 10 PLAYED, but only 2 MINT exists in Account A
+            when(cardInventoryRepository.findByCardId(1L)).thenReturn(List.of(invA_Mint, invB_Played));
+
+            assertThatThrownBy(() -> tradeMatchingService.autoMatchOrderItem(601L))
+                    .isInstanceOf(InsufficientStockException.class)
+                    .hasMessageContaining("No READY game account found with sufficient stock (3 cards) for: Charizard ex in condition: MINT");
+        }
+
+        @Test
+        @DisplayName("Last card booked: Warehouse unreserved stock is 0, but original inventory can still fulfill item")
+        void testLastCardBookedStockZeroOriginalInventoryCanStillFulfill() {
+            mintItem.setQuantity(1);
+            invA_Mint.setQuantity(0); // Warehouse unreserved stock is 0 because order reserved it
+
+            when(orderItemRepository.findById(601L)).thenReturn(Optional.of(mintItem));
+            when(cardInventoryRepository.findByCardId(1L)).thenReturn(List.of(invA_Mint));
+            when(orderItemRepository.save(any(OrderItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            TradeRecommendationResponse response = tradeMatchingService.autoMatchOrderItem(601L);
+
+            assertThat(response.getMatchFound()).isTrue();
+            assertThat(response.getRecommendedAccountId()).isEqualTo(100L);
+            assertThat(mintItem.getAssignedAccount()).isEqualTo(accountA);
+            assertThat(response.getFulfillmentStatus()).isEqualTo(TradeFulfillmentStatus.FRIEND_PENDING);
+        }
+
+        @Test
+        @DisplayName("Manual assignment and recommendations enforce identical condition and stock rules")
+        void testManualAssignmentAndRecommendationsEnforceSameRules() {
+            // Customer requested MINT. Account B only has PLAYED (qty 10).
+            when(orderItemRepository.findById(601L)).thenReturn(Optional.of(mintItem));
+            when(cardInventoryRepository.findByCardId(1L)).thenReturn(List.of(invB_Played));
+
+            // 1. Recommendation must NOT recommend Account B
+            TradeRecommendationResponse rec = tradeMatchingService.getRecommendationForItem(601L);
+            assertThat(rec.getMatchFound()).isFalse();
+            assertThat(rec.getAlternativeCandidates()).isEmpty();
+
+            // 2. Manual assignment to Account B must be rejected
+            when(gameAccountRepository.findById(200L)).thenReturn(Optional.of(accountB));
+
+            assertThatThrownBy(() -> tradeMatchingService.assignAccountToOrderItem(601L, 200L))
+                    .isInstanceOf(InsufficientStockException.class)
+                    .hasMessageContaining("does not hold card: Charizard ex in condition: MINT");
+        }
+
+        @Test
+        @DisplayName("Manual assignment: Failure rolls back and does not alter stock or assignments")
+        void testManualAssignFailureRollbackDoesNotAlterStock() {
+            // Account C exists and is READY, but has 0 MINT stock (needs 1)
+            GameAccount accountC = GameAccount.builder()
+                    .id(300L)
+                    .accountCode("ACC-MINT-03")
+                    .tradeStatus(AccountTradeStatus.READY)
+                    .build();
+
+            CardInventory invC_Mint = CardInventory.builder()
+                    .id(501L)
+                    .card(charizardCard)
+                    .gameAccount(accountC)
+                    .condition(CardCondition.MINT)
+                    .quantity(0) // insufficient
+                    .build();
+
+            int originalInvAStock = invA_Mint.getQuantity();
+
+            when(orderItemRepository.findById(601L)).thenReturn(Optional.of(mintItem));
+            when(gameAccountRepository.findById(300L)).thenReturn(Optional.of(accountC));
+            when(cardInventoryRepository.findByCardId(1L)).thenReturn(List.of(invA_Mint, invC_Mint));
+
+            assertThatThrownBy(() -> tradeMatchingService.assignAccountToOrderItem(601L, 300L))
+                    .isInstanceOf(InsufficientStockException.class)
+                    .hasMessageContaining("has insufficient stock for card: Charizard ex");
+
+            // Stock of original inventory must not be changed
+            assertThat(invA_Mint.getQuantity()).isEqualTo(originalInvAStock);
+            assertThat(invC_Mint.getQuantity()).isEqualTo(0);
+            assertThat(mintItem.getInventory()).isEqualTo(invA_Mint);
+            assertThat(mintItem.getAssignedAccount()).isNull();
+
+            // Verify no saves occurred
+            verify(cardInventoryRepository, never()).save(any());
+            verify(orderItemRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Manual assignment: Account with multiple conditions selects exact matching condition, not findFirst")
+        void testManualAssignPicksMatchingConditionWhenAccountHasMultiple() {
+            // Account A has invA_Mint (qty 2) and invA_Played (qty 5)
+            // Item currently has invB_Mint (from Account B)
+            CardInventory invB_Mint = CardInventory.builder()
+                    .id(999L)
+                    .card(charizardCard)
+                    .gameAccount(accountB)
+                    .condition(CardCondition.MINT)
+                    .quantity(1)
+                    .build();
+            mintItem.setInventory(invB_Mint);
+
+            when(orderItemRepository.findById(601L)).thenReturn(Optional.of(mintItem));
+            when(gameAccountRepository.findById(100L)).thenReturn(Optional.of(accountA));
+            // List returned has invA_Played FIRST, then invA_Mint
+            when(cardInventoryRepository.findByCardId(1L)).thenReturn(List.of(invA_Played, invA_Mint));
+            when(orderItemRepository.save(any(OrderItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            tradeMatchingService.assignAccountToOrderItem(601L, 100L);
+
+            // Must pick invA_Mint (301L), NOT invA_Played (302L)
+            assertThat(mintItem.getInventory().getId()).isEqualTo(301L);
+            assertThat(mintItem.getInventory().getCondition()).isEqualTo(CardCondition.MINT);
+            assertThat(mintItem.getAssignedAccount()).isEqualTo(accountA);
         }
     }
 }
