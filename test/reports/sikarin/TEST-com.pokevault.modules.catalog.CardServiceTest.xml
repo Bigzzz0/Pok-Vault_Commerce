@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.catalog.CardServiceTest" time="0.05" tests="13" errors="0" skipped="0" failures="0">
+  <testcase name="deleteCard_CardExists_DeletesSuccessfully" classname="com.pokevault.modules.catalog.CardServiceTest" time="0.01" />
+  <testcase name="getExpansionByCode_ValidCode_ReturnsExpansion" classname="com.pokevault.modules.catalog.CardServiceTest" time="0.002" />
+  <testcase name="createCard_ValidRequest_ReturnsCardResponse" classname="com.pokevault.modules.catalog.CardServiceTest" time="0.005" />
+  <testcase name="getCardsPaged_WithPagination_ReturnsPageResponse" classname="com.pokevault.modules.catalog.CardServiceTest" time="0.002" />
+  <testcase name="getCardById_CardNotFound_ThrowsException" classname="com.pokevault.modules.catalog.CardServiceTest" time="0.003" />
+  <testcase name="getAllCards_WithFilter_ReturnsFilteredCards" classname="com.pokevault.modules.catalog.CardServiceTest" time="0.002" />
+  <testcase name="getCardById_CardExists_ReturnsCard" classname="com.pokevault.modules.catalog.CardServiceTest" time="0.002" />
+  <testcase name="getExpansionByCode_NotFound_ThrowsException" classname="com.pokevault.modules.catalog.CardServiceTest" time="0.003" />
+  <testcase name="createCard_ExpansionNotFound_ThrowsException" classname="com.pokevault.modules.catalog.CardServiceTest" time="0.003" />
+  <testcase name="getAllCards_NoFilter_ReturnsAllCards" classname="com.pokevault.modules.catalog.CardServiceTest" time="0.002" />
+  <testcase name="searchCards_ValidQuery_ReturnsMatchingCards" classname="com.pokevault.modules.catalog.CardServiceTest" time="0.003" />
+  <testcase name="deleteCard_CardNotFound_ThrowsException" classname="com.pokevault.modules.catalog.CardServiceTest" time="0.002" />
+  <testcase name="updateCard_CardExists_ReturnsUpdatedCardResponse" classname="com.pokevault.modules.catalog.CardServiceTest" time="0.005" />
+</testsuite>

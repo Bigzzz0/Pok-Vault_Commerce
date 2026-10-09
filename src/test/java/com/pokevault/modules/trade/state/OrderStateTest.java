@@ -306,4 +306,93 @@ class OrderStateTest {
                     .hasMessage("Order cannot be null");
         }
     }
+
+    @Nested
+    @DisplayName("8. OrderContext Constructors & Direct Mutators Tests")
+    class OrderContextMutatorTests {
+
+        @Test
+        @DisplayName("Default constructor and parameterized constructor should initialize state correctly")
+        void testConstructors() {
+            OrderContext emptyCtx = new OrderContext();
+            assertThat(emptyCtx.getCurrentState()).isNull();
+            assertThat(emptyCtx.getOrder()).isNull();
+            assertThat(emptyCtx.getStatus()).isNull();
+
+            PendingOrderState pendingState = new PendingOrderState();
+            OrderContext stateOnlyCtx = new OrderContext(pendingState);
+            assertThat(stateOnlyCtx.getCurrentState()).isSameAs(pendingState);
+            assertThat(stateOnlyCtx.getStatus()).isEqualTo(OrderStatus.PENDING);
+        }
+
+        @Test
+        @DisplayName("setState should synchronize status on associated order entity")
+        void testSetStateSyncsOrder() {
+            Order sampleOrder = Order.builder().orderStatus(OrderStatus.PENDING).build();
+            OrderContext ctx = new OrderContext();
+            ctx.setOrder(sampleOrder);
+            assertThat(ctx.getOrder()).isSameAs(sampleOrder);
+
+            ctx.setState(new PaidOrderState());
+            assertThat(sampleOrder.getOrderStatus()).isEqualTo(OrderStatus.PAID);
+        }
+
+        @Test
+        @DisplayName("Delegated actions on empty context should not throw NullPointerException")
+        void testSafeDelegationWhenStateIsNull() {
+            OrderContext emptyCtx = new OrderContext();
+            emptyCtx.pay();
+            emptyCtx.ship();
+            emptyCtx.complete();
+            emptyCtx.cancel();
+            assertThat(emptyCtx.getStatus()).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("9. CancelledOrderState Defensive Edge Cases (Null Safety)")
+    class CancelledOrderStateEdgeCaseTests {
+
+        @Test
+        @DisplayName("CancelledOrderState default constructor logs and does not throw")
+        void testDefaultConstructor() {
+            CancelledOrderState state = new CancelledOrderState();
+            assertThat(state.getStatus()).isEqualTo(OrderStatus.CANCELLED);
+        }
+
+        @Test
+        @DisplayName("restoreStock safely handles null context and null order")
+        void testRestoreStockNullContextAndOrder() {
+            CancelledOrderState state = new CancelledOrderState();
+            state.restoreStock(null);
+
+            OrderContext ctxWithoutOrder = new OrderContext();
+            state.restoreStock(ctxWithoutOrder);
+            assertThat(ctxWithoutOrder.getOrder()).isNull();
+        }
+
+        @Test
+        @DisplayName("restoreStock safely skips items with null inventory or non-positive quantity")
+        void testRestoreStockSkipsInvalidItems() {
+            CardInventory validInventory = CardInventory.builder().id(50L).quantity(10).build();
+            Order testOrder = Order.builder().build();
+
+            // Item 1: null inventory
+            testOrder.getItems().add(OrderItem.builder().inventory(null).quantity(2).build());
+            // Item 2: null quantity
+            testOrder.getItems().add(OrderItem.builder().inventory(validInventory).quantity(null).build());
+            // Item 3: zero quantity
+            testOrder.getItems().add(OrderItem.builder().inventory(validInventory).quantity(0).build());
+            // Item 4: negative quantity
+            testOrder.getItems().add(OrderItem.builder().inventory(validInventory).quantity(-1).build());
+            // Item 5: valid item
+            testOrder.getItems().add(OrderItem.builder().inventory(validInventory).quantity(3).build());
+
+            OrderContext ctx = OrderContext.fromOrder(testOrder);
+            CancelledOrderState state = new CancelledOrderState(ctx);
+
+            assertThat(state.getStatus()).isEqualTo(OrderStatus.CANCELLED);
+            assertThat(validInventory.getQuantity()).isEqualTo(13); // only Item 5 was restored (+3)
+        }
+    }
 }
