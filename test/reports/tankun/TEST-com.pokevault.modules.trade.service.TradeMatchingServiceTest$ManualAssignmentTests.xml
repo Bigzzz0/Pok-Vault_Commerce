@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.service.TradeMatchingServiceTest$ManualAssignmentTests" time="0.258" tests="3" errors="0" skipped="0" failures="0">
+  <testcase name="testManualAssignRejectWhenCompleted" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$ManualAssignmentTests" time="0.247" />
+  <testcase name="testManualAssignAccountNotReady" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$ManualAssignmentTests" time="0.003" />
+  <testcase name="testManualAssignAccountSuccess" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$ManualAssignmentTests" time="0.008">
+    <system-out>16:48:26.294 [main] INFO com.pokevault.modules.trade.service.TradeMatchingServiceImpl -- Manually assigned account ACC-READY-02 (Blue_Trader) to OrderItem id: 501
+</system-out>
+  </testcase>
+</testsuite>

@@ -239,10 +239,17 @@ src/main/resources/
 
 ## การทดสอบและ CI/CD
 
+> 📖 **คู่มือการทดสอบของสมาชิกคนที่ 4 (นายแทนคุณ พันธ์นิกุล)**: อ่านรายละเอียดคลาสทดสอบทั้ง 7 คลาส (74 เคส) ของ GoF State Pattern, Trade Matching Engine, และ Global Exception Handler ได้ที่ **[README-TEST.md](README-TEST.md)** (74/74 Tests Passed — 100% Build Success)
+
 รันเทสต์และ build ในเครื่อง:
 
 ```bash
 ./mvnw clean verify
+```
+
+หรือรันเฉพาะ Unit Tests ทั้งหมด (รวดเร็วเพียง ~6 วินาที):
+```powershell
+.\mvnw.cmd test
 ```
 
 GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ทำงานเมื่อ push หรือเปิด Pull Request เข้า `develop` และ `main`:
@@ -266,6 +273,7 @@ GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ท�
 | Security / Core Schema | [doc/sikarin-security-schema.md](doc/sikarin-security-schema.md) |
 | Test Report (ศิฆรินทร์) | [test/reports/sikarin/TEST-REPORT.md](test/reports/sikarin/TEST-REPORT.md) |
 | SOLID Analysis | [doc/solid-analysis.md](doc/solid-analysis.md) |
+| คู่มือการทดสอบ Unit Tests ของคนที่ 4 (นายแทนคุณ พันธ์นิกุล) | [README-TEST.md](README-TEST.md) |
 | โครงร่างสไลด์นำเสนอ | [doc/slide/presentation-outline.md](doc/slide/presentation-outline.md) |
 
 ## การทำงานร่วมกันด้วย Git
