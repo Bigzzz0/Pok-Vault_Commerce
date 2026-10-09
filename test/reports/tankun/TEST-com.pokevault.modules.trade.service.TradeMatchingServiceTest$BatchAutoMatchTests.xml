@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.service.TradeMatchingServiceTest$BatchAutoMatchTests" time="0.007" tests="1" errors="0" skipped="0" failures="0">
+  <testcase name="testAutoMatchOrderSuccess" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$BatchAutoMatchTests" time="0.007">
+    <system-out>16:48:26.301 [main] INFO com.pokevault.modules.trade.service.TradeMatchingServiceImpl -- Auto-matching game accounts for order id: 1001, code: ORD-2026-TEST
+16:48:26.305 [main] INFO com.pokevault.modules.trade.service.TradeMatchingServiceImpl -- Successfully auto-matched account ACC-READY-01 (Red_Trader) to OrderItem id: 501 for card: Charizard ex
+</system-out>
+  </testcase>
+</testsuite>
