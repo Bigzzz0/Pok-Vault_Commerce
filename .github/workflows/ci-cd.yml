@@ -75,14 +75,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}   # มีให้อยู่แล้ว ไม่ต้องสร้างเอง
 
+      # ชื่อ image ต้องเป็นตัวพิมพ์เล็ก แต่ชื่อ repo (Bigzzz0/Pok-Vault_Commerce) มีตัวใหญ่ -> แปลงก่อน
+      - name: Set lowercase image name
+        run: echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
-            ghcr.io/${{ github.repository }}:${{ github.ref_name }}-latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}:${{ github.ref_name }}-latest
 
   # ยังไม่มี job deploy — ตอนพร้อม deploy จริง (เลือก Render/Railway/Fly.io แล้ว)
   # ค่อยเพิ่ม job ใหม่ต่อจาก build-and-push ทีหลังได้

@@ -62,7 +62,7 @@ class CardApiControllerTest {
     @Test void missingCardReturns404() throws Exception {
         when(service.getCardById(99L)).thenThrow(new ResourceNotFoundException("Card", "id", 99L));
         mvc.perform(get("/api/v1/cards/99")).andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("RESOURCE_NOT_FOUND"));
+                .andExpect(jsonPath("$.error").value("NOT_FOUND"));
     }
 
     @Test void searchUsesLiteralRouteRatherThanIdRoute() throws Exception {

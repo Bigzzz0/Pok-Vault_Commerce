@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderStockAndSecurityTest$ReassignAccountTests" time="0.009" tests="1" errors="0" skipped="0" failures="0">
+  <testcase name="reassignAccount_TransfersStockBetweenInventoriesCorrectly" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$ReassignAccountTests" time="0.008">
+    <system-out>2026-10-09T17:55:34.444+07:00  INFO 29200 --- [tcg-pocket-inventory] [           main] c.p.m.order.service.OrderServiceImpl     : Reassigned OrderItem [501] to GameAccount [VAULT-ACC-B] (Trainer_B) and transferred stock cleanly
+</system-out>
+  </testcase>
+</testsuite>
