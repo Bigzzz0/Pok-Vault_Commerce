@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.044" tests="5" errors="0" skipped="0" failures="0">
+  <testcase name="createAccount_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.014">
+    <system-out>2026-10-09T17:51:40.901+07:00  INFO 10636 --- [tcg-pocket-inventory] [           main] c.p.m.v.service.GameAccountServiceImpl   : Registering new game account vault: code=NEW_ACC_02, inGameName=PikaTrainer
+2026-10-09T17:51:40.902+07:00  INFO 10636 --- [tcg-pocket-inventory] [           main] c.p.m.v.service.GameAccountServiceImpl   : Successfully registered game account [ID: 2]: code=NEW_ACC_02
+</system-out>
+  </testcase>
+  <testcase name="getAccountById_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.009" />
+  <testcase name="getAccountCards_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.009" />
+  <testcase name="updateTradeStatus_Success" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.006">
+    <system-out>2026-10-09T17:51:40.932+07:00  INFO 10636 --- [tcg-pocket-inventory] [           main] c.p.m.v.service.GameAccountServiceImpl   : Updated trade status for account [VAULT_ACC_01]: newStatus=BUSY_TRADING
+</system-out>
+  </testcase>
+  <testcase name="createAccount_WhenDuplicateCode_ShouldThrowException" classname="com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests" time="0.003">
+    <system-out>2026-10-09T17:51:40.937+07:00  INFO 10636 --- [tcg-pocket-inventory] [           main] c.p.m.v.service.GameAccountServiceImpl   : Registering new game account vault: code=VAULT_ACC_01, inGameName=null
+</system-out>
+  </testcase>
+</testsuite>
