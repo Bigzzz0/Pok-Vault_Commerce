@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.624" tests="7" errors="0" skipped="0" failures="0">
-  <testcase name="auditCreationTimestampIsRetainedOnUpdate" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.045">
-    <system-out>2026-10-09T17:48:23.377+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.pokevault.modules.catalog.CatalogPersistenceTest]: CatalogPersistenceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2026-10-09T17:48:23.410+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.pokevault.PokevaultApplication for test class com.pokevault.modules.catalog.CatalogPersistenceTest
-2026-10-09T17:48:23.412+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.catalog.CatalogPersistenceTest" time="1.646" tests="7" errors="0" skipped="0" failures="0">
+  <testcase name="auditCreationTimestampIsRetainedOnUpdate" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.081">
+    <system-out>2026-10-09T19:06:00.046+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.pokevault.modules.catalog.CatalogPersistenceTest]: CatalogPersistenceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T19:06:00.111+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.pokevault.PokevaultApplication for test class com.pokevault.modules.catalog.CatalogPersistenceTest
+2026-10-09T19:06:00.116+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -14,37 +14,37 @@
 
  :: Spring Boot ::                (v3.4.3)
 
-2026-10-09T17:48:23.437+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] c.p.m.catalog.CatalogPersistenceTest     : Starting CatalogPersistenceTest using Java 21.0.10 with PID 40624 (started by User in C:\Users\User\Downloads\PokéVault_Commerce)
-2026-10-09T17:48:23.437+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] c.p.m.catalog.CatalogPersistenceTest     : The following 1 profile is active: "test"
-2026-10-09T17:48:23.538+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-10-09T17:48:23.575+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 35 ms. Found 8 JPA repository interfaces.
-2026-10-09T17:48:23.582+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
-2026-10-09T17:48:23.598+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:6f0a06b2-b2ef-417b-ac11-0cf56e563130;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
-2026-10-09T17:48:23.620+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-10-09T17:48:23.625+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-10-09T17:48:23.635+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-10-09T17:48:23.638+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
-	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@2c94326f']
+2026-10-09T19:06:00.184+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] c.p.m.catalog.CatalogPersistenceTest     : Starting CatalogPersistenceTest using Java 21.0.10 with PID 30040 (started by User in C:\Users\User\Downloads\PokéVault_Commerce)
+2026-10-09T19:06:00.185+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] c.p.m.catalog.CatalogPersistenceTest     : The following 1 profile is active: "test"
+2026-10-09T19:06:00.468+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-09T19:06:00.606+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 136 ms. Found 8 JPA repository interfaces.
+2026-10-09T19:06:00.624+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2026-10-09T19:06:00.687+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:53c906af-1863-4049-8191-7f576478996f;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2026-10-09T19:06:00.772+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-10-09T19:06:00.780+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-10-09T19:06:00.861+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-09T19:06:00.873+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy@4468f64c']
 	Database driver: undefined/unknown
 	Database version: 2.3.232
 	Autocommit mode: undefined/unknown
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2026-10-09T17:48:23.748+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-10-09T17:48:23.762+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-10-09T17:48:23.842+07:00  INFO 40624 --- [tcg-pocket-inventory] [           main] c.p.m.catalog.CatalogPersistenceTest     : Started CatalogPersistenceTest in 0.43 seconds (process running for 12.218)
+2026-10-09T19:06:01.181+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-09T19:06:01.223+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-09T19:06:01.392+07:00  INFO 30040 --- [tcg-pocket-inventory] [           main] c.p.m.catalog.CatalogPersistenceTest     : Started CatalogPersistenceTest in 1.277 seconds (process running for 20.814)
 </system-out>
   </testcase>
-  <testcase name="duplicateCardNumberWithinSameExpansionIsRejected" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.014">
-    <system-out>2026-10-09T17:48:23.896+07:00  WARN 40624 --- [tcg-pocket-inventory] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 23505, SQLState: 23505
-2026-10-09T17:48:23.897+07:00 ERROR 40624 --- [tcg-pocket-inventory] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Unique index or primary key violation: "PUBLIC.CONSTRAINT_INDEX_3 ON PUBLIC.CARDS(EXPANSION_ID NULLS FIRST, CARD_NUMBER NULLS FIRST) VALUES ( /* key:2 */ CAST(2 AS BIGINT), '001')"; SQL statement:
+  <testcase name="duplicateCardNumberWithinSameExpansionIsRejected" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.023">
+    <system-out>2026-10-09T19:06:01.491+07:00  WARN 30040 --- [tcg-pocket-inventory] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 23505, SQLState: 23505
+2026-10-09T19:06:01.491+07:00 ERROR 30040 --- [tcg-pocket-inventory] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Unique index or primary key violation: "PUBLIC.CONSTRAINT_INDEX_3 ON PUBLIC.CARDS(EXPANSION_ID NULLS FIRST, CARD_NUMBER NULLS FIRST) VALUES ( /* key:2 */ CAST(2 AS BIGINT), '001')"; SQL statement:
 insert into cards (card_number,card_type,created_at,element_type,expansion_id,hp,image_url,name,rarity,retreat_cost,updated_at,id) values (?,?,?,?,?,?,?,?,?,?,?,default) [23505-232]
 </system-out>
   </testcase>
-  <testcase name="sameCardNumberInDifferentExpansionsIsAllowed" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.013" />
-  <testcase name="realSearchAndExpansionQueriesFindMatchingCards" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.022" />
-  <testcase name="userProfileCascadesAndCanBeQueriedAfterReload" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.022" />
-  <testcase name="removingUserProfileDeletesOrphan" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.012" />
-  <testcase name="realSpecificationCombinesAllFiltersAndSortsBeforePaging" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.026" />
+  <testcase name="sameCardNumberInDifferentExpansionsIsAllowed" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.027" />
+  <testcase name="realSearchAndExpansionQueriesFindMatchingCards" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.038" />
+  <testcase name="userProfileCascadesAndCanBeQueriedAfterReload" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.039" />
+  <testcase name="removingUserProfileDeletesOrphan" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.026" />
+  <testcase name="realSpecificationCombinesAllFiltersAndSortsBeforePaging" classname="com.pokevault.modules.catalog.CatalogPersistenceTest" time="0.052" />
 </testsuite>
