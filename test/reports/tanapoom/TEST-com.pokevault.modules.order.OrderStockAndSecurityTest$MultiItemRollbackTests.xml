@@ -1,4 +1,4 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderStockAndSecurityTest$MultiItemRollbackTests" time="0.006" tests="1" errors="0" skipped="0" failures="0">
-  <testcase name="multiItemBooking_SecondItemFails_AbortsAndNeverSavesOrder" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$MultiItemRollbackTests" time="0.005" />
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderStockAndSecurityTest$MultiItemRollbackTests" time="0.007" tests="1" errors="0" skipped="0" failures="0">
+  <testcase name="multiItemBooking_SecondItemFails_AbortsAndNeverSavesOrder" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$MultiItemRollbackTests" time="0.007" />
 </testsuite>

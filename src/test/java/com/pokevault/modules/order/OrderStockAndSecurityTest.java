@@ -221,14 +221,17 @@ class OrderStockAndSecurityTest {
     }
 
     @Nested
-    @DisplayName("3. เปลี่ยนบัญชีแล้วจำนวนทั้งสองคลังถูกต้อง (Reassign Account & Stock Transfer)")
+    @DisplayName("3. เปลี่ยนบัญชีแล้วจำนวนและสภาพการ์ดทั้งสองคลังถูกต้อง (Condition & Stock Preservation on Reassign)")
     class ReassignAccountTests {
 
         @Test
-        @DisplayName("เปลี่ยนบัญชีส่งมอบ: สต็อกคลังเก่าต้องถูกคืน (+1) สต็อกคลังใหม่ต้องถูกหัก (-1) และ item.inventory ชี้ไปยังคลังใหม่")
-        void reassignAccount_TransfersStockBetweenInventoriesCorrectly() {
-            // เริ่มต้น item ถือการจองจาก Inventory A (สต็อกเดิม 1 หักไปแล้วเหลือ 0)
+        @DisplayName("ย้ายไปคลัง MINT ที่เพียงพอ: คืนคลังเดิมและหักคลังใหม่ถูกต้อง พร้อมรักษาการ์ดและสภาพ MINT")
+        void reassignAccount_TargetAccountHasSufficientMint_TransfersStockCleanly() {
+            // เริ่มต้น item ถือการจองจาก Inventory A (MINT, สต็อกเดิม 1 หักไปแล้วเหลือ 0)
+            inventoryA.setCondition(CardCondition.MINT);
             inventoryA.setQuantity(0);
+
+            inventoryB.setCondition(CardCondition.MINT);
             inventoryB.setQuantity(3);
 
             OrderItem item = OrderItem.builder()
@@ -237,12 +240,15 @@ class OrderStockAndSecurityTest {
                     .assignedAccount(accountA)
                     .quantity(1)
                     .tradeStatus(TradeFulfillmentStatus.UNASSIGNED)
+                    .unitPrice(new BigDecimal("1200.00"))
+                    .subtotal(new BigDecimal("1200.00"))
                     .build();
 
             Order order = Order.builder()
                     .id(101L)
                     .orderCode("ORD-2026-001")
                     .orderStatus(OrderStatus.PENDING)
+                    .finalAmount(new BigDecimal("1200.00"))
                     .items(new ArrayList<>(List.of(item)))
                     .build();
             item.setOrder(order);
@@ -259,14 +265,183 @@ class OrderStockAndSecurityTest {
             assertThat(inventoryA.getQuantity()).isEqualTo(1);
             // คลังใหม่ B ต้องถูกหักสต็อก (-1 กลายเป็น 2)
             assertThat(inventoryB.getQuantity()).isEqualTo(2);
-            // item ต้องชี้ไปยังคลังใหม่ B
+            // item ต้องชี้ไปยังคลังใหม่ B และสภาพยังเป็น MINT
             assertThat(item.getInventory()).isEqualTo(inventoryB);
+            assertThat(item.getInventory().getCondition()).isEqualTo(CardCondition.MINT);
             assertThat(item.getAssignedAccount()).isEqualTo(accountB);
             assertThat(item.getTradeStatus()).isEqualTo(TradeFulfillmentStatus.FRIEND_PENDING);
 
             verify(cardInventoryRepository).save(inventoryA);
             verify(cardInventoryRepository).save(inventoryB);
             verify(orderRepository).save(order);
+        }
+
+        @Test
+        @DisplayName("จอง MINT แต่บัญชีอื่นมีเฉพาะ PLAYED: ห้ามย้ายไปบัญชีนั้น (โยน InsufficientStockException)")
+        void reassignAccount_TargetAccountOnlyHasPlayed_ThrowsExceptionAndRejects() {
+            inventoryA.setCondition(CardCondition.MINT);
+            inventoryA.setQuantity(0);
+
+            // บัญชี B มีการ์ดใบเดียวกัน แต่เป็นสภาพ PLAYED เท่านั้น
+            inventoryB.setCondition(CardCondition.PLAYED);
+            inventoryB.setQuantity(5);
+
+            OrderItem item = OrderItem.builder()
+                    .id(501L)
+                    .inventory(inventoryA)
+                    .assignedAccount(accountA)
+                    .quantity(1)
+                    .tradeStatus(TradeFulfillmentStatus.FRIEND_PENDING)
+                    .unitPrice(new BigDecimal("1200.00"))
+                    .subtotal(new BigDecimal("1200.00"))
+                    .build();
+
+            Order order = Order.builder()
+                    .id(101L)
+                    .orderCode("ORD-2026-001")
+                    .orderStatus(OrderStatus.PENDING)
+                    .items(new ArrayList<>(List.of(item)))
+                    .build();
+            item.setOrder(order);
+
+            when(orderRepository.findById(101L)).thenReturn(Optional.of(order));
+            when(gameAccountRepository.findById(200L)).thenReturn(Optional.of(accountB));
+            when(cardInventoryRepository.findByCardId(10L)).thenReturn(List.of(inventoryA, inventoryB));
+
+            // ต้องโยน InsufficientStockException ห้ามย้ายข้ามสภาพการ์ด
+            assertThatThrownBy(() -> orderService.reassignOrderItemAccount(101L, 501L, 200L))
+                    .isInstanceOf(InsufficientStockException.class)
+                    .hasMessageContaining("MINT");
+
+            // สต็อกทั้งสองคลังต้องไม่เปลี่ยนแปลง
+            assertThat(inventoryA.getQuantity()).isEqualTo(0);
+            assertThat(inventoryB.getQuantity()).isEqualTo(5);
+            // item ต้องยังผูกอยู่กับคลังเดิม A
+            assertThat(item.getInventory()).isEqualTo(inventoryA);
+            assertThat(item.getAssignedAccount()).isEqualTo(accountA);
+
+            verify(cardInventoryRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("ย้ายล้มเหลวเนื่องจากสต็อกไม่พอ: จำนวนทุกคลังต้องคงเดิม")
+        void reassignAccount_InsufficientStock_FailsAndAllInventoriesUnchanged() {
+            inventoryA.setCondition(CardCondition.MINT);
+            inventoryA.setQuantity(0);
+
+            // บัญชี B มี MINT แต่มี 0 ใบ
+            inventoryB.setCondition(CardCondition.MINT);
+            inventoryB.setQuantity(0);
+
+            OrderItem item = OrderItem.builder()
+                    .id(501L)
+                    .inventory(inventoryA)
+                    .assignedAccount(accountA)
+                    .quantity(1)
+                    .tradeStatus(TradeFulfillmentStatus.FRIEND_PENDING)
+                    .build();
+
+            Order order = Order.builder()
+                    .id(101L)
+                    .orderCode("ORD-2026-001")
+                    .orderStatus(OrderStatus.PENDING)
+                    .items(new ArrayList<>(List.of(item)))
+                    .build();
+            item.setOrder(order);
+
+            when(orderRepository.findById(101L)).thenReturn(Optional.of(order));
+            when(gameAccountRepository.findById(200L)).thenReturn(Optional.of(accountB));
+            when(cardInventoryRepository.findByCardId(10L)).thenReturn(List.of(inventoryA, inventoryB));
+
+            assertThatThrownBy(() -> orderService.reassignOrderItemAccount(101L, 501L, 200L))
+                    .isInstanceOf(InsufficientStockException.class);
+
+            // จำนวนคงเดิม ไม่มีการโอนย้าย
+            assertThat(inventoryA.getQuantity()).isEqualTo(0);
+            assertThat(inventoryB.getQuantity()).isEqualTo(0);
+            assertThat(item.getInventory()).isEqualTo(inventoryA);
+            verify(cardInventoryRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("ยกเลิกหลังย้าย: คืนสต็อกไปยังคลังที่ถือการจองล่าสุด (คลัง B)")
+        void cancelOrder_AfterReassign_RestoresStockToLatestHoldingInventory() {
+            // สมมติย้ายมาอยู่ที่ Inventory B แล้ว (B มี 2 หลังถูกหัก 1 จากเดิม 3)
+            inventoryA.setQuantity(1);
+            inventoryB.setQuantity(2);
+
+            OrderItem item = OrderItem.builder()
+                    .id(501L)
+                    .inventory(inventoryB)
+                    .assignedAccount(accountB)
+                    .quantity(1)
+                    .tradeStatus(TradeFulfillmentStatus.FRIEND_PENDING)
+                    .build();
+
+            Order order = Order.builder()
+                    .id(101L)
+                    .orderCode("ORD-2026-001")
+                    .orderStatus(OrderStatus.PENDING)
+                    .items(new ArrayList<>(List.of(item)))
+                    .build();
+            item.setOrder(order);
+
+            when(orderRepository.findById(101L)).thenReturn(Optional.of(order));
+            when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            // สั่งยกเลิกออเดอร์
+            OrderResponse response = orderService.transitionOrderStatus(101L, "cancel");
+
+            assertThat(response.getOrderStatus()).isEqualTo(OrderStatus.CANCELLED);
+            // คลังล่าสุด B ต้องได้รับสต็อกคืน (+1 กลายเป็น 3)
+            assertThat(inventoryB.getQuantity()).isEqualTo(3);
+            // คลังเดิม A ต้องไม่ถูกคืนซ้ำ (ยังคงเป็น 1 เท่าเดิม)
+            assertThat(inventoryA.getQuantity()).isEqualTo(1);
+
+            verify(cardInventoryRepository).save(inventoryB);
+        }
+
+        @Test
+        @DisplayName("ราคาต่อหน่วยและยอดออเดอร์คงเดิมหลังย้าย: ไม่เปลี่ยนตามราคาของคลังใหม่")
+        void reassignAccount_PreservesOriginalUnitPriceAndTotalAmount() {
+            inventoryA.setSellingPrice(new BigDecimal("1200.00"));
+            inventoryA.setQuantity(0);
+
+            // คลัง B ขายแพงกว่า (2500.00)
+            inventoryB.setSellingPrice(new BigDecimal("2500.00"));
+            inventoryB.setQuantity(3);
+
+            OrderItem item = OrderItem.builder()
+                    .id(501L)
+                    .inventory(inventoryA)
+                    .assignedAccount(accountA)
+                    .quantity(1)
+                    .tradeStatus(TradeFulfillmentStatus.UNASSIGNED)
+                    .unitPrice(new BigDecimal("1200.00"))
+                    .subtotal(new BigDecimal("1200.00"))
+                    .build();
+
+            Order order = Order.builder()
+                    .id(101L)
+                    .orderCode("ORD-2026-001")
+                    .orderStatus(OrderStatus.PENDING)
+                    .totalAmount(new BigDecimal("1200.00"))
+                    .finalAmount(new BigDecimal("1200.00"))
+                    .items(new ArrayList<>(List.of(item)))
+                    .build();
+            item.setOrder(order);
+
+            when(orderRepository.findById(101L)).thenReturn(Optional.of(order));
+            when(gameAccountRepository.findById(200L)).thenReturn(Optional.of(accountB));
+            when(cardInventoryRepository.findByCardId(10L)).thenReturn(List.of(inventoryA, inventoryB));
+
+            orderService.reassignOrderItemAccount(101L, 501L, 200L);
+
+            // ราคาที่ฟรีซไว้ตอนซื้อ (unitPrice, subtotal, finalAmount) ต้องไม่เปลี่ยนตามราคาคลัง B
+            assertThat(item.getUnitPrice()).isEqualByComparingTo("1200.00");
+            assertThat(item.getSubtotal()).isEqualByComparingTo("1200.00");
+            assertThat(order.getTotalAmount()).isEqualByComparingTo("1200.00");
+            assertThat(order.getFinalAmount()).isEqualByComparingTo("1200.00");
         }
     }
 

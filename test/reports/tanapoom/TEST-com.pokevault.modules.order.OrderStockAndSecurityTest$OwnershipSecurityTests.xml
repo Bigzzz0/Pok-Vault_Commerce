@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderStockAndSecurityTest$OwnershipSecurityTests" time="0.075" tests="5" errors="0" skipped="0" failures="0">
-  <testcase name="customerCannotPlaceOrderForOtherUser" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$OwnershipSecurityTests" time="0.063" />
-  <testcase name="customerGetAllOrders_ReturnsOnlyOwnOrders" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$OwnershipSecurityTests" time="0.002" />
-  <testcase name="customerCannotViewOtherCustomerOrder" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$OwnershipSecurityTests" time="0.002" />
-  <testcase name="staffCanViewAnyCustomerOrder" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$OwnershipSecurityTests" time="0.002" />
-  <testcase name="staffCanPlaceOrderOnBehalfOfCustomer" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$OwnershipSecurityTests" time="0.003" />
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.OrderStockAndSecurityTest$OwnershipSecurityTests" time="0.027" tests="5" errors="0" skipped="0" failures="0">
+  <testcase name="customerCannotPlaceOrderForOtherUser" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$OwnershipSecurityTests" time="0.005" />
+  <testcase name="customerGetAllOrders_ReturnsOnlyOwnOrders" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$OwnershipSecurityTests" time="0.004" />
+  <testcase name="customerCannotViewOtherCustomerOrder" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$OwnershipSecurityTests" time="0.005" />
+  <testcase name="staffCanViewAnyCustomerOrder" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$OwnershipSecurityTests" time="0.003" />
+  <testcase name="staffCanPlaceOrderOnBehalfOfCustomer" classname="com.pokevault.modules.order.OrderStockAndSecurityTest$OwnershipSecurityTests" time="0.006" />
 </testsuite>

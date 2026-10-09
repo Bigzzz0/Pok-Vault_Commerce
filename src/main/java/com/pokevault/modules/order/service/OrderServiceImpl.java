@@ -10,6 +10,7 @@ import com.pokevault.domain.entity.Order;
 import com.pokevault.domain.entity.OrderItem;
 import com.pokevault.domain.entity.User;
 import com.pokevault.domain.enums.AccountTradeStatus;
+import com.pokevault.domain.enums.CardCondition;
 import com.pokevault.domain.enums.MembershipTier;
 import com.pokevault.domain.enums.OrderStatus;
 import com.pokevault.domain.enums.TradeFulfillmentStatus;
@@ -347,16 +348,20 @@ public class OrderServiceImpl implements OrderService {
                         if (card == null) {
                                 throw new IllegalStateException("Card information not found for OrderItem id: " + orderItemId);
                         }
+                        CardCondition requiredCondition = (oldInv != null) ? oldInv.getCondition() : null;
                         List<CardInventory> targetInventories = cardInventoryRepository.findByCardId(card.getId());
                         CardInventory newInv = targetInventories.stream()
                                         .filter(inv -> inv.getGameAccount() != null && inv.getGameAccount().getId().equals(newAccountId))
+                                        .filter(inv -> requiredCondition == null || inv.getCondition() == requiredCondition)
                                         .findFirst()
                                         .orElseThrow(() -> new InsufficientStockException(
-                                                        "Account " + newAccount.getAccountCode() + " does not hold card " + card.getName()));
+                                                        "Account " + newAccount.getAccountCode() + " does not hold card " + card.getName()
+                                                                        + (requiredCondition != null ? " with condition " + requiredCondition : "")));
 
                         if (!newInv.hasSufficientStock(targetItem.getQuantity())) {
                                 throw new InsufficientStockException(
                                                 "Account " + newAccount.getAccountCode() + " has insufficient stock for: " + card.getName()
+                                                                + (requiredCondition != null ? " (" + requiredCondition + ")" : "")
                                                                 + " (Available: " + newInv.getQuantity() + ", Requested: " + targetItem.getQuantity() + ")");
                         }
 
