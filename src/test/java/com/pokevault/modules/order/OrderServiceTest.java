@@ -6,8 +6,10 @@ import com.pokevault.modules.order.dto.OrderItemResponse;
 
 import com.pokevault.common.exception.InsufficientStockException;
 import com.pokevault.common.exception.ResourceNotFoundException;
+import com.pokevault.common.exception.TradeStateConflictException;
 import com.pokevault.domain.entity.Card;
 import com.pokevault.domain.entity.CardInventory;
+import com.pokevault.domain.entity.GameAccount;
 import com.pokevault.domain.entity.Order;
 import com.pokevault.domain.entity.User;
 import com.pokevault.domain.entity.UserProfile;
@@ -252,26 +254,27 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("updateItemTradeStatus: อัปเดตสถานะเทรดของไอเทมสำเร็จ และ auto-sync เป็น SHIPPING เมื่อส่งการ์ด")
-        void updateItemTradeStatus_Success_AndSyncShipping() {
+        @DisplayName("updateItemTradeStatus: อัปเดตเป็น TRADE_SENT สำเร็จเมื่อจับคู่บัญชีแล้วและออเดอร์อยู่ใน SHIPPING")
+        void updateItemTradeStatus_Success_TradeSent() {
+                GameAccount account = GameAccount.builder().id(100L).accountCode("ACC-001").build();
                 OrderItem item = OrderItem.builder()
                                 .id(10L)
                                 .quantity(1)
+                                .assignedAccount(account)
                                 .tradeStatus(TradeFulfillmentStatus.FRIEND_PENDING)
                                 .build();
 
                 Order order = Order.builder()
                                 .id(1L)
                                 .orderCode("ORD-2026-001")
-                                .orderStatus(OrderStatus.PAID)
+                                .orderStatus(OrderStatus.SHIPPING)
                                 .build();
                 order.addItem(item);
 
                 when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
                 when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-                OrderItemResponse response = orderService.updateItemTradeStatus(1L, 10L,
-                                TradeFulfillmentStatus.TRADE_SENT);
+                OrderItemResponse response = orderService.updateItemTradeStatus(1L, 10L, TradeFulfillmentStatus.TRADE_SENT);
 
                 assertThat(response).isNotNull();
                 assertThat(response.getId()).isEqualTo(10L);
@@ -281,11 +284,20 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("updateItemTradeStatus: เมื่อทุกไอเทมส่งมอบเสร็จสิ้น (COMPLETED) auto-sync OrderStatus เป็น COMPLETED")
-        void updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompleted() {
-                OrderItem item1 = OrderItem.builder().id(10L).quantity(1).tradeStatus(TradeFulfillmentStatus.COMPLETED)
+        @DisplayName("updateItemTradeStatus: เมื่อทุกรายการเทรดเสร็จสิ้น (COMPLETED) เปลี่ยน Order เป็น COMPLETED ผ่าน State Pattern")
+        void updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompletedViaStatePattern() {
+                GameAccount account = GameAccount.builder().id(100L).accountCode("ACC-001").build();
+                OrderItem item1 = OrderItem.builder()
+                                .id(10L)
+                                .quantity(1)
+                                .assignedAccount(account)
+                                .tradeStatus(TradeFulfillmentStatus.COMPLETED)
                                 .build();
-                OrderItem item2 = OrderItem.builder().id(20L).quantity(1).tradeStatus(TradeFulfillmentStatus.TRADE_SENT)
+                OrderItem item2 = OrderItem.builder()
+                                .id(20L)
+                                .quantity(1)
+                                .assignedAccount(account)
+                                .tradeStatus(TradeFulfillmentStatus.TRADE_SENT)
                                 .build();
 
                 Order order = Order.builder()
@@ -299,9 +311,8 @@ class OrderServiceTest {
                 when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
                 when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-                // อัปเดตไอเทมชิ้นสุดท้ายให้ COMPLETED
-                OrderItemResponse response = orderService.updateItemTradeStatus(1L, 20L,
-                                TradeFulfillmentStatus.COMPLETED);
+                // อัปเดตไอเทมชิ้นที่สองให้ COMPLETED
+                OrderItemResponse response = orderService.updateItemTradeStatus(1L, 20L, TradeFulfillmentStatus.COMPLETED);
 
                 assertThat(response.getTradeStatus()).isEqualTo(TradeFulfillmentStatus.COMPLETED);
                 assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.COMPLETED);
@@ -309,12 +320,233 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("updateItemTradeStatus: โยน ResourceNotFoundException เมื่อไม่พบ Order ID")
+        @DisplayName("updateItemTradeStatus: ออเดอร์หลายรายการยังคงเป็น SHIPPING หากบางรายการยังไม่เสร็จ")
+        void updateItemTradeStatus_MultiItem_RemainsShippingWhenPartiallyCompleted() {
+                GameAccount account = GameAccount.builder().id(100L).accountCode("ACC-001").build();
+                OrderItem item1 = OrderItem.builder()
+                                .id(10L)
+                                .quantity(1)
+                                .assignedAccount(account)
+                                .tradeStatus(TradeFulfillmentStatus.FRIEND_PENDING)
+                                .build();
+                OrderItem item2 = OrderItem.builder()
+                                .id(20L)
+                                .quantity(1)
+                                .assignedAccount(account)
+                                .tradeStatus(TradeFulfillmentStatus.FRIEND_PENDING)
+                                .build();
+
+                Order order = Order.builder()
+                                .id(1L)
+                                .orderCode("ORD-2026-001")
+                                .orderStatus(OrderStatus.SHIPPING)
+                                .build();
+                order.addItem(item1);
+                order.addItem(item2);
+
+                when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+                when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+                OrderItemResponse response = orderService.updateItemTradeStatus(1L, 10L, TradeFulfillmentStatus.TRADE_SENT);
+
+                assertThat(response.getTradeStatus()).isEqualTo(TradeFulfillmentStatus.TRADE_SENT);
+                assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.SHIPPING);
+                verify(orderRepository, times(1)).save(order);
+        }
+
+        @Test
+        @DisplayName("updateItemTradeStatus: Idempotent - กดส่งสถานะเดิมซ้ำ ให้คืนสถานะปัจจุบันโดยไม่บันทึกซ้ำ")
+        void updateItemTradeStatus_Idempotent_ReturnsCurrentWithoutModification() {
+                GameAccount account = GameAccount.builder().id(100L).accountCode("ACC-001").build();
+                OrderItem item = OrderItem.builder()
+                                .id(10L)
+                                .quantity(1)
+                                .assignedAccount(account)
+                                .tradeStatus(TradeFulfillmentStatus.TRADE_SENT)
+                                .build();
+
+                Order order = Order.builder()
+                                .id(1L)
+                                .orderCode("ORD-2026-001")
+                                .orderStatus(OrderStatus.SHIPPING)
+                                .build();
+                order.addItem(item);
+
+                when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+                // ส่ง TRADE_SENT ซ้ำ
+                OrderItemResponse response = orderService.updateItemTradeStatus(1L, 10L, TradeFulfillmentStatus.TRADE_SENT);
+
+                assertThat(response.getTradeStatus()).isEqualTo(TradeFulfillmentStatus.TRADE_SENT);
+                // ต้องไม่เรียก save เมื่อสถานะตรงกันอยู่แล้ว
+                verify(orderRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("updateItemTradeStatus: โยน IllegalArgumentException เมื่อส่งสถานะที่ไม่รองรับ เช่น UNASSIGNED หรือ FRIEND_PENDING")
+        void updateItemTradeStatus_UnsupportedStatus_ThrowsException() {
+                assertThatThrownBy(() -> orderService.updateItemTradeStatus(1L, 10L, TradeFulfillmentStatus.UNASSIGNED))
+                                .isInstanceOf(IllegalArgumentException.class)
+                                .hasMessageContaining("Unsupported trade status");
+
+                assertThatThrownBy(() -> orderService.updateItemTradeStatus(1L, 10L, TradeFulfillmentStatus.FRIEND_PENDING))
+                                .isInstanceOf(IllegalArgumentException.class)
+                                .hasMessageContaining("Unsupported trade status");
+        }
+
+        @Test
+        @DisplayName("updateItemTradeStatus: โยน TradeStateConflictException เมื่อไอเทมยังไม่ผูกบัญชีเกม (assignedAccount == null)")
+        void updateItemTradeStatus_UnassignedAccount_ThrowsConflict() {
+                OrderItem item = OrderItem.builder()
+                                .id(10L)
+                                .quantity(1)
+                                .assignedAccount(null)
+                                .tradeStatus(TradeFulfillmentStatus.FRIEND_PENDING)
+                                .build();
+
+                Order order = Order.builder()
+                                .id(1L)
+                                .orderCode("ORD-2026-001")
+                                .orderStatus(OrderStatus.SHIPPING)
+                                .build();
+                order.addItem(item);
+
+                when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+                assertThatThrownBy(() -> orderService.updateItemTradeStatus(1L, 10L, TradeFulfillmentStatus.TRADE_SENT))
+                                .isInstanceOf(TradeStateConflictException.class)
+                                .hasMessageContaining("Game account has not been assigned");
+        }
+
+        @Test
+        @DisplayName("updateItemTradeStatus: โยน TradeStateConflictException เมื่อออเดอร์ยังไม่อยู่ในสถานะ SHIPPING (เช่น PAID หรือ PENDING)")
+        void updateItemTradeStatus_OrderNotInShipping_ThrowsConflict() {
+                GameAccount account = GameAccount.builder().id(100L).accountCode("ACC-001").build();
+                OrderItem item = OrderItem.builder()
+                                .id(10L)
+                                .quantity(1)
+                                .assignedAccount(account)
+                                .tradeStatus(TradeFulfillmentStatus.FRIEND_PENDING)
+                                .build();
+
+                Order order = Order.builder()
+                                .id(1L)
+                                .orderCode("ORD-2026-001")
+                                .orderStatus(OrderStatus.PAID)
+                                .build();
+                order.addItem(item);
+
+                when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+                assertThatThrownBy(() -> orderService.updateItemTradeStatus(1L, 10L, TradeFulfillmentStatus.TRADE_SENT))
+                                .isInstanceOf(TradeStateConflictException.class)
+                                .hasMessageContaining("Order must be in SHIPPING status");
+        }
+
+        @Test
+        @DisplayName("updateItemTradeStatus: โยน TradeStateConflictException เมื่อออเดอร์ถูกยกเลิก (CANCELLED) หรือจบแล้ว (COMPLETED)")
+        void updateItemTradeStatus_TerminalOrder_ThrowsConflict() {
+                OrderItem item = OrderItem.builder()
+                                .id(10L)
+                                .quantity(1)
+                                .tradeStatus(TradeFulfillmentStatus.FRIEND_PENDING)
+                                .build();
+
+                Order cancelledOrder = Order.builder()
+                                .id(1L)
+                                .orderCode("ORD-2026-001")
+                                .orderStatus(OrderStatus.CANCELLED)
+                                .build();
+                cancelledOrder.addItem(item);
+
+                when(orderRepository.findById(1L)).thenReturn(Optional.of(cancelledOrder));
+
+                assertThatThrownBy(() -> orderService.updateItemTradeStatus(1L, 10L, TradeFulfillmentStatus.TRADE_SENT))
+                                .isInstanceOf(TradeStateConflictException.class)
+                                .hasMessageContaining("terminal state");
+        }
+
+        @Test
+        @DisplayName("updateItemTradeStatus: โยน TradeStateConflictException เมื่อข้ามขั้นจาก UNASSIGNED ไป TRADE_SENT")
+        void updateItemTradeStatus_SkipSequence_UnassignedToTradeSent_ThrowsConflict() {
+                GameAccount account = GameAccount.builder().id(100L).accountCode("ACC-001").build();
+                OrderItem item = OrderItem.builder()
+                                .id(10L)
+                                .quantity(1)
+                                .assignedAccount(account)
+                                .tradeStatus(TradeFulfillmentStatus.UNASSIGNED)
+                                .build();
+
+                Order order = Order.builder()
+                                .id(1L)
+                                .orderCode("ORD-2026-001")
+                                .orderStatus(OrderStatus.SHIPPING)
+                                .build();
+                order.addItem(item);
+
+                when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+                assertThatThrownBy(() -> orderService.updateItemTradeStatus(1L, 10L, TradeFulfillmentStatus.TRADE_SENT))
+                                .isInstanceOf(TradeStateConflictException.class)
+                                .hasMessageContaining("Expected: FRIEND_PENDING");
+        }
+
+        @Test
+        @DisplayName("updateItemTradeStatus: โยน TradeStateConflictException เมื่อข้ามขั้นจาก FRIEND_PENDING ไป COMPLETED โดยไม่ผ่าน TRADE_SENT")
+        void updateItemTradeStatus_SkipSequence_FriendPendingToCompleted_ThrowsConflict() {
+                GameAccount account = GameAccount.builder().id(100L).accountCode("ACC-001").build();
+                OrderItem item = OrderItem.builder()
+                                .id(10L)
+                                .quantity(1)
+                                .assignedAccount(account)
+                                .tradeStatus(TradeFulfillmentStatus.FRIEND_PENDING)
+                                .build();
+
+                Order order = Order.builder()
+                                .id(1L)
+                                .orderCode("ORD-2026-001")
+                                .orderStatus(OrderStatus.SHIPPING)
+                                .build();
+                order.addItem(item);
+
+                when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+                assertThatThrownBy(() -> orderService.updateItemTradeStatus(1L, 10L, TradeFulfillmentStatus.COMPLETED))
+                                .isInstanceOf(TradeStateConflictException.class)
+                                .hasMessageContaining("Expected: TRADE_SENT");
+        }
+
+        @Test
+        @DisplayName("updateItemTradeStatus: โยน TradeStateConflictException เมื่อพยายามย้อนสถานะจาก COMPLETED กลับเป็น TRADE_SENT")
+        void updateItemTradeStatus_ReverseSequence_CompletedToTradeSent_ThrowsConflict() {
+                GameAccount account = GameAccount.builder().id(100L).accountCode("ACC-001").build();
+                OrderItem item = OrderItem.builder()
+                                .id(10L)
+                                .quantity(1)
+                                .assignedAccount(account)
+                                .tradeStatus(TradeFulfillmentStatus.COMPLETED)
+                                .build();
+
+                Order order = Order.builder()
+                                .id(1L)
+                                .orderCode("ORD-2026-001")
+                                .orderStatus(OrderStatus.SHIPPING)
+                                .build();
+                order.addItem(item);
+
+                when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+                assertThatThrownBy(() -> orderService.updateItemTradeStatus(1L, 10L, TradeFulfillmentStatus.TRADE_SENT))
+                                .isInstanceOf(TradeStateConflictException.class)
+                                .hasMessageContaining("Expected: FRIEND_PENDING");
+        }
+
+        @Test
+        @DisplayName("updateItemTradeStatus: โยน ResourceNotFoundException (404) เมื่อไม่พบ Order ID")
         void updateItemTradeStatus_OrderNotFound_ThrowsException() {
                 when(orderRepository.findById(999L)).thenReturn(Optional.empty());
 
-                assertThatThrownBy(
-                                () -> orderService.updateItemTradeStatus(999L, 10L, TradeFulfillmentStatus.COMPLETED))
+                assertThatThrownBy(() -> orderService.updateItemTradeStatus(999L, 10L, TradeFulfillmentStatus.COMPLETED))
                                 .isInstanceOf(ResourceNotFoundException.class)
                                 .hasMessageContaining("Order");
 
@@ -322,8 +554,8 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("updateItemTradeStatus: โยน ResourceNotFoundException เมื่อไม่พบ Item ID ในออเดอร์นั้น")
-        void updateItemTradeStatus_ItemNotFound_ThrowsException() {
+        @DisplayName("updateItemTradeStatus: โยน ResourceNotFoundException (404) เมื่อส่ง OrderItem ที่อยู่คนละออเดอร์ (IDOR Protection)")
+        void updateItemTradeStatus_ItemNotFoundInOrder_ThrowsException() {
                 Order order = Order.builder().id(1L).orderCode("ORD-2026-001").build();
 
                 when(orderRepository.findById(1L)).thenReturn(Optional.of(order));

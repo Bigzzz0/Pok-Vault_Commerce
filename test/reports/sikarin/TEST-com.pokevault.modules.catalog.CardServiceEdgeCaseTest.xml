@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.146" tests="13" errors="0" skipped="0" failures="0">
+  <testcase name="createPersistsActualRequestFields" classname="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.094" />
+  <testcase name="blankSearchReturnsAllCards(String)[1]" classname="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.004" />
+  <testcase name="blankSearchReturnsAllCards(String)[2]" classname="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.002" />
+  <testcase name="blankSearchReturnsAllCards(String)[3]" classname="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.002" />
+  <testcase name="blankSearchReturnsAllCards(String)[4]" classname="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.002" />
+  <testcase name="searchTrimsQueryBeforeRepositoryCall" classname="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.003" />
+  <testcase name="allExpansionsMapToResponses" classname="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.002" />
+  <testcase name="updateMissingCardDoesNotWrite" classname="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.002" />
+  <testcase name="updateMissingExpansionDoesNotMutateExistingCard" classname="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.004" />
+  <testcase name="expansionCardsMapToResponse" classname="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.004" />
+  <testcase name="emptyPagePreservesRequestedPageAndSort" classname="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.009" />
+  <testcase name="combinedFiltersAreCaseInsensitiveAndTrimmed" classname="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.003" />
+  <testcase name="filtersWithNoMatchReturnEmptyList" classname="com.pokevault.modules.catalog.CardServiceEdgeCaseTest" time="0.002" />
+</testsuite>

@@ -2,6 +2,7 @@ package com.pokevault.modules.order.service;
 
 import com.pokevault.common.exception.InsufficientStockException;
 import com.pokevault.common.exception.ResourceNotFoundException;
+import com.pokevault.common.exception.TradeStateConflictException;
 import com.pokevault.domain.entity.CardInventory;
 import com.pokevault.domain.entity.Order;
 import com.pokevault.domain.entity.OrderItem;
@@ -162,40 +163,76 @@ public class OrderServiceImpl implements OrderService {
 
         @Override
         public OrderItemResponse updateItemTradeStatus(Long orderId, Long itemId, TradeFulfillmentStatus status) {
+                // ตรวจสอบความถูกต้องของสถานะเป้าหมาย (รองรับเฉพาะ TRADE_SENT และ COMPLETED)
+                if (status == null || (status != TradeFulfillmentStatus.TRADE_SENT && status != TradeFulfillmentStatus.COMPLETED)) {
+                        throw new IllegalArgumentException("Unsupported trade status: " + status
+                                        + ". Only TRADE_SENT and COMPLETED are allowed.");
+                }
+
                 // 1. ค้นหา Order
                 Order order = orderRepository.findById(orderId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
                 // 2. ค้นหา OrderItem ภายใน Order นั้น (ป้องกัน IDOR / เข้าถึงไอเทมข้ามออเดอร์)
                 OrderItem targetItem = order.getItems().stream()
-                                .filter(item -> item.getId().equals(itemId))
+                                .filter(item -> item.getId() != null && item.getId().equals(itemId))
                                 .findFirst()
                                 .orElseThrow(() -> new ResourceNotFoundException("OrderItem", "id", itemId));
 
-                // 3. อัปเดตสถานะการเทรดของไอเทม
+                // 3. Idempotency Check: หากสถานะตรงกับปัจจุบันอยู่แล้ว ให้คืนค่าทันทีโดยไม่ประมวลผลซ้ำ
+                if (targetItem.getTradeStatus() == status) {
+                        log.info("OrderItem id: {} in order id: {} is already in status: {}. Returning current state.",
+                                        itemId, orderId, status);
+                        return OrderItemResponse.fromEntity(targetItem);
+                }
+
+                // 4. ตรวจสอบว่าคำสั่งซื้อยังไม่ถูกยกเลิกหรือจบไปแล้ว
+                if (order.getOrderStatus() == OrderStatus.CANCELLED || order.getOrderStatus() == OrderStatus.COMPLETED) {
+                        throw new TradeStateConflictException(
+                                        "Cannot modify trade status for an order in terminal state: " + order.getOrderStatus());
+                }
+
+                // 5. ตรวจสอบเงื่อนไขตามลำดับ Invariant: UNASSIGNED -> FRIEND_PENDING -> TRADE_SENT -> COMPLETED
+                if (status == TradeFulfillmentStatus.TRADE_SENT) {
+                        // ต้องมีบัญชีเกมที่จับคู่แล้ว
+                        if (targetItem.getAssignedAccount() == null) {
+                                throw new TradeStateConflictException(
+                                                "Cannot set TRADE_SENT: Game account has not been assigned to OrderItem id: " + itemId);
+                        }
+                        // ออเดอร์ต้องอยู่ในสถานะ SHIPPING
+                        if (order.getOrderStatus() != OrderStatus.SHIPPING) {
+                                throw new TradeStateConflictException(
+                                                "Cannot set TRADE_SENT: Order must be in SHIPPING status (current status: " + order.getOrderStatus() + ")");
+                        }
+                        // สถานะปัจจุบันต้องเป็น FRIEND_PENDING (ห้ามข้ามขั้นจาก UNASSIGNED หรือย้อนจาก COMPLETED)
+                        if (targetItem.getTradeStatus() != TradeFulfillmentStatus.FRIEND_PENDING) {
+                                throw new TradeStateConflictException(
+                                                "Cannot transition to TRADE_SENT from current status: " + targetItem.getTradeStatus()
+                                                                + ". Expected: FRIEND_PENDING");
+                        }
+                } else if (status == TradeFulfillmentStatus.COMPLETED) {
+                        // เปลี่ยนเป็น COMPLETED ได้จาก TRADE_SENT เท่านั้น
+                        if (targetItem.getTradeStatus() != TradeFulfillmentStatus.TRADE_SENT) {
+                                throw new TradeStateConflictException(
+                                                "Cannot transition to COMPLETED from current status: " + targetItem.getTradeStatus()
+                                                                + ". Expected: TRADE_SENT");
+                        }
+                }
+
+                // 6. อัปเดตสถานะการเทรดของไอเทม
                 targetItem.setTradeStatus(status);
                 log.info("Updated trade status for order item [{}] in order [{}] to {}",
                                 itemId, order.getOrderCode(), status);
 
-                // 4. Auto-sync: ตรวจสอบและอัปเดตสถานะ Order ภาพรวม
+                // 7. Auto-sync: เมื่อทุกรายการในออเดอร์เป็น COMPLETED ให้เปลี่ยนออเดอร์เป็น COMPLETED ผ่าน GoF State Pattern
                 boolean allItemsCompleted = order.getItems().stream()
                                 .allMatch(item -> item.getTradeStatus() == TradeFulfillmentStatus.COMPLETED);
-                boolean anyItemTradeSent = order.getItems().stream()
-                                .anyMatch(item -> item.getTradeStatus() == TradeFulfillmentStatus.TRADE_SENT);
 
                 if (allItemsCompleted && !order.getItems().isEmpty()) {
-                        if (order.getOrderStatus() == OrderStatus.SHIPPING
-                                        || order.getOrderStatus() == OrderStatus.PAID) {
-                                order.setOrderStatus(OrderStatus.COMPLETED);
-                                log.info("All trade items completed in order [{}], auto-updated OrderStatus to COMPLETED",
-                                                order.getOrderCode());
-                        }
-                } else if (anyItemTradeSent) {
-                        if (order.getOrderStatus() == OrderStatus.PAID) {
-                                order.setOrderStatus(OrderStatus.SHIPPING);
-                                log.info("Item trade sent in order [{}], auto-updated OrderStatus to SHIPPING",
-                                                order.getOrderCode());
-                        }
+                        log.info("All trade items completed for order [{}] (id: {}). Transitioning order to COMPLETED via State Pattern.",
+                                        order.getOrderCode(), order.getId());
+                        OrderContext context = OrderContext.fromOrder(order);
+                        context.complete();
                 }
 
                 orderRepository.save(order);

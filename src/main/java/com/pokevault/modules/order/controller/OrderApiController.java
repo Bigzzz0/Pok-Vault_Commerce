@@ -1,19 +1,20 @@
 package com.pokevault.modules.order.controller;
 
+import com.pokevault.common.response.ApiResponse;
 import com.pokevault.domain.enums.TradeFulfillmentStatus;
 import com.pokevault.modules.order.dto.OrderItemResponse;
-
-import com.pokevault.common.response.ApiResponse;
 import com.pokevault.modules.order.dto.OrderResponse;
 import com.pokevault.modules.order.dto.PlaceOrderRequest;
 import com.pokevault.modules.order.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,8 +43,7 @@ public class OrderApiController {
             @Parameter(description = "Action to execute (pay, ship, complete, cancel)", example = "pay") @RequestParam String action) {
 
         OrderResponse response = orderService.transitionOrderStatus(id, action);
-        return ResponseEntity
-                .ok(ApiResponse.ok("Order status updated successfully to " + response.getOrderStatus(), response));
+        return ResponseEntity.ok(ApiResponse.ok("Order status updated successfully to " + response.getOrderStatus(), response));
     }
 
     @GetMapping("/{id}")
@@ -60,15 +60,23 @@ public class OrderApiController {
         return ResponseEntity.ok(ApiResponse.ok("Retrieved " + orders.size() + " orders successfully", orders));
     }
 
-    @PatchMapping("/{id}/items/{itemId}/trade-status")
-    @Operation(summary = "Update order item trade status", description = "Update in-game trade fulfillment status for a specific card item in the order (e.g., FRIEND_PENDING, TRADE_SENT, COMPLETED)")
+    @PatchMapping("/{orderId}/items/{orderItemId}/trade-status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @Operation(
+            summary = "Update order item trade status",
+            description = "Update in-game trade fulfillment status for a specific card item (TRADE_SENT or COMPLETED). "
+                    + "Enforces strict lifecycle sequence: UNASSIGNED -> FRIEND_PENDING -> TRADE_SENT -> COMPLETED. "
+                    + "TRADE_SENT requires an assigned game account and order in SHIPPING status. "
+                    + "Automatically transitions order to COMPLETED via GoF State Pattern when all items are COMPLETED. "
+                    + "Idempotent: repeating the current status returns current state without duplicate action. "
+                    + "Restricted to ADMIN and STAFF roles only (CUSTOMER will receive 403 Forbidden)."
+    )
     public ResponseEntity<ApiResponse<OrderItemResponse>> updateItemTradeStatus(
-            @Parameter(description = "Order ID", example = "1") @PathVariable Long id,
-            @Parameter(description = "Order Item ID", example = "1") @PathVariable Long itemId,
-            @Parameter(description = "New trade fulfillment status", example = "TRADE_SENT") @RequestParam TradeFulfillmentStatus status) {
+            @Parameter(description = "Order ID", example = "1") @PathVariable Long orderId,
+            @Parameter(description = "Order Item ID", example = "1") @PathVariable Long orderItemId,
+            @Parameter(description = "Target trade status (TRADE_SENT or COMPLETED)", example = "TRADE_SENT") @RequestParam TradeFulfillmentStatus status) {
 
-        OrderItemResponse response = orderService.updateItemTradeStatus(id, itemId, status);
+        OrderItemResponse response = orderService.updateItemTradeStatus(orderId, orderItemId, status);
         return ResponseEntity.ok(ApiResponse.ok("Order item trade status updated successfully", response));
     }
-
 }
