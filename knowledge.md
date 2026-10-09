@@ -593,3 +593,169 @@ graph TD
 | **`TradeMatchingApiController`** | REST Controller & Swagger | Routing เฉพาะ HTTP, ห่อผลลัพธ์ด้วย `ApiResponse<T>`, มี OpenAPI Docs ครบ |
 | **`OrderStateTest`** | Unit Test with BDD AssertJ | แยก 7 `@Nested` suites ตรวจสอบ State Machine ทุก Transition และ Guards |
 | **`TradeMatchingServiceTest`** | Mockito Test Isolation | จำลอง Repositories ทั้งหมด ตรวจสอบทั้งผลลัพธ์และ Behavior Verification (`verify()`) |
+
+---
+
+## 🧠 6. การวิเคราะห์เชิงลึก: Strategy Pattern & Algorithmic Strategies ในผลงานของคนที่ 4 (Deep-Dive Strategy Analysis)
+
+> ส่วนนี้จัดทำขึ้นโดยละเอียดเพื่อวิเคราะห์การประยุกต์ใช้ **Strategy Pattern** และ **Algorithmic Selection Strategies** ในส่วนงานที่สมาชิกคนที่ 4 (นายแทนคุณ พันธ์นิกุล — 673380301-0) รับผิดชอบโดยเฉพาะ ทั้ง 15 Commits เพื่อให้สามารถนำไปเสนออาจารย์ผู้สอนได้อย่างแม่นยำ ลึกซึ้ง และเห็นภาพการเชื่อมโยงทางทฤษฎีซอฟต์แวร์
+
+---
+
+### 🔍 6.1 ทฤษฎีความสัมพันธ์ระหว่าง GoF State Pattern กับ GoF Strategy Pattern
+
+ในตำราการออกแบบซอฟต์แวร์ระดับโลก *Design Patterns: Elements of Reusable Object-Oriented Software* โดย Gang of Four (GoF) ได้ระบุไว้อย่างชัดเจนว่า:
+> *"The State pattern can be considered as an extension of the Strategy pattern. Both share the exact same class structure (Context delegating to an Interface with Concrete Implementations), but they differ profoundly in their **Intent** and **Lifecycle**."*
+
+```mermaid
+classDiagram
+    direction LR
+    
+    class StrategyPattern {
+        <<GoF Structural Twin>>
+        Intent: สลับอัลกอริทึมการคำนวณ (How to do)
+        Client/Caller กำหนด Strategy ให้ Context
+        มักไม่มีการเปลี่ยนสลับระหว่างทำงาน
+    }
+    
+    class StatePattern {
+        <<GoF Structural Twin>>
+        Intent: สลับพฤติกรรมตามสถานะภายใน (Behavior based on state)
+        State เปลี่ยนแปลงตัวเองไดนามิก (State Transition)
+        Context คอยซิงค์สถานะ
+    }
+```
+
+#### ตารางเปรียบเทียบเชิงลึก: Strategy Pattern vs State Pattern
+
+| มิติการเปรียบเทียบ | GoF Strategy Pattern | GoF State Pattern (งานของคนที่ 4) |
+| :--- | :--- | :--- |
+| **เจตนารมณ์ (Intent)** | นิยามตระกูลของขั้นตอนวิธี (Family of Algorithms) เพื่อให้เลือกสลับขั้นตอนวิธีในการแก้ปัญหาหนึ่งๆ ได้ | อนุญาตให้วัตถุเปลี่ยนพฤติกรรมไปตามสถานะภายในของตนเอง เสมือนเปลี่ยนคลาสของวัตถุได้ ณ ขณะรันไทม์ |
+| **ใครเป็นผู้เปลี่ยน (Who transitions?)** | **ภายนอก (Client/Caller)** เป็นผู้เลือกหรือ Inject Strategy ที่ต้องการให้กับ Context | **ตัว State เอง (Internal Transition)** เป็นผู้ตัดสินใจเปลี่ยนผ่านไปยัง State ถัดไปผ่าน `context.setState(...)` |
+| **ความถี่ในการเปลี่ยน (Dynamic Transition)** | มักถูกกำหนดครั้งเดียวตอนเริ่มใช้งาน หรือเปลี่ยนตามการตั้งค่าของผู้ใช้ | เปลี่ยนแปลงอย่างต่อเนื่องตาม Lifecycle Event ของกระบวนการทางธุรกิจ |
+| **ความตระหนักรู้ต่อกัน (Mutual Knowledge)** | Concrete Strategies แต่ละตัวไม่จำเป็นต้องรู้จักกัน | Concrete States มักต้องรู้จัก State อื่นเพื่อส่งต่อไปยังสถานะถัดไป (เช่น `Pending` รู้จัก `Paid` และ `Cancelled`) |
+| **การประยุกต์ใช้ใน PokéVault** | ระบบคำนวณส่วนลดตามระดับสมาชิก (`DiscountStrategy`) | **ระบบวงจรชีวิตคำสั่งซื้อ (`OrderState` Lifecycle State Machine)** |
+
+---
+
+### ⚙️ 6.2 กลยุทธ์ (Strategies) ทั้ง 4 รูปแบบที่ถูกนำมาใช้จริงใน Commit ของคนที่ 4
+
+ในผลงานทั้ง 15 Commits ของสมาชิกคนที่ 4 มีการประยุกต์ใช้แนวคิดเชิงกลยุทธ์ (Strategy & Algorithmic Patterns) อย่างเด่นชัด 4 รูปแบบดังนี้:
+
+#### 🎯 กลยุทธ์ที่ 1: Dynamic Behavioral Strategy Pattern (Order Lifecycle Engine)
+* **ไฟล์ที่เกี่ยวข้อง**:
+  - `src/main/java/com/pokevault/modules/trade/state/OrderState.java`
+  - `src/main/java/com/pokevault/modules/trade/state/OrderContext.java`
+  - `PendingOrderState.java`, `PaidOrderState.java`, `ShippingOrderState.java`, `CompletedOrderState.java`, `CancelledOrderState.java`
+* **ลักษณะทางสถาปัตยกรรม**:
+  - `OrderContext` ทำหน้าที่เป็น Context ที่มอบหมาย (Delegate) การตอบสนองต่อคำสั่ง (`pay()`, `ship()`, `complete()`, `cancel()`) ให้กับ Concrete State ซึ่งทำหน้าที่เป็น **Behavioral Execution Strategy**
+  - ในแต่ละช่วงเวลา คำสั่งเดียวกัน (เช่น `cancel()`) จะมีกลยุทธ์การตอบสนองที่แตกต่างกันอย่างสิ้นเชิง:
+    1. ใน `PendingOrderState`: กลยุทธ์คือ **Cancel Immediately** (เปลี่ยนเป็น `CancelledOrderState`)
+    2. ใน `PaidOrderState`: กลยุทธ์คือ **Cancel & Refund** (เปลี่ยนเป็น `CancelledOrderState` พร้อมคืนเงิน)
+    3. ใน `ShippingOrderState`: กลยุทธ์คือ **Defensive Rejection** (โยน `InvalidOrderStateException` ทันทีเพื่อป้องกัน Free-Card Loss)
+    4. ใน `CompletedOrderState` / `CancelledOrderState`: กลยุทธ์คือ **Terminal Rejection** (ห้ามดำเนินการใดๆ เพิ่มเติม)
+
+#### 🎯 กลยุทธ์ที่ 2: Stock-Maximization Greedy Selection Strategy (Trade Auto-Matching)
+* **ไฟล์ที่เกี่ยวข้อง**:
+  - `src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java` (บรรทัดที่ 81-89)
+* **โค้ดและกลยุทธ์**:
+  ```java
+  // กรองเฉพาะไอดีที่มีสถานะ READY และมีสต็อกเพียงพอกับจำนวนที่สั่ง
+  CardInventory bestInventory = inventories.stream()
+          .filter(inv -> inv.getGameAccount() != null)
+          .filter(inv -> inv.getGameAccount().getTradeStatus() == AccountTradeStatus.READY)
+          .filter(inv -> inv.getQuantity() != null && inv.getQuantity() >= item.getQuantity())
+          .max(Comparator.comparing(CardInventory::getQuantity))
+          .orElseThrow(() -> new InsufficientStockException(...));
+  ```
+* **คำอธิบายกลยุทธ์ (Algorithmic Rationale)**:
+  - **Eligibility Strategy (คัดกรองคุณสมบัติ)**: บัญชีต้องมี `tradeStatus == READY` และมีสต็อกคงเหลือ `>= item.getQuantity()`
+  - **Greedy Optimization Strategy (คัดเลือกจุดคุ้มค่าสูงสุด)**: ใช้ `max(Comparator.comparing(CardInventory::getQuantity))` เพื่อเลือกบัญชีที่มีสต็อกการ์ดใบนั้น **"มากที่สุด"** 
+  - **เหตุผลทางธุรกิจ**: การเลือกไอดีที่มีสต็อกสูงสุดช่วยป้องกันไม่ให้ไอดีที่มีการ์ดเหลือน้อยต้องสต็อกหมดเกลี้ยง (Load Balancing across accounts) และรักษาความพร้อมของคลังเกมโดยรวม
+
+#### 🎯 กลยุทธ์ที่ 3: Two-Tier Prioritization & Ranking Strategy (Recommendation Query)
+* **ไฟล์ที่เกี่ยวข้อง**:
+  - `src/main/java/com/pokevault/modules/trade/service/TradeMatchingServiceImpl.java` (บรรทัดที่ 168-175)
+* **โค้ดและกลยุทธ์**:
+  ```java
+  List<CardInventory> availableInventories = inventories.stream()
+          .filter(inv -> inv.getGameAccount() != null)
+          .filter(inv -> inv.getQuantity() != null && inv.getQuantity() > 0)
+          .sorted(Comparator
+                  .comparing((CardInventory inv) -> inv.getGameAccount().getTradeStatus() == AccountTradeStatus.READY ? 0 : 1)
+                  .thenComparing(CardInventory::getQuantity, Comparator.reverseOrder()))
+          .toList();
+  ```
+* **คำอธิบายกลยุทธ์ (Multi-Level Comparator Strategy)**:
+  - **Tier 1 Strategy (Readiness Precedence)**: ให้ความสำคัญลำดับแรกกับไอดีที่มีสถานะ `READY` (แปลงเป็นค่า `0`) ให้อยู่เหนือสถานะอื่น (`BUSY`, `COOLDOWN` แปลงเป็นค่า `1`)
+  - **Tier 2 Strategy (Stock Descending Order)**: หากสถานะเท่ากัน ให้จัดเรียงตามจำนวนการ์ดจากมากไปน้อย (`Comparator.reverseOrder()`)
+  - ส่งผลให้ระบบคัดแยกตัวเลือกลำดับ 1 (Best Candidate) และตัวเลือกสำรอง (Alternative Candidates) ได้อย่างมีประสิทธิภาพและแม่นยำ
+
+#### 🎯 กลยุทธ์ที่ 4: Centralized Error Translation Strategy (AOP Exception Handling)
+* **ไฟล์ที่เกี่ยวข้อง**:
+  - `src/main/java/com/pokevault/modules/trade/advice/GlobalExceptionHandler.java`
+* **ลักษณะทางสถาปัตยกรรม**:
+  - ใช้กลยุทธ์แยกย่อยในการแปลงประเภทข้อผิดพลาด (Exception Types) ให้เป็น HTTP Status และ Error JSON Contract ที่เหมาะสม:
+    - Domain Not Found Strategy: `ResourceNotFoundException` ➔ HTTP 404
+    - Domain Invariant Strategy: `InsufficientStockException` / `InvalidOrderStateException` ➔ HTTP 400
+    - Input Validation Strategy: `MethodArgumentNotValidException` ➔ แกะ Field Error Map ➔ HTTP 400
+    - Unhandled Fallback Strategy: `Exception` ➔ HTTP 500
+
+---
+
+### 💡 6.3 แนวคิดการต่อยอด: การ Refactor สู่ Full Strategy Pattern สำหรับ Trade Matching
+
+หากในอนาคตธุรกิจต้องการขยายระบบการจับคู่ไอดีเกมให้รองรับกลยุทธ์ที่หลากหลายขึ้น เช่น:
+1. **MaxStockMatchingStrategy** (กลยุทธ์ปัจจุบัน: เลือกไอดีสต็อกสูงสุด)
+2. **RoundRobinMatchingStrategy** (กลยุทธ์กระจายรอบ: สลับไอดีหมุนเวียนเพื่อไม่ให้ไอดีใดไอดีหนึ่งถูกใช้งานหนักเกินไป)
+3. **LowestCooldownMatchingStrategy** (กลยุทธ์ประเมินเวลา: เลือกไอดีที่จะพ้นคูลดาวน์เร็วที่สุด)
+
+เราสามารถสกัดเป็น GoF Strategy Pattern แท้ได้ดังโครงสร้างนี้:
+
+```java
+// 1. Strategy Interface
+public interface AccountMatchingStrategy {
+    Optional<CardInventory> selectBestInventory(List<CardInventory> inventories, int requestedQuantity);
+}
+
+// 2. Concrete Strategy (Max Stock)
+@Component("maxStockStrategy")
+public class MaxStockMatchingStrategy implements AccountMatchingStrategy {
+    @Override
+    public Optional<CardInventory> selectBestInventory(List<CardInventory> inventories, int requestedQuantity) {
+        return inventories.stream()
+                .filter(inv -> inv.getGameAccount() != null && inv.getGameAccount().getTradeStatus() == AccountTradeStatus.READY)
+                .filter(inv -> inv.getQuantity() != null && inv.getQuantity() >= requestedQuantity)
+                .max(Comparator.comparing(CardInventory::getQuantity));
+    }
+}
+
+// 3. Context Usage in Service
+@Service
+@RequiredArgsConstructor
+public class TradeMatchingServiceImpl implements TradeMatchingService {
+    private final AccountMatchingStrategy matchingStrategy; // Inject ผ่าน Spring DI (Open/Closed Principle)
+    ...
+}
+```
+
+---
+
+### 🎤 6.4 ชุดคำถาม-คำตอบเจาะลึกเฉพาะหัวข้อ Strategy Pattern สำหรับนำเสนออาจารย์
+
+#### ❓ คำถามที่ 1: "ในกลุ่มของคุณ มีการใช้ Strategy Pattern ที่จุดใดบ้าง และในส่วนที่คุณ (คนที่ 4) เขียน มีส่วนเกี่ยวข้องอย่างไร?"
+* **แนวทางการตอบ (Core Rationale)**:
+  > *"ในระบบ PokéVault ภาพรวมระดับโครงงาน มีการใช้ GoF Strategy Pattern หลักในระบบคำนวณส่วนลดตามระดับสมาชิก (`DiscountStrategy`) ซึ่งเพื่อนสมาชิกคนที่ 3 เป็นผู้พัฒนาหลักครับ*  
+  > *ส่วนในโค้ดที่ผม (คนที่ 4) รับผิดชอบ ผมได้ประยุกต์ใช้แนวคิดเชิง Strategy ใน 2 มิติสำคัญครับ:*  
+  > *1. **State Pattern as a Dynamic Strategy**: สถาปัตยกรรม GoF State Pattern ที่ผมสร้าง (`OrderState`) ในทางทฤษฎีคือฝาแฝดของ Strategy Pattern ที่เปลี่ยนอัลกอริทึมพฤติกรรมของ Order ตามสถานะภายในแบบไดนามิก*  
+  > *2. **Selection & Ranking Strategies ใน Trade Matching**: ใน `TradeMatchingServiceImpl` ผมได้เขียนกลยุทธ์การคัดเลือกบัญชีแบบ **Greedy Stock-Maximization Strategy** และ **Two-Tier Prioritization Strategy** โดยใช้ Java Stream API และ `Comparator` เพื่อเลือกบัญชีที่ดีที่สุดโดยอัตโนมัติครับ"*
+
+#### ❓ คำถามที่ 2: "ทำไมใน Trade Matching คุณถึงเลือกกลยุทธ์แบบ Max Stock (เลือกไอดีที่สต็อกเยอะที่สุด) แทนที่จะเลือกไอดีแรกที่เจอ (First-Fit)?"
+* **แนวทางการตอบ (Core Rationale)**:
+  > *"ถ้าเราใช้กลยุทธ์ First-Fit หรือเลือกไอดีแรกที่เจอ อาจทำให้เกิดปัญหาไอดีเกมบางไอดีถูกใช้งานจนสต็อกการ์ดหมดเกลี้ยง (Inventory Starvation) ในขณะที่ไอดีอื่นมีสต็อกค้างอยู่จำนวนมากครับ*  
+  > *ผมจึงเลือกใช้กลยุทธ์ **Greedy Stock-Maximization** โดยดึงเฉพาะไอดีที่มีสถานะ `READY` แล้วใช้ `max(Comparator.comparing(CardInventory::getQuantity))` เพื่อเลือกไอดีที่มีสต็อกสูงสุด ซึ่งทำหน้าที่เสมือนการกระจายโหลด (Load Balancing) และรักษาความพร้อมของคลังการ์ดในระบบเกมให้มั่นคงที่สุดครับ"*
+
+#### ❓ คำถามที่ 3: "หากอาจารย์สั่งให้เพิ่มกลยุทธ์การจับคู่ไอดีแบบอื่น คุณจะปรับโค้ดของคุณตามหลัก SOLID อย่างไร?"
+* **แนวทางการตอบ (Core Rationale)**:
+  > *"ผมจะประยุกต์ใช้หลัก **Open/Closed Principle (OCP)** และ **Dependency Inversion Principle (DIP)** โดยสกัด Interface ชื่อ `AccountMatchingStrategy` ออกมา แล้วย้ายตรรกะการเลือกไอดีไปไว้ในคลาส เช่น `MaxStockMatchingStrategy` และ `RoundRobinMatchingStrategy` จากนั้นใน `TradeMatchingServiceImpl` จะเรียกใช้งานผ่าน Interface แทนครับ ทำให้เมื่อต้องการเพิ่มกลยุทธ์ใหม่ เราสามารถสร้างคลาสใหม่ได้ทันทีโดยไม่ต้องแก้ไขโค้ดใน Service เดิมครับ"*
+
