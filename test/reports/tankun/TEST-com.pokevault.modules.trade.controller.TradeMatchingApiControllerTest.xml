@@ -1,89 +1,89 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.185" tests="13" errors="0" skipped="0" failures="0">
-  <testcase name="autoMatchOrderItem_AlreadyCompleted_Returns409" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.064">
-    <system-out>2026-10-09T18:10:27.479+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T18:10:27.479+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T18:10:27.479+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T18:10:27.490+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : State conflict error (409): Cannot reassign account for OrderItem in status: COMPLETED at path /api/v1/trades/items/501/auto-match
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.163" tests="13" errors="0" skipped="0" failures="0">
+  <testcase name="autoMatchOrderItem_AlreadyCompleted_Returns409" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.067">
+    <system-out>2026-10-09T18:29:22.308+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:29:22.308+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:29:22.308+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:29:22.311+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : State conflict error (409): Cannot reassign account for OrderItem in status: COMPLETED at path /api/v1/trades/items/501/auto-match
 </system-out>
   </testcase>
-  <testcase name="getItemRecommendation_NotFound_Returns404" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.009">
-    <system-out>2026-10-09T18:10:27.499+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T18:10:27.499+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T18:10:27.499+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T18:10:27.500+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): OrderItem not found with id : '999' at path /api/v1/trades/items/999/recommendation
+  <testcase name="getItemRecommendation_NotFound_Returns404" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.01">
+    <system-out>2026-10-09T18:29:22.319+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:29:22.319+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:29:22.319+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:29:22.320+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): OrderItem not found with id : '999' at path /api/v1/trades/items/999/recommendation
 </system-out>
   </testcase>
-  <testcase name="autoMatchOrder_NotFound_Returns404" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.009">
-    <system-out>2026-10-09T18:10:27.508+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T18:10:27.508+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T18:10:27.508+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T18:10:27.510+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): Order not found with id : '999' at path /api/v1/trades/orders/999/auto-match
+  <testcase name="autoMatchOrder_NotFound_Returns404" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.008">
+    <system-out>2026-10-09T18:29:22.328+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:29:22.328+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:29:22.328+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:29:22.329+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): Order not found with id : '999' at path /api/v1/trades/orders/999/auto-match
 </system-out>
   </testcase>
-  <testcase name="getItemRecommendation_Success_Returns200" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.01">
-    <system-out>2026-10-09T18:10:27.516+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T18:10:27.516+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T18:10:27.516+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+  <testcase name="getItemRecommendation_Success_Returns200" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.009">
+    <system-out>2026-10-09T18:29:22.336+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:29:22.336+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:29:22.336+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="autoMatchOrder_Success_Returns200" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.023">
-    <system-out>2026-10-09T18:10:27.527+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T18:10:27.527+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T18:10:27.527+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+  <testcase name="autoMatchOrder_Success_Returns200" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.01">
+    <system-out>2026-10-09T18:29:22.346+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:29:22.346+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:29:22.346+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="assignAccountToOrderItem_Success_Returns200" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.009">
-    <system-out>2026-10-09T18:10:27.551+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T18:10:27.551+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T18:10:27.551+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+  <testcase name="assignAccountToOrderItem_Success_Returns200" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.008">
+    <system-out>2026-10-09T18:29:22.356+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:29:22.356+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:29:22.356+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="assignAccountToOrderItem_MissingAccountId_Returns400" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.01">
-    <system-out>2026-10-09T18:10:27.562+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T18:10:27.562+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T18:10:27.562+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T18:10:27.563+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Missing request parameter (400): Required parameter 'accountId' is missing at path /api/v1/trades/items/501/assign
+  <testcase name="assignAccountToOrderItem_MissingAccountId_Returns400" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.007">
+    <system-out>2026-10-09T18:29:22.365+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:29:22.365+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:29:22.365+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:29:22.366+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Missing request parameter (400): Required parameter 'accountId' is missing at path /api/v1/trades/items/501/assign
 </system-out>
   </testcase>
   <testcase name="autoMatchOrderItem_Success_Returns200" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.008">
-    <system-out>2026-10-09T18:10:27.570+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T18:10:27.570+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T18:10:27.570+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+    <system-out>2026-10-09T18:29:22.371+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:29:22.371+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:29:22.372+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
 </system-out>
   </testcase>
-  <testcase name="getOrderRecommendations_Success_Returns200" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.009">
-    <system-out>2026-10-09T18:10:27.578+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T18:10:27.578+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T18:10:27.579+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+  <testcase name="getOrderRecommendations_Success_Returns200" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.008">
+    <system-out>2026-10-09T18:29:22.379+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:29:22.379+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:29:22.379+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
 </system-out>
   </testcase>
-  <testcase name="autoMatchOrderItem_InsufficientStock_Returns400" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.008">
-    <system-out>2026-10-09T18:10:27.588+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T18:10:27.588+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T18:10:27.588+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T18:10:27.590+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Insufficient stock error (400): No READY game accounts have stock for card: Charizard ex at path /api/v1/trades/items/501/auto-match
+  <testcase name="autoMatchOrderItem_InsufficientStock_Returns400" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.006">
+    <system-out>2026-10-09T18:29:22.387+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:29:22.387+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:29:22.387+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:29:22.388+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Insufficient stock error (400): No READY game accounts have stock for card: Charizard ex at path /api/v1/trades/items/501/auto-match
 </system-out>
   </testcase>
-  <testcase name="assignAccountToOrderItem_AccountNotReady_Returns409" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.007">
-    <system-out>2026-10-09T18:10:27.596+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T18:10:27.596+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T18:10:27.596+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T18:10:27.598+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : State conflict error (409): Cannot assign account ACC-BUSY-01 because its status is: BUSY_TRADING at path /api/v1/trades/items/501/assign
+  <testcase name="assignAccountToOrderItem_AccountNotReady_Returns409" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.006">
+    <system-out>2026-10-09T18:29:22.393+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:29:22.393+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:29:22.393+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:29:22.394+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : State conflict error (409): Cannot assign account ACC-BUSY-01 because its status is: BUSY_TRADING at path /api/v1/trades/items/501/assign
 </system-out>
   </testcase>
-  <testcase name="getOrderRecommendations_NotFound_Returns404" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.007">
-    <system-out>2026-10-09T18:10:27.603+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T18:10:27.603+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T18:10:27.603+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T18:10:27.605+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): Order not found with id : '999' at path /api/v1/trades/orders/999/recommendations
+  <testcase name="getOrderRecommendations_NotFound_Returns404" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.006">
+    <system-out>2026-10-09T18:29:22.400+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:29:22.400+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:29:22.400+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:29:22.401+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): Order not found with id : '999' at path /api/v1/trades/orders/999/recommendations
 </system-out>
   </testcase>
-  <testcase name="assignAccountToOrderItem_AccountNotFound_Returns404" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.008">
-    <system-out>2026-10-09T18:10:27.611+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
-2026-10-09T18:10:27.611+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-10-09T18:10:27.611+07:00  INFO 103100 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-10-09T18:10:27.612+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): GameAccount not found with id : '888' at path /api/v1/trades/items/501/assign
+  <testcase name="assignAccountToOrderItem_AccountNotFound_Returns404" classname="com.pokevault.modules.trade.controller.TradeMatchingApiControllerTest" time="0.007">
+    <system-out>2026-10-09T18:29:22.406+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T18:29:22.406+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T18:29:22.406+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T18:29:22.408+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): GameAccount not found with id : '888' at path /api/v1/trades/items/501/assign
 </system-out>
   </testcase>
 </testsuite>

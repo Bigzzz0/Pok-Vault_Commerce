@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.dto.TradeRecommendationResponseTest" time="0.001" tests="3" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.dto.TradeRecommendationResponseTest" time="0.002" tests="3" errors="0" skipped="0" failures="0">
   <testcase name="testBuilderAndGetters" classname="com.pokevault.modules.trade.dto.TradeRecommendationResponseTest" time="0.0" />
   <testcase name="testDefaultAlternativeCandidates" classname="com.pokevault.modules.trade.dto.TradeRecommendationResponseTest" time="0.0" />
-  <testcase name="testSetters" classname="com.pokevault.modules.trade.dto.TradeRecommendationResponseTest" time="0.0" />
+  <testcase name="testSetters" classname="com.pokevault.modules.trade.dto.TradeRecommendationResponseTest" time="0.001" />
 </testsuite>

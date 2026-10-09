@@ -1,31 +1,31 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.019" tests="10" errors="0" skipped="0" failures="0">
-  <testcase name="handleInvalidOrderState_Returns409" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.001">
-    <system-out>2026-10-09T18:10:27.404+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : State conflict error (409): Cannot ship order in current state: PENDING at path /api/v1/orders/1/items/1/trade-status
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.01" tests="10" errors="0" skipped="0" failures="0">
+  <testcase name="handleInvalidOrderState_Returns409" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.0">
+    <system-out>2026-10-09T18:29:22.234+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : State conflict error (409): Cannot ship order in current state: PENDING at path /api/v1/orders/1/items/1/trade-status
 </system-out>
   </testcase>
-  <testcase name="handleInsufficientStock_Returns400" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.0">
-    <system-out>2026-10-09T18:10:27.404+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Insufficient stock error (400): Insufficient stock for Pikachu at path /api/v1/orders/1/items/1/trade-status
+  <testcase name="handleInsufficientStock_Returns400" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.001">
+    <system-out>2026-10-09T18:29:22.235+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Insufficient stock error (400): Insufficient stock for Pikachu at path /api/v1/orders/1/items/1/trade-status
 </system-out>
   </testcase>
   <testcase name="handleTypeMismatch_Returns400" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.001">
-    <system-out>2026-10-09T18:10:27.405+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Method argument type mismatch (400): Parameter 'status' has invalid value: 'INVALID_STATUS' at path /api/v1/orders/1/items/1/trade-status
+    <system-out>2026-10-09T18:29:22.235+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Method argument type mismatch (400): Parameter 'status' has invalid value: 'INVALID_STATUS' at path /api/v1/orders/1/items/1/trade-status
 </system-out>
   </testcase>
   <testcase name="handleTradeStateConflict_Returns409" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.0">
-    <system-out>2026-10-09T18:10:27.407+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : State conflict error (409): Cannot set TRADE_SENT: Order must be in SHIPPING status (current status: PAID) at path /api/v1/orders/1/items/1/trade-status
+    <system-out>2026-10-09T18:29:22.236+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : State conflict error (409): Cannot set TRADE_SENT: Order must be in SHIPPING status (current status: PAID) at path /api/v1/orders/1/items/1/trade-status
 </system-out>
   </testcase>
   <testcase name="handleIllegalArgument_Returns400" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.0">
-    <system-out>2026-10-09T18:10:27.407+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Illegal argument error (400): Unsupported trade status: UNASSIGNED at path /api/v1/orders/1/items/1/trade-status
+    <system-out>2026-10-09T18:29:22.237+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Illegal argument error (400): Unsupported trade status: UNASSIGNED at path /api/v1/orders/1/items/1/trade-status
 </system-out>
   </testcase>
   <testcase name="handleResourceNotFound_Returns404" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.0">
-    <system-out>2026-10-09T18:10:27.408+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): Order not found with id : '999' at path /api/v1/orders/1/items/1/trade-status
+    <system-out>2026-10-09T18:29:22.237+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): Order not found with id : '999' at path /api/v1/orders/1/items/1/trade-status
 </system-out>
   </testcase>
-  <testcase name="handleGeneralException_Returns500" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.012">
-    <system-out>2026-10-09T18:10:27.408+07:00 ERROR 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Internal server error (500) at path: /api/v1/orders/1/items/1/trade-status
+  <testcase name="handleGeneralException_Returns500" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.005">
+    <system-out>2026-10-09T18:29:22.238+07:00 ERROR 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Internal server error (500) at path: /api/v1/orders/1/items/1/trade-status
 
 java.lang.RuntimeException: Unexpected database failure
 	at com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest.handleGeneralException_Returns500(GlobalExceptionHandlerTest.java:164) ~[test-classes/:na]
@@ -103,16 +103,16 @@ java.lang.RuntimeException: Unexpected database failure
 
 </system-out>
   </testcase>
-  <testcase name="handleMissingParameter_Returns400" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.0">
-    <system-out>2026-10-09T18:10:27.420+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Missing request parameter (400): Required parameter 'accountId' is missing at path /api/v1/orders/1/items/1/trade-status
+  <testcase name="handleMissingParameter_Returns400" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.001">
+    <system-out>2026-10-09T18:29:22.243+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Missing request parameter (400): Required parameter 'accountId' is missing at path /api/v1/orders/1/items/1/trade-status
 </system-out>
   </testcase>
   <testcase name="handleAccessDenied_Returns403" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.0">
-    <system-out>2026-10-09T18:10:27.421+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Access denied (403): Access is denied at path /api/v1/orders/1/items/1/trade-status
+    <system-out>2026-10-09T18:29:22.243+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Access denied (403): Access is denied at path /api/v1/orders/1/items/1/trade-status
 </system-out>
   </testcase>
   <testcase name="handleNoResourceFound_Returns404" classname="com.pokevault.modules.trade.advice.GlobalExceptionHandlerTest" time="0.001">
-    <system-out>2026-10-09T18:10:27.422+07:00  WARN 103100 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): No static resource api/v1/orders/1/items/1/trade-status. at path /api/v1/orders/1/items/1/trade-status
+    <system-out>2026-10-09T18:29:22.244+07:00  WARN 115328 --- [tcg-pocket-inventory] [           main] c.p.m.t.advice.GlobalExceptionHandler    : Resource/URL not found (404): No static resource api/v1/orders/1/items/1/trade-status. at path /api/v1/orders/1/items/1/trade-status
 </system-out>
   </testcase>
 </testsuite>
