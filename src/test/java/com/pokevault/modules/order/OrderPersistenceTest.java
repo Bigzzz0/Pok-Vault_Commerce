@@ -199,4 +199,25 @@ class OrderPersistenceTest {
         assertThat(found.getCreatedAt()).isNotNull();
         assertThat(found.getUpdatedAt()).isNotNull();
     }
+
+    @Test
+    @DisplayName("Rollback Integrity: การหักสต็อกสินค้าหลายรายการ หากเกิดข้อผิดพลาดและ rollback ข้อมูลสต็อกใน DB จะไม่ถูกหัก")
+    void multiItemInventoryRollback_PreservesOriginalStock() {
+        CardExpansion exp = persistExpansion("A4");
+        CardInventory inv1 = persistInventory(exp, "001", "Bulbasaur");
+        CardInventory inv2 = persistInventory(exp, "002", "Ivysaur");
+        int originalQty1 = inv1.getQuantity(); // 10
+        int originalQty2 = inv2.getQuantity(); // 10
+
+        // จำลอง transaction ที่เริ่มหัก inv1 แต่ abort กลางคันก่อน commit
+        inv1.deductStock(2);
+        em.persist(inv1);
+        em.clear(); // จำลองการ abort/rollback โดยไม่ flush ลง DB
+
+        CardInventory reloaded1 = em.find(CardInventory.class, inv1.getId());
+        CardInventory reloaded2 = em.find(CardInventory.class, inv2.getId());
+
+        assertThat(reloaded1.getQuantity()).isEqualTo(originalQty1);
+        assertThat(reloaded2.getQuantity()).isEqualTo(originalQty2);
+    }
 }

@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.catalog.UserServiceTest" time="0.119" tests="8" errors="0" skipped="0" failures="0">
-  <testcase name="missingRewardProfileThrowsNotFound" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.087" />
-  <testcase name="profileMapsMembershipAndContactFields" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.005" />
-  <testcase name="absentProfileReturnsZeroPointsAndNullAddress" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.002" />
-  <testcase name="missingUserCannotBeRead" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.007" />
-  <testcase name="missingUserCannotUpdateAddress" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.003" />
-  <testcase name="addressUpdatePreservesExistingMembershipAndPoints" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.003" />
-  <testcase name="rewardPointsComeFromProfileRepository" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.001" />
-  <testcase name="addressUpdateCreatesAndLinksMissingProfile" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.003" />
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.catalog.UserServiceTest" time="0.061" tests="8" errors="0" skipped="0" failures="0">
+  <testcase name="missingRewardProfileThrowsNotFound" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.054" />
+  <testcase name="profileMapsMembershipAndContactFields" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.0" />
+  <testcase name="absentProfileReturnsZeroPointsAndNullAddress" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.0" />
+  <testcase name="missingUserCannotBeRead" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.0" />
+  <testcase name="missingUserCannotUpdateAddress" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.001" />
+  <testcase name="addressUpdatePreservesExistingMembershipAndPoints" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.001" />
+  <testcase name="rewardPointsComeFromProfileRepository" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.0" />
+  <testcase name="addressUpdateCreatesAndLinksMissingProfile" classname="com.pokevault.modules.catalog.UserServiceTest" time="0.001" />
 </testsuite>

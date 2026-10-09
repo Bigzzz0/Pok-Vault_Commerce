@@ -3,6 +3,7 @@ package com.pokevault.modules.order;
 import com.pokevault.common.exception.InsufficientStockException;
 import com.pokevault.common.exception.ResourceNotFoundException;
 import com.pokevault.domain.enums.OrderStatus;
+import com.pokevault.domain.enums.TradeFulfillmentStatus;
 import com.pokevault.modules.order.controller.OrderApiController;
 import com.pokevault.modules.order.dto.OrderItemResponse;
 import com.pokevault.modules.order.dto.OrderResponse;
@@ -31,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -339,5 +341,39 @@ class OrderBookingApiControllerTest {
                 .andExpect(jsonPath("$.data.length()").value(2))
                 .andExpect(jsonPath("$.data[0].orderCode").value("ORD-2026-001"))
                 .andExpect(jsonPath("$.data[1].orderCode").value("ORD-2026-002"));
+    }
+
+    @Test
+    @DisplayName("200 OK: PATCH /api/v1/orders/{orderId}/items/{orderItemId}/assign ย้ายบัญชีและสต็อกสำเร็จ")
+    void reassignOrderItemAccount_Success_Returns200() throws Exception {
+        OrderItemResponse response = OrderItemResponse.builder()
+                .id(10L)
+                .cardName("Charizard ex")
+                .quantity(1)
+                .assignedAccountId(2L)
+                .tradeStatus(TradeFulfillmentStatus.FRIEND_PENDING)
+                .build();
+
+        when(orderService.reassignOrderItemAccount(1L, 10L, 2L)).thenReturn(response);
+
+        mockMvc.perform(patch("/api/v1/orders/1/items/10/assign?accountId=2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.id").value(10))
+                .andExpect(jsonPath("$.data.assignedAccountId").value(2));
+
+        verify(orderService).reassignOrderItemAccount(1L, 10L, 2L);
+    }
+
+    @Test
+    @DisplayName("404 NOT_FOUND: PATCH /api/v1/orders/{orderId}/items/{orderItemId}/assign เมื่อไม่พบบัญชีปลายทาง")
+    void reassignOrderItemAccount_NotFound_Returns404() throws Exception {
+        when(orderService.reassignOrderItemAccount(1L, 10L, 999L))
+                .thenThrow(new ResourceNotFoundException("GameAccount", "id", 999L));
+
+        mockMvc.perform(patch("/api/v1/orders/1/items/10/assign?accountId=999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("NOT_FOUND"));
     }
 }

@@ -270,6 +270,8 @@ GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ท�
 | Activity Diagram | [doc/diagrams/activity-diagram.md](doc/diagrams/activity-diagram.md) |
 | Component & Deployment Diagram | [doc/diagrams/component-deployment-diagram.md](doc/diagrams/component-deployment-diagram.md) |
 | Design Patterns | [doc/design-patterns.md](doc/design-patterns.md) |
+| Security / Core Schema | [doc/sikarin-security-schema.md](doc/sikarin-security-schema.md) |
+| Test Report (ศิฆรินทร์) | [test/reports/sikarin/TEST-REPORT.md](test/reports/sikarin/TEST-REPORT.md) |
 | SOLID Analysis | [doc/solid-analysis.md](doc/solid-analysis.md) |
 | คู่มือการทดสอบ Unit Tests ของคนที่ 4 (นายแทนคุณ พันธ์นิกุล) | [README-TEST.md](README-TEST.md) |
 | โครงร่างสไลด์นำเสนอ | [doc/slide/presentation-outline.md](doc/slide/presentation-outline.md) |
@@ -283,7 +285,7 @@ GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)) ท�
 
 ## ข้อจำกัดที่ทราบ
 
-- `/api/**` เปิดให้เรียกได้โดยไม่ต้องเข้าสู่ระบบ (ยกเว้น `/api/v1/admin/**` ที่ตรวจบทบาทเอง) เหมาะกับการสาธิตและทดสอบผ่าน Swagger ไม่เหมาะกับการใช้งานจริง
+- REST API ตรวจสิทธิ์ตามบทบาท: แคตตาล็อก/สมัครสมาชิกเป็นสาธารณะ, API จัดการร้านเฉพาะ STAFF/ADMIN, ลูกค้าสร้างและอ่านออเดอร์เฉพาะของตนเอง ดู [Security และ Schema](doc/sikarin-security-schema.md)
 - ปุ่ม Inbox FB เปิดแชท Facebook ของร้านในแท็บใหม่และคัดลอกข้อความให้ ผู้ใช้ต้องวางข้อความเอง
 - การ์ดในฐานข้อมูลมี 28 ใบ แต่มีรูปและสต็อก 12 ใบ แกลเลอรีแสดงเฉพาะการ์ดที่มีสต็อก
 - ข้อความ error บางส่วนจาก API ยังเป็นภาษาอังกฤษ
