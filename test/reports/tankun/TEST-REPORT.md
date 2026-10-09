@@ -2,23 +2,23 @@
 
 Branch: `Tankun_6733803010_01`  
 บทบาท: Trade Matching, GoF State Pattern & Global Exception Handling Specialist (สมาชิกคนที่ 4, 673380301-0)  
-Report generated: 2026-10-09T16:51:47.532751+07:00
+Report generated: 2026-10-09T18:29:52.905266+07:00
 
 ## ผลการรัน
 
 | ขอบเขต | Tests | Failures | Errors | Skipped |
 |---|---:|---:|---:|---:|
-| ทั้งโปรเจกต์ | 145 | 0 | 0 | 0 |
-| ส่วนของแทนคุณ (Trade & State & Advice) | 74 | 0 | 0 | 0 |
+| ทั้งโปรเจกต์ | 355 | 0 | 0 | 0 |
+| ส่วนของแทนคุณ (Trade & State & Advice) | 87 | 0 | 0 | 0 |
 
 ## รายละเอียดส่วนของแทนคุณ (Member 4)
 
 | Test class | Tests | Failures | Errors |
 |---|---:|---:|---:|
-| OrderStateTest | 21 | 0 | 0 |
-| TradeMatchingServiceTest | 12 | 0 | 0 |
+| OrderStateTest | 23 | 0 | 0 |
+| TradeMatchingServiceTest | 21 | 0 | 0 |
 | TradeMatchingApiControllerTest | 13 | 0 | 0 |
-| OrderApiControllerTest | 13 | 0 | 0 |
+| OrderApiControllerTest | 15 | 0 | 0 |
 | GlobalExceptionHandlerTest | 10 | 0 | 0 |
 | TradeRecommendationResponseTest | 3 | 0 | 0 |
 | CustomExceptionTest | 2 | 0 | 0 |
@@ -52,12 +52,12 @@ python generate_tankun_report.py
 
 - ทดสอบเฉพาะไฟล์ที่เกี่ยวข้องกับสถาปัตยกรรมของสมาชิกคนที่ 4 ไม่แตะต้องโค้ด Production นอกขอบเขต
 - MockMvc ใช้ Standalone Setup ร่วมกับ `@ExtendWith(MockitoExtension.class)` เพื่อความรวดเร็วระดับมิลลิวินาที และหลีกเลี่ยงความขัดแย้งของ Sliced Context กับ `@EnableJpaAuditing`
-- ผลการทดสอบ Unit Tests ทั้ง 74 เคส ยืนยันว่า Business Invariants, State Machine, และ Trade Fulfillment Sequence ทำงานได้อย่างถูกต้องสมบูรณ์ 100%
+- ผลการทดสอบ Unit Tests ทั้ง 87 เคส ยืนยันว่า Business Invariants, State Machine, และ Trade Fulfillment Sequence ทำงานได้อย่างถูกต้องสมบูรณ์ 100%
 - ผลรายกรณีแบบละเอียดดูได้จาก `summary.json` และ JUnit XML ในโฟลเดอร์นี้
 
-## ผลรายกรณี (All 74 Test Cases)
+## ผลรายกรณี (All 87 Test Cases)
 
-### OrderStateTest (21 เคส)
+### OrderStateTest (23 เคส)
 
 - `testCancelFromPending` — passed
 - `testCancelFromPaidRestoresStock` — passed
@@ -77,19 +77,30 @@ python generate_tankun_report.py
 - `testConstructors` — passed
 - `testSetStateSyncsOrder` — passed
 - `testSafeDelegationWhenStateIsNull` — passed
+- `testCompleteRejectedWhenItemsNotAllCompleted` — passed
 - `testCancelRejectedWhileShipping` — passed
+- `testCompleteRejectedWhenOrderHasNoItems` — passed
 - `testCancelledStateIsTerminal` — passed
 - `testCompletedStateIsTerminal` — passed
 
-### TradeMatchingServiceTest (12 เคส)
+### TradeMatchingServiceTest (21 เคส)
 
 - `testAutoMatchOrderItemInsufficientStock` — passed
 - `testAutoMatchOrderItemSuccess` — passed
+- `testAutoMatchOrderItemRejectedWhenOrderCompleted` — passed
 - `testAutoMatchOrderItemNoReadyAccounts` — passed
 - `testAutoMatchOrderItemGuardAgainstReassignment` — passed
+- `testAutoMatchOrderItemRejectedWhenOrderCancelled` — passed
 - `testAutoMatchOrderSuccess` — passed
+- `testAutoMatchOrderRejectedWhenOrderCancelled` — passed
 - `testManualAssignRejectWhenCompleted` — passed
+- `testManualAssignRejectedWhenTargetAccountHasInsufficientStock` — passed
+- `testManualAssignRejectedWhenOrderCancelled` — passed
+- `testManualAssignRejectedWhenAccountDoesNotHoldCard` — passed
+- `testManualAssignRejectWhenTradeSent` — passed
 - `testManualAssignAccountNotReady` — passed
+- `testManualAssignLastAvailableCardSuccess` — passed
+- `testManualAssignRejectedWhenOrderCompleted` — passed
 - `testManualAssignAccountSuccess` — passed
 - `testGetRecommendationForItem` — passed
 - `testGetRecommendationsNoInventory` — passed
@@ -112,7 +123,7 @@ python generate_tankun_report.py
 - `getOrderRecommendations_NotFound_Returns404` — passed
 - `assignAccountToOrderItem_AccountNotFound_Returns404` — passed
 
-### OrderApiControllerTest (13 เคส)
+### OrderApiControllerTest (15 เคส)
 
 - `updateItemTradeStatus_InvalidStatus_Returns400` — passed
 - `updateItemTradeStatus_AccessDenied_Returns403` — passed
@@ -121,9 +132,11 @@ python generate_tankun_report.py
 - `transitionOrderStatus_InvalidStateTransition_Returns409` — passed
 - `transitionOrderStatus_Pay_Returns200` — passed
 - `updateItemTradeStatus_Success_Returns200` — passed
+- `transitionOrderStatus_Complete_Returns200` — passed
 - `updateItemTradeStatus_StateConflict_Returns409` — passed
 - `transitionOrderStatus_Ship_Returns200` — passed
 - `updateItemTradeStatus_NotFound_Returns404` — passed
+- `transitionOrderStatus_Complete_IncompleteItems_Returns409` — passed
 - `updateItemTradeStatus_Completed_Returns200` — passed
 - `updateItemTradeStatus_UnsupportedStatus_Returns400` — passed
 - `transitionOrderStatus_Cancel_Returns200` — passed

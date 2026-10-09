@@ -4,7 +4,7 @@
 **ผู้จัดทำและผู้นำเสนอ**: **สมาชิกคนที่ 4 — นายแทนคุณ พันธ์นิกุล (รหัสนักศึกษา: 673380301-0)**  
 **บทบาทหน้าที่**: Trade Matching Engine, GoF State Pattern & Global Exception Handling Specialist  
 **Git Branch**: `Tankun_6733803010_01`  
-**ผลงานการทดสอบ**: ✅ **7 Test Classes / 74 Test Cases (100% BUILD SUCCESS — 0 Failures, 0 Errors)**  
+**ผลงานการทดสอบ**: ✅ **7 Test Classes / 87 Test Cases (100% BUILD SUCCESS — 0 Failures, 0 Errors)**  
 **ไฟล์อ้างอิงหลัก**: [`README-TEST.md`](file:///e:/Coding/Pok-Vault_Commerce/README-TEST.md), [`doc/solid-analysis.md`](file:///e:/Coding/Pok-Vault_Commerce/doc/solid-analysis.md), [`doc/design-patterns.md`](file:///e:/Coding/Pok-Vault_Commerce/doc/design-patterns.md)
 
 ---
@@ -14,7 +14,7 @@
 2. [โครงสร้างสไลด์นำเสนอ 3 หน้าเฉพาะของสมาชิกคนที่ 4 (Slide Content & Script)](#2-โครงสร้างสไลด์นำเสนอ-3-หน้าเฉพาะของสมาชิกคนที่-4)
    - [สไลด์ที่ 1: GoF State Pattern — วงจรชีวิตคำสั่งซื้อ & Anti-Fraud Protection Guard](#สไลด์ที่-1-gof-state-pattern--วงจรชีวิตคำสั่งซื้อ--anti-fraud-protection-guard)
    - [สไลด์ที่ 2: In-Game Trade Matching Engine — อัลกอริทึม Greedy Auto-Match & Trade Lifecycle Sequence](#สไลด์ที่-2-in-game-trade-matching-engine--อัลกอริทึม-greedy-auto-match--trade-lifecycle-sequence)
-   - [สไลด์ที่ 3: Centralized Global Exception Handler, SOLID Architecture & ผลทดสอบ 74 เคส](#สไลด์ที่-3-centralized-global-exception-handler-solid-architecture--ผลทดสอบ-74-เคส)
+   - [สไลด์ที่ 3: Centralized Global Exception Handler, SOLID Architecture & ผลทดสอบ 87 เคส](#สไลด์ที่-3-centralized-global-exception-handler-solid-architecture--ผลทดสอบ-87-เคส)
 3. [คลังข้อมูลเจาะลึกโค้ดและคู่มือตอบคำถามอาจารย์รายบุคคล (Code Defense Guide - การันตี 20 คะแนนเต็ม)](#3-คลังข้อมูลเจาะลึกโค้ดและคู่มือตอบคำถามอาจารย์รายบุคคล)
    - [3.1 ตารางไฟล์และบรรทัดโค้ดทั้งหมดที่สมาชิกคนที่ 4 รับผิดชอบ](#31-ตารางไฟล์และบรรทัดโค้ดทั้งหมดที่สมาชิกคนที่-4-รับผิดชอบ)
    - [3.2 เจาะลึกโค้ด GoF State Pattern (`OrderState`, `OrderContext`)](#32-เจาะลึกโค้ด-gof-state-pattern-orderstate-ordercontext)
@@ -40,7 +40,7 @@
 │ • Auto Stock Restore    │ • Two-Tier Candidate DTO│ • Auto-Sync Completed              │
 ├─────────────────────────┴─────────────────────────┴────────────────────────────────────┤
 │ 4. Centralized Global Exception Handler (AOP @RestControllerAdvice) ➔ JSON ErrorResponse│
-│ 5. Unit Testing Architecture: 7 Classes / 74 Test Cases (100% BUILD SUCCESS ~2.5 วินาที)│
+│ 5. Unit Testing Architecture: 7 Classes / 87 Test Cases (100% BUILD SUCCESS ~2.5 วินาที)│
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -77,6 +77,7 @@
 3. **ไฮไลท์ทางความปลอดภัย (Business Invariant & Anti-Fraud Guard)**:
    - **Anti-Fraud Guard ใน `ShippingOrderState`**: เมื่อสถานะเป็น `SHIPPING` (พนักงานส่งการ์ดในเกมแล้ว) เมธอด `cancel()` จะโยน `InvalidOrderStateException` ทันที เพื่อป้องกันไม่ให้ลูกค้ายกเลิกเพื่อเอาเงินคืนในขณะที่ได้รับข้อเสนอการ์ดในเกมไปแล้ว
    - **Automatic Stock Restoration ใน `CancelledOrderState`**: เมื่อออเดอร์ถูกยกเลิกในสถานะที่อนุญาต (`PENDING` หรือ `PAID`) คอนสตรัคเตอร์จะสั่ง `restoreStock()` คืนการ์ดเข้า `CardInventory` ให้อัตโนมัติทันที
+   - **Completion Guard ใน `ShippingOrderState` (กันปิดออเดอร์ก่อนเทรดครบ)**: ออเดอร์ต้องมีรายการสินค้า และทุก `OrderItem` ต้องมีสถานะเป็น `COMPLETED` ก่อนที่จะอนุญาตให้ปิดคำสั่งซื้อ (`complete()`) หากยังเทรดไม่ครบจะโยน `TradeStateConflictException` (HTTP 409 Conflict) ทันที โดยใช้เงื่อนไขเดียวกันทั้งการเรียกผ่าน API `PATCH /orders/{id}/status?action=complete` และการปิดอัตโนมัติ (Auto-Sync)
 
 #### 📊 แผนภาพสถานะประกอบสไลด์ (State Diagram):
 ```mermaid
@@ -88,12 +89,11 @@ stateDiagram-v2
     PAID --> SHIPPING : ship() [เริ่มส่งมอบการ์ดในเกม]
     PAID --> CANCELLED : cancel() [ยกเลิก ➔ คืนเงิน & คืนสต็อก]
     
-    SHIPPING --> COMPLETED : complete() [ลูกค้ายืนยันรับการ์ดครบ]
+    SHIPPING --> COMPLETED : complete() [ทุกไอเทมต้อง COMPLETED ก่อน]
     
     note right of SHIPPING
-        ⚠️ Anti-Fraud Guard:
-        ห้าม cancel() เด็ดขาด!
-        ป้องกันการโกงรับการ์ดฟรีในเกม
+        ⚠️ Anti-Fraud Guard: ห้าม cancel()
+        ⚠️ Completion Guard: เทรดไม่ครบห้าม complete() (409)
     end note
     
     COMPLETED --> [*]
@@ -105,7 +105,7 @@ stateDiagram-v2
 > 
 > เริ่มต้นที่ **GoF State Pattern** ครับ ในระบบร้านค้าการ์ดเกม ปัญหาใหญ่คือ 'การเปลี่ยนสถานะข้ามขั้นตอน' หรือ 'ลูกค้ายกเลิกคำสั่งซื้อหลังจากที่ร้านกดยื่นข้อเสนอเทรดการ์ดในเกมไปแล้ว' ซึ่งจะทำให้ร้านสูญเสียการ์ดฟรี  
 > 
-> กระผมจึงได้ออกแบบ State Machine ผ่านอินเทอร์เฟซ `OrderState` และ `OrderContext` แยกพฤติกรรมออกเป็น 5 สถานะอิสระ โดยมีกฎความปลอดภัยระดับ Invariant ที่สำคัญมากคือ ในสถานะ `SHIPPING` ตัวเมธอด `cancel()` จะ Fail-Fast โยนข้อผิดพลาดทันทีเพื่อป้องกันการโกง และหากคำสั่งซื้อถูกยกเลิกในสถานะ `PENDING` หรือ `PAID` ตัว `CancelledOrderState` จะทำหน้าที่คืนสต็อกการ์ดกลับเข้าคลังให้อัตโนมัติทันที ทำให้โค้ดไม่มี if-else ซ้ำซ้อน และสอดคล้องกับหลัก Liskov Substitution Principle อย่างสมบูรณ์ครับ"*
+> กระผมจึงได้ออกแบบ State Machine ผ่านอินเทอร์เฟซ `OrderState` และ `OrderContext` แยกพฤติกรรมออกเป็น 5 สถานะอิสระ โดยมีกฎความปลอดภัยระดับ Invariant ที่สำคัญมากคือ ในสถานะ `SHIPPING` ตัวเมธอด `cancel()` จะ Fail-Fast โยนข้อผิดพลาดทันทีเพื่อป้องกันการโกง และมี **Completion Guard** ตรวจสอบว่าสินค้าทุกรายการต้องเป็น `COMPLETED` จึงจะปิดออเดอร์ได้ หากยังเทรดไม่ครบจะคืนสถานะ 409 Conflict ทันทีทั้งแบบกดปิดเองและแบบปิดอัตโนมัติ และหากคำสั่งซื้อถูกยกเลิกในสถานะ `PENDING` หรือ `PAID` ตัว `CancelledOrderState` จะทำหน้าที่คืนสต็อกการ์ดกลับเข้าคลังให้อัตโนมัติทันที ทำให้โค้ดไม่มี if-else ซ้ำซ้อน และสอดคล้องกับหลัก Liskov Substitution Principle อย่างสมบูรณ์ครับ"*
 
 ---
 
@@ -140,6 +140,8 @@ stateDiagram-v2
      - **Tier 2 (Alternative Candidates)**: รายชื่อไอดีสำรองสำหรับแสดงผลให้พนักงานเลือกเองได้
 4. **Trade Fulfillment Status Lifecycle & Auto-Sync ใน [`OrderServiceImpl:165-240`](file:///e:/Coding/Pok-Vault_Commerce/src/main/java/com/pokevault/modules/order/service/OrderServiceImpl.java#L165-L240)**:
    - ลำดับสถานะรายไอเทม: `UNASSIGNED` $\rightarrow$ `FRIEND_PENDING` $\rightarrow$ `TRADE_SENT` $\rightarrow$ `COMPLETED`
+   - **Strict Target Status & Idempotency**: ปฏิเสธสถานะเป้าหมาย `UNASSIGNED` และ `FRIEND_PENDING` (400 Bad Request) บังคับลำดับอย่างเข้มงวด `FRIEND_PENDING` $\rightarrow$ `TRADE_SENT` $\rightarrow$ `COMPLETED` และหากกดสถานะเดิมซ้ำจะไม่เกิดผลข้างเคียง (Idempotent)
+   - **Defensive Guards ใน Auto-Match & Manual Assignment**: ปฏิเสธหากออเดอร์ถูก `CANCELLED` หรือ `COMPLETED` (409 Conflict), ปฏิเสธการสลับไอดีหากการเทรดเริ่มส่งมอบแล้ว (`TRADE_SENT` / `COMPLETED`), ตรวจสอบสถานะบัญชีต้องเป็น `READY`, ตรวจสอบว่าบัญชีมีการ์ดและสต็อกเพียงพอ และรองรับการสลับบัญชีโดยซิงค์การจองสต็อก (คืนสต็อกคลังเดิม หักสต็อกคลังใหม่) รวมถึงการจองการ์ดใบสุดท้ายในคลัง (หักสต็อกเหลือ 0 สำเร็จ)
    - **กลไก Auto-Sync**: ใน 1 ออเดอร์อาจมีการ์ดหลายใบ เมื่อพนักงานกดเทรดการ์ดสำเร็จจนครบทุกใบ (`allItemsCompleted`) ระบบจะเรียก `OrderContext.complete()` เปลี่ยนสถานะออเดอร์หลักเป็น `COMPLETED` ผ่าน State Pattern อัตโนมัติทันที
 
 #### 📊 แผนภาพการทำงานประกอบสไลด์ (Sequence Diagram):
@@ -177,15 +179,15 @@ sequenceDiagram
 
 ---
 
-### สไลด์ที่ 3: Centralized Global Exception Handler, SOLID Architecture & ผลทดสอบ 74 เคส
+### สไลด์ที่ 3: Centralized Global Exception Handler, SOLID Architecture & ผลทดสอบ 87 เคส
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ SLIDE 3 (หน้าที่สามของแทนคุณ)                                                                    │
-│ Global Exception Handler, มาตรฐาน REST API, SOLID Architecture & Test Suite (74/74 Passes)       │
+│ Global Exception Handler, มาตรฐาน REST API, SOLID Architecture & Test Suite (87/87 Passes)       │
 ├───────────────────────────────────┬──────────────────────────────────────────────────────────────┤
 │ [Global Exception Handler]        │ [Testing Architecture & Results]                             │
-│ • AOP @RestControllerAdvice       │ • 7 Test Suites / 74 Test Cases                              │
+│ • AOP @RestControllerAdvice       │ • 7 Test Suites / 87 Test Cases                              │
 │ • JSON ErrorResponse สากล         │ • ผลลัพธ์: 100% PASS (0 Failures, 0 Errors)                  │
 │ • 404 NOT_FOUND                   │ • Execution Time: ~2.5 วินาที                                │
 │ • 409 CONFLICT (State Mismatch)   │ • Mockito Standalone Testing ไม่โหลด Context ช้า             │
@@ -208,21 +210,21 @@ sequenceDiagram
    - **LSP**: คลาส State ทุกตัวสามารถทดแทนกันได้ใน `OrderContext` ตามสัญญาของ `OrderState`
    - **ISP**: แยก Interface เฉพาะทาง `TradeMatchingService` ไม่พึ่งพาเมธอดที่ไม่เกี่ยวข้อง
    - **DIP**: ใช้ **Constructor Injection ผ่าน Lombok `@RequiredArgsConstructor` 100%** ไม่ใช้ Field Injection
-3. **ผลการทดสอบ Unit Testing 74 เคส (หลักฐานความเสถียรของระบบ)**:
-   - สถิติ: **7 Test Classes / 74 Test Scenarios — 100% BUILD SUCCESS**
+3. **ผลการทดสอบ Unit Testing 87 เคส (หลักฐานความเสถียรของระบบ)**:
+   - สถิติ: **7 Test Classes / 87 Test Scenarios — 100% BUILD SUCCESS**
    - ความเร็วในการรัน: **~2.5 วินาที** (ใช้ Mockito Standalone Setup หลีกเลี่ยง Overhead ของ Spring TestContext)
 
 #### 📊 ตารางสรุป Test Suite ของคนที่ 4 (แสดงบนสไลด์):
 | # | Test Suite Class | ขอบเขตการทดสอบ | จำนวนเคส | ผลลัพธ์ |
 | :-: | :--- | :--- | :-: | :-: |
-| 1 | **`OrderStateTest`** | State Machine Transitions, Anti-Fraud Guard, Stock Restoration | 21 เคส | ✅ PASS |
-| 2 | **`TradeMatchingServiceTest`** | Greedy Auto-Match, Two-Tier Recommendation, Batch Match | 12 เคส | ✅ PASS |
+| 1 | **`OrderStateTest`** | State Machine Transitions, Anti-Fraud Guard, Completion Guard, Stock Restoration | 23 เคส | ✅ PASS |
+| 2 | **`TradeMatchingServiceTest`** | Greedy Auto-Match, Terminal State Guards, Hold Card & Stock Check, Last Card Booking | 21 เคส | ✅ PASS |
 | 3 | **`TradeMatchingApiControllerTest`** | 5 Trade REST Endpoints, HTTP Status Mapping | 13 เคส | ✅ PASS |
-| 4 | **`OrderApiControllerTest`** | State Transition API & Trade Status Lifecycle API, RBAC | 13 เคส | ✅ PASS |
+| 4 | **`OrderApiControllerTest`** | State Transition API & Trade Status Lifecycle API, RBAC, 409 Conflict | 15 เคส | ✅ PASS |
 | 5 | **`GlobalExceptionHandlerTest`** | Centralized Exception Advice (400, 403, 404, 409, 500) | 10 เคส | ✅ PASS |
 | 6 | **`TradeRecommendationResponseTest`** | Trade DTO Models, Builder Pattern, Empty List Guard | 3 เคส | ✅ PASS |
 | 7 | **`CustomExceptionTest`** | Custom Domain Exceptions & Cause Wrappers | 2 เคส | ✅ PASS |
-| — | **รวมชุดทดสอบของสมาชิกคนที่ 4** | **ครอบคลุม Business Invariants และ Exception Mapping ครบ 100%** | **74 เคส** | **✅ PASS** |
+| — | **รวมชุดทดสอบของสมาชิกคนที่ 4** | **ครอบคลุม Business Invariants และ Exception Mapping ครบ 100%** | **87 เคส** | **✅ PASS** |
 
 #### 🎙️ บทพูดนำเสนอ (Speaking Script - 1 นาที 15 วินาที):
 > *"สำหรับสไลด์สุดท้ายในส่วนของกระผม คือ **การควบคุมคุณภาพสถาปัตยกรรมและการทดสอบ** ครับ  
@@ -231,7 +233,7 @@ sequenceDiagram
 > 
 > ในด้านการปฏิบัติตาม **SOLID Principles** โค้ดของกระผมสะท้อนหลักการอย่างครบถ้วน โดยเฉพาะ **LSP** ใน State Pattern และ **DIP** ที่ทุกคลาสใช้ Constructor Injection เท่านั้น ไม่มีการใช้ Field Injection ครับ  
 > 
-> และเพื่อพิสูจน์ความถูกต้องของซอฟต์แวร์ กระผมได้เขียน Unit Test ด้วย JUnit 5 และ Mockito ครอบคลุมถึง **7 Test Classes รวม 74 Test Cases** รันผ่าน **100% BUILD SUCCESS 0 Failures 0 Errors** โดยใช้เวลาเพียง 2.5 วินาที พร้อมออกรายงานการทดสอบอย่างเป็นทางการใน `README-TEST.md` ครับ ขอบพระคุณครับ"*
+> และเพื่อพิสูจน์ความถูกต้องของซอฟต์แวร์ กระผมได้เขียน Unit Test ด้วย JUnit 5 และ Mockito ครอบคลุมถึง **7 Test Classes รวม 87 Test Cases** รันผ่าน **100% BUILD SUCCESS 0 Failures 0 Errors** โดยใช้เวลาเพียง 2.5 วินาที พร้อมออกรายงานการทดสอบอย่างเป็นทางการใน `README-TEST.md` ครับ ขอบพระคุณครับ"*
 
 ---
 
@@ -498,14 +500,14 @@ public class GlobalExceptionHandler {
 
 ---
 
-#### ❓ คำถามที่ 10: *"ทำไมชุดทดสอบ 74 เคสของคุณถึงรันได้เร็วมากเพียง 2.5 วินาที คุณมีแนวทางการออกแบบเทสอย่างไร?"*
+#### ❓ คำถามที่ 10: *"ทำไมชุดทดสอบ 87 เคสของคุณถึงรันได้เร็วมากเพียง 2.5 วินาที คุณมีแนวทางการออกแบบเทสอย่างไร?"*
 > **🎯 แนวทางการตอบให้ได้ 20 คะแนนเต็ม**:  
 > *"เราใช้เทคนิค **Decoupled Standalone Unit Testing** ครับอาจารย์  
 > แทนที่เราจะใช้ `@SpringBootTest` หรือ `@WebMvcTest` ซึ่งต้องรอ Spring Boot สแกน Component และเชื่อมต่อ Hibernate DB จำลอง ซึ่งกินเวลาเริ่มต้น 5-10 วินาที  
-> ชุดทดสอบ 74 เคสของกระผม:  
+> ชุดทดสอบ 87 เคสของกระผม:  
 > 1. ในฝั่ง Service และ State (`OrderStateTest`, `TradeMatchingServiceTest`) เราเขียนเป็น Pure Java Unit Test ร่วมกับ Mockito `@Mock` และ `@InjectMocks`  
 > 2. ในฝั่ง Controller (`TradeMatchingApiControllerTest`, `OrderApiControllerTest`) เราใช้ `MockMvcBuilders.standaloneSetup(controller)` และผูก `GlobalExceptionHandler` เข้าไปตรงๆ  
-> ทำให้เราทดสอบ Business Logic, Serialization และ Exception Handling ได้ครบ 100% บนหน่วยความจำ JVM ตรงๆ ในระดับมิลลิวินาที จึงรันผ่าน 74 เคสได้ในเวลาเพียง 2.5 วินาทีครับ"*
+> ทำให้เราทดสอบ Business Logic, Serialization และ Exception Handling ได้ครบ 100% บนหน่วยความจำ JVM ตรงๆ ในระดับมิลลิวินาที จึงรันผ่าน 87 เคสได้ในเวลาเพียง 2.5 วินาทีครับ"*
 
 ---
 
@@ -514,10 +516,10 @@ public class GlobalExceptionHandler {
 หากในวันนำเสนอ อาจารย์ต้องการให้เปิด PowerShell รันชุดทดสอบของสมาชิกคนที่ 4 ให้ดูสดๆ:
 
 ```powershell
-# คำสั่งรันเฉพาะ 7 คลาสของสมาชิกคนที่ 4 (74 เคส)
+# คำสั่งรันเฉพาะ 7 คลาสของสมาชิกคนที่ 4 (87 เคส)
 .\mvnw.cmd test "-Dtest=OrderStateTest,TradeMatchingServiceTest,TradeMatchingApiControllerTest,OrderApiControllerTest,GlobalExceptionHandlerTest,TradeRecommendationResponseTest,CustomExceptionTest"
 ```
 
 > **ผลลัพธ์ที่จะปรากฏบนหน้าจอ**:  
-> `Tests run: 74, Failures: 0, Errors: 0, Skipped: 0`  
+> `Tests run: 87, Failures: 0, Errors: 0, Skipped: 0`  
 > `BUILD SUCCESS` (ใช้เวลารันประมาณ 2–3 วินาที)

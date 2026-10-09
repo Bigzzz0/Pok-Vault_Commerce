@@ -1,26 +1,26 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.state.OrderStateTest$CancellationTests" time="0.002" tests="4" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.state.OrderStateTest$CancellationTests" time="0.001" tests="4" errors="0" skipped="0" failures="0">
   <testcase name="testCancelFromPending" classname="com.pokevault.modules.trade.state.OrderStateTest$CancellationTests" time="0.0">
-    <system-out>16:48:26.365 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- Order reached terminal state: CANCELLED
-16:48:26.365 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- CancelledOrderState: Triggering automatic stock restoration for Order: com.pokevault.domain.entity.Order@71139e77
+    <system-out>2026-10-09T18:29:22.487+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : Order reached terminal state: CANCELLED
+2026-10-09T18:29:22.487+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: Triggering automatic stock restoration for Order: com.pokevault.domain.entity.Order@14ac020b
 </system-out>
   </testcase>
   <testcase name="testCancelFromPaidRestoresStock" classname="com.pokevault.modules.trade.state.OrderStateTest$CancellationTests" time="0.0">
-    <system-out>16:48:26.365 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- Order reached terminal state: CANCELLED
-16:48:26.365 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- CancelledOrderState: Triggering automatic stock restoration for Order: com.pokevault.domain.entity.Order@4de91056
-16:48:26.365 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- CancelledOrderState: Restored 1 copies to inventory id: 12 (now 1 in vault)
+    <system-out>2026-10-09T18:29:22.487+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : Order reached terminal state: CANCELLED
+2026-10-09T18:29:22.487+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: Triggering automatic stock restoration for Order: com.pokevault.domain.entity.Order@590a4378
+2026-10-09T18:29:22.487+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: Restored 1 copies to inventory id: 12 (now 1 in vault)
 </system-out>
   </testcase>
   <testcase name="testCancelFromPaid" classname="com.pokevault.modules.trade.state.OrderStateTest$CancellationTests" time="0.001">
-    <system-out>16:48:26.366 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- Order reached terminal state: CANCELLED
-16:48:26.366 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- CancelledOrderState: Triggering automatic stock restoration for Order: com.pokevault.domain.entity.Order@2404abe2
+    <system-out>2026-10-09T18:29:22.488+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : Order reached terminal state: CANCELLED
+2026-10-09T18:29:22.488+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: Triggering automatic stock restoration for Order: com.pokevault.domain.entity.Order@7b43dbf9
 </system-out>
   </testcase>
   <testcase name="testCancelRestoresStock" classname="com.pokevault.modules.trade.state.OrderStateTest$CancellationTests" time="0.0">
-    <system-out>16:48:26.366 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- Order reached terminal state: CANCELLED
-16:48:26.366 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- CancelledOrderState: Triggering automatic stock restoration for Order: com.pokevault.domain.entity.Order@16cf7fd0
-16:48:26.366 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- CancelledOrderState: Restored 2 copies to inventory id: 10 (now 2 in vault)
-16:48:26.366 [main] INFO com.pokevault.modules.trade.state.CancelledOrderState -- CancelledOrderState: Restored 1 copies to inventory id: 11 (now 5 in vault)
+    <system-out>2026-10-09T18:29:22.488+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : Order reached terminal state: CANCELLED
+2026-10-09T18:29:22.488+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: Triggering automatic stock restoration for Order: com.pokevault.domain.entity.Order@16fad7c3
+2026-10-09T18:29:22.488+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: Restored 2 copies to inventory id: 10 (now 2 in vault)
+2026-10-09T18:29:22.488+07:00  INFO 115328 --- [tcg-pocket-inventory] [           main] c.p.m.trade.state.CancelledOrderState    : CancelledOrderState: Restored 1 copies to inventory id: 11 (now 5 in vault)
 </system-out>
   </testcase>
 </testsuite>

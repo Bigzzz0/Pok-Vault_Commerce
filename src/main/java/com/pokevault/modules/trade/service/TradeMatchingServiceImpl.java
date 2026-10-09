@@ -3,6 +3,7 @@ package com.pokevault.modules.trade.service;
 import com.pokevault.common.exception.InsufficientStockException;
 import com.pokevault.common.exception.InvalidOrderStateException;
 import com.pokevault.common.exception.ResourceNotFoundException;
+import com.pokevault.common.exception.TradeStateConflictException;
 import com.pokevault.domain.entity.Card;
 import com.pokevault.domain.entity.CardInventory;
 import com.pokevault.domain.entity.GameAccount;
@@ -63,10 +64,11 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
         OrderItem item = orderItemRepository.findById(orderItemId)
                 .orElseThrow(() -> new ResourceNotFoundException("OrderItem", "id", orderItemId));
 
-        if (item.getOrder() != null && (item.getOrder().getOrderStatus() == OrderStatus.CANCELLED ||
-            item.getOrder().getOrderStatus() == OrderStatus.COMPLETED)) {
-            throw new InvalidOrderStateException(
-                    "Cannot match account for Order in terminal status: " + item.getOrder().getOrderStatus());
+        // ตรวจสอบว่าออเดอร์ไม่ใช่ CANCELLED/COMPLETED
+        Order order = item.getOrder();
+        if (order != null && (order.getOrderStatus() == OrderStatus.CANCELLED || order.getOrderStatus() == OrderStatus.COMPLETED)) {
+            throw new TradeStateConflictException(
+                    "Cannot auto-match account for order in terminal status: " + order.getOrderStatus());
         }
 
         // ป้องกันการเปลี่ยนไอดีหากการเทรดเริ่มส่งมอบหรือเสร็จสิ้นไปแล้ว
@@ -135,6 +137,11 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
+        if (order.getOrderStatus() == OrderStatus.CANCELLED || order.getOrderStatus() == OrderStatus.COMPLETED) {
+            throw new TradeStateConflictException(
+                    "Cannot auto-match accounts for order in terminal status: " + order.getOrderStatus());
+        }
+
         log.info("Auto-matching game accounts for order id: {}, code: {}", orderId, order.getOrderCode());
 
         List<TradeRecommendationResponse> responses = new ArrayList<>();
@@ -150,18 +157,21 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
         OrderItem item = orderItemRepository.findById(orderItemId)
                 .orElseThrow(() -> new ResourceNotFoundException("OrderItem", "id", orderItemId));
 
-        if (item.getOrder() != null && (item.getOrder().getOrderStatus() == OrderStatus.CANCELLED ||
-            item.getOrder().getOrderStatus() == OrderStatus.COMPLETED)) {
-            throw new InvalidOrderStateException(
-                    "Cannot assign account for Order in terminal status: " + item.getOrder().getOrderStatus());
+        // 1. ตรวจสอบว่าออเดอร์ไม่ใช่ CANCELLED/COMPLETED
+        Order order = item.getOrder();
+        if (order != null && (order.getOrderStatus() == OrderStatus.CANCELLED || order.getOrderStatus() == OrderStatus.COMPLETED)) {
+            throw new TradeStateConflictException(
+                    "Cannot assign account for order in terminal status: " + order.getOrderStatus());
         }
 
+        // 2. ป้องกันการเปลี่ยนไอดีหากการเทรดเริ่มส่งมอบหรือเสร็จสิ้นไปแล้ว
         if (item.getTradeStatus() == TradeFulfillmentStatus.TRADE_SENT ||
             item.getTradeStatus() == TradeFulfillmentStatus.COMPLETED) {
             throw new InvalidOrderStateException(
                     "Cannot reassign account for OrderItem in status: " + item.getTradeStatus());
         }
 
+        // 3. ตรวจสอบบัญชีเกมที่ระบุ
         GameAccount account = gameAccountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("GameAccount", "id", accountId));
 
@@ -170,41 +180,43 @@ public class TradeMatchingServiceImpl implements TradeMatchingService {
                     "Cannot assign account " + account.getAccountCode() + " because its status is: " + account.getTradeStatus());
         }
 
-        CardInventory oldInv = item.getInventory();
-        if (oldInv != null && oldInv.getGameAccount() != null && oldInv.getGameAccount().getId().equals(accountId)) {
+        CardInventory oldInventory = item.getInventory();
+        if (oldInventory != null && oldInventory.getGameAccount() != null && oldInventory.getGameAccount().getId().equals(accountId)) {
             // บัญชีเดิมที่ถือสต็อกที่จองไว้อยู่แล้ว
             item.setAssignedAccount(account);
             item.setTradeStatus(TradeFulfillmentStatus.FRIEND_PENDING);
             orderItemRepository.save(item);
         } else {
-            // บัญชีใหม่ ต้องค้นหา CardInventory ของบัญชีนี้ที่มีการ์ดใบเดียวกัน
-            Card card = (oldInv != null) ? oldInv.getCard() : null;
+            Card card = (oldInventory != null) ? oldInventory.getCard() : null;
             if (card == null) {
                 throw new InvalidOrderStateException(
-                        "Cannot assign account: Card information not found for OrderItem id: " + orderItemId);
+                        "Cannot match account: Card information not found for OrderItem id: " + orderItemId);
             }
-            List<CardInventory> targetInventories = cardInventoryRepository.findByCardId(card.getId());
-            CardInventory newInv = targetInventories.stream()
+
+            // 4. ตรวจสอบว่าบัญชีเป้าหมายมีการ์ดและสต็อกที่จัดสรรให้รายการนี้จริง
+            List<CardInventory> inventories = cardInventoryRepository.findByCardId(card.getId());
+            CardInventory targetInventory = inventories.stream()
                     .filter(inv -> inv.getGameAccount() != null && inv.getGameAccount().getId().equals(accountId))
                     .findFirst()
                     .orElseThrow(() -> new InsufficientStockException(
-                            "Account " + account.getAccountCode() + " does not hold card " + card.getName()));
+                            "Selected account " + account.getAccountCode() + " does not hold card: " + card.getName()));
 
-            if (!newInv.hasSufficientStock(item.getQuantity())) {
+            if (!targetInventory.hasSufficientStock(item.getQuantity())) {
                 throw new InsufficientStockException(
-                        "Account " + account.getAccountCode() + " has insufficient stock for: " + card.getName()
-                                + " (Available: " + newInv.getQuantity() + ", Requested: " + item.getQuantity() + ")");
+                        "Selected account " + account.getAccountCode() + " has insufficient stock for card: "
+                                + card.getName() + " (Available: " + targetInventory.getQuantity()
+                                + ", Requested: " + item.getQuantity() + ")");
             }
 
-            // ย้ายการจองสต็อกจริง: คืนคลังเก่า หักคลังใหม่
-            if (oldInv != null) {
-                oldInv.restoreStock(item.getQuantity());
-                cardInventoryRepository.save(oldInv);
+            // 5. เปลี่ยนบัญชีแล้วการจองสต็อกตรงกัน (สลับการจองสต็อก)
+            if (oldInventory != null) {
+                oldInventory.restoreStock(item.getQuantity());
+                cardInventoryRepository.save(oldInventory);
             }
-            newInv.deductStock(item.getQuantity());
-            cardInventoryRepository.save(newInv);
+            targetInventory.deductStock(item.getQuantity());
+            cardInventoryRepository.save(targetInventory);
 
-            item.setInventory(newInv);
+            item.setInventory(targetInventory);
             item.setAssignedAccount(account);
             item.setTradeStatus(TradeFulfillmentStatus.FRIEND_PENDING);
             orderItemRepository.save(item);

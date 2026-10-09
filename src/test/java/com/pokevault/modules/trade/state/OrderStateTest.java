@@ -1,10 +1,12 @@
 package com.pokevault.modules.trade.state;
 
 import com.pokevault.common.exception.InvalidOrderStateException;
+import com.pokevault.common.exception.TradeStateConflictException;
 import com.pokevault.domain.entity.CardInventory;
 import com.pokevault.domain.entity.Order;
 import com.pokevault.domain.entity.OrderItem;
 import com.pokevault.domain.enums.OrderStatus;
+import com.pokevault.domain.enums.TradeFulfillmentStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -53,6 +55,13 @@ class OrderStateTest {
             assertThat(context.getStatus()).isEqualTo(OrderStatus.SHIPPING);
             assertThat(context.getCurrentState()).isInstanceOf(ShippingOrderState.class);
             assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.SHIPPING);
+
+            // ก่อน complete: ทุกรายการสินค้าต้องเป็น COMPLETED
+            order.getItems().add(OrderItem.builder()
+                    .order(order)
+                    .quantity(1)
+                    .tradeStatus(TradeFulfillmentStatus.COMPLETED)
+                    .build());
 
             // Action: Complete -> COMPLETED
             context.complete();
@@ -139,6 +148,44 @@ class OrderStateTest {
             assertThat(context.getCurrentState()).isInstanceOf(ShippingOrderState.class);
             assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.SHIPPING);
         }
+
+        @Test
+        @DisplayName("Order in SHIPPING state cannot be completed if order has no items")
+        void testCompleteRejectedWhenOrderHasNoItems() {
+            context.pay();
+            context.ship();
+            assertThat(context.getStatus()).isEqualTo(OrderStatus.SHIPPING);
+
+            assertThatThrownBy(() -> context.complete())
+                    .isInstanceOf(TradeStateConflictException.class)
+                    .hasMessageContaining("Cannot complete order: order has no items");
+
+            assertThat(context.getStatus()).isEqualTo(OrderStatus.SHIPPING);
+        }
+
+        @Test
+        @DisplayName("CRITICAL: Order in SHIPPING state MUST REJECT completion before all trade items are COMPLETED")
+        void testCompleteRejectedWhenItemsNotAllCompleted() {
+            context.pay();
+            context.ship();
+
+            order.getItems().add(OrderItem.builder()
+                    .order(order)
+                    .quantity(1)
+                    .tradeStatus(TradeFulfillmentStatus.COMPLETED)
+                    .build());
+            order.getItems().add(OrderItem.builder()
+                    .order(order)
+                    .quantity(1)
+                    .tradeStatus(TradeFulfillmentStatus.TRADE_SENT)
+                    .build());
+
+            assertThatThrownBy(() -> context.complete())
+                    .isInstanceOf(TradeStateConflictException.class)
+                    .hasMessageContaining("Cannot complete order: not all items have reached COMPLETED trade status");
+
+            assertThat(context.getStatus()).isEqualTo(OrderStatus.SHIPPING);
+        }
     }
 
     @Nested
@@ -150,6 +197,11 @@ class OrderStateTest {
         void testCompletedStateIsTerminal() {
             context.pay();
             context.ship();
+            order.getItems().add(OrderItem.builder()
+                    .order(order)
+                    .quantity(1)
+                    .tradeStatus(TradeFulfillmentStatus.COMPLETED)
+                    .build());
             context.complete();
             assertThat(context.getStatus()).isEqualTo(OrderStatus.COMPLETED);
 
@@ -253,6 +305,11 @@ class OrderStateTest {
             context.executeAction("  ship  ");
             assertThat(context.getStatus()).isEqualTo(OrderStatus.SHIPPING);
 
+            order.getItems().add(OrderItem.builder()
+                    .order(order)
+                    .quantity(1)
+                    .tradeStatus(TradeFulfillmentStatus.COMPLETED)
+                    .build());
             context.executeAction("CoMpLeTe");
             assertThat(context.getStatus()).isEqualTo(OrderStatus.COMPLETED);
         }
