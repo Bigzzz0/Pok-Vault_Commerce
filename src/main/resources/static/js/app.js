@@ -1132,10 +1132,10 @@ function renderTradeModalContent(items) {
         });
         selectHtml += `</select>`;
 
-        // Action buttons based on status
+        // Action buttons based on status (Sequence: UNASSIGNED -> FRIEND_PENDING -> TRADE_SENT -> COMPLETED)
         let actionButtons = '';
         if (isAssigned) {
-            if (status === 'UNASSIGNED' || status === 'FRIEND_PENDING') {
+            if (status === 'FRIEND_PENDING') {
                 actionButtons += `
                     <button class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="advanceItemTradeStatus(${item.orderItemId}, 'TRADE_SENT')">
                         ส่งเทรดแล้ว
@@ -1150,6 +1150,8 @@ function renderTradeModalContent(items) {
             } else if (status === 'COMPLETED') {
                 actionButtons += `<span style="color: #10b981; font-size: 0.8rem; font-weight: 700;">เทรดในเกมแล้ว</span>`;
             }
+        } else {
+            actionButtons += `<span style="color: var(--text-muted); font-size: 0.75rem;">(รอจับคู่ไอดี)</span>`;
         }
 
         rowsHtml += `

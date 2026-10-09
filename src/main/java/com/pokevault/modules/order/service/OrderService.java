@@ -18,8 +18,8 @@ public interface OrderService {
     List<OrderResponse> getAllOrders();
 
     /**
-     * อัปเดตสถานะการส่งมอบการ์ดในเกม (Trade Fulfillment Status) สำหรับ OrderItem
-     * แต่ละรายการ
+     * อัปเดตสถานะการส่งมอบการ์ดในเกม (Trade Fulfillment Status) สำหรับ OrderItem แต่ละรายการ
+     * รองรับ TRADE_SENT และ COMPLETED พร้อมตรวจสอบลำดับ Invariants และซิงค์สถานะ Order ผ่าน State Pattern
      */
-    OrderItemResponse updateItemTradeStatus(Long orderId, Long itemId, TradeFulfillmentStatus status);
+    OrderItemResponse updateItemTradeStatus(Long orderId, Long orderItemId, TradeFulfillmentStatus status);
 }
