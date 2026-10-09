@@ -80,4 +80,21 @@ public class GameAccountApiController {
         GameAccountResponse response = gameAccountService.updateTradeStatus(id, status);
         return ResponseEntity.ok(ApiResponse.ok("Account trade status updated successfully", response));
     }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update game account", description = "Update full details of a store game account")
+    public ResponseEntity<ApiResponse<GameAccountResponse>> updateAccount(
+            @PathVariable Long id,
+            @Valid @RequestBody GameAccountRequest request) {
+        GameAccountResponse response = gameAccountService.updateAccount(id, request);
+        return ResponseEntity.ok(ApiResponse.ok("Game account updated successfully", response));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete game account", description = "Delete an unused game account from vault (must have no inventory or order references)")
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
+        gameAccountService.deleteAccount(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

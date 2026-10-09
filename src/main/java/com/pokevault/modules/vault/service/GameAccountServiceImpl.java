@@ -1,5 +1,8 @@
 package com.pokevault.modules.vault.service;
 
+import com.pokevault.domain.entity.OrderItem;
+import com.pokevault.repository.OrderItemRepository;
+
 import com.pokevault.common.exception.ResourceNotFoundException;
 import com.pokevault.domain.entity.Card;
 import com.pokevault.domain.entity.CardInventory;
@@ -32,149 +35,229 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class GameAccountServiceImpl implements GameAccountService {
 
-    private final GameAccountRepository gameAccountRepository;
-    private final CardInventoryRepository cardInventoryRepository;
-    private final CardRepository cardRepository;
+        private final GameAccountRepository gameAccountRepository;
+        private final CardInventoryRepository cardInventoryRepository;
+        private final CardRepository cardRepository;
+        private final OrderItemRepository orderItemRepository;
 
-    @Override
-    @Transactional
-    public GameAccountResponse createAccount(GameAccountRequest request) {
-        log.info("Registering new game account vault: code={}, inGameName={}",
-                request.getAccountCode(), request.getInGameName());
+        @Override
+        @Transactional
+        public GameAccountResponse createAccount(GameAccountRequest request) {
+                log.info("Registering new game account vault: code={}, inGameName={}",
+                                request.getAccountCode(), request.getInGameName());
 
-        if (gameAccountRepository.existsByAccountCode(request.getAccountCode())) {
-            throw new IllegalArgumentException("Account code already exists: " + request.getAccountCode());
+                if (gameAccountRepository.existsByAccountCode(request.getAccountCode())) {
+                        throw new IllegalArgumentException("Account code already exists: " + request.getAccountCode());
+                }
+
+                GameAccount account = GameAccount.builder()
+                                .accountCode(request.getAccountCode())
+                                .inGameName(request.getInGameName())
+                                .friendId(request.getFriendId())
+                                .tradeStatus(request.getTradeStatus() != null ? request.getTradeStatus()
+                                                : AccountTradeStatus.READY)
+                                .buyInCost(request.getBuyInCost() != null ? request.getBuyInCost() : BigDecimal.ZERO)
+                                .notes(request.getNotes())
+                                .build();
+
+                GameAccount saved = gameAccountRepository.save(account);
+                log.info("Successfully registered game account [ID: {}]: code={}", saved.getId(),
+                                saved.getAccountCode());
+                return GameAccountResponse.fromEntity(saved, 0);
         }
 
-        GameAccount account = GameAccount.builder()
-                .accountCode(request.getAccountCode())
-                .inGameName(request.getInGameName())
-                .friendId(request.getFriendId())
-                .tradeStatus(request.getTradeStatus() != null ? request.getTradeStatus() : AccountTradeStatus.READY)
-                .buyInCost(request.getBuyInCost() != null ? request.getBuyInCost() : BigDecimal.ZERO)
-                .notes(request.getNotes())
-                .build();
-
-        GameAccount saved = gameAccountRepository.save(account);
-        log.info("Successfully registered game account [ID: {}]: code={}", saved.getId(), saved.getAccountCode());
-        return GameAccountResponse.fromEntity(saved, 0);
-    }
-
-    @Override
-    public List<GameAccountResponse> getAllAccounts() {
-        List<GameAccount> accounts = gameAccountRepository.findAll();
-        return accounts.stream()
-                .map(account -> {
-                    int totalCards = cardInventoryRepository.findByGameAccountId(account.getId())
-                            .stream()
-                            .mapToInt(CardInventory::getQuantity)
-                            .sum();
-                    return GameAccountResponse.fromEntity(account, totalCards);
-                })
-                .toList();
-    }
-
-    @Override
-    public GameAccountResponse getAccountById(Long id) {
-        GameAccount account = gameAccountRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("GameAccount", "id", id));
-
-        int totalCards = cardInventoryRepository.findByGameAccountId(id)
-                .stream()
-                .mapToInt(CardInventory::getQuantity)
-                .sum();
-
-        return GameAccountResponse.fromEntity(account, totalCards);
-    }
-
-    @Override
-    @Transactional
-    public AccountCardResponse addPulledCard(Long id, AddPulledCardRequest request) {
-        log.info("Recording pack pull for game account [ID: {}]: cardId={}, qty={}",
-                id, request.getCardId(), request.getQuantity());
-
-        GameAccount account = gameAccountRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("GameAccount", "id", id));
-
-        Card card = cardRepository.findById(request.getCardId())
-                .orElseThrow(() -> new ResourceNotFoundException("Card", "id", request.getCardId()));
-
-        CardCondition condition = request.getCondition() != null ? request.getCondition() : CardCondition.MINT;
-        int quantityToAdd = request.getQuantity() > 0 ? request.getQuantity() : 1;
-
-        Optional<CardInventory> existingInventory = cardInventoryRepository
-                .findByCardIdAndGameAccountIdAndCondition(card.getId(), account.getId(), condition);
-
-        CardInventory inventoryToSave;
-        if (existingInventory.isPresent()) {
-            inventoryToSave = existingInventory.get();
-            int previousQty = inventoryToSave.getQuantity();
-            inventoryToSave.restoreStock(quantityToAdd);
-
-            if (request.getSellingPrice() != null && request.getSellingPrice().compareTo(BigDecimal.ZERO) > 0) {
-                inventoryToSave.setSellingPrice(request.getSellingPrice());
-            }
-
-            log.info(
-                    "Updated existing card inventory [ID: {}] for account [{}]: card='{}' ({}), condition={}, added={}, newQty={}",
-                    inventoryToSave.getId(), account.getAccountCode(), card.getName(), card.getCardNumber(),
-                    condition, quantityToAdd, inventoryToSave.getQuantity());
-        } else {
-            inventoryToSave = CardInventory.builder()
-                    .card(card)
-                    .gameAccount(account)
-                    .condition(condition)
-                    .quantity(quantityToAdd)
-                    .buyInPrice(request.getBuyInPrice() != null ? request.getBuyInPrice() : BigDecimal.ZERO)
-                    .sellingPrice(request.getSellingPrice() != null ? request.getSellingPrice() : BigDecimal.ZERO)
-                    .storageSlot(request.getStorageSlot())
-                    .build();
-
-            log.info("Created new card inventory for account [{}]: card='{}' ({}), condition={}, qty={}",
-                    account.getAccountCode(), card.getName(), card.getCardNumber(), condition, quantityToAdd);
+        @Override
+        public List<GameAccountResponse> getAllAccounts() {
+                List<GameAccount> accounts = gameAccountRepository.findAll();
+                return accounts.stream()
+                                .map(account -> {
+                                        int totalCards = cardInventoryRepository.findByGameAccountId(account.getId())
+                                                        .stream()
+                                                        .mapToInt(CardInventory::getQuantity)
+                                                        .sum();
+                                        return GameAccountResponse.fromEntity(account, totalCards);
+                                })
+                                .toList();
         }
 
-        CardInventory saved = cardInventoryRepository.save(inventoryToSave);
-        return AccountCardResponse.fromEntity(saved);
-    }
+        @Override
+        public GameAccountResponse getAccountById(Long id) {
+                GameAccount account = gameAccountRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("GameAccount", "id", id));
 
-    @Override
-    public List<AccountCardResponse> getAccountCards(Long id) {
-        if (!gameAccountRepository.existsById(id)) {
-            throw new ResourceNotFoundException("GameAccount", "id", id);
+                int totalCards = cardInventoryRepository.findByGameAccountId(id)
+                                .stream()
+                                .mapToInt(CardInventory::getQuantity)
+                                .sum();
+
+                return GameAccountResponse.fromEntity(account, totalCards);
         }
 
-        List<CardInventory> inventories = cardInventoryRepository.findByGameAccountId(id);
-        return inventories.stream()
-                .map(AccountCardResponse::fromEntity)
-                .toList();
-    }
+        @Override
+        @Transactional
+        public AccountCardResponse addPulledCard(Long id, AddPulledCardRequest request) {
+                log.info("Recording pack pull for game account [ID: {}]: cardId={}, qty={}",
+                                id, request.getCardId(), request.getQuantity());
 
-    @Override
-    @Transactional
-    public GameAccountResponse updateTradeStatus(Long id, AccountTradeStatus status) {
-        GameAccount account = gameAccountRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("GameAccount", "id", id));
+                GameAccount account = gameAccountRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("GameAccount", "id", id));
 
-        account.setTradeStatus(status);
-        GameAccount updated = gameAccountRepository.save(account);
-        log.info("Updated trade status for account [{}]: newStatus={}", updated.getAccountCode(), status);
+                Card card = cardRepository.findById(request.getCardId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Card", "id", request.getCardId()));
 
-        int totalCards = cardInventoryRepository.findByGameAccountId(id)
-                .stream()
-                .mapToInt(CardInventory::getQuantity)
-                .sum();
+                CardCondition condition = request.getCondition() != null ? request.getCondition() : CardCondition.MINT;
+                int quantityToAdd = request.getQuantity() > 0 ? request.getQuantity() : 1;
 
-        return GameAccountResponse.fromEntity(updated, totalCards);
-    }
+                Optional<CardInventory> existingInventory = cardInventoryRepository
+                                .findByCardIdAndGameAccountIdAndCondition(card.getId(), account.getId(), condition);
 
-    @Override
-    public BigDecimal calculateTotalVaultCostValue() {
-        return cardInventoryRepository.calculateTotalVaultCostValue();
-    }
+                CardInventory inventoryToSave;
+                if (existingInventory.isPresent()) {
+                        inventoryToSave = existingInventory.get();
+                        int previousQty = inventoryToSave.getQuantity();
+                        inventoryToSave.restoreStock(quantityToAdd);
 
-    @Override
-    public BigDecimal calculateTotalVaultSellingValue() {
-        return cardInventoryRepository.calculateTotalVaultSellingValue();
-    }
+                        if (request.getSellingPrice() != null
+                                        && request.getSellingPrice().compareTo(BigDecimal.ZERO) > 0) {
+                                inventoryToSave.setSellingPrice(request.getSellingPrice());
+                        }
+
+                        log.info(
+                                        "Updated existing card inventory [ID: {}] for account [{}]: card='{}' ({}), condition={}, added={}, newQty={}",
+                                        inventoryToSave.getId(), account.getAccountCode(), card.getName(),
+                                        card.getCardNumber(),
+                                        condition, quantityToAdd, inventoryToSave.getQuantity());
+                } else {
+                        inventoryToSave = CardInventory.builder()
+                                        .card(card)
+                                        .gameAccount(account)
+                                        .condition(condition)
+                                        .quantity(quantityToAdd)
+                                        .buyInPrice(request.getBuyInPrice() != null ? request.getBuyInPrice()
+                                                        : BigDecimal.ZERO)
+                                        .sellingPrice(request.getSellingPrice() != null ? request.getSellingPrice()
+                                                        : BigDecimal.ZERO)
+                                        .storageSlot(request.getStorageSlot())
+                                        .build();
+
+                        log.info("Created new card inventory for account [{}]: card='{}' ({}), condition={}, qty={}",
+                                        account.getAccountCode(), card.getName(), card.getCardNumber(), condition,
+                                        quantityToAdd);
+                }
+
+                CardInventory saved = cardInventoryRepository.save(inventoryToSave);
+                return AccountCardResponse.fromEntity(saved);
+        }
+
+        @Override
+        public List<AccountCardResponse> getAccountCards(Long id) {
+                if (!gameAccountRepository.existsById(id)) {
+                        throw new ResourceNotFoundException("GameAccount", "id", id);
+                }
+
+                List<CardInventory> inventories = cardInventoryRepository.findByGameAccountId(id);
+                return inventories.stream()
+                                .map(AccountCardResponse::fromEntity)
+                                .toList();
+        }
+
+        @Override
+        @Transactional
+        public GameAccountResponse updateTradeStatus(Long id, AccountTradeStatus status) {
+                GameAccount account = gameAccountRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("GameAccount", "id", id));
+
+                account.setTradeStatus(status);
+                GameAccount updated = gameAccountRepository.save(account);
+                log.info("Updated trade status for account [{}]: newStatus={}", updated.getAccountCode(), status);
+
+                int totalCards = cardInventoryRepository.findByGameAccountId(id)
+                                .stream()
+                                .mapToInt(CardInventory::getQuantity)
+                                .sum();
+
+                return GameAccountResponse.fromEntity(updated, totalCards);
+        }
+
+        @Override
+        public BigDecimal calculateTotalVaultCostValue() {
+                return cardInventoryRepository.calculateTotalVaultCostValue();
+        }
+
+        @Override
+        public BigDecimal calculateTotalVaultSellingValue() {
+                return cardInventoryRepository.calculateTotalVaultSellingValue();
+        }
+
+        @Override
+        @Transactional
+        public GameAccountResponse updateAccount(Long id, GameAccountRequest request) {
+                log.info("Updating game account vault [ID: {}]: inGameName={}, friendId={}",
+                                id, request.getInGameName(), request.getFriendId());
+
+                GameAccount account = gameAccountRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("GameAccount", "id", id));
+
+                // ตรวจสอบ accountCode ซ้ำ หากมีการขอเปลี่ยน code
+                if (request.getAccountCode() != null && !request.getAccountCode().isBlank()) {
+                        if (!account.getAccountCode().equals(request.getAccountCode())
+                                        && gameAccountRepository.existsByAccountCode(request.getAccountCode())) {
+                                throw new IllegalArgumentException(
+                                                "Account code already exists: " + request.getAccountCode());
+                        }
+                        account.setAccountCode(request.getAccountCode());
+                }
+
+                account.setInGameName(request.getInGameName());
+                account.setFriendId(request.getFriendId());
+                if (request.getTradeStatus() != null) {
+                        account.setTradeStatus(request.getTradeStatus());
+                }
+                if (request.getBuyInCost() != null) {
+                        account.setBuyInCost(request.getBuyInCost());
+                }
+                account.setNotes(request.getNotes());
+
+                GameAccount updated = gameAccountRepository.save(account);
+                log.info("Successfully updated game account [ID: {}]: code={}", updated.getId(),
+                                updated.getAccountCode());
+
+                int totalCards = cardInventoryRepository.findByGameAccountId(id)
+                                .stream()
+                                .mapToInt(CardInventory::getQuantity)
+                                .sum();
+
+                return GameAccountResponse.fromEntity(updated, totalCards);
+        }
+
+        @Override
+        @Transactional
+        public void deleteAccount(Long id) {
+                log.info("Deleting game account vault [ID: {}]", id);
+
+                GameAccount account = gameAccountRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("GameAccount", "id", id));
+
+                // 1. ตรวจสอบว่ามีการ์ดในคลังผูกอยู่หรือไม่
+                List<CardInventory> inventories = cardInventoryRepository.findByGameAccountId(id);
+                if (!inventories.isEmpty()) {
+                        throw new IllegalStateException(
+                                        "Cannot delete game account [ID: " + id + ", Code: " + account.getAccountCode()
+                                                        + "]: account contains " + inventories.size()
+                                                        + " card inventory record(s) in vault.");
+                }
+
+                // 2. ตรวจสอบว่ามีรายการออเดอร์ผูกอยู่หรือไม่
+                List<OrderItem> assignedItems = orderItemRepository.findByAssignedAccountId(id);
+                if (!assignedItems.isEmpty()) {
+                        throw new IllegalStateException(
+                                        "Cannot delete game account [ID: " + id + ", Code: " + account.getAccountCode()
+                                                        + "]: account is assigned to " + assignedItems.size()
+                                                        + " order item(s).");
+                }
+
+                gameAccountRepository.delete(account);
+                log.info("Successfully deleted game account [ID: {}]: code={}", id, account.getAccountCode());
+        }
+
 }
