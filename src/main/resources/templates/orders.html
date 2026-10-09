@@ -11,6 +11,7 @@
         })();
     </script>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/ux-improvements.css}">
     <link rel="stylesheet" th:href="@{/css/pokemon-cards-holo.css}">
 </head>
 <body>
@@ -23,12 +24,13 @@
             </div>
             <span>Pokémon TCG Pocket Gallery</span>
         </a>
-        <div class="nav-links">
+        <button type="button" class="nav-menu-toggle" aria-expanded="false" aria-controls="siteNavigation">เมนู</button>
+        <div class="nav-links" id="siteNavigation">
             <a th:href="@{/}" class="nav-link">
                 <div th:replace="~{fragments/icons :: dashboard('icon-sm')}"></div>
                 <span>หน้าแรก</span>
             </a>
-            <a th:href="@{/cards}" class="nav-link">
+            <a th:href="@{/cards}" data-gallery-return class="nav-link">
                 <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
                 <span>แกลเลอรีการ์ด</span>
             </a>
@@ -74,7 +76,7 @@
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
             <div>
                 <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px;">คำสั่งซื้อและการเทรดในเกม</h1>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">จัดการสถานะคำสั่งซื้อ (Pending → Paid → Shipping → Completed) และจับคู่บัญชีเกมเพื่อเทรดการ์ดให้ลูกค้าผ่าน Friend Code</p>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">ตรวจสอบการชำระเงิน จับคู่บัญชี และติดตามการส่งการ์ดผ่านการเทรดในเกม</p>
             </div>
             <a th:href="@{/inventory}" class="btn btn-primary">
                 <div th:replace="~{fragments/icons :: plus('icon-sm')}"></div>
@@ -82,9 +84,17 @@
             </a>
         </div>
 
+
+        <section class="orders-filter-toolbar" aria-label="กรองคำสั่งซื้อ">
+            <label>ค้นหาออเดอร์ ลูกค้า หรือการ์ด<input id="orderSearch" class="input-field" type="search" placeholder="รหัสออเดอร์ ชื่อลูกค้า หรือชื่อการ์ด"></label>
+            <label>สถานะ<select id="orderStatusFilter" class="input-field"><option value="all">ทั้งหมด</option><option value="PENDING">รอชำระเงิน</option><option value="PAID">ชำระแล้ว</option><option value="SHIPPING">กำลังเทรด</option><option value="COMPLETED">เสร็จสิ้น</option><option value="CANCELLED">ยกเลิกแล้ว</option></select></label>
+            <button type="button" class="btn btn-secondary" id="orderFilterReset">ล้างตัวกรอง</button>
+            <span id="orderFilterCount" role="status" aria-live="polite"></span>
+        </section>
+        <p id="orderFilterEmpty" hidden>ไม่พบออเดอร์ตามเงื่อนไขนี้ ลองเปลี่ยนคำค้นหาหรือล้างตัวกรอง</p>
         <!-- Orders Table -->
         <div class="table-wrapper">
-            <table class="orders-table">
+            <table class="orders-table responsive-data-table">
                 <thead>
                     <tr>
                         <th>รหัสคำสั่งซื้อ</th>
@@ -102,12 +112,12 @@
                             ยังไม่มีคำสั่งซื้อในระบบ ไปที่ <a th:href="@{/inventory}" style="color: var(--accent-cyan); font-weight: 700;">คลังสินค้า</a> เพื่อสร้างคำสั่งซื้อแรก
                         </td>
                     </tr>
-                    <tr th:each="ord : ${orders}">
-                        <td>
+                    <tr th:each="ord : ${orders}" th:data-order-status="${ord.orderStatus.name()}">
+                        <td data-label="รหัสคำสั่งซื้อ">
                             <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent-cyan); white-space: nowrap;" th:text="${ord.orderCode}">ORD-001</span>
                             <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${#temporals.format(ord.createdAt, 'yyyy-MM-dd HH:mm')}">2026-09-06</div>
                         </td>
-                        <td>
+                        <td data-label="การ์ด">
                             <div th:each="item : ${ord.items}" style="display: flex; align-items: center; gap: 0.85rem; margin: 0.2rem 0;">
                                 <img th:src="${item.imageUrl}" th:alt="${item.cardName}" class="inv-card-thumb" loading="lazy">
                                 <div>
@@ -116,7 +126,8 @@
                                 </div>
                             </div>
                         </td>
-                        <td>
+                        <td data-label="ลูกค้า / Friend ID">
+                            <details class="order-secondary-details" open><summary>ข้อมูลลูกค้าและ Friend ID</summary><div class="order-secondary-content">
                             <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.2rem 0.5rem;">
                                 <span style="font-weight: 600;" th:text="${ord.customerFullName != null ? ord.customerFullName : ord.username}">Ash Ketchum</span>
                                 <span class="rarity-pill" th:if="${ord.membershipTier != null}" th:text="${ord.membershipTier}">VIP</span>
@@ -129,28 +140,29 @@
                                 </button>
                             </div>
                             <div th:if="${ord.customerInGameName != null}" style="font-size: 0.75rem; color: var(--text-secondary);" th:text="'IGN: ' + ${ord.customerInGameName}">IGN: AshMaster</div>
+                        </div></details>
                         </td>
-                        <td>
+                        <td data-label="สถานะคำสั่งซื้อ">
                             <!-- Visual State Node Stepper -->
                             <div class="state-pipeline">
                                 <span th:class="${'state-node ' + (ord.orderStatus.name() == 'PENDING' ? 'active-pending' : '')}">
-                                    <span>PENDING</span>
+                                    <span>รอชำระเงิน</span>
                                 </span>
                                 <span style="color: var(--text-muted);">→</span>
                                 <span th:class="${'state-node ' + (ord.orderStatus.name() == 'PAID' ? 'active-paid' : '')}">
-                                    <span>PAID</span>
+                                    <span>ชำระแล้ว</span>
                                 </span>
                                 <span style="color: var(--text-muted);">→</span>
                                 <span th:class="${'state-node ' + (ord.orderStatus.name() == 'SHIPPING' ? 'active-shipping' : '')}">
-                                    <span>SHIPPING</span>
+                                    <span>กำลังเทรด</span>
                                 </span>
                                 <span style="color: var(--text-muted);">→</span>
                                 <span th:class="${'state-node ' + (ord.orderStatus.name() == 'COMPLETED' ? 'active-completed' : (ord.orderStatus.name() == 'CANCELLED' ? 'active-cancelled' : ''))}">
-                                    <span th:text="${ord.orderStatus.name() == 'CANCELLED' ? 'CANCELLED' : 'COMPLETED'}">COMPLETED</span>
+                                    <span th:text="${ord.orderStatus.name() == 'CANCELLED' ? 'ยกเลิกแล้ว' : 'เสร็จสิ้น'}">COMPLETED</span>
                                 </span>
                             </div>
                         </td>
-                        <td>
+                        <td data-label="การเทรดในเกม">
                             <!-- In-Game Trade Fulfillment Summary & Action -->
                             <div style="display: flex; flex-direction: column; gap: 0.35rem;">
                                 <div style="display: flex; align-items: center; gap: 0.4rem;">
@@ -166,11 +178,18 @@
                                 <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${ord.items != null ? ord.items.size() + ' รายการในออเดอร์' : '0 รายการ'}">1 card</div>
                             </div>
                         </td>
-                        <td>
-                            <div style="color: #10b981; font-weight: 800; font-size: 1rem;" th:text="'฿' + ${#numbers.formatDecimal(ord.finalAmount, 1, 2)}">฿405.00</div>
-                            <div th:if="${ord.discountAmount > 0}" style="color: var(--accent-gold); font-size: 0.75rem;" th:text="'ประหยัด ฿' + ${#numbers.formatDecimal(ord.discountAmount, 1, 2)}">Save ฿45.00</div>
+                        <td data-label="ยอดชำระ">
+                            <div style="color: #10b981; font-weight: 800; font-size: 1rem;" th:text="'฿' + ${#numbers.formatDecimal(ord.finalAmount, 1, 'COMMA', 2, 'POINT')}">฿405.00</div>
+                            <div th:if="${ord.discountAmount > 0}" style="color: var(--accent-gold); font-size: 0.75rem;" th:text="'ประหยัด ฿' + ${#numbers.formatDecimal(ord.discountAmount, 1, 'COMMA', 2, 'POINT')}">Save ฿45.00</div>
                         </td>
-                        <td>
+                        <td data-label="จัดการสถานะ">
+                            <p class="order-next-step" th:switch="${ord.orderStatus.name()}">
+                                <span th:case="'PENDING'">ตรวจสอบหลักฐานและยอดชำระก่อนเปลี่ยนสถานะ</span>
+                                <span th:case="'PAID'">จับคู่บัญชีและนัดเทรดกับลูกค้า</span>
+                                <span th:case="'SHIPPING'">ตรวจสอบว่าลูกค้าได้รับการ์ดครบก่อนปิดออเดอร์</span>
+                                <span th:case="'COMPLETED'">ดำเนินการครบแล้ว</span>
+                                <span th:case="'CANCELLED'">ออเดอร์ยกเลิกแล้ว</span>
+                            </p>
                             <!-- Contextual State Action Buttons -->
                             <div class="order-actions">
                                 <!-- Action when PENDING -->
@@ -230,11 +249,11 @@
     </main>
 
     <!-- Order state transition confirmation -->
-    <div id="transitionModal" class="modal-overlay" onclick="if(event.target === this) closeTransitionModal()">
+    <div id="transitionModal" class="modal-overlay" onclick="if(event.target === this) closeTransitionModal()" role="dialog" aria-modal="true" aria-hidden="true" inert>
         <div class="modal-container" style="max-width: 440px;">
             <div class="modal-header">
                 <h3 class="modal-title" id="transitionTitle">ยืนยัน</h3>
-                <button type="button" class="modal-close-btn" onclick="closeTransitionModal()">
+                <button type="button" class="modal-close-btn" aria-label="ปิดหน้าต่าง" onclick="closeTransitionModal()">
                     <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
                 </button>
             </div>
@@ -245,6 +264,7 @@
                     <span style="color: var(--text-muted);">→</span>
                     <span id="transitionTo" class="state-node">PAID</span>
                 </div>
+                <p id="transitionError" class="field-error" role="alert" hidden></p>
                 <p id="transitionMessage" style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;"></p>
             </div>
             <div class="modal-footer transition-footer">
@@ -255,7 +275,7 @@
     </div>
 
     <!-- In-Game Trade Matching & Fulfillment Modal -->
-    <div id="tradeFulfillmentModal" class="modal-overlay" onclick="if(event.target === this) closeTradeModal()">
+    <div id="tradeFulfillmentModal" class="modal-overlay" onclick="if(event.target === this) closeTradeModal()" role="dialog" aria-modal="true" aria-hidden="true" inert>
         <div class="modal-container modal-wide" style="max-width: 960px;">
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -265,7 +285,7 @@
                         <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;" id="tradeModalCustomerSub">Friend Code ของลูกค้าและการจับคู่บัญชี</p>
                     </div>
                 </div>
-                <button class="modal-close-btn" onclick="closeTradeModal()">
+                <button class="modal-close-btn" aria-label="ปิดหน้าต่าง" onclick="closeTradeModal()">
                     <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
                 </button>
             </div>
@@ -327,5 +347,6 @@
 
     <script th:src="@{/js/audio.js}"></script>
     <script th:src="@{/js/app.js}"></script>
+    <script th:src="@{/js/ux-improvements.js}"></script>
 </body>
 </html>

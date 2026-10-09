@@ -11,6 +11,7 @@
         })();
     </script>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/ux-improvements.css}">
 </head>
 <body>
 
@@ -22,12 +23,13 @@
             </div>
             <span>Pokémon TCG Pocket Gallery</span>
         </a>
-        <div class="nav-links">
+        <button type="button" class="nav-menu-toggle" aria-expanded="false" aria-controls="siteNavigation">เมนู</button>
+        <div class="nav-links" id="siteNavigation">
             <a th:href="@{/}" class="nav-link active">
                 <div th:replace="~{fragments/icons :: dashboard('icon-sm')}"></div>
                 <span>หน้าแรก</span>
             </a>
-            <a th:href="@{/cards}" class="nav-link">
+            <a th:href="@{/cards}" data-gallery-return class="nav-link">
                 <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
                 <span>แกลเลอรีการ์ด</span>
             </a>
@@ -76,7 +78,7 @@
                 <span>นิทรรศการการ์ดและศูนย์จัดการร้าน</span>
             </div>
             <h1>POKÉMON TCG POCKET VAULT</h1>
-            <p>นิทรรศการการ์ด Pokémon Trading Card Game แบบอินเทอร์แอกทีฟ พัฒนาด้วย Spring Boot 3.4.3 Layered Architecture, GoF Behavioral Patterns (Strategy, State, Observer) และ PostgreSQL</p>
+            <p>เลือกการ์ดที่ชอบ ตรวจสอบสต็อก และสั่งจองเพื่อรับการ์ดผ่านการเทรดในเกม</p>
             <div class="hero-stats-row">
                 <div class="hero-stat-pill">
                     <div class="hero-stat-num" th:text="${totalCards}">12</div>
@@ -93,12 +95,23 @@
             </div>
         </header>
 
+
+        <section class="purchase-guide" aria-labelledby="purchaseGuideTitle">
+            <h2 id="purchaseGuideTitle">ซื้อการ์ดอย่างไร</h2>
+            <ol>
+                <li><strong>1. เลือกและจอง</strong><span>เลือกการ์ด แล้วกรอก Friend ID ในเกม</span></li>
+                <li><strong>2. ติดต่อร้านและชำระเงิน</strong><span>แจ้งรหัสออเดอร์ให้ร้านเพื่อตรวจสอบยอดและนัดหมาย</span></li>
+                <li><strong>3. รับการ์ดผ่านเทรด</strong><span>เพิ่มเพื่อนและเทรดตามที่ตกลงกับร้าน</span></li>
+            </ol>
+            <p>เตรียม Friend ID 16 หลัก และตรวจสอบว่าบัญชีเกมพร้อมเทรดก่อนจอง</p>
+        </section>
+
         <!-- Featured Frameless Cards Showcase -->
         <section>
             <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
                 <div>
                     <h2 style="font-size: 1.8rem; font-weight: 900; letter-spacing: -0.5px;">การ์ดเด่นประจำร้าน</h2>
-                    <p style="color: var(--text-muted); font-size: 0.95rem;">การ์ดสะสม Genetic Apex พร้อมเอฟเฟกต์เอียง 3D และแสงสะท้อน</p>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">การ์ดแนะนำ พร้อมราคาและจำนวนที่มีในร้าน</p>
                 </div>
                 <a th:href="@{/cards}" class="btn btn-primary">
                     <span>ดูแกลเลอรีทั้งหมด</span>
@@ -126,27 +139,39 @@
                          th:data-price="${c.price}"
                          th:data-element="${c.elementType.name()}"
                          th:data-image="${c.imageUrl}"
-                         onclick="handleInspectClick(this)">
+                         role="button" tabindex="0" th:aria-label="'ดูรายละเอียด ' + ${c.name}"
+                     onclick="handleInspectClick(this)">
                         
                         <!-- Simeydotme Holographic Shimmer & Glare -->
                         <div class="holo-card__shine"></div>
                         <div class="holo-card__glare"></div>
                         <div class="card-glare"></div>
 
-                        <!-- Top Bar with Zero Overlap Guarantee -->
-                        <div class="card-top-bar">
+                        
+                        
+
+                        <!-- Authentic High-Resolution Card Artwork -->
+                        <img th:src="${c.imageUrl}" th:alt="${c.name}" class="card-real-img" loading="lazy">
+
+                        
+                        
+                    </div>
+                <div class="gallery-card-caption">
+                    <h2 class="gallery-card-name" th:text="${c.name}">Venusaur ex</h2>
+                    <div class="gallery-card-offer">
+                        <strong th:if="${c.price != null and c.price > 0}" th:text="'฿' + ${#numbers.formatDecimal(c.price, 1, 'COMMA', 2, 'POINT')}">฿180.00</strong>
+                        <span th:if="${c.price == null or c.price <= 0}">สอบถามราคา</span>
+                        <span class="gallery-card-stock" th:text="${c.totalStock > 0 ? 'มีสินค้า ' + c.totalStock + ' ใบ' : 'หมดสต็อก'}">มีสินค้า 3 ใบ</span>
+                    </div>
+                </div>
+                <div class="card-top-bar">
                             <span class="card-num-badge" th:text="${c.expansionCode + ' #' + c.cardNumber}">A1 #004</span>
                             <div class="element-badge-pill">
                                 <th:block th:replace="~{fragments/icons :: elementIcon(${c.elementType.name()}, 'icon-sm')}"></th:block>
                                 <span th:text="${c.elementType}">FIRE</span>
                             </div>
                         </div>
-
-                        <!-- Authentic High-Resolution Card Artwork -->
-                        <img th:src="${c.imageUrl}" th:alt="${c.name}" class="card-real-img" loading="lazy">
-
-                        <!-- Hover Quick Action Pill -->
-                        <div class="card-hover-actions" onclick="event.stopPropagation()">
+                <div class="card-hover-actions" onclick="event.stopPropagation()">
                             <button class="card-action-btn btn-act-inspect"
                                     th:data-name="${c.name}"
                                     th:data-number="${c.cardNumber}"
@@ -162,14 +187,13 @@
                                     th:data-image="${c.imageUrl}"
                                     onclick="handleInspectClick(this)">
                                 <div th:replace="~{fragments/icons :: eye('icon-sm')}"></div>
-                                <span>ดูการ์ด 3D</span>
+                                <span>ดูรายละเอียด</span>
                             </button>
                             <a th:href="@{/inventory}" class="card-action-btn btn-act-buy" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
                                 <div th:replace="~{fragments/icons :: package('icon-sm')}"></div>
                                 <span>ดูสต็อก</span>
                             </a>
                         </div>
-                    </div>
 
                 </div>
             </div>
@@ -177,14 +201,14 @@
     </main>
 
     <!-- Museum Spotlight Stage Modal (Official Gallery Inspector) -->
-    <div id="inspectionModal" class="modal-overlay" onclick="if(event.target === this) closeInspection()">
+    <div id="inspectionModal" class="modal-overlay" onclick="if(event.target === this) closeInspection()" role="dialog" aria-modal="true" aria-hidden="true" inert>
         <div class="modal-container modal-wide">
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <div th:replace="~{fragments/icons :: eye('icon-md')}"></div>
                     <h3 class="modal-title">รายละเอียดการ์ด</h3>
                 </div>
-                <button class="modal-close-btn" onclick="closeInspection()">
+                <button class="modal-close-btn" aria-label="ปิดหน้าต่าง" onclick="closeInspection()">
                     <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
                 </button>
             </div>
@@ -218,7 +242,7 @@
                             <!-- HP for Pokémon cards, the card type (e.g. Trainer Supporter) for the rest -->
                             <div id="inspectCardHp" class="inspect-card-kind">HP 180</div>
                         </div>
-                        <p id="inspectCardDesc" style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.7; font-size: 1rem;"></p>
+                        <details class="inspect-description"><summary>ข้อมูลการ์ดเพิ่มเติม</summary><p id="inspectCardDesc" style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.7; font-size: 1rem;"></p></details>
                         
                         <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">
                             <span id="inspectCardRarity" class="rarity-pill" style="font-size: 0.85rem; padding: 6px 14px;">RARITY</span>
@@ -236,9 +260,9 @@
                                 <span>ดูคลังสินค้า</span>
                             </a>
                             <button type="button" class="btn btn-secondary" sec:authorize="!hasAnyRole('ADMIN', 'STAFF')" onclick="inboxStoreAboutCard()" style="border-color: #0084ff; color: #0084ff;">
-                                <span>Inbox FB</span>
+                                <span>ติดต่อร้าน</span>
                             </button>
-                            <a th:href="@{/login}" class="btn btn-primary" sec:authorize="isAnonymous()" title="เข้าสู่ระบบเพื่อสั่งซื้อ">
+                            <a th:href="@{/login}" class="btn btn-primary" data-remember-card="true" sec:authorize="isAnonymous()" title="เข้าสู่ระบบเพื่อสั่งซื้อ">
                                 <div th:replace="~{fragments/icons :: receipt('icon-sm')}"></div>
                                 <span>สั่งซื้อ</span>
                             </a>
@@ -257,5 +281,6 @@
 
     <script th:src="@{/js/audio.js}"></script>
     <script th:src="@{/js/app.js}"></script>
+    <script th:src="@{/js/ux-improvements.js}"></script>
 </body>
 </html>

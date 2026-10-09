@@ -11,6 +11,7 @@
         })();
     </script>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/ux-improvements.css}">
 </head>
 <body>
 
@@ -21,12 +22,13 @@
             </div>
             <span>Pokémon TCG Pocket Gallery</span>
         </a>
-        <div class="nav-links">
+        <button type="button" class="nav-menu-toggle" aria-expanded="false" aria-controls="siteNavigation">เมนู</button>
+        <div class="nav-links" id="siteNavigation">
             <a th:href="@{/}" class="nav-link">
                 <div th:replace="~{fragments/icons :: dashboard('icon-sm')}"></div>
                 <span>หน้าแรก</span>
             </a>
-            <a th:href="@{/cards}" class="nav-link">
+            <a th:href="@{/cards}" data-gallery-return class="nav-link">
                 <div th:replace="~{fragments/icons :: layers('icon-sm')}"></div>
                 <span>แกลเลอรีการ์ด</span>
             </a>
@@ -80,8 +82,20 @@
             </div>
         </div>
 
+        <section class="inventory-toolbar" aria-label="ค้นหาและกรองคลังสินค้า">
+            <label class="inventory-search">ค้นหาการ์ดหรือรหัสรายการ
+                <input id="inventorySearch" type="search" class="input-field" placeholder="ชื่อการ์ด หรือ A1 #004">
+            </label>
+            <label class="inventory-stock-filter">สต็อก
+                <select id="inventoryStockFilter" class="input-field">
+                    <option value="all">ทั้งหมด</option><option value="low">สต็อกใกล้หมด</option><option value="available">มีสินค้า</option><option value="empty">หมดสต็อก</option>
+                </select>
+            </label>
+            <span id="inventoryResultCount" role="status" aria-live="polite"></span>
+        </section>
+        <p id="inventoryNoResults" hidden>ไม่พบรายการ ลองเปลี่ยนคำค้นหาหรือเลือกสต็อก “ทั้งหมด”</p>
         <div class="table-wrapper">
-            <table>
+            <table class="responsive-data-table">
                 <thead>
                     <tr>
                         <th>รหัสรายการ</th>
@@ -95,9 +109,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="inv : ${inventories}">
-                        <td style="font-family: 'JetBrains Mono', monospace; color: var(--text-muted);" th:text="${inv.id}">1</td>
-                        <td>
+                    <tr th:each="inv : ${inventories}" th:data-stock="${inv.quantity}" th:data-low-stock="${inv.lowStock}">
+                        <td data-label="รหัสรายการ" style="font-family: 'JetBrains Mono', monospace; color: var(--text-muted);" th:text="${inv.id}">1</td>
+                        <td data-label="การ์ด">
                             <div style="display: flex; align-items: center; gap: 0.85rem;">
                                 <img th:src="${inv.imageUrl}" th:alt="${inv.cardName}" class="inv-card-thumb" loading="lazy">
                                 <div>
@@ -107,16 +121,16 @@
                                 </div>
                             </div>
                         </td>
-                        <td>
+                        <td data-label="สภาพ">
                             <span class="rarity-pill" th:text="${inv.condition}">MINT</span>
                         </td>
-                        <td>
+                        <td data-label="สต็อก">
                             <span th:class="${'stepper-val ' + (inv.lowStock ? 'low-stock-alert' : '')}" th:text="${inv.quantity}">5</span>
                         </td>
-                        <td style="color: var(--text-muted);" th:text="'฿' + ${#numbers.formatDecimal(inv.buyInPrice, 1, 2)}">฿250.00</td>
-                        <td>
+                        <td data-label="ต้นทุน" style="color: var(--text-muted);" th:text="'฿' + ${#numbers.formatDecimal(inv.buyInPrice, 1, 'COMMA', 2, 'POINT')}">฿250.00</td>
+                        <td data-label="ราคาขาย">
                             <div style="display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap;">
-                                <span style="color: #10b981; font-weight: 800;" th:text="'฿' + ${#numbers.formatDecimal(inv.sellingPrice, 1, 2)}">฿450.00</span>
+                                <span style="color: #10b981; font-weight: 800;" th:text="'฿' + ${#numbers.formatDecimal(inv.sellingPrice, 1, 'COMMA', 2, 'POINT')}">฿450.00</span>
                                 <button type="button" class="icon-btn price-edit-btn" title="แก้ไขราคาขาย"
                                         th:data-id="${inv.id}" th:data-name="${inv.cardName}" th:data-number="${inv.expansionCode + ' #' + inv.cardNumber}"
                                         th:data-price="${inv.sellingPrice}" th:data-cost="${inv.buyInPrice}"
@@ -125,14 +139,15 @@
                                 </button>
                             </div>
                         </td>
-                        <td>
-                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 6px; color: #cbd5e1;" th:text="${inv.storageSlot}">SHOWCASE-01</span>
+                        <td data-label="ช่องเก็บ">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 6px; color: #cbd5e1;" th:text="${inv.storageSlot != null and !#strings.isEmpty(inv.storageSlot) ? inv.storageSlot : 'ยังไม่ระบุ'}">SHOWCASE-01</span>
                         </td>
-                        <td>
+                        <td data-label="จัดการ">
                             <button class="btn btn-primary" style="padding: 0.45rem 0.9rem; font-size: 0.82rem;"
                                     th:data-id="${inv.id}"
                                     th:data-name="${inv.cardName}"
-                                    th:data-number="${inv.cardNumber}"
+                                    th:data-number="${inv.expansionCode + ' #' + inv.cardNumber}"
+                                    th:data-image="${inv.imageUrl}"
                                     th:data-condition="${inv.condition}"
                                     th:data-price="${inv.sellingPrice}"
                                     th:data-stock="${inv.quantity}"
@@ -148,18 +163,21 @@
         </div>
     </main>
 
-    <!-- Strategy Pattern Order Modal Component -->
-    <div id="orderModal" class="modal-overlay" onclick="if(event.target === this) closeOrderModal()">
+    <!-- ระดับสมาชิก Order Modal Component -->
+    <div id="orderModal" class="modal-overlay" onclick="if(event.target === this) closeOrderModal()" role="dialog" aria-modal="true" aria-hidden="true" inert>
         <div class="modal-container">
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <div th:replace="~{fragments/icons :: receipt('icon-md')}"></div>
+                    <button type="button" id="orderCardPreviewButton" class="order-preview-trigger" aria-label="ขยายภาพการ์ด" onclick="openOrderCardImage()" hidden>
+                        <img id="orderCardPreview" class="order-card-preview" alt="">
+                        <span>ขยายภาพ</span>
+                    </button>
                     <div>
                         <h3 class="modal-title" id="orderCardTitle">รายการสั่งซื้อ</h3>
                         <span id="orderCardNumber" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan);">A1 #004</span>
                     </div>
                 </div>
-                <button class="modal-close-btn" onclick="closeOrderModal()">
+                <button class="modal-close-btn" aria-label="ปิดหน้าต่าง" onclick="closeOrderModal()">
                     <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
                 </button>
             </div>
@@ -167,7 +185,7 @@
                 <!-- Customer & Strategy Selector -->
                 <div style="margin-bottom: 1.25rem;">
                     <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">
-                        เลือกบัญชีลูกค้า (ส่วนลดตามระดับสมาชิก - Strategy Pattern):
+                        บัญชีลูกค้าและส่วนลดสมาชิก:
                     </label>
                     <select id="orderUserSelect" class="select-field" style="width: 100%;" onchange="updateOrderCalculation()">
                         <option th:each="c : ${customers}" th:value="${c.id}" th:data-tier="${c.membershipTier}"
@@ -185,7 +203,7 @@
                         <button class="stepper-btn" onclick="adjustOrderQty(-1)">
                             <div th:replace="~{fragments/icons :: minus('icon-sm')}"></div>
                         </button>
-                        <input id="orderQtyInput" type="text" value="1" readonly class="stepper-val" style="background: none; border: none; color: #fff; width: 35px;">
+                        <input id="orderQtyInput" type="text" value="1" readonly class="stepper-val" style="background: none; border: none; width: 35px; font-size: 1rem;">
                         <button class="stepper-btn" onclick="adjustOrderQty(1)">
                             <div th:replace="~{fragments/icons :: plus('icon-sm')}"></div>
                         </button>
@@ -208,7 +226,7 @@
                     </div>
                 </div>
 
-                <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="order-customer-fields" style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                     <div>
                         <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">
                             Friend ID ของลูกค้า (ในเกม):
@@ -240,8 +258,15 @@
         </div>
     </div>
 
+    <dialog id="orderCardImageDialog" class="card-image-dialog" aria-labelledby="orderCardImageTitle">
+        <div class="card-image-dialog-header">
+            <h3 id="orderCardImageTitle">ภาพการ์ด</h3>
+            <button type="button" class="modal-close-btn" aria-label="ปิดภาพการ์ด" onclick="document.getElementById('orderCardImageDialog').close()">×</button>
+        </div>
+        <img id="orderCardLargeImage" alt="">
+    </dialog>
     <!-- Edit Retail Price Modal (ADMIN / STAFF) -->
-    <div id="priceModal" class="modal-overlay" onclick="if(event.target === this) closePriceModal()">
+    <div id="priceModal" class="modal-overlay" onclick="if(event.target === this) closePriceModal()" role="dialog" aria-modal="true" aria-hidden="true" inert>
         <div class="modal-container" style="max-width: 440px;">
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -251,7 +276,7 @@
                         <span id="priceCardNumber" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan);">A1 #004</span>
                     </div>
                 </div>
-                <button type="button" class="modal-close-btn" onclick="closePriceModal()">
+                <button type="button" class="modal-close-btn" aria-label="ปิดหน้าต่าง" onclick="closePriceModal()">
                     <div th:replace="~{fragments/icons :: xCircle('icon-md')}"></div>
                 </button>
             </div>
@@ -270,7 +295,7 @@
     </div>
 
     <!-- Chat Commerce Flow Confirmation Modal -->
-    <div id="chatCommerceModal" class="modal-overlay" onclick="if(event.target === this) closeChatCommerceModal()">
+    <div id="chatCommerceModal" class="modal-overlay" onclick="if(event.target === this) closeChatCommerceModal()" role="dialog" aria-modal="true" aria-hidden="true" inert>
         <div class="modal-container" style="max-width: 520px; text-align: center; border-color: rgba(59, 130, 246, 0.4);">
             <div style="padding: 2rem 1.5rem 1.25rem;">
                 <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(16, 185, 129, 0.15); border: 2px solid #10b981; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem; color: #10b981;">
@@ -317,5 +342,6 @@
 
     <script th:src="@{/js/audio.js}"></script>
     <script th:src="@{/js/app.js}"></script>
+    <script th:src="@{/js/ux-improvements.js}"></script>
 </body>
 </html>
