@@ -907,6 +907,11 @@ async function runOrderTransition(orderId, action) {
             showToast(`เปลี่ยนสถานะคำสั่งซื้อเป็น ${result.data.orderStatus} แล้ว`, 'success');
             setTimeout(() => window.location.reload(), 1000);
             return true;
+        } else if (response.status === 409) {
+            // The order moved on since this page was rendered (or the action is not allowed in its state):
+            // explain in Thai, then reload so the table shows the real status
+            showTransitionError(orderConflictMessage(result.message) + ' กำลังโหลดสถานะล่าสุด...');
+            setTimeout(() => window.location.reload(), 2500);
         } else {
             showTransitionError(result.message || 'เปลี่ยนสถานะไม่ได้ กรุณาตรวจสอบสถานะปัจจุบันแล้วลองอีกครั้ง');
         }
@@ -914,6 +919,17 @@ async function runOrderTransition(orderId, action) {
         showTransitionError('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาลองอีกครั้ง');
     }
     return false;
+}
+
+// Thai wording for the backend's 409 messages on PATCH /orders/{id}/status
+function orderConflictMessage(message) {
+    const text = message || '';
+    const state = (text.match(/current state: (\w+)/) || [])[1];
+    if (state === 'COMPLETED') return 'คำสั่งซื้อนี้เสร็จสิ้นไปแล้ว';
+    if (state === 'CANCELLED') return 'คำสั่งซื้อนี้ถูกยกเลิกไปแล้ว';
+    if (text.includes('not all items')) return 'ยังเทรดไม่ครบทุกรายการ จึงปิดคำสั่งซื้อไม่ได้ เปิด "จัดการเทรด" เพื่อเทรดให้ครบก่อน';
+    if (text.includes('being shipped')) return 'เริ่มส่งการ์ดในเกมแล้ว จึงยกเลิกคำสั่งซื้อไม่ได้';
+    return 'เปลี่ยนสถานะไม่ได้ เพราะสถานะของคำสั่งซื้อเปลี่ยนไปแล้ว';
 }
 
 // --- 6. Futuristic Toast Notifications ---
@@ -1022,6 +1038,9 @@ function copyCustomerModalFriendCode(btn) {
 let currentTradeOrderId = null;
 let currentTradeOrderCode = null;
 let currentTradeCustomerFriendId = null;
+// Set once a trade status changes: the orders table behind the modal is server-rendered, and the
+// backend completes the order by itself when the last item is traded, so the row would go stale.
+let tradeStatusChanged = false;
 
 async function openTradeModal(orderId, orderCode, customerFriendId) {
     currentTradeOrderId = orderId;
@@ -1063,6 +1082,9 @@ function closeTradeModal() {
     const modal = document.getElementById('tradeFulfillmentModal');
     if (modal) modal.classList.remove('active');
     currentTradeOrderId = null;
+    if (tradeStatusChanged) {
+        window.location.reload();
+    }
 }
 
 // Accounts holding the card: the backend's recommended account first, then its alternatives
@@ -1264,6 +1286,7 @@ async function advanceItemTradeStatus(orderItemId, newStatus) {
         const result = await response.json();
 
         if (response.ok && result.success) {
+            tradeStatusChanged = true;
             showToast(`อัปเดตสถานะเทรดเป็น ${newStatus} แล้ว`, 'success');
             if (window.soundFx) window.soundFx.playClick();
             openTradeModal(currentTradeOrderId, currentTradeOrderCode, currentTradeCustomerFriendId);

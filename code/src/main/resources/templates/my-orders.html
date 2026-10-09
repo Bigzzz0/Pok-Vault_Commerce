@@ -96,7 +96,7 @@
                         <th>ยอดรวม</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="myOrdersBody">
                     <tr th:if="${#lists.isEmpty(orders)}">
                         <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 3rem;">
                             คุณยังไม่มีคำสั่งซื้อ ลองดูที่ <a th:href="@{/cards}" style="color: var(--accent-cyan); font-weight: 700;">แกลเลอรีการ์ด</a> แล้วสั่งจองการ์ดได้เลย
