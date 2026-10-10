@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.order.DiscountStrategyEdgeCaseTest" time="0.01" tests="11" errors="0" skipped="0" failures="0">
+  <testcase name="wholesaleStrategy_RoundingPrecisionHalfUp" classname="com.pokevault.modules.order.DiscountStrategyEdgeCaseTest" time="0.002" />
+  <testcase name="vipStrategy_RoundingPrecisionHalfUp" classname="com.pokevault.modules.order.DiscountStrategyEdgeCaseTest" time="0.001" />
+  <testcase name="calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[1]" classname="com.pokevault.modules.order.DiscountStrategyEdgeCaseTest" time="0.001" />
+  <testcase name="calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[2]" classname="com.pokevault.modules.order.DiscountStrategyEdgeCaseTest" time="0.0" />
+  <testcase name="calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[3]" classname="com.pokevault.modules.order.DiscountStrategyEdgeCaseTest" time="0.001" />
+  <testcase name="calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[4]" classname="com.pokevault.modules.order.DiscountStrategyEdgeCaseTest" time="0.0" />
+  <testcase name="calculateDiscount_NullZeroOrNegativeSubtotal_ReturnsZero(String)[5]" classname="com.pokevault.modules.order.DiscountStrategyEdgeCaseTest" time="0.0" />
+  <testcase name="calculateDiscount_NullTier_FallsBackToRegularStrategy" classname="com.pokevault.modules.order.DiscountStrategyEdgeCaseTest" time="0.001" />
+  <testcase name="discountService_NullConstructorList_DefaultsToEmptyListAndThrowsOnLookup" classname="com.pokevault.modules.order.DiscountStrategyEdgeCaseTest" time="0.0" />
+  <testcase name="discountService_EmptyStrategiesList_ThrowsIllegalStateException" classname="com.pokevault.modules.order.DiscountStrategyEdgeCaseTest" time="0.0" />
+  <testcase name="calculateDiscount_VeryLargeSubtotal_MaintainsPrecision" classname="com.pokevault.modules.order.DiscountStrategyEdgeCaseTest" time="0.0" />
+</testsuite>

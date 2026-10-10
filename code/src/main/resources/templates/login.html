@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon TCG Pocket - เข้าสู่ระบบ</title>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('tcg-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/ux-improvements.css}">
+    <style>
+        .login-shell { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+        .login-card { width: 100%; max-width: 440px; background: var(--bg-surface-card); border: 1px solid var(--border-subtle); border-radius: 18px; padding: 2rem; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35); backdrop-filter: blur(12px); }
+        .login-brand { display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin-bottom: 1.25rem; color: var(--text-pure); font-weight: 800; text-decoration: none; }
+        .login-title { text-align: center; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+        .login-sub { text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin: 0.25rem 0 1.5rem; }
+        .field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+        .field label { font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .field .input-field { width: 100%; }
+        .login-error { background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); color: var(--accent-ruby); border-radius: 10px; padding: 0.65rem 0.9rem; font-size: 0.88rem; margin-bottom: 1rem; }
+        .login-success { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; border-radius: 10px; padding: 0.65rem 0.9rem; font-size: 0.88rem; margin-bottom: 1rem; }
+        .required-mark { color: var(--accent-ruby); font-weight: 800; }
+        .required-note { color: var(--text-muted); font-size: 0.78rem; margin: -0.25rem 0 0.75rem; }
+        .login-hint { text-align: center; color: var(--text-muted); font-size: 0.82rem; margin-top: 1.25rem; }
+        .login-hint a { color: var(--accent-cyan); font-weight: 700; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <main class="login-shell">
+        <section class="login-card">
+            <a th:href="@{/}" class="login-brand">
+                <span th:replace="~{fragments/icons :: pokeball('icon-md')}"></span>
+                <span>Pokémon TCG Pocket Vault</span>
+            </a>
+
+            <h1 class="login-title">ยินดีต้อนรับกลับมา</h1>
+            <p class="login-sub" id="loginSubtitle">เข้าสู่ระบบบัญชี Pokémon TCG Pocket Vault ของคุณ</p>
+
+            <div class="login-error" th:if="${param.error}" role="alert">
+                ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่
+            </div>
+            <div class="login-success" th:if="${param.logout}" role="status">
+                ออกจากระบบเรียบร้อยแล้ว
+            </div>
+            <form th:action="@{/login}" method="post" id="loginForm" autocomplete="on">
+                <div class="field">
+                    <label for="username">ชื่อผู้ใช้</label>
+                    <input class="input-field" type="text" id="username" name="username" placeholder="กรอกชื่อผู้ใช้" autocomplete="username" required>
+                </div>
+
+                <div class="field">
+                    <label for="password">รหัสผ่าน</label>
+                    <input class="input-field" type="password" id="password" name="password" placeholder="กรอกรหัสผ่าน" autocomplete="current-password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+                    <span>เข้าสู่ระบบ</span>
+                </button>
+            </form>
+
+            <div class="login-success" id="signUpSuccess" role="status" style="display: none; margin-top: 1rem;"></div>
+
+            <!-- Customer self-registration (POST /api/v1/auth/register) -->
+            <form id="signUpForm" autocomplete="on" style="display: none;" onsubmit="submitSignUp(event)">
+                <div class="login-error" id="signUpError" role="alert" style="display: none;"></div>
+
+                <div class="field">
+                    <label for="signUpFacebook">ชื่อ Facebook <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="text" id="signUpFacebook" placeholder="ชื่อที่แสดงบนโปรไฟล์ Facebook" maxlength="100" autocomplete="name" required>
+                </div>
+
+                <div class="field">
+                    <label for="signUpEmail">อีเมล <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="email" id="signUpEmail" placeholder="you@example.com" maxlength="100" autocomplete="email" required>
+                </div>
+
+                <div class="field">
+                    <label for="signUpUsername">ชื่อผู้ใช้ <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="text" id="signUpUsername" placeholder="ตัวอักษรอังกฤษ ตัวเลข และ _" minlength="3" maxlength="50" pattern="[A-Za-z0-9_]+" autocomplete="username" required>
+                </div>
+
+                <div class="field">
+                    <label for="signUpPassword">รหัสผ่าน <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="password" id="signUpPassword" placeholder="อย่างน้อย 8 ตัวอักษร" minlength="8" maxlength="72" autocomplete="new-password" required>
+                </div>
+
+                <div class="field">
+                    <label for="signUpConfirm">ยืนยันรหัสผ่าน <span class="required-mark" aria-hidden="true">*</span></label>
+                    <input class="input-field" type="password" id="signUpConfirm" placeholder="กรอกรหัสผ่านอีกครั้ง" minlength="8" maxlength="72" autocomplete="new-password" required>
+                </div>
+
+                <p class="required-note"><span class="required-mark" aria-hidden="true">*</span> จำเป็นต้องกรอก</p>
+
+                <button type="submit" class="btn btn-primary" id="signUpSubmit" style="width: 100%; margin-top: 0.5rem;">
+                    <span>สมัครสมาชิก</span>
+                </button>
+            </form>
+
+            <p class="login-hint" id="signUpPrompt">
+                ยังไม่มีบัญชี? <a href="#" onclick="showSignUp(true); return false;">สมัครสมาชิกลูกค้า</a>
+            </p>
+            <p class="login-hint" id="signInPrompt" style="display: none;">
+                มีบัญชีอยู่แล้ว? <a href="#" onclick="showSignUp(false); return false;">เข้าสู่ระบบ</a>
+            </p>
+
+            <p class="login-hint">
+                <a th:href="@{/}">เข้าชมต่อโดยไม่เข้าสู่ระบบ</a>
+            </p>
+        </section>
+    </main>
+
+    <script>
+        // Toggle between the sign-in form and the customer sign-up form
+        function showSignUp(show) {
+            document.getElementById('signUpForm').style.display = show ? '' : 'none';
+            document.getElementById('loginForm').style.display = show ? 'none' : '';
+            document.getElementById('signUpPrompt').style.display = show ? 'none' : '';
+            document.getElementById('signInPrompt').style.display = show ? '' : 'none';
+            document.querySelectorAll('.login-card > .login-error, .login-card > .login-success').forEach(function(box) {
+                box.style.display = 'none';
+            });
+            document.querySelector('.login-title').textContent = show ? 'สมัครสมาชิก' : 'ยินดีต้อนรับกลับมา';
+            document.getElementById('loginSubtitle').textContent = show
+                ? 'สมัครสมาชิกลูกค้าเพื่อสั่งจองการ์ด'
+                : 'เข้าสู่ระบบบัญชี Pokémon TCG Pocket Vault ของคุณ';
+        }
+
+        function showSignUpError(message) {
+            var box = document.getElementById('signUpError');
+            box.textContent = message;
+            box.style.display = '';
+        }
+
+        async function submitSignUp(event) {
+            event.preventDefault();
+            var password = document.getElementById('signUpPassword').value;
+            if (password !== document.getElementById('signUpConfirm').value) {
+                showSignUpError('รหัสผ่านทั้งสองช่องไม่ตรงกัน');
+                return;
+            }
+
+            var username = document.getElementById('signUpUsername').value.trim();
+            var submitBtn = document.getElementById('signUpSubmit');
+            submitBtn.disabled = true;
+            document.getElementById('signUpError').style.display = 'none';
+
+            try {
+                var response = await fetch('/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        facebookName: document.getElementById('signUpFacebook').value.trim(),
+                        email: document.getElementById('signUpEmail').value.trim(),
+                        username: username,
+                        password: password
+                    })
+                });
+                var result = await response.json();
+
+                if (response.ok && result.success) {
+                    document.getElementById('signUpForm').reset();
+                    showSignUp(false);
+                    document.getElementById('username').value = username;
+                    var success = document.getElementById('signUpSuccess');
+                    success.textContent = 'สมัครสมาชิกสำเร็จ! เข้าสู่ระบบด้วยชื่อผู้ใช้และรหัสผ่านใหม่ได้เลย';
+                    success.style.display = '';
+                    document.getElementById('password').focus();
+                } else {
+                    var details = result.details ? Object.values(result.details) : [];
+                    showSignUpError(details.length ? details.join(' ') : (result.message || 'ไม่สามารถสมัครสมาชิกได้'));
+                }
+            } catch (e) {
+                showSignUpError('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + e.message);
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Allow deep-linking to the sign-up form: /login?signup
+        if (new URLSearchParams(window.location.search).has('signup')) {
+            showSignUp(true);
+        }
+    </script>
+</body>
+</html>

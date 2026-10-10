@@ -1,0 +1,435 @@
+{
+  "generated_at": "2026-10-09T20:32:29.821969+07:00",
+  "owner": "สัพพัญญู คำตุ้ม (673380066-4)",
+  "branch": "sikarin_6733802925_01",
+  "command": "code/mvnw.cmd -f code/pom.xml clean verify",
+  "whole_suite": {
+    "tests": 373,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "vault_inventory_scope": {
+    "tests": 28,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "sapphanyu_related_scope": {
+    "tests": 66,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "suite": "com.pokevault.domain.entity.CardInventoryTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.007,
+      "cases": [
+        {
+          "name": "deductStockReducesQuantityWhenStockIsAvailable",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "pricesCannotBeNegative",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "restoreStockIncreasesQuantity",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "stockChangesRequirePositiveQuantities",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "deductStockRejectsRequestsExceedingAvailableQuantity",
+          "result": "passed",
+          "seconds": 0.001
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderApiControllerTest",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.128,
+      "cases": [
+        {
+          "name": "updateItemTradeStatus_InvalidStatus_Returns400",
+          "result": "passed",
+          "seconds": 0.016
+        },
+        {
+          "name": "updateItemTradeStatus_AccessDenied_Returns403",
+          "result": "passed",
+          "seconds": 0.008
+        },
+        {
+          "name": "transitionOrderStatus_MissingActionParam_Returns400",
+          "result": "passed",
+          "seconds": 0.008
+        },
+        {
+          "name": "transitionOrderStatus_OrderNotFound_Returns404",
+          "result": "passed",
+          "seconds": 0.008
+        },
+        {
+          "name": "transitionOrderStatus_InvalidStateTransition_Returns409",
+          "result": "passed",
+          "seconds": 0.009
+        },
+        {
+          "name": "transitionOrderStatus_Pay_Returns200",
+          "result": "passed",
+          "seconds": 0.008
+        },
+        {
+          "name": "updateItemTradeStatus_Success_Returns200",
+          "result": "passed",
+          "seconds": 0.007
+        },
+        {
+          "name": "transitionOrderStatus_Complete_Returns200",
+          "result": "passed",
+          "seconds": 0.008
+        },
+        {
+          "name": "updateItemTradeStatus_StateConflict_Returns409",
+          "result": "passed",
+          "seconds": 0.008
+        },
+        {
+          "name": "transitionOrderStatus_Ship_Returns200",
+          "result": "passed",
+          "seconds": 0.006
+        },
+        {
+          "name": "updateItemTradeStatus_NotFound_Returns404",
+          "result": "passed",
+          "seconds": 0.006
+        },
+        {
+          "name": "transitionOrderStatus_Complete_IncompleteItems_Returns409",
+          "result": "passed",
+          "seconds": 0.008
+        },
+        {
+          "name": "updateItemTradeStatus_Completed_Returns200",
+          "result": "passed",
+          "seconds": 0.007
+        },
+        {
+          "name": "updateItemTradeStatus_UnsupportedStatus_Returns400",
+          "result": "passed",
+          "seconds": 0.007
+        },
+        {
+          "name": "transitionOrderStatus_Cancel_Returns200",
+          "result": "passed",
+          "seconds": 0.007
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.order.OrderServiceTest",
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.125,
+      "cases": [
+        {
+          "name": "updateItemTradeStatus_TerminalOrder_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.061
+        },
+        {
+          "name": "updateItemTradeStatus_SkipSequence_FriendPendingToCompleted_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "createOrder_UserNotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "transitionOrderStatus_Complete_Success",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "getOrderById_Success",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "getOrderById_NotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "createOrder_InventoryNotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "updateItemTradeStatus_Success_TradeSent",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "updateItemTradeStatus_MultiItem_RemainsShippingWhenPartiallyCompleted",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "updateItemTradeStatus_Idempotent_ReturnsCurrentWithoutModification",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "createOrder_InsufficientStock_ThrowsException",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "updateItemTradeStatus_SkipSequence_UnassignedToTradeSent_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "updateItemTradeStatus_ItemNotFoundInOrder_ThrowsException",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "updateItemTradeStatus_OrderNotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "transitionOrderStatus_Complete_IncompleteItems_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "updateItemTradeStatus_OrderNotInShipping_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "getAllOrders_ReturnsList",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "updateItemTradeStatus_UnsupportedStatus_ThrowsException",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "transitionOrderStatus_Complete_NoItems_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "updateItemTradeStatus_AllItemsCompleted_SyncsOrderCompletedViaStatePattern",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "updateItemTradeStatus_ReverseSequence_CompletedToTradeSent_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "createOrder_Success",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "updateItemTradeStatus_UnassignedAccount_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.002
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.vault.observer.LowStockObserverTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.013,
+      "cases": [
+        {
+          "name": "onOrderPlaced_WithMultipleItems_ShouldCheckAllCards",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "onOrderPlaced_WhenStockEqualsThreshold_ShouldTriggerWarning",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "onOrderPlaced_WhenEventIsNull_ShouldReturnSafely",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "onOrderPlaced_WhenItemsNullOrEmpty_ShouldReturnSafely",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "onOrderPlaced_WhenStockBelowThreshold_ShouldQueryStockAndWarn",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "onOrderPlaced_WhenStockAboveThreshold_ShouldLogNormal",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "onOrderPlaced_WhenItemHasNullInventoryOrCard_ShouldSkipGracefully",
+          "result": "passed",
+          "seconds": 0.002
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.vault.service.GameAccountServiceTest$AccountManagementTests",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.016,
+      "cases": [
+        {
+          "name": "deleteAccount_Success",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "updateAccount_DuplicateCode_ThrowsException",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "deleteAccount_AssignedToOrder_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "updateAccount_Success",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "deleteAccount_NotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "updateAccount_NotFound_ThrowsException",
+          "result": "passed",
+          "seconds": 0.001
+        },
+        {
+          "name": "deleteAccount_HasInventory_ThrowsConflict",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "createAccount_Success",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "getAccountById_Success",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "getAccountCards_Success",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "updateTradeStatus_Success",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "createAccount_WhenDuplicateCode_ShouldThrowException",
+          "result": "passed",
+          "seconds": 0.002
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.vault.service.GameAccountServiceTest$AddPulledCardTests",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.014,
+      "cases": [
+        {
+          "name": "addPulledCard_WhenAccountNotFound_ShouldThrowException",
+          "result": "passed",
+          "seconds": 0.003
+        },
+        {
+          "name": "addPulledCard_WhenExistingInventory_ShouldIncrementStock",
+          "result": "passed",
+          "seconds": 0.004
+        },
+        {
+          "name": "addPulledCard_WhenNewInventory_ShouldCreateNewRecord",
+          "result": "passed",
+          "seconds": 0.002
+        },
+        {
+          "name": "addPulledCard_WhenCardNotFound_ShouldThrowException",
+          "result": "passed",
+          "seconds": 0.003
+        }
+      ]
+    },
+    {
+      "suite": "com.pokevault.modules.vault.service.GameAccountServiceTest",
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.051,
+      "cases": []
+    }
+  ],
+  "timezone": "Asia/Bangkok",
+  "commit": "82c449b857d32dc7ad231e97a57ba3ebd976c761",
+  "exit_code": 0,
+  "build": "BUILD SUCCESS",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "java": "openjdk version \"21.0.10\" 2026-01-20\nOpenJDK Runtime Environment (build 21.0.10+-14961533-b1163.108)\nOpenJDK 64-Bit Server VM (build 21.0.10+-14961533-b1163.108, mixed mode)",
+  "database": "Local H2; includes H2 PostgreSQL mode tests, not a live PostgreSQL server",
+  "tracked_source_sha256": "98ab0cc2bddbbb1825d0e0e615f0b1fe8ee069d061c9ddc990a4fb03acfca502",
+  "source_diff_from_commit": "",
+  "maven_total_time": "46.613 s"
+}

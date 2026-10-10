@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: tcg-pocket-inventory
+  profiles:
+    active: local
+
+---
+# Local Development Profile (H2 In-Memory)
+spring:
+  config:
+    activate:
+      on-profile: local
+  thymeleaf:
+    cache: false
+  datasource:
+    url: jdbc:h2:mem:tcgdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always
+
+---
+# Production Profile (PostgreSQL for Docker & Cloud Deploy)
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tcg_pocket_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    # no fallback: a missing password must fail startup rather than try a well-known default
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
+    show-sql: false
+  sql:
+    init:
+      mode: always
+      # Postgres keeps its data across restarts, so data.sql hits the unique constraints
+      # on every boot after the first; skip those inserts instead of failing startup
+      continue-on-error: true
+
+---
+# Common Server & Documentation Config
+server:
+  port: ${PORT:8080}
+  # Cloud hosts terminate HTTPS at a proxy; honour X-Forwarded-* so Swagger's
+  # generated server URL is https and "Try it out" isn't blocked as mixed content
+  forward-headers-strategy: framework
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: method

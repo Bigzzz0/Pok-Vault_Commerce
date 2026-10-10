@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.web.WebViewControllerTest$LoginPage" time="0.232" tests="5" errors="0" skipped="0" failures="0">
+  <testcase name="loginForm_PostsUsernamePasswordWithCsrf" classname="com.pokevault.modules.web.WebViewControllerTest$LoginPage" time="0.009">
+    <system-out>2026-10-09T20:32:07.629+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.pokevault.modules.web.WebViewControllerTest$LoginPage]: LoginPage does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T20:32:07.634+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.pokevault.PokevaultApplication for test class com.pokevault.modules.web.WebViewControllerTest$LoginPage
+</system-out>
+  </testcase>
+  <testcase name="formLogin_RedirectsOnSuccessAndFailure" classname="com.pokevault.modules.web.WebViewControllerTest$LoginPage" time="0.183">
+    <system-out>2026-10-09T20:32:07.827+07:00  WARN 43300 --- [tcg-pocket-inventory] [           main] o.s.s.c.bcrypt.BCryptPasswordEncoder     : Empty encoded password
+</system-out>
+  </testcase>
+  <testcase name="loginPage_WithErrorParam_ShowsErrorBox" classname="com.pokevault.modules.web.WebViewControllerTest$LoginPage" time="0.008" />
+  <testcase name="loginPage_WithLogoutParam_ShowsLogoutBox" classname="com.pokevault.modules.web.WebViewControllerTest$LoginPage" time="0.008" />
+  <testcase name="signOut_RedirectsToLoginWithLogoutMessage" classname="com.pokevault.modules.web.WebViewControllerTest$LoginPage" time="0.012" />
+</testsuite>

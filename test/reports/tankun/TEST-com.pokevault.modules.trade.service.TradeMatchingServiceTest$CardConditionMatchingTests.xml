@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.trade.service.TradeMatchingServiceTest$CardConditionMatchingTests" time="0.025" tests="7" errors="0" skipped="0" failures="0">
+  <testcase name="testConditionMatchesButQuantityInsufficient" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$CardConditionMatchingTests" time="0.003" />
+  <testcase name="testManualAssignPicksMatchingConditionWhenAccountHasMultiple" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$CardConditionMatchingTests" time="0.007">
+    <system-out>2026-10-09T20:32:03.946+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.t.s.TradeMatchingServiceImpl       : Manually assigned account ACC-MINT-01 (MintDealer) to OrderItem id: 601 for condition: MINT and synchronized stock
+</system-out>
+  </testcase>
+  <testcase name="testManualAssignmentAndRecommendationsEnforceSameRules" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$CardConditionMatchingTests" time="0.003" />
+  <testcase name="testLastCardBookedStockZeroOriginalInventoryCanStillFulfill" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$CardConditionMatchingTests" time="0.002">
+    <system-out>2026-10-09T20:32:03.952+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.t.s.TradeMatchingServiceImpl       : Successfully auto-matched account ACC-MINT-01 (MintDealer) to OrderItem id: 601 for card: Charizard ex (condition: MINT)
+</system-out>
+  </testcase>
+  <testcase name="testAutoMatchSelectsMintOverPlayedEvenWithLowerStock" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$CardConditionMatchingTests" time="0.002">
+    <system-out>2026-10-09T20:32:03.954+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.t.s.TradeMatchingServiceImpl       : Successfully auto-matched account ACC-MINT-01 (MintDealer) to OrderItem id: 601 for card: Charizard ex (condition: MINT)
+</system-out>
+  </testcase>
+  <testcase name="testSameAccountMultipleConditionsTargetsCorrectInventory" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$CardConditionMatchingTests" time="0.004">
+    <system-out>2026-10-09T20:32:03.957+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.t.s.TradeMatchingServiceImpl       : Successfully auto-matched account ACC-MINT-01 (MintDealer) to OrderItem id: 601 for card: Charizard ex (condition: MINT)
+</system-out>
+  </testcase>
+  <testcase name="testManualAssignFailureRollbackDoesNotAlterStock" classname="com.pokevault.modules.trade.service.TradeMatchingServiceTest$CardConditionMatchingTests" time="0.002" />
+</testsuite>

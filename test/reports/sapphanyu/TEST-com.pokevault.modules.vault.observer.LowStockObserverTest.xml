@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.pokevault.modules.vault.observer.LowStockObserverTest" time="0.013" tests="7" errors="0" skipped="0" failures="0">
+  <testcase name="onOrderPlaced_WithMultipleItems_ShouldCheckAllCards" classname="com.pokevault.modules.vault.observer.LowStockObserverTest" time="0.001">
+    <system-out>2026-10-09T20:32:04.034+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.vault.observer.LowStockObserver    : Received OrderPlacedEvent for order: code=ORD-2026-004, checking inventory levels...
+2026-10-09T20:32:04.034+07:00  WARN 43300 --- [tcg-pocket-inventory] [           main] c.p.m.vault.observer.LowStockObserver    : ⚠️ LOW STOCK ALERT: Card 'Mewtwo ex' (A1-001) has only 1 copies left in vault (threshold: 2)!
+2026-10-09T20:32:04.034+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.vault.observer.LowStockObserver    : Card 'Pikachu' (A1-025) stock is sufficient: 8 copies remaining in vault.
+</system-out>
+  </testcase>
+  <testcase name="onOrderPlaced_WhenStockEqualsThreshold_ShouldTriggerWarning" classname="com.pokevault.modules.vault.observer.LowStockObserverTest" time="0.001">
+    <system-out>2026-10-09T20:32:04.037+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.vault.observer.LowStockObserver    : Received OrderPlacedEvent for order: code=ORD-2026-002, checking inventory levels...
+2026-10-09T20:32:04.037+07:00  WARN 43300 --- [tcg-pocket-inventory] [           main] c.p.m.vault.observer.LowStockObserver    : ⚠️ LOW STOCK ALERT: Card 'Mewtwo ex' (A1-001) has only 2 copies left in vault (threshold: 2)!
+</system-out>
+  </testcase>
+  <testcase name="onOrderPlaced_WhenEventIsNull_ShouldReturnSafely" classname="com.pokevault.modules.vault.observer.LowStockObserverTest" time="0.001" />
+  <testcase name="onOrderPlaced_WhenItemsNullOrEmpty_ShouldReturnSafely" classname="com.pokevault.modules.vault.observer.LowStockObserverTest" time="0.001" />
+  <testcase name="onOrderPlaced_WhenStockBelowThreshold_ShouldQueryStockAndWarn" classname="com.pokevault.modules.vault.observer.LowStockObserverTest" time="0.002">
+    <system-out>2026-10-09T20:32:04.042+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.vault.observer.LowStockObserver    : Received OrderPlacedEvent for order: code=ORD-2026-001, checking inventory levels...
+2026-10-09T20:32:04.042+07:00  WARN 43300 --- [tcg-pocket-inventory] [           main] c.p.m.vault.observer.LowStockObserver    : ⚠️ LOW STOCK ALERT: Card 'Mewtwo ex' (A1-001) has only 1 copies left in vault (threshold: 2)!
+</system-out>
+  </testcase>
+  <testcase name="onOrderPlaced_WhenStockAboveThreshold_ShouldLogNormal" classname="com.pokevault.modules.vault.observer.LowStockObserverTest" time="0.002">
+    <system-out>2026-10-09T20:32:04.043+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.vault.observer.LowStockObserver    : Received OrderPlacedEvent for order: code=ORD-2026-003, checking inventory levels...
+2026-10-09T20:32:04.043+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.vault.observer.LowStockObserver    : Card 'Pikachu' (A1-025) stock is sufficient: 5 copies remaining in vault.
+</system-out>
+  </testcase>
+  <testcase name="onOrderPlaced_WhenItemHasNullInventoryOrCard_ShouldSkipGracefully" classname="com.pokevault.modules.vault.observer.LowStockObserverTest" time="0.002">
+    <system-out>2026-10-09T20:32:04.046+07:00  INFO 43300 --- [tcg-pocket-inventory] [           main] c.p.m.vault.observer.LowStockObserver    : Received OrderPlacedEvent for order: code=null, checking inventory levels...
+</system-out>
+  </testcase>
+</testsuite>
